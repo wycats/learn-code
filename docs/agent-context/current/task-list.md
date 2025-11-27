@@ -1,24 +1,30 @@
-# Phase 2 Task List: Modern CSS Foundation
+# Phase 3 Task List
 
-## Goal
+- [x] **Step 1: Core Game State (Model)**
+  - [x] Define Types (`Grid`, `Cell`, `Block`, `Program`, `GameState`)
+  - [x] Implement `GameModel` with Svelte 5 Runes
+  - [x] Implement `HistoryManager` (Undo/Redo)
 
-Establish a robust, future-proof styling architecture using Baseline 2025 features (Open Props, Semantic Tokens, Dark Mode).
+- [x] **Step 2: The Stage (View)**
+  - [x] Create `Cell` component
+  - [x] Create `Grid` component
+  - [x] Create `Character` component
 
-## Tasks
+- [x] **Step 3: The Interpreter (Logic)**
+  - [x] Implement `Mimic` engine (`runProgram` generator)
+  - [x] Implement `MoveForward`, `TurnLeft`, `TurnRight` logic
 
-### 1. CSS Architecture & Tokens
+- [x] **Step 4: Drag & Drop (Interaction)**
+  - [x] Install `svelte-dnd-action`
+  - [x] Create `Block` component
+  - [x] Create `Tray` component (Palette & Sequence)
 
-- [x] Create a semantic token layer (Brand, Surface, Text) mapping to Open Props.
-- [x] Implement Dark Mode using `light-dark()` and `color-scheme`.
-- [x] Organize global styles using CSS `@layer`.
+- [x] **Step 5: Integration & Game Loop**
+  - [x] Implement Play/Stop/Reset controls
+  - [x] Connect UI to `Mimic` interpreter
+  - [x] Implement execution visualization (highlighting)
+  - [x] Implement Win/Loss detection
 
-### 2. Layout Primitives Refinement
-
-- [x] Review and refine "Every Layout" components (Stack, Cluster, Grid, etc.) to ensure they use modern logical properties and best practices.
-- [x] Add a `Switch` layout primitive (for switching between horizontal/vertical based on container width - using Container Queries).
-- [x] Define global CSS variables for minimum touch target sizes.
-
-### 3. Design System Validation
-
-- [x] Create a "Kitchen Sink" page (`/design`) to visualize all tokens and components.
-- [x] Verify "Modern Matte" aesthetic in both Light and Dark modes.
+- [x] **Step 6: Content (Level 1)**
+  - [x] Define "Cross the River" level
+  - [x] Load level in `GameModel`

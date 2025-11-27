@@ -45,17 +45,39 @@
 ## Phase 2: Modern CSS Foundation
 
 ### 7. CSS Layers for Specificity Management
+
 **Decision:** Use CSS `@layer` (`reset`, `theme`, `base`, `layout`, `components`) to organize global styles.
 **Context:** Managing CSS specificity can be difficult as the project grows. Layers provide a standard way to ensure resets and themes don't override component styles unintentionally.
 **Consequence:** All global styles in `src/app.css` must be assigned to a layer.
 
 ### 8. Semantic Tokens with `light-dark()`
+
 **Decision:** Define semantic tokens (e.g., `--surface-1`, `--text-1`) using the `light-dark()` function.
 **Context:** We need to support both light and dark modes. Traditional media query approaches lead to code duplication or complex selector nesting.
 **Consequence:** We can handle theme switching entirely within the CSS variable definitions, keeping the rest of the CSS theme-agnostic.
 
 ### 9. Container Queries for Layout Switching
+
 **Decision:** Use Container Queries (`@container`) for the `Switch` component instead of the `flex-basis` hack.
 **Context:** The `Switch` component needs to change layout based on available space, not viewport width. Container Queries are now Baseline 2025 and offer a more explicit and robust solution.
 **Consequence:** The `Switch` component requires a wrapper with `container-type: inline-size`.
 
+## Phase 3: Prototype / MVP
+
+### 10. Generator Functions for Execution
+
+**Decision:** Use JavaScript Generator Functions (`function*`) for the `Mimic` interpreter's execution loop.
+**Context:** We need to pause execution between steps to allow the UI to render animations and the user to follow the logic. Callbacks or `setTimeout` chains are messy.
+**Consequence:** The `runProgram` function yields control back to the UI loop after each step, allowing for clean `for await...of` consumption in the view layer.
+
+### 11. Relative Movement Model (Logo-style)
+
+**Decision:** Use relative movement commands (`Move Forward`, `Turn Left`, `Turn Right`) instead of absolute (`Move Up`, `Move Down`).
+**Context:** This aligns with standard pedagogical progression (Logo, Bee-Bot) which emphasizes spatial reasoning and perspective taking ("body syntonicity").
+**Consequence:** The `GameModel` must track `orientation` in addition to `position`.
+
+### 12. Drag & Drop Library: `svelte-dnd-action`
+
+**Decision:** Use `svelte-dnd-action` for the block coding interface.
+**Context:** We needed a Svelte-friendly library that supports sorting and moving items between lists. While it relies on HTML5 DnD (requiring a polyfill for mobile), it offers the best developer experience for list-based interactions compared to writing raw pointer events.
+**Consequence:** We accept a dependency on `svelte-dnd-action` and will need to ensure `mobile-drag-drop` polyfill is added for touch device support in later phases.

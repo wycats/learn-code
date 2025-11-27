@@ -1,54 +1,51 @@
-# Phase 2 Walkthrough: Modern CSS Foundation
+# Phase 3 Walkthrough: Prototype / MVP
 
 ## Overview
 
-In this phase, we established the styling architecture for the application, focusing on modern CSS features (Baseline 2025) to create a robust, maintainable, and accessible design system. We implemented the "Modern Matte" aesthetic using Open Props and semantic tokens.
+In this phase, we built the functional "unplugged-digital" prototype. The core focus was on the "Stop & Go" mechanic, where users plan a sequence of commands (Stop) and then execute them (Go).
 
 ## Key Implementations
 
-### 1. CSS Architecture (`src/app.css`)
+### 1. Game Model (Svelte 5 Runes)
 
-We organized the global styles using CSS `@layer` to manage specificity cleanly:
+We implemented `GameModel` in `src/lib/game/model.svelte.ts` using Svelte 5 Runes (`$state`).
 
-- **`reset`**: Imports `open-props/style` and `open-props/normalize`.
-- **`theme`**: Defines our semantic tokens.
-- **`base`**: Global element styles (body, etc.).
-- **`layout`** & **`components`**: Reserved for future use.
+- **State**: Tracks `program`, `characterPosition`, `characterOrientation`, and `status`.
+- **History**: Implemented a snapshot-based Undo/Redo system that serializes the `program` array.
+- **Types**: Defined strict types for `Direction` ('N', 'E', 'S', 'W') and `BlockType` (relative movement).
 
-### 2. Semantic Tokens & Dark Mode
+### 2. The Mimic Interpreter
 
-We defined a set of semantic variables in the `:root` scope using the `light-dark()` function. This allows us to handle light and dark modes in a single declaration without duplicating selectors.
+We built a custom execution engine in `src/lib/game/mimic.ts`.
 
-- **Surfaces**: `--surface-1` to `--surface-4`.
-- **Text**: `--text-1` to `--text-3`.
-- **Functional Colors**: `--color-action`, `--color-movement`, `--color-logic`, `--color-loop` (mapped to Open Props).
-- **Touch**: `--touch-target-min: 44px`.
+- **Generator Pattern**: The `runProgram` function is an async generator. This allows the UI to iterate through steps (`for await...`) and visualize the execution flow with pauses.
+- **Logic**: Implemented relative movement (`move-forward` depends on orientation) and rotation.
+- **Safety**: Added bounds checking and wall collision detection.
 
-We also enabled `color-scheme: light dark;` to ensure the browser renders native UI elements correctly in both modes.
+### 3. Drag & Drop Interface
 
-### 3. Layout Primitives
+We used `svelte-dnd-action` to implement the block coding interface.
 
-We refined the existing "Every Layout" components and added a new one:
+- **Tray Component**: Contains the `Palette` (source) and `Sequence` (program).
+- **Copy-on-Drag**: The Palette resets its items on drop to simulate an infinite supply of blocks.
+- **Block Component**: Visual representation of commands using Open Props for "Modern Matte" styling.
 
-- **`Stack.svelte`**: Updated to use `gap` instead of margin hacks for better nesting support.
-- **`Switch.svelte`**: A new component that switches from a vertical stack to a horizontal cluster based on available width. We used **Container Queries** (`@container`) to implement this, with preset thresholds (`xs`, `sm`, `md`, `lg`).
-- **`Grid`, `Cluster`, `Center`, `Box`**: Verified and updated to use consistent props.
+### 4. The Stage
 
-### 4. Design System Validation (`/design`)
+- **Grid**: Renders the 5x5 game board using CSS Grid.
+- **Character**: Renders the avatar with CSS transforms for rotation.
+- **Cells**: Visual feedback for Grass, Water, Walls, and Goal.
 
-We created a "Kitchen Sink" page at `src/routes/design/+page.svelte` that displays:
+### 5. Integration
 
-- Typography hierarchy.
-- Color palette (Surfaces, Functional, Status).
-- Layout primitives in action.
-- Touch target validation.
+The `src/routes/game/+page.svelte` page ties everything together.
 
-## Decisions & Trade-offs
-
-- **Container Queries for Switch**: We chose Container Queries over the traditional `flex-basis` hack for `Switch.svelte` because it provides more explicit control and is fully supported in our target baseline.
-- **Open Props**: We stuck to Open Props for values to ensure consistency, mapping them to our semantic names.
-- **Touch Targets**: We enforced a global variable `--touch-target-min` to ensure we never accidentally create inaccessible targets.
+- **Game Loop**: Manages the `runProgram` generator execution.
+- **Controls**: Play, Reset, Undo, Redo buttons.
+- **Feedback**: Visual highlighting of the active block during execution.
 
 ## Next Steps
 
-With the foundation in place, we are ready to move to **Phase 3: Prototype / MVP**, where we will build the actual "Stop & Go" interface using these primitives.
+- **Testing**: Verify touch interactions on actual devices.
+- **Content**: Expand to more levels.
+- **Polish**: Add animations and sound effects.

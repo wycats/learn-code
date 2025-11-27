@@ -1,6 +1,6 @@
-export type Direction = 'up' | 'down' | 'left' | 'right';
+export type Direction = 'N' | 'E' | 'S' | 'W';
 
-export type BlockType = 'move-right' | 'move-up' | 'move-down' | 'move-left' | 'loop';
+export type BlockType = 'move-forward' | 'turn-left' | 'turn-right' | 'loop';
 
 export interface Block {
 	id: string;
@@ -15,13 +15,22 @@ export interface GridPosition {
 	y: number;
 }
 
+export type CellType = 'grass' | 'water' | 'wall' | 'goal';
+
+export interface Cell {
+	type: CellType;
+	position: GridPosition;
+}
+
 export interface LevelDefinition {
 	id: string;
 	name: string;
 	gridSize: { width: number; height: number };
 	start: GridPosition;
+	startOrientation: Direction;
 	goal: GridPosition;
-	walls: GridPosition[];
+	// Map of "x,y" to CellType for non-default cells
+	layout: Record<string, CellType>;
 	availableBlocks: BlockType[];
 	solutionPar?: number;
 }

@@ -4,10 +4,11 @@ export const Level1: LevelDefinition = {
 	id: 'level-1',
 	name: 'First Steps',
 	gridSize: { width: 5, height: 5 },
-	start: { x: 1, y: 2 }, // 0-indexed
+	start: { x: 1, y: 2 },
+	startOrientation: 'E',
 	goal: { x: 3, y: 2 },
-	walls: [],
-	availableBlocks: ['move-right', 'move-up'],
+	layout: {},
+	availableBlocks: ['move-forward', 'turn-left', 'turn-right'],
 	solutionPar: 2
 };
 

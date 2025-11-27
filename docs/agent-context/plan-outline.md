@@ -20,15 +20,15 @@
 - [x] Establish Touch-First sizing defaults (min 44px targets).
 - [x] Create a "Kitchen Sink" style guide page to validate the design system.
 
-## Phase 3: Prototype / MVP (Next)
+## Phase 3: Prototype / MVP (Completed)
 
 **Goal:** Build a functional "unplugged-digital" prototype to test the core "Stop & Go" mechanic.
 
-- [ ] Implement the "Stop" (Planning) mode interface (Touch-First Drag & Drop).
-- [ ] Implement the "Go" (Execution) mode interface.
-- [ ] Create basic "Do Blocks" (Sequencing).
-- [ ] Build a simple level/scenario (e.g., "Cross the River").
-- [ ] Implement the "Play" execution engine.
+- [x] Implement the "Stop" (Planning) mode interface (Touch-First Drag & Drop).
+- [x] Implement the "Go" (Execution) mode interface.
+- [x] Create basic "Do Blocks" (Sequencing).
+- [x] Build a simple level/scenario (e.g., "Cross the River").
+- [x] Implement the "Play" execution engine.
 
 ## Phase 4: Content & Curriculum
 

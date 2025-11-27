@@ -1,44 +1,44 @@
-# Phase 2 Implementation Plan: Modern CSS Foundation
+# Phase 3 Implementation Plan: Prototype / MVP
 
 ## Objective
 
-Establish a robust, future-proof styling architecture using Baseline 2025 features. This ensures that when we build the UI in Phase 3, we have a solid, semantic design system in place.
+Build a functional "unplugged-digital" prototype to test the core "Stop & Go" mechanic. This involves implementing the game state, execution engine, and the primary UI for planning and running code.
 
-## Technical Approach
+## Detailed Steps
 
-### 1. CSS Layers & Open Props
+### Step 1: Core Game State (Model)
 
-We will use CSS `@layer` to manage specificity and organize our styles.
+- [ ] **Define Types**: Create TypeScript interfaces for `Grid`, `Cell`, `Block`, `Program`, and `GameState` in `src/lib/game/types.ts`.
+- [ ] **GameModel**: Implement the `GameModel` class in `src/lib/game/model.svelte.ts` using Svelte 5 Runes (`$state`). This will manage the grid state, character position/orientation, and the current program.
+- [ ] **HistoryManager**: Implement a simple snapshot-based Undo/Redo system within `GameModel`.
 
-- `reset`: Open Props normalize.
-- `theme`: Our semantic tokens (Brand, Surface, Text).
-- `layout`: Global layout utilities.
-- `components`: Component-specific styles (though Svelte handles scoping, this is for global component patterns).
+### Step 2: The Stage (View)
 
-### 2. Semantic Tokens & Dark Mode
+- [ ] **Cell Component**: Create `src/lib/components/game/Cell.svelte` to render individual grid cells (grass, water, goal).
+- [ ] **Grid Component**: Create `src/lib/components/game/Grid.svelte` to render the 5x5 game board.
+- [ ] **Character Component**: Create `src/lib/components/game/Character.svelte` to render the player avatar with proper positioning and rotation.
 
-We will define a set of semantic variables that map to Open Props values. We will use the `light-dark()` function to handle dark mode switching inline.
+### Step 3: The Interpreter (Logic)
 
-**Token Categories:**
+- [ ] **Mimic Engine**: Implement the `Mimic` interpreter in `src/lib/game/mimic.ts`.
+- [ ] **Instruction Set**: Define the core commands: `MoveForward`, `TurnLeft`, `TurnRight`.
+- [ ] **Execution Generator**: Implement the `run()` method as a generator function to allow step-by-step execution and state yielding.
 
-- **Surface**: `surface-1` (page), `surface-2` (card/panel), `surface-3` (input/button).
-- **Text**: `text-1` (headings), `text-2` (body), `text-3` (muted).
-- **Brand**: `brand` (primary action), `accent` (secondary).
-- **Status**: `success`, `warning`, `error`, `info`.
+### Step 4: Drag & Drop (Interaction)
 
-### 3. Layout Primitives
+- [ ] **Library Selection**: Evaluate and select a touch-friendly DnD solution compatible with Svelte 5 (e.g., `svelte-dnd-action` or a custom pointer-event implementation).
+- [ ] **Block Component**: Create `src/lib/components/game/Block.svelte` representing code blocks.
+- [ ] **Palette & Sequence**: Create `Tray.svelte` containing the `Palette` (available blocks) and `Sequence` (program timeline).
+- [ ] **Wiring**: Connect the DnD events to update the `GameModel`'s program state.
 
-We will review our existing "Every Layout" components (`Stack`, `Cluster`, `Grid`, `Center`, `Box`) and ensure they are robust.
+### Step 5: Integration & Game Loop
 
-- **New Component**: `Switch.svelte`. A container that switches its children from a `Stack` (vertical) to a `Cluster` (horizontal) based on available width, using Container Queries.
+- [ ] **Play Controls**: Implement Play/Stop/Reset buttons in the UI.
+- [ ] **Execution Loop**: Connect the UI controls to the `Mimic` interpreter.
+- [ ] **Visualization**: Add state to `GameModel` to track the "active block" index and highlight it during execution.
+- [ ] **Win/Loss Detection**: Implement logic to check if the character is on the goal or an invalid tile after each step.
 
-### 4. Touch Interaction Defaults
+### Step 6: Content (Level 1)
 
-We will establish global CSS variables and utility classes to enforce minimum touch target sizes (44px/48px) across the application, ensuring the "Touch-First" requirement is baked into the foundation.
-
-## Step-by-Step Plan
-
-1.  **Configure Global Styles**: Update `src/app.css` to use `@layer` and define the semantic tokens with `light-dark()`.
-2.  **Refine Layouts**: Audit existing layout components. Implement `Switch.svelte`.
-3.  **Create Kitchen Sink**: Build `src/routes/design/+page.svelte` to display all tokens and primitives.
-4.  **Verify Dark Mode**: Ensure the "Modern Matte" aesthetic holds up in dark mode (adjusting shadows and surface colors as needed).
+- [ ] **Level Definition**: Define the "Cross the River" level data structure (grid layout, start pos, goal pos).
+- [ ] **Level Loader**: Add functionality to `GameModel` to load a level definition.
