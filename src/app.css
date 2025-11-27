@@ -1,0 +1,9 @@
+@import 'open-props/style';
+@import 'open-props/normalize';
+
+/* Global styles that apply everywhere */
+body {
+	background-color: var(--gray-0);
+	color: var(--gray-9);
+	font-family: var(--font-sans);
+}

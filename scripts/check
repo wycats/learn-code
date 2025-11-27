@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+
+echo "Running svelte-check..."
+pnpm check
+
+echo "Running lint..."
+pnpm lint
+
+echo "Running unit tests..."
+pnpm exec vitest run --project server
