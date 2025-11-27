@@ -8,12 +8,16 @@ fi
 
 echo "=== Committing Changes ==="
 git add .
-git commit -m "$1"
-
-if [ $? -ne 0 ]; then
-    echo "Git commit failed. Aborting."
-    exit 1
+if ! git diff --cached --quiet; then
+    git commit -m "$1"
+else
+    echo "Nothing to commit. Proceeding..."
 fi
+
+# if [ $? -ne 0 ]; then
+#     echo "Git commit failed. Aborting."
+#     exit 1
+# fi
 
 echo "=== Emptying Current Context ==="
 truncate -s 0 docs/agent-context/current/task-list.md
