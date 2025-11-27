@@ -6,3 +6,4 @@ export { default as Cluster } from './components/layout/Cluster.svelte';
 export { default as Grid } from './components/layout/Grid.svelte';
 export { default as Center } from './components/layout/Center.svelte';
 export { default as Box } from './components/layout/Box.svelte';
+export { default as Switch } from './components/layout/Switch.svelte';

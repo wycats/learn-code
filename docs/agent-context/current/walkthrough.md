@@ -1,43 +1,54 @@
-# Phase 1 Walkthrough: Foundation & Research
+# Phase 2 Walkthrough: Modern CSS Foundation
 
 ## Overview
 
-This phase focused on grounding the project in solid pedagogical theory and establishing a robust technical and visual foundation. We moved from a vague idea to a concrete plan for a "Digital Montessori" coding tool.
+In this phase, we established the styling architecture for the application, focusing on modern CSS features (Baseline 2025) to create a robust, maintainable, and accessible design system. We implemented the "Modern Matte" aesthetic using Open Props and semantic tokens.
 
-## Key Decisions
+## Key Implementations
 
-### 1. Pedagogy: "Stop & Go"
+### 1. CSS Architecture (`src/app.css`)
 
-We adopted the "Stop & Go" model (Planning vs. Execution) to encourage reflective thinking. This distinguishes Wonderblocks from "tinkering" tools like ScratchJr, where planning and execution often blur.
+We organized the global styles using CSS `@layer` to manage specificity cleanly:
 
-### 2. Visual Style: "Modern Matte"
+- **`reset`**: Imports `open-props/style` and `open-props/normalize`.
+- **`theme`**: Defines our semantic tokens.
+- **`base`**: Global element styles (body, etc.).
+- **`layout`** & **`components`**: Reserved for future use.
 
-We rejected the "Toy Box" aesthetic (skeuomorphic, glossy) in favor of "Modern Matte" (flat, tactile, calming). This aligns with the "Digital Montessori" philosophy—respecting the child's intelligence and reducing cognitive load.
+### 2. Semantic Tokens & Dark Mode
 
-- **Tooling**: We chose **Open Props** over Tailwind to enforce a consistent design system (spacing, colors, shadows) without the visual noise of utility classes in markup.
+We defined a set of semantic variables in the `:root` scope using the `light-dark()` function. This allows us to handle light and dark modes in a single declaration without duplicating selectors.
 
-### 3. Architecture: Custom "Mimic" Interpreter
+- **Surfaces**: `--surface-1` to `--surface-4`.
+- **Text**: `--text-1` to `--text-3`.
+- **Functional Colors**: `--color-action`, `--color-movement`, `--color-logic`, `--color-loop` (mapped to Open Props).
+- **Touch**: `--touch-target-min: 44px`.
 
-We decided to build a custom interpreter ("Mimic") rather than integrating PXT immediately.
+We also enabled `color-scheme: light dark;` to ensure the browser renders native UI elements correctly in both modes.
 
-- **Reasoning**: PXT is powerful but complex. For the MVP, we need full control over the execution flow to support the "Stop & Go" mechanics and step-by-step visualization.
-- **Future-Proofing**: The data structure will be kept compatible with PXT for potential future migration.
+### 3. Layout Primitives
 
-### 4. State Management: Runes
+We refined the existing "Every Layout" components and added a new one:
 
-We chose Svelte 5 Runes (`$state`) for state management. This provides a simple, reactive data model that is easy to reason about and debug.
+- **`Stack.svelte`**: Updated to use `gap` instead of margin hacks for better nesting support.
+- **`Switch.svelte`**: A new component that switches from a vertical stack to a horizontal cluster based on available width. We used **Container Queries** (`@container`) to implement this, with preset thresholds (`xs`, `sm`, `md`, `lg`).
+- **`Grid`, `Cluster`, `Center`, `Box`**: Verified and updated to use consistent props.
 
-## Implementation Details
+### 4. Design System Validation (`/design`)
 
-### Project Structure
+We created a "Kitchen Sink" page at `src/routes/design/+page.svelte` that displays:
 
-- Standard SvelteKit layout.
-- `src/lib/game/`: Core game logic (types, model).
-- `src/levels/`: Level definitions (TypeScript-as-Data).
-- `src/lib/components/layout/`: "Every Layout" primitives (`Stack`, `Cluster`, `Grid`, `Center`, `Box`).
+- Typography hierarchy.
+- Color palette (Surfaces, Functional, Status).
+- Layout primitives in action.
+- Touch target validation.
 
-### CSS Architecture
+## Decisions & Trade-offs
 
-- **Open Props**: Imported in `src/app.css`.
-- **Scoped Styles**: Component-specific styles using Svelte's built-in scoping.
-- **Layout Primitives**: Compositional components to handle layout, keeping business logic components free of layout concerns.
+- **Container Queries for Switch**: We chose Container Queries over the traditional `flex-basis` hack for `Switch.svelte` because it provides more explicit control and is fully supported in our target baseline.
+- **Open Props**: We stuck to Open Props for values to ensure consistency, mapping them to our semantic names.
+- **Touch Targets**: We enforced a global variable `--touch-target-min` to ensure we never accidentally create inaccessible targets.
+
+## Next Steps
+
+With the foundation in place, we are ready to move to **Phase 3: Prototype / MVP**, where we will build the actual "Stop & Go" interface using these primitives.

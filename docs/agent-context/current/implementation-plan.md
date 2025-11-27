@@ -32,6 +32,10 @@ We will review our existing "Every Layout" components (`Stack`, `Cluster`, `Grid
 
 - **New Component**: `Switch.svelte`. A container that switches its children from a `Stack` (vertical) to a `Cluster` (horizontal) based on available width, using Container Queries.
 
+### 4. Touch Interaction Defaults
+
+We will establish global CSS variables and utility classes to enforce minimum touch target sizes (44px/48px) across the application, ensuring the "Touch-First" requirement is baked into the foundation.
+
 ## Step-by-Step Plan
 
 1.  **Configure Global Styles**: Update `src/app.css` to use `@layer` and define the semantic tokens with `light-dark()`.

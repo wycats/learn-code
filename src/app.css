@@ -1,9 +1,73 @@
-@import 'open-props/style';
-@import 'open-props/normalize';
+@import 'open-props/style' layer(reset);
+@import 'open-props/normalize' layer(reset);
 
-/* Global styles that apply everywhere */
-body {
-	background-color: var(--gray-0);
-	color: var(--gray-9);
-	font-family: var(--font-sans);
+@layer theme {
+	:root {
+		/* Enable native dark mode support */
+		color-scheme: light dark;
+
+		/* Surface Colors */
+		--surface-1: light-dark(var(--gray-0), var(--gray-9));
+		--surface-2: light-dark(var(--white), var(--gray-8));
+		--surface-3: light-dark(var(--gray-1), var(--gray-7));
+		--surface-4: light-dark(var(--gray-2), var(--gray-6));
+
+		/* Text Colors */
+		--text-1: light-dark(var(--gray-9), var(--gray-1));
+		--text-2: light-dark(var(--gray-7), var(--gray-3));
+		--text-3: light-dark(var(--gray-6), var(--gray-5));
+
+		/* Brand & Functional Colors */
+		/* Using Open Props values that approximate the "Modern Matte" palette */
+		--brand: light-dark(var(--indigo-6), var(--indigo-4));
+		--accent: light-dark(var(--pink-6), var(--pink-4));
+
+		--color-action: var(--green-5);
+		--color-movement: var(--blue-5);
+		--color-logic: var(--violet-5);
+		--color-loop: var(--orange-5);
+
+		/* Status Colors */
+		--success: var(--green-6);
+		--warning: var(--yellow-6);
+		--error: var(--red-6);
+		--info: var(--blue-6);
+
+		/* Touch Interaction */
+		--touch-target-min: 44px;
+
+		/* Shadows */
+		--shadow-soft: var(--shadow-3);
+	}
+}
+
+@layer base {
+	body {
+		background-color: var(--surface-1);
+		color: var(--text-1);
+		font-family: var(--font-sans);
+
+		/* Smooth scrolling */
+		scroll-behavior: smooth;
+
+		/* Better font rendering */
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+	/* Touch target enforcement utility */
+	.touch-target {
+		min-width: var(--touch-target-min);
+		min-height: var(--touch-target-min);
+		display: grid;
+		place-content: center;
+	}
+}
+
+@layer layout {
+	/* Global layout utilities can go here if not in components */
+}
+
+@layer components {
+	/* Global component patterns */
 }

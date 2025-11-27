@@ -10,16 +10,17 @@
 - [x] Create initial technical architecture plan.
 - [x] Set up project structure (SvelteKit/Vite).
 
-## Phase 2: Modern CSS Foundation (Next)
+## Phase 2: Modern CSS Foundation (Completed)
 
 **Goal:** Establish a robust, future-proof styling architecture using Baseline 2025 features.
 
-- [ ] Configure Open Props with a semantic token layer (Brand, Surface, Text).
-- [ ] Implement Dark Mode using `light-dark()` and semantic tokens.
-- [ ] Refine "Every Layout" primitives to use modern CSS (Logical Properties, etc.).
-- [ ] Create a "Kitchen Sink" style guide page to validate the design system.
+- [x] Configure Open Props with a semantic token layer (Brand, Surface, Text).
+- [x] Implement Dark Mode using `light-dark()` and semantic tokens.
+- [x] Refine "Every Layout" primitives to use modern CSS (Logical Properties, etc.).
+- [x] Establish Touch-First sizing defaults (min 44px targets).
+- [x] Create a "Kitchen Sink" style guide page to validate the design system.
 
-## Phase 3: Prototype / MVP
+## Phase 3: Prototype / MVP (Next)
 
 **Goal:** Build a functional "unplugged-digital" prototype to test the core "Stop & Go" mechanic.
 
