@@ -87,4 +87,5 @@ Transformed the tutorial from a passive reading experience into an interactive, 
   - "Pop-in" animations for Win Modal.
   - Explicit loop counts on blocks.
   - Harmonized "Modern Matte" color usage.
+  - Fixed layout shifts and grid rendering issues (off-by-one error).
 - **Technical Refactor**: Encapsulated `executionState` and `loopProgress` in `GameModel` to prevent reactivity bugs.

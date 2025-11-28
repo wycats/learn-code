@@ -142,6 +142,7 @@
 **Decision:** Mutate `SvelteMap` instances in place using `clear()` and `set()` instead of reassigning the map reference.
 **Context:** Reassigning a `SvelteMap` property (e.g., `game.executionState = new SvelteMap()`) breaks reactivity for components that hold a reference to the old map.
 **Consequence:**
+
 - Added `resetExecutionState()` and `restoreExecutionState()` methods to `GameModel`.
 - Made map properties `readonly` to enforce this pattern.
 
@@ -150,6 +151,7 @@
 **Decision:** Allocate a fixed-height "Dashboard" area at the top of the game view for instructions and status.
 **Context:** The previous modal-based tutorial blocked the view of the grid, preventing users from following instructions while acting. A dynamic height bar caused layout shifts that were disorienting.
 **Consequence:**
+
 - The stage is stable and does not jump when switching between Story and Planning modes.
 - We have a dedicated space for "Mission Control" UI.
 
@@ -158,13 +160,15 @@
 **Decision:** Advance the story automatically based on game events (e.g., `block-placed`) rather than relying solely on a "Next" button.
 **Context:** Clicking "Next" after performing an action felt redundant and disconnected.
 **Consequence:**
+
 - Added `advanceCondition` to the `StorySegment` schema.
 - The `GameModel` now listens for and validates actions against the current story requirement.
 
 ### 21. CSS Grid for Character Movement
 
 **Decision:** Move the Character component out of the grid cells and into a dedicated overlay layer, positioned via CSS Grid and `transform`.
-**Context:** Rendering the character *inside* a cell made smooth CSS transitions impossible because the DOM element was destroyed and recreated in a new parent on every move.
+**Context:** Rendering the character _inside_ a cell made smooth CSS transitions impossible because the DOM element was destroyed and recreated in a new parent on every move.
 **Consequence:**
+
 - We can use `transition: transform` for smooth movement.
 - We calculate position using `calc(var(--x) * (100% + var(--gap)))`.

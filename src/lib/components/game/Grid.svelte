@@ -45,7 +45,7 @@
 
 <div class="grid-stage" style:--grid-width={width} style:--grid-height={height}>
 	{#each cells as cell (`${cell.x},${cell.y}`)}
-		<div class="grid-cell-wrapper">
+		<div class="grid-cell-wrapper" style:grid-column={cell.x + 1} style:grid-row={cell.y + 1}>
 			<Cell type={cell.type} x={cell.x} y={cell.y} {highlight} />
 		</div>
 	{/each}
@@ -70,6 +70,7 @@
 		border-radius: var(--radius-3);
 		box-shadow: var(--shadow-3);
 		aspect-ratio: var(--grid-width) / var(--grid-height);
+		width: 100%;
 		max-width: 100%;
 		max-height: 100%;
 		position: relative;
