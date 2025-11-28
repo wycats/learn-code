@@ -74,6 +74,9 @@
 		max-width: 100%;
 		max-height: 100%;
 		position: relative;
+		/* Ensure grid items don't overflow */
+		min-width: 0;
+		min-height: 0;
 	}
 
 	.grid-cell-wrapper {

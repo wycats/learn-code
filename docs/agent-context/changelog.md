@@ -89,3 +89,33 @@ Transformed the tutorial from a passive reading experience into an interactive, 
   - Harmonized "Modern Matte" color usage.
   - Fixed layout shifts and grid rendering issues (off-by-one error).
 - **Technical Refactor**: Encapsulated `executionState` and `loopProgress` in `GameModel` to prevent reactivity bugs.
+
+## Phase 6: Advanced Concepts & Audio (Completed)
+
+**Date:** November 28, 2025
+
+**Summary:**
+Implemented "Functions" (Magic Blocks) to introduce the concept of reusable code, and a comprehensive Audio System for immersive feedback. This involved a significant update to the `GameModel` to support multiple editing contexts and updating the `StackInterpreter` to handle function calls with a call stack.
+
+**Key Deliverables:**
+
+- **Functions Core Logic**:
+  - Updated `LevelSchema` to support `functions`.
+  - Added `CallBlock` type.
+  - Updated `StackInterpreter` to handle `CALL` and `RETURN` operations with stack frames.
+  - Implemented context switching in `GameModel` (`activeProgram`).
+- **Function Editor UI**:
+  - Updated `Tray.svelte` with tabs to switch between Main Program and Function definitions.
+  - Added `MagicBlock` (Call Block) visualization.
+  - Added smooth transitions (`fly`/`fade`) when switching contexts.
+- **Visual Execution**:
+  - Updated Interpreter to automatically switch the UI context when execution enters a function, allowing users to see the function executing step-by-step.
+- **Audio System**:
+  - Implemented `SoundManager` using Web Audio API.
+  - Added support for voiceovers in `Dialogue` and looping ambient tracks.
+- **Content**:
+  - Level 7 ("The Magic Spell"): Introduction to functions.
+  - Level 8 ("Pattern Recognition"): Complex pattern solving with functions.
+- **UI Refinements**:
+  - Implemented "Infinite Loop" logic and UI.
+  - Refactored Loop Block configuration into a "Contextual Configuration Panel" in the Tray using Glassomorphism and Popover API.

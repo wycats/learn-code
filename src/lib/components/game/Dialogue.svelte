@@ -2,6 +2,7 @@
 	import type { StorySegment } from '$lib/game/types';
 	import { fade, fly } from 'svelte/transition';
 	import { ArrowRight } from 'lucide-svelte';
+	import { soundManager } from '$lib/game/sound';
 
 	interface Props {
 		segment: StorySegment;
@@ -16,6 +17,12 @@
 		concerned: '😟',
 		excited: '🤩'
 	};
+
+	$effect(() => {
+		if (segment.audioId) {
+			soundManager.playFile(segment.audioId);
+		}
+	});
 </script>
 
 <div class="dialogue-overlay" transition:fade={{ duration: 200 }}>

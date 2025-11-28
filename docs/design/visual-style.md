@@ -51,3 +51,15 @@ The visual language aims to feel like a high-end, digital educational tool. It a
 - **Sequence Track**: A clearly defined horizontal track for placing blocks.
 - **Palette**: A scrollable area for selecting blocks.
 - **Play Button**: The primary call-to-action, distinct in size and color.
+
+### Contextual Configuration
+
+- **Principles**:
+  - **Contextual**: Only appears when relevant (e.g., when a block is selected).
+  - **Proximate**: Appears near the selection or the tools acting on it.
+  - **Distinct**: Visually distinct from the primary toolbar (Glassomorphism vs Solid).
+  - **Generous**: Large touch targets, clear labels.
+- **Style**:
+  - **Glassomorphism**: `backdrop-filter: blur(12px)`, semi-transparent white background.
+  - **Positioning**: Floats to the left of the primary toolbar.
+  - **Grid Layout**: Options are arranged in a grid for easy scanning.

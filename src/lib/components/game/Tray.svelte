@@ -10,9 +10,10 @@
 	import type { Block, BlockType } from '$lib/game/types';
 	import type { GameModel } from '$lib/game/model.svelte';
 	import { setDragContext } from '$lib/game/drag-context.svelte';
-	import { Trash2, Move, ListChecks, Copy } from 'lucide-svelte';
+	import { Trash2, Move, ListChecks, Copy, Infinity as InfinityIcon } from 'lucide-svelte';
 	import { soundManager } from '$lib/game/sound';
 	import { SvelteSet } from 'svelte/reactivity';
+	import { fly, fade } from 'svelte/transition';
 
 	interface Props {
 		game: GameModel;
@@ -28,6 +29,9 @@
 	const isFull = $derived(
 		game.level.maxBlocks !== undefined && game.blockCount >= game.level.maxBlocks
 	);
+
+	const hasFunctions = $derived(Object.keys(game.functions).length > 0);
+	const functionNames = $derived(Object.keys(game.functions));
 
 	const highlight = $derived(game.currentStorySegment?.highlight);
 
@@ -69,11 +73,17 @@
 
 	const selectedBlocks = $derived(
 		Array.from(selectedBlockIds)
-			.map((id) => findBlock(game.program, id))
+			.map((id) => findBlock(game.activeProgram, id))
 			.filter((b) => b !== null) as Block[]
 	);
 	const primarySelectedBlock = $derived(selectedBlocks.length === 1 ? selectedBlocks[0] : null);
 	const selectedBlockId = $derived(primarySelectedBlock?.id ?? null); // Backwards compatibility for logic that expects single ID
+
+	function updateLoopCount(count: number | undefined) {
+		if (primarySelectedBlock && primarySelectedBlock.type === 'loop') {
+			game.updateBlock(primarySelectedBlock.id, { count });
+		}
+	}
 
 	function deepCloneWithNewIds(block: Block): Block {
 		const newBlock = { ...block, id: crypto.randomUUID() };
@@ -101,8 +111,8 @@
 				}
 			}
 		}
-		removeGhosts(game.program);
-		game.program = [...game.program];
+		removeGhosts(game.activeProgram);
+		game.activeProgram = [...game.activeProgram];
 	}
 
 	function confirmGhost(ghostBlock: Block) {
@@ -120,7 +130,7 @@
 			// The ghost is in the tree. The original is also in the tree.
 
 			// Let's remove the original block
-			removeBlock(game.program, selectedBlockId);
+			removeBlock(game.activeProgram, selectedBlockId);
 			isMoveMode = false;
 		}
 
@@ -139,8 +149,8 @@
 					if (b.children) finalizePaste(b.children);
 				}
 			}
-			finalizePaste(game.program);
-			game.program = [...game.program];
+			finalizePaste(game.activeProgram);
+			game.activeProgram = [...game.activeProgram];
 
 			selectedBlockIds.clear();
 			for (const b of newBlocks) selectedBlockIds.add(b.id);
@@ -162,8 +172,8 @@
 				}
 			}
 		}
-		finalize(game.program);
-		game.program = [...game.program];
+		finalize(game.activeProgram);
+		game.activeProgram = [...game.activeProgram];
 
 		// Restore selection to the target block (if it exists) so we can keep editing relative to it
 		if (ghostTargetId) {
@@ -217,12 +227,12 @@
 			return false;
 		}
 
-		insertGhostsRecursive(game.program);
-		game.program = [...game.program];
+		insertGhostsRecursive(game.activeProgram);
+		game.activeProgram = [...game.activeProgram];
 	}
 
 	function handleSelect(id: string) {
-		const block = findBlock(game.program, id);
+		const block = findBlock(game.activeProgram, id);
 
 		// If we clicked a ghost, confirm it
 		if (block?.isGhost) {
@@ -234,7 +244,7 @@
 		if (isPasteMode && clipboard.length > 0 && block) {
 			// If we click the SAME target again, confirm default ghost
 			if (id === ghostTargetId && defaultGhostId) {
-				const defaultGhost = findBlock(game.program, defaultGhostId);
+				const defaultGhost = findBlock(game.activeProgram, defaultGhostId);
 				if (defaultGhost) {
 					confirmGhost(defaultGhost);
 					return;
@@ -253,7 +263,7 @@
 
 			// If we click the SAME target again, confirm the default ghost
 			if (id === ghostTargetId && defaultGhostId) {
-				const defaultGhost = findBlock(game.program, defaultGhostId);
+				const defaultGhost = findBlock(game.activeProgram, defaultGhostId);
 				if (defaultGhost) {
 					confirmGhost(defaultGhost);
 					return;
@@ -269,7 +279,7 @@
 				}
 				return false;
 			}
-			const sourceBlock = findBlock(game.program, selectedBlockId);
+			const sourceBlock = findBlock(game.activeProgram, selectedBlockId);
 			if (sourceBlock && isChild(sourceBlock, block.id)) return;
 
 			clearGhosts();
@@ -318,7 +328,7 @@
 		if (selectedBlockId) {
 			// If we click the SAME palette item again, confirm the default ghost
 			if (selectedBlockId === ghostTargetId && ghostSourceType === type && defaultGhostId) {
-				const defaultGhost = findBlock(game.program, defaultGhostId);
+				const defaultGhost = findBlock(game.activeProgram, defaultGhostId);
 				if (defaultGhost) {
 					confirmGhost(defaultGhost);
 					return;
@@ -326,7 +336,7 @@
 			}
 
 			clearGhosts();
-			const target = findBlock(game.program, selectedBlockId);
+			const target = findBlock(game.activeProgram, selectedBlockId);
 			if (target) {
 				showGhosts(target, type);
 				return;
@@ -336,7 +346,8 @@
 		clearGhosts();
 
 		// Check if the last block is a container (Loop)
-		const lastBlock = game.program.length > 0 ? game.program[game.program.length - 1] : null;
+		const lastBlock =
+			game.activeProgram.length > 0 ? game.activeProgram[game.activeProgram.length - 1] : null;
 		if (lastBlock && lastBlock.type === 'loop') {
 			const newBlock: Block = { id: crypto.randomUUID(), type };
 			game.insertBlockIntoContainer(lastBlock.id, newBlock);
@@ -365,7 +376,7 @@
 
 		// Deep clone selected blocks
 		const blocks = Array.from(selectedBlockIds)
-			.map((id) => findBlock(game.program, id))
+			.map((id) => findBlock(game.activeProgram, id))
 			.filter((b) => b !== null) as Block[];
 
 		// Store in clipboard
@@ -400,7 +411,7 @@
 		if (!selectedBlockId) return;
 		if (selectedBlockId === containerId) return; // Can't move into self
 
-		const blockToMove = findBlock(game.program, selectedBlockId);
+		const blockToMove = findBlock(game.activeProgram, selectedBlockId);
 		if (!blockToMove) return;
 
 		// Check if target is a child of the block we are moving (prevent cycles)
@@ -415,18 +426,31 @@
 		if (isChild(blockToMove, containerId)) return;
 
 		// Remove from old position
-		removeBlock(game.program, selectedBlockId);
+		removeBlock(game.activeProgram, selectedBlockId);
 
 		// Add to new position
-		const container = findBlock(game.program, containerId);
+		const container = findBlock(game.activeProgram, containerId);
 		if (container) {
 			if (!container.children) container.children = [];
 			container.children.push(blockToMove);
 		}
 
-		game.program = [...game.program];
+		game.activeProgram = [...game.activeProgram];
 		// Keep selected so user sees where it went
 	}
+
+	$effect(() => {
+		if (game.activeBlockId) {
+			// We need to wait for the DOM to update if we just switched context
+			// But $effect runs after render, so it should be fine.
+			// However, the element might be inside a key block that just remounted.
+			// Let's try a small timeout or just run it.
+			const el = document.querySelector(`[data-block-id="${game.activeBlockId}"]`);
+			if (el) {
+				el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			}
+		}
+	});
 
 	$effect(() => {
 		return monitorForElements({
@@ -519,8 +543,8 @@
 				// Handle Trash
 				if (targetData.type === 'trash') {
 					if (!isPaletteItem) {
-						removeBlock(game.program, sourceBlock.id);
-						game.program = [...game.program]; // Trigger reactivity
+						removeBlock(game.activeProgram, sourceBlock.id);
+						game.activeProgram = [...game.activeProgram]; // Trigger reactivity
 					}
 					return;
 				}
@@ -533,7 +557,7 @@
 					} else {
 						newBlock = sourceBlock;
 						// Remove from old position first
-						removeBlock(game.program, sourceBlock.id);
+						removeBlock(game.activeProgram, sourceBlock.id);
 					}
 
 					// Insert at new position
@@ -541,11 +565,11 @@
 					const targetId = targetData.blockId as string;
 
 					// Special case: Dropping into empty program list
-					if (targetId === 'program-list' && game.program.length === 0) {
-						game.program = [newBlock];
+					if (targetId === 'program-list' && game.activeProgram.length === 0) {
+						game.activeProgram = [newBlock];
 					} else {
-						insertBlock(game.program, targetId, newBlock, edge);
-						game.program = [...game.program]; // Trigger reactivity
+						insertBlock(game.activeProgram, targetId, newBlock, edge);
+						game.activeProgram = [...game.activeProgram]; // Trigger reactivity
 					}
 				}
 			}
@@ -587,145 +611,180 @@
 			{/if}
 		</div>
 
-		<div class="program-container">
-			<div
-				class="program-list"
-				data-block-id="program-list"
-				use:dropTarget={{
-					blockId: 'program-list',
-					type: 'drop-target'
-				}}
-				onclick={() => selectedBlockIds.clear()}
-				role="button"
-				tabindex="0"
-				onkeydown={(e) => {
-					if (e.key === 'Enter' || e.key === ' ') selectedBlockIds.clear();
-				}}
-			>
-				{#each game.program as item, index (item.id)}
-					<div class="block-wrapper" style:position="relative">
-						{#if dragCtx.targetId === item.id && dragCtx.closestEdge === 'top'}
-							<DropIndicator edge="top" />
-						{/if}
-
-						<div
-							use:draggableBlock={{ block: item }}
-							use:dropTarget={{
-								blockId: item.id,
-								index: index,
-								type: 'drop-target'
-							}}
-						>
-							<BlockComponent
-								block={item}
-								{game}
-								activeBlockId={game.activeBlockId}
-								{selectedBlockIds}
-								onSelect={handleSelect}
-								onContainerClick={handleContainerClick}
-							/>
-						</div>
-
-						{#if dragCtx.targetId === item.id && dragCtx.closestEdge === 'bottom'}
-							<DropIndicator edge="bottom" />
-						{/if}
-					</div>
+		{#if hasFunctions}
+			<div class="context-tabs">
+				<button
+					class:active={game.editingContext === null}
+					onclick={() => (game.editingContext = null)}
+				>
+					Main
+				</button>
+				{#each functionNames as name (name)}
+					<button
+						class:active={game.editingContext === name}
+						onclick={() => (game.editingContext = name)}
+					>
+						{name}
+					</button>
 				{/each}
-
-				{#if game.program.length === 0}
-					<div class="empty-placeholder">Drag blocks here...</div>
-				{/if}
 			</div>
+		{/if}
+
+		<div class="program-container">
+			{#key game.editingContext}
+				<div
+					class="program-list"
+					in:fly={{ x: 20, duration: 300, delay: 100 }}
+					out:fade={{ duration: 100 }}
+					data-block-id="program-list"
+					use:dropTarget={{
+						blockId: 'program-list',
+						type: 'drop-target'
+					}}
+					onclick={() => selectedBlockIds.clear()}
+					role="button"
+					tabindex="0"
+					onkeydown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') selectedBlockIds.clear();
+					}}
+				>
+					{#each game.activeProgram as item, index (item.id)}
+						<div class="block-wrapper" style:position="relative">
+							{#if dragCtx.targetId === item.id && dragCtx.closestEdge === 'top'}
+								<DropIndicator edge="top" />
+							{/if}
+
+							<div
+								use:draggableBlock={{ block: item }}
+								use:dropTarget={{
+									blockId: item.id,
+									index: index,
+									type: 'drop-target'
+								}}
+							>
+								<BlockComponent
+									block={item}
+									{game}
+									activeBlockId={game.activeBlockId}
+									{selectedBlockIds}
+									onSelect={handleSelect}
+									onContainerClick={handleContainerClick}
+								/>
+							</div>
+
+							{#if dragCtx.targetId === item.id && dragCtx.closestEdge === 'bottom'}
+								<DropIndicator edge="bottom" />
+							{/if}
+						</div>
+					{/each}
+
+					{#if game.activeProgram.length === 0}
+						<div class="empty-placeholder">Drag blocks here...</div>
+					{/if}
+				</div>
+			{/key}
 		</div>
 	</div>
 
 	<!-- Floating Toolbar (Trash / Inspector) -->
 	<div class="floating-toolbar" class:visible={dragCtx.isDragging || selectedBlockIds.size > 0}>
-		{#if primarySelectedBlock && primarySelectedBlock.type === 'loop' && selectedBlockIds.size === 1}
-			<div class="toolbar-item loop-control">
-				<label for="loop-count">Repeat</label>
-				<input
-					id="loop-count"
-					type="number"
-					min="1"
-					max="99"
-					disabled={game.status === 'running'}
-					value={primarySelectedBlock.count || 1}
-					oninput={(e) => {
-						const val = parseInt(e.currentTarget.value);
-						if (!isNaN(val) && val >= 1) {
-							game.updateBlock(primarySelectedBlock!.id, { count: val });
-						}
-					}}
-				/>
+		<!-- Configuration Panel (Left of Toolbar) -->
+		{#if primarySelectedBlock?.type === 'loop'}
+			<div class="config-panel" transition:fly={{ x: -20, duration: 200 }}>
+				<div class="config-header">Repeat</div>
+				<div class="config-grid">
+					{#each [2, 3, 4, 5, 10] as count (count)}
+						<button
+							class="config-btn"
+							class:active={primarySelectedBlock.count === count}
+							onclick={() => updateLoopCount(count)}
+						>
+							{count}x
+						</button>
+					{/each}
+					<button
+						class="config-btn infinity"
+						class:active={primarySelectedBlock.count === undefined}
+						onclick={() => updateLoopCount(undefined)}
+						title="Repeat Forever"
+					>
+						<InfinityIcon size={20} />
+					</button>
+				</div>
 			</div>
 		{/if}
 
-		<div
-			class="trash-zone"
-			class:active={isTrashActive}
-			use:dropTarget={{
-				type: 'trash'
-			}}
-			onclick={handleDeleteSelected}
-			title="Drag here to delete, or click to delete selected"
-			role="button"
-			tabindex="0"
-			onkeydown={(e) => {
-				if (e.key === 'Enter' || e.key === ' ') handleDeleteSelected();
-			}}
-		>
-			<Trash2 size={24} />
-			{#if selectedBlockIds.size > 1}
-				<span class="badge">{selectedBlockIds.size}</span>
+		<div class="toolbar-container">
+			<div
+				class="toolbar-btn trash-zone"
+				class:active={isTrashActive}
+				use:dropTarget={{
+					type: 'trash'
+				}}
+				onclick={handleDeleteSelected}
+				title="Drag here to delete, or click to delete selected"
+				role="button"
+				tabindex="0"
+				onkeydown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') handleDeleteSelected();
+				}}
+			>
+				<Trash2 size={24} />
+				<span class="label">Delete</span>
+				{#if selectedBlockIds.size > 1}
+					<span class="badge">{selectedBlockIds.size}</span>
+				{/if}
+			</div>
+
+			{#if selectedBlockIds.size > 0}
+				<div
+					class="toolbar-btn"
+					class:active={isPasteMode}
+					onclick={handleDuplicate}
+					title="Duplicate selected blocks"
+					role="button"
+					tabindex="0"
+					onkeydown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') handleDuplicate();
+					}}
+				>
+					<Copy size={24} />
+					<span class="label">Copy</span>
+				</div>
+
+				<div
+					class="toolbar-btn"
+					class:active={isMultiSelectMode}
+					onclick={() => (isMultiSelectMode = !isMultiSelectMode)}
+					title="Toggle Multi-Select Mode"
+					role="button"
+					tabindex="0"
+					onkeydown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') isMultiSelectMode = !isMultiSelectMode;
+					}}
+				>
+					<ListChecks size={24} />
+					<span class="label">Select</span>
+				</div>
+			{/if}
+
+			{#if selectedBlockIds.size === 1}
+				<div
+					class="toolbar-btn"
+					class:active={isMoveMode}
+					onclick={() => (isMoveMode = !isMoveMode)}
+					title="Move selected block"
+					role="button"
+					tabindex="0"
+					onkeydown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') isMoveMode = !isMoveMode;
+					}}
+				>
+					<Move size={24} />
+					<span class="label">Move</span>
+				</div>
 			{/if}
 		</div>
-
-		{#if selectedBlockIds.size > 0}
-			<div
-				class="trash-zone"
-				class:active={isPasteMode}
-				onclick={handleDuplicate}
-				title="Duplicate selected blocks"
-				role="button"
-				tabindex="0"
-				onkeydown={(e) => {
-					if (e.key === 'Enter' || e.key === ' ') handleDuplicate();
-				}}
-			>
-				<Copy size={24} />
-			</div>
-
-			<div
-				class="trash-zone"
-				class:active={isMultiSelectMode}
-				onclick={() => (isMultiSelectMode = !isMultiSelectMode)}
-				title="Toggle Multi-Select Mode"
-				role="button"
-				tabindex="0"
-				onkeydown={(e) => {
-					if (e.key === 'Enter' || e.key === ' ') isMultiSelectMode = !isMultiSelectMode;
-				}}
-			>
-				<ListChecks size={24} />
-			</div>
-		{/if}
-
-		{#if selectedBlockIds.size === 1}
-			<div
-				class="trash-zone"
-				class:active={isMoveMode}
-				onclick={() => (isMoveMode = !isMoveMode)}
-				title="Move selected block"
-				role="button"
-				tabindex="0"
-				onkeydown={(e) => {
-					if (e.key === 'Enter' || e.key === ' ') isMoveMode = !isMoveMode;
-				}}
-			>
-				<Move size={24} />
-			</div>
-		{/if}
 	</div>
 </div>
 
@@ -743,7 +802,7 @@
 	.floating-toolbar {
 		position: absolute;
 		top: 50%;
-		left: -80px; /* Push out to the left */
+		left: -100px; /* Push out to the left */
 		transform: translateY(-50%) translateX(20px);
 		opacity: 0;
 		pointer-events: none;
@@ -753,8 +812,9 @@
 		z-index: 100;
 		display: flex;
 		flex-direction: column;
-		gap: var(--size-3);
 		align-items: center;
+		/* Allow config panel to overflow */
+		overflow: visible;
 	}
 
 	.floating-toolbar.visible {
@@ -763,32 +823,158 @@
 		transform: translateY(-50%) translateX(0);
 	}
 
-	.toolbar-item {
+	.config-panel {
+		position: absolute;
+		right: 100%;
+		top: 50%;
+		transform: translateY(-50%);
+		margin-right: var(--size-3);
+
+		/* Glassomorphism */
+		background: rgba(255, 255, 255, 0.65);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		border: 1px solid rgba(255, 255, 255, 0.5);
+		box-shadow:
+			0 10px 25px -5px rgba(0, 0, 0, 0.1),
+			0 8px 10px -6px rgba(0, 0, 0, 0.1),
+			inset 0 0 20px rgba(255, 255, 255, 0.5);
+
+		border-radius: var(--radius-3);
+		padding: var(--size-3);
+		width: 200px;
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-2);
+	}
+
+	.config-header {
+		font-size: var(--font-size-0);
+		font-weight: 800;
+		color: var(--text-2);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		text-align: center;
+		padding-bottom: var(--size-1);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	}
+
+	.config-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: var(--size-2);
+	}
+
+	.config-btn {
+		aspect-ratio: 1;
+		background-color: rgba(255, 255, 255, 0.5);
+		border: 1px solid rgba(0, 0, 0, 0.05);
+		border-radius: var(--radius-2);
+		font-size: var(--font-size-1);
+		font-weight: bold;
+		color: var(--text-2);
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.2s var(--ease-2);
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+	}
+
+	.config-btn:hover {
+		background-color: white;
+		transform: translateY(-2px);
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		color: var(--text-1);
+	}
+
+	.config-btn.active {
+		background-color: var(--blue-2);
+		color: var(--blue-7);
+		border-color: var(--blue-5);
+		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+		transform: translateY(1px);
+	}
+
+	.toolbar-container {
 		background-color: var(--surface-1);
 		padding: var(--size-2);
+		border-radius: var(--radius-3);
+		box-shadow: var(--shadow-4);
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-2);
+		border: 1px solid var(--surface-3);
+	}
+
+	.toolbar-btn {
+		width: 70px;
+		height: 70px;
+		background-color: var(--surface-2);
+		border: 2px solid transparent;
 		border-radius: var(--radius-2);
-		box-shadow: var(--shadow-3);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		justify-content: center;
 		gap: var(--size-1);
+		color: var(--text-2);
+		cursor: pointer;
+		transition:
+			transform 0.1s,
+			background-color 0.2s,
+			color 0.2s;
+		position: relative;
 	}
 
-	.loop-control label {
-		font-size: var(--font-size-0);
+	.toolbar-btn:hover {
+		background-color: var(--surface-3);
+		color: var(--text-1);
+		transform: scale(1.05);
+	}
+
+	.toolbar-btn.active {
+		background-color: var(--blue-2);
+		color: var(--blue-7);
+		border-color: var(--blue-5);
+	}
+
+	.toolbar-btn .label {
+		font-size: var(--font-size-00);
 		font-weight: bold;
-		color: var(--text-2);
 		text-transform: uppercase;
 	}
 
-	.loop-control input {
-		width: 50px;
-		text-align: center;
-		padding: var(--size-1);
-		border: 1px solid var(--surface-3);
-		border-radius: var(--radius-1);
+	.trash-zone {
+		color: var(--red-7);
+		border-color: var(--red-3);
+	}
+
+	.trash-zone:hover {
+		background-color: var(--red-1);
+	}
+
+	.trash-zone.active {
+		background-color: var(--red-2);
+		border-color: var(--red-5);
+		transform: scale(1.1);
+	}
+
+	.badge {
+		position: absolute;
+		top: -5px;
+		right: -5px;
+		background-color: var(--red-7);
+		color: white;
+		font-size: var(--font-size-0);
 		font-weight: bold;
-		font-size: var(--font-size-2);
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: var(--shadow-2);
 	}
 
 	h3 {
@@ -825,19 +1011,6 @@
 		background-color: var(--red-2);
 	}
 
-	.block-list.disabled {
-		opacity: 0.7;
-		cursor: not-allowed;
-	}
-
-	.opacity-50 {
-		opacity: 0.5;
-	}
-
-	/* .palette {
-		Fixed height for palette or auto? Let's keep it auto but maybe grid
-	} */
-
 	.block-list {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr); /* 2 columns for blocks */
@@ -846,6 +1019,15 @@
 		background-color: var(--surface-1);
 		border-radius: var(--radius-2);
 		align-items: start; /* Prevent stretching */
+	}
+
+	.block-list.disabled {
+		opacity: 0.7;
+		cursor: not-allowed;
+	}
+
+	.opacity-50 {
+		opacity: 0.5;
 	}
 
 	.highlighted {
@@ -885,51 +1067,6 @@
 		min-height: 0; /* Crucial for flex child scrolling */
 	}
 
-	.trash-zone {
-		width: 60px;
-		height: 60px;
-		background-color: var(--surface-1);
-		border: 2px solid var(--red-3);
-		border-radius: var(--radius-round);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: var(--red-7);
-		box-shadow: var(--shadow-3);
-		cursor: pointer;
-		transition:
-			transform 0.1s,
-			background-color 0.2s;
-		position: relative;
-	}
-
-	.trash-zone:hover {
-		transform: scale(1.1);
-	}
-
-	.trash-zone.active {
-		background-color: var(--red-2);
-		border-color: var(--red-5);
-		transform: scale(1.2);
-	}
-
-	.badge {
-		position: absolute;
-		top: -5px;
-		right: -5px;
-		background-color: var(--red-7);
-		color: white;
-		font-size: var(--font-size-0);
-		font-weight: bold;
-		width: 20px;
-		height: 20px;
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		box-shadow: var(--shadow-2);
-	}
-
 	.program-list {
 		flex: 1;
 		display: flex;
@@ -954,5 +1091,34 @@
 		font-style: italic;
 		pointer-events: none;
 		min-height: 100px;
+	}
+
+	.context-tabs {
+		display: flex;
+		gap: var(--size-2);
+		margin-bottom: var(--size-2);
+		padding-bottom: var(--size-2);
+		border-bottom: 1px solid var(--surface-3);
+		overflow-x: auto;
+	}
+
+	.context-tabs button {
+		background: none;
+		border: none;
+		padding: var(--size-1) var(--size-2);
+		font-weight: bold;
+		color: var(--text-2);
+		cursor: pointer;
+		border-radius: var(--radius-2);
+		white-space: nowrap;
+	}
+
+	.context-tabs button.active {
+		background-color: var(--surface-3);
+		color: var(--text-1);
+	}
+
+	.context-tabs button:hover {
+		background-color: var(--surface-2);
 	}
 </style>

@@ -164,11 +164,38 @@
 - Added `advanceCondition` to the `StorySegment` schema.
 - The `GameModel` now listens for and validates actions against the current story requirement.
 
-### 21. CSS Grid for Character Movement
+## Phase 6: Advanced Concepts & Audio
 
-**Decision:** Move the Character component out of the grid cells and into a dedicated overlay layer, positioned via CSS Grid and `transform`.
-**Context:** Rendering the character _inside_ a cell made smooth CSS transitions impossible because the DOM element was destroyed and recreated in a new parent on every move.
+### 22. Unified Editor Context
+
+**Decision:** Use a single "Tray" component that switches context (Main Program vs. Function) rather than showing multiple editors side-by-side.
+**Context:** Screen real estate is limited, especially on tablets. Showing multiple block lists simultaneously would clutter the UI.
 **Consequence:**
+- Added "Context Tabs" to the Tray.
+- The `GameModel` tracks `editingContext`.
+- Users focus on one scope at a time, reducing cognitive load.
 
-- We can use `transition: transform` for smooth movement.
-- We calculate position using `calc(var(--x) * (100% + var(--gap)))`.
+### 23. Visual Execution Sync
+
+**Decision:** Automatically switch the editor view to the active function during execution.
+**Context:** The concept of a "Call Stack" is abstract. By visually jumping to the function definition when it is called, we make the flow of control concrete and observable.
+**Consequence:**
+- The `StackInterpreter` updates `game.editingContext` on every step.
+- The UI must handle rapid context switching smoothly (using transitions).
+
+### 24. Hybrid Audio System
+
+**Decision:** Expand the `SoundManager` to support loading external assets (MP3/WAV) for voiceovers and music, while keeping procedural synthesis for UI SFX.
+**Context:** While procedural audio is great for UI, we need high-quality recorded audio for character dialogue and ambient music to achieve the desired immersion.
+**Consequence:**
+- Added `playFile` and `playAmbient` methods to `SoundManager`.
+- We now manage a mix of synthesized and asset-based audio.
+
+### 25. Contextual Configuration Panel
+
+**Decision:** Move block configuration (e.g., Loop counts) to a floating "Glassomorphism" panel in the Tray, triggered by selection.
+**Context:** Inline controls on blocks were too small for touch and cluttered the block design. A modal would be too heavy. A contextual panel offers a balance of accessibility and unobtrusiveness.
+**Consequence:**
+- Blocks are cleaner and easier to read.
+- Configuration options can be larger and more descriptive.
+- We adopted a new visual layer (glass effect) to distinguish this "meta-UI" from the game UI.

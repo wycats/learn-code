@@ -1,6 +1,10 @@
 export class SoundManager {
 	private ctx: AudioContext | null = null;
 	private enabled = true;
+	private buffers: Map<string, AudioBuffer> = new Map();
+	private ambientSource: AudioBufferSourceNode | null = null;
+	private activeSources: Set<AudioBufferSourceNode> = new Set();
+	private lastPlayed: Map<string, number> = new Map();
 
 	constructor() {
 		if (typeof window !== 'undefined') {
@@ -22,17 +26,76 @@ export class SoundManager {
 		return this.ctx;
 	}
 
+	async load(id: string, url: string) {
+		const ctx = this.getContext();
+		if (!ctx) return;
+
+		try {
+			const response = await fetch(url);
+			const arrayBuffer = await response.arrayBuffer();
+			const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+			this.buffers.set(id, audioBuffer);
+		} catch (e) {
+			console.error(`Failed to load sound ${id} from ${url}`, e);
+		}
+	}
+
+	playFile(id: string, loop = false): AudioBufferSourceNode | null {
+		const ctx = this.getContext();
+		if (!ctx) return null;
+		const buffer = this.buffers.get(id);
+		if (!buffer) return null;
+
+		const source = ctx.createBufferSource();
+		source.buffer = buffer;
+		source.loop = loop;
+
+		const gain = ctx.createGain();
+		// Voiceovers might need to be louder, or ambient quieter.
+		// For now, default gain.
+
+		source.connect(gain);
+		gain.connect(ctx.destination);
+		source.start();
+
+		this.activeSources.add(source);
+		source.onended = () => {
+			this.activeSources.delete(source);
+		};
+
+		return source;
+	}
+
+	playAmbient(id: string) {
+		if (this.ambientSource) {
+			this.ambientSource.stop();
+			this.activeSources.delete(this.ambientSource);
+		}
+		this.ambientSource = this.playFile(id, true);
+	}
+
+	stopAmbient() {
+		if (this.ambientSource) {
+			this.ambientSource.stop();
+			this.activeSources.delete(this.ambientSource);
+			this.ambientSource = null;
+		}
+	}
+
 	play(type: 'step' | 'turn' | 'win' | 'fail' | 'click' | 'delete' | 'pickup' | 'drop') {
 		const ctx = this.getContext();
 		if (!ctx) return;
+
+		const now = ctx.currentTime;
+		const lastTime = this.lastPlayed.get(type) || 0;
+		if (now - lastTime < 0.1) return; // Throttle to 100ms
+		this.lastPlayed.set(type, now);
 
 		const osc = ctx.createOscillator();
 		const gain = ctx.createGain();
 
 		osc.connect(gain);
 		gain.connect(ctx.destination);
-
-		const now = ctx.currentTime;
 
 		switch (type) {
 			case 'step':

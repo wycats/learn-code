@@ -1,0 +1,44 @@
+{
+	"id": "level-7",
+	"name": "The Magic Spell",
+	"gridSize": { "width": 8, "height": 8 },
+	"start": { "x": 1, "y": 1 },
+	"startOrientation": "E",
+	"goal": { "x": 6, "y": 6 },
+	"layout": {
+		"1,1": "grass",
+		"2,1": "grass",
+		"3,1": "grass",
+		"3,2": "grass",
+		"3,3": "grass",
+		"4,3": "grass",
+		"5,3": "grass",
+		"5,4": "grass",
+		"5,5": "grass",
+		"6,5": "grass",
+		"6,6": "goal"
+	},
+	"availableBlocks": ["move-forward", "turn-left", "turn-right", "call"],
+	"maxBlocks": 10,
+	"functions": {
+		"Jump": []
+	},
+	"solutionPar": 6,
+	"intro": [
+		{
+			"speaker": "Zoey",
+			"text": "Look at this old book! It says 'Spell of Leaping'.",
+			"emotion": "excited"
+		},
+		{
+			"speaker": "Jonas",
+			"text": "That's a Function! It lets you give a name to a group of blocks.",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "System",
+			"text": "Define the 'Jump' function to move 2 steps, then call it to cross the gaps.",
+			"highlight": { "target": "ui:function-tab", "type": "pulse" }
+		}
+	]
+}

@@ -49,9 +49,26 @@
 - [x] **Triggers**: Allow story to advance based on user actions.
 - [x] **Polish**: Smooth character animations.
 
-## Phase 6: Advanced Concepts (Next)
+## Phase 6: Advanced Concepts (Completed)
 
 **Goal:** Introduce complex programming concepts.
 
-- [ ] **Functions**: "Higher Order Blocks" (Callbacks).
-- [ ] **Audio**: Voiceover and soundscapes.
+- [x] **Functions**: "Higher Order Blocks" (Callbacks).
+- [x] **Audio**: Voiceover and soundscapes.
+- [x] **UI Polish**: Contextual Configuration for blocks.
+
+## Phase 7: Tutorial System Expansion (Next)
+
+**Goal:** Flesh out the interactive tutorial system to support complex, multi-stage guidance and non-linear progression.
+
+- [ ] **Contextual Hints**: System for detecting user struggle and offering specific hints.
+- [ ] **Rich Media**: Support for diagrams/animations within the instruction bar.
+- [ ] **Guide Character**: Introduce a "Guide" character (e.g., a robot helper) who delivers the tutorial content.
+
+## Phase 8: Level Builder
+
+**Goal:** Create an in-game editor to allow users to create, test, and share custom levels.
+
+- [ ] **Editor UI**: Drag-and-drop interface for placing walls, characters, and goals.
+- [ ] **Serialization**: Export/Import levels as JSON.
+- [ ] **Playtesting**: "Test Level" mode within the editor.

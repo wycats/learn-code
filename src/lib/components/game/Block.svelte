@@ -5,7 +5,7 @@
 	import { getDragContext } from '$lib/game/drag-context.svelte';
 	import BlockComponent from './Block.svelte';
 	import DropIndicator from './DropIndicator.svelte';
-	import { ArrowUp, RotateCcw, RotateCw, Repeat, Check, XCircle } from 'lucide-svelte';
+	import { ArrowUp, RotateCcw, RotateCw, Repeat, Check, XCircle, Wand2 } from 'lucide-svelte';
 
 	interface Props {
 		block: Block;
@@ -98,6 +98,8 @@
 				<RotateCw size={24} />
 			{:else if block.type === 'loop'}
 				<Repeat size={24} />
+			{:else if block.type === 'call'}
+				<Wand2 size={24} />
 			{/if}
 		</div>
 		<span class="label">
@@ -108,7 +110,10 @@
 			{:else if block.type === 'turn-right'}
 				Right
 			{:else if block.type === 'loop'}
-				Repeat <span class="loop-badge">{block.count || 1}x</span>
+				Repeat
+				<span class="loop-badge">{block.count ? `${block.count}x` : '∞'}</span>
+			{:else if block.type === 'call'}
+				Call <span class="function-badge">{block.functionName || '???'}</span>
 			{/if}
 		</span>
 		{#if block.type === 'loop' && derivedLoopProgress !== undefined && game?.status === 'running'}
@@ -227,6 +232,12 @@
 		background-color: var(--orange-2);
 		color: var(--orange-9);
 		border-color: var(--orange-3);
+	}
+
+	.block[data-type='call'] {
+		background-color: var(--pink-2);
+		color: var(--pink-9);
+		border-color: var(--pink-3);
 	}
 
 	.block[data-type='loop']:not(:has(.children)) {
@@ -360,5 +371,13 @@
 		padding: 0 6px;
 		border-radius: var(--radius-round);
 		font-weight: 800;
+	}
+
+	.function-badge {
+		background-color: rgba(0, 0, 0, 0.1);
+		padding: 0 6px;
+		border-radius: var(--radius-2);
+		font-weight: 800;
+		font-family: var(--font-mono);
 	}
 </style>

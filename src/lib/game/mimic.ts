@@ -65,6 +65,7 @@ type StackFrame = {
 	loopCounter?: number;
 	loopMax?: number;
 	blockId?: string; // For loop block ID
+	context?: string | null; // The editing context this frame belongs to
 };
 
 export class StackInterpreter {
@@ -82,7 +83,7 @@ export class StackInterpreter {
 		this.game.activeBlockId = null;
 		this.game.resetExecutionState();
 
-		this.stack = [{ blocks: this.game.program, index: 0 }];
+		this.stack = [{ blocks: this.game.program, index: 0, context: null }];
 		this.history = [];
 		this.phase = 'before';
 
@@ -130,6 +131,11 @@ export class StackInterpreter {
 
 		const frame = this.stack[this.stack.length - 1];
 
+		// Sync context with the current frame
+		if (frame.context !== undefined && this.game.editingContext !== frame.context) {
+			this.game.editingContext = frame.context;
+		}
+
 		// Check if we are done with this block list
 		if (frame.index >= frame.blocks.length) {
 			// If it's a loop, check counter
@@ -164,6 +170,13 @@ export class StackInterpreter {
 
 			// Pop stack
 			this.stack.pop();
+
+			// Restore context of the new top frame
+			if (this.stack.length > 0) {
+				const top = this.stack[this.stack.length - 1];
+				this.game.editingContext = top.context ?? null;
+			}
+
 			return this.step(); // Immediately try next step
 		}
 
@@ -181,22 +194,39 @@ export class StackInterpreter {
 				}
 
 				// Enter loop
-				const count = block.count || 100;
+				const count = block.count ?? Infinity;
 				this.stack.push({
 					blocks: block.children || [],
 					index: 0,
 					loopCounter: 0,
 					loopMax: count,
-					blockId: block.id
+					blockId: block.id,
+					context: frame.context // Inherit context
 				});
 
-				// We don't switch phase to 'after' for loop, we just go to next step (which will be first child)
-				// But we yield so user sees the loop block highlighted
-				// Actually, if we push stack, next step will be child.
-				// So we yield now.
-				// But wait, if we yield now, next time we call step(), we are at top of stack (child).
-				// So we need to advance? No, step() looks at top of stack.
-				// So next call to step() will see child.
+				// Advance past the loop block in the parent frame
+				frame.index++;
+
+				// We yield to show the loop block highlighted
+				return true;
+			}
+
+			if (block.type === 'call') {
+				const funcName = block.functionName;
+				// Use game.functions (current state) instead of game.level.functions (initial state)
+				if (funcName && this.game.functions && this.game.functions[funcName]) {
+					const funcBlocks = this.game.functions[funcName];
+					this.stack.push({
+						blocks: funcBlocks,
+						index: 0,
+						context: funcName
+					});
+				}
+
+				// Advance past the call block in the parent frame
+				frame.index++;
+
+				// We yield to show the call block highlighted
 				return true;
 			}
 
@@ -210,6 +240,17 @@ export class StackInterpreter {
 				this.game.executionState.set(block.id, 'success');
 			} else {
 				this.game.executionState.set(block.id, 'failure');
+				// Pause on error
+				this.game.status = 'planning'; // Or stay in 'running' but paused?
+				// If we go to planning, the user can edit.
+				// If we want to "pause", we need a 'paused' state or just stop stepping.
+				// The user asked to "pause the program".
+				// If we return false here, the run loop stops.
+				// But we should probably leave the status as 'running' or 'paused' so the UI shows the error state.
+				// Let's just return false to stop the loop, but keep status as running?
+				// No, if status is running, the UI might think it's still going.
+				// Let's set activeBlockId to the failed block so it stays highlighted red.
+				return false;
 			}
 
 			// Move to next instruction

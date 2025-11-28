@@ -5,6 +5,8 @@ export class GameModel {
 	// Game State
 	status = $state<GameStatus>('planning');
 	program = $state<Block[]>([]);
+	functions = $state<Record<string, Block[]>>({});
+	editingContext = $state<string | null>(null); // null = main program, string = function name
 
 	// Execution State
 	activeBlockId = $state<string | null>(null);
@@ -19,14 +21,18 @@ export class GameModel {
 	storyIndex = $state(0);
 
 	// History State
-	#history: Block[][] = [];
-	#future: Block[][] = [];
+	#history: { program: Block[]; functions: Record<string, Block[]> }[] = [];
+	#future: { program: Block[]; functions: Record<string, Block[]> }[] = [];
 
 	constructor(level: LevelDefinition) {
 		this.level = level;
 		// Load initial program if defined
 		if (this.level.initialProgram) {
 			this.program = JSON.parse(JSON.stringify(this.level.initialProgram));
+		}
+		// Load functions if defined
+		if (this.level.functions) {
+			this.functions = JSON.parse(JSON.stringify(this.level.functions));
 		}
 		this.reset();
 		if (this.level.intro && this.level.intro.length > 0) {
@@ -45,6 +51,7 @@ export class GameModel {
 		this.characterPosition = { ...this.level.start };
 		this.characterOrientation = this.level.startOrientation;
 		this.activeBlockId = null;
+		this.lastEvent = null; // Clear last event (e.g. blocked/fail)
 		this.resetExecutionState();
 		// We don't clear program on reset, usually just execution state
 		// But if it's a "hard" reset, maybe? For now, let's keep program.
@@ -92,6 +99,21 @@ export class GameModel {
 
 	// --- Program Management ---
 
+	get activeProgram() {
+		if (this.editingContext && this.functions[this.editingContext]) {
+			return this.functions[this.editingContext];
+		}
+		return this.program;
+	}
+
+	set activeProgram(blocks: Block[]) {
+		if (this.editingContext && this.functions[this.editingContext]) {
+			this.functions[this.editingContext] = blocks;
+		} else {
+			this.program = blocks;
+		}
+	}
+
 	checkTrigger(type: 'block-placed' | 'program-run' | 'level-complete', payload?: Block) {
 		if (this.status !== 'story') return;
 		const segment = this.currentStorySegment;
@@ -111,7 +133,7 @@ export class GameModel {
 	addBlock(block: Block) {
 		if (this.status !== 'planning' && this.status !== 'story') return;
 		this.#pushHistory();
-		this.program.push(block);
+		this.activeProgram.push(block);
 		this.checkTrigger('block-placed', block);
 	}
 
@@ -133,7 +155,7 @@ export class GameModel {
 			return false;
 		};
 
-		if (insertInList(this.program)) {
+		if (insertInList(this.activeProgram)) {
 			this.checkTrigger('block-placed', newBlock);
 		}
 	}
@@ -156,7 +178,7 @@ export class GameModel {
 			return false;
 		};
 
-		if (insertInList(this.program)) {
+		if (insertInList(this.activeProgram)) {
 			this.checkTrigger('block-placed', newBlock);
 		}
 	}
@@ -164,20 +186,21 @@ export class GameModel {
 	removeBlock(index: number) {
 		if (this.status !== 'planning' && this.status !== 'story') return;
 		this.#pushHistory();
-		this.program.splice(index, 1);
+		this.activeProgram.splice(index, 1);
 	}
 
 	reorderBlocks(fromIndex: number, toIndex: number) {
 		if (this.status !== 'planning' && this.status !== 'story') return;
 		this.#pushHistory();
-		const [block] = this.program.splice(fromIndex, 1);
-		this.program.splice(toIndex, 0, block);
+		const [block] = this.activeProgram.splice(fromIndex, 1);
+		this.activeProgram.splice(toIndex, 0, block);
 	}
 
 	clearProgram() {
 		if (this.status !== 'planning' && this.status !== 'story') return;
 		this.#pushHistory();
-		this.program = [];
+		// We can't reassign activeProgram if it's a proxy property, but we can clear the array
+		this.activeProgram.length = 0;
 	}
 
 	updateBlock(id: string, updates: Partial<Block>) {
@@ -198,7 +221,7 @@ export class GameModel {
 			return false;
 		};
 
-		updateInList(this.program);
+		updateInList(this.activeProgram);
 	}
 
 	deleteBlock(id: string) {
@@ -219,7 +242,7 @@ export class GameModel {
 			return false;
 		};
 
-		deleteFromList(this.program);
+		deleteFromList(this.activeProgram);
 	}
 
 	deleteBlocks(ids: string[]) {
@@ -241,7 +264,7 @@ export class GameModel {
 			}
 		};
 
-		deleteFromList(this.program);
+		deleteFromList(this.activeProgram);
 	}
 
 	// --- History Management ---
@@ -252,8 +275,11 @@ export class GameModel {
 	}
 
 	#pushHistory() {
-		// Snapshot the current program
-		this.#history.push($state.snapshot(this.program));
+		// Snapshot the current program AND functions
+		this.#history.push({
+			program: $state.snapshot(this.program),
+			functions: $state.snapshot(this.functions)
+		});
 		this.#future = []; // Clear redo stack on new action
 	}
 
@@ -262,8 +288,12 @@ export class GameModel {
 
 		const previous = this.#history.pop();
 		if (previous) {
-			this.#future.push($state.snapshot(this.program));
-			this.program = previous;
+			this.#future.push({
+				program: $state.snapshot(this.program),
+				functions: $state.snapshot(this.functions)
+			});
+			this.program = previous.program;
+			this.functions = previous.functions;
 		}
 	}
 
@@ -272,8 +302,12 @@ export class GameModel {
 
 		const next = this.#future.pop();
 		if (next) {
-			this.#history.push($state.snapshot(this.program));
-			this.program = next;
+			this.#history.push({
+				program: $state.snapshot(this.program),
+				functions: $state.snapshot(this.functions)
+			});
+			this.program = next.program;
+			this.functions = next.functions;
 		}
 	}
 

@@ -1,0 +1,48 @@
+{
+	"id": "level-8",
+	"name": "Pattern Recognition",
+	"gridSize": { "width": 10, "height": 10 },
+	"start": { "x": 1, "y": 8 },
+	"startOrientation": "N",
+	"goal": { "x": 8, "y": 1 },
+	"layout": {
+		"1,8": "grass",
+		"1,7": "grass",
+		"1,6": "grass",
+		"2,6": "grass",
+		"3,6": "grass",
+		"3,5": "grass",
+		"3,4": "grass",
+		"4,4": "grass",
+		"5,4": "grass",
+		"5,3": "grass",
+		"5,2": "grass",
+		"6,2": "grass",
+		"7,2": "grass",
+		"7,1": "grass",
+		"8,1": "goal"
+	},
+	"availableBlocks": ["move-forward", "turn-right", "call"],
+	"maxBlocks": 8,
+	"functions": {
+		"Stairs": []
+	},
+	"solutionPar": 5,
+	"intro": [
+		{
+			"speaker": "Jonas",
+			"text": "This path looks like a giant staircase.",
+			"emotion": "neutral"
+		},
+		{
+			"speaker": "Zoey",
+			"text": "It repeats the same pattern over and over: Up two, Right two.",
+			"emotion": "concerned"
+		},
+		{
+			"speaker": "System",
+			"text": "Create a 'Stairs' function for the pattern, then call it multiple times.",
+			"highlight": { "target": "ui:function-tab", "type": "pulse" }
+		}
+	]
+}

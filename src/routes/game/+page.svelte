@@ -61,7 +61,6 @@
 	}
 
 	async function handleStep() {
-		soundManager.play('click');
 		if (!isRunning || !interpreter) {
 			await startExecution();
 		}
@@ -72,7 +71,16 @@
 			if (!continueExecution) {
 				// Don't stop immediately if won, let the modal show
 				if (game.status !== 'won') {
-					handleStop();
+					// If we failed, we want to stay in the "failed" state visually
+					// But handleStop resets to planning.
+					// If we want to show the error, we should probably just pause?
+					// But the user said "pause the program".
+					// If we just return, isRunning is true, isPaused is true.
+					// The UI will show "Stop" button (red).
+					// The user can then click Stop to reset.
+					// But we need to make sure the error state is visible.
+					// The interpreter sets executionState to 'failure'.
+					// So we just stop stepping.
 				} else {
 					isRunning = false;
 					isPaused = false;
@@ -110,7 +118,8 @@
 				const continueExecution = interpreter.step();
 				if (!continueExecution) {
 					if (game.status !== 'won') {
-						handleStop();
+						// Pause on error instead of stopping
+						isPaused = true;
 					} else {
 						isRunning = false;
 						isPaused = false;
@@ -141,6 +150,14 @@
 		handleStop();
 		game.reset();
 	}
+
+	$effect(() => {
+		if (game.level.ambientSoundId) {
+			soundManager.playAmbient(game.level.ambientSoundId);
+		} else {
+			soundManager.stopAmbient();
+		}
+	});
 </script>
 
 <div class="game-layout">
