@@ -1,126 +1,76 @@
-# Phase 4: Content & Curriculum - Walkthrough
+# Phase 5: Interactive Pedagogy - Walkthrough
 
 ## Goals
 
-- Implement the first set of playable levels.
-- Introduce "Loop" blocks.
-- Add a narrative layer (dialogue/story).
-- Refine the UI/UX for a better learning experience.
+- Replace blocking modals with a persistent instruction bar.
+- Implement "Spotlight" highlighting for tutorial steps.
+- Refactor state management for robust in-place reactivity.
 
 ## Progress
 
-### 1. Loop Blocks
+### 1. Technical Refactor (State Abstraction)
 
-- **Implementation**: Added `Loop` block type to `Block` component.
-- **Logic**: Updated `mimic.ts` interpreter to handle recursive block execution.
-- **UI**: `Block.svelte` now supports nested slots for loop bodies.
+- **Problem**: Reassigning `SvelteMap` instances (`game.executionState = new SvelteMap()`) caused reactivity issues where components holding the old reference wouldn't update.
+- **Solution**: Implemented "In-Place Reactivity".
+  - Made `executionState` and `loopProgress` `readonly` properties in `GameModel`.
+  - Added `resetExecutionState()` and `restoreExecutionState()` methods to mutate the maps in place.
+  - Updated `StackInterpreter` to use these methods instead of reassigning.
 
-### 2. Narrative System
+### 2. Persistent Tutorial UI
 
-- **Components**: Created `StoryOverlay.svelte` (implied/integrated) to show dialogue.
-- **Data**: Added `story` field to `Level` type.
-- **Integration**: Game pauses when story is active.
+- **Problem**: The `Dialogue` modal blocked the game board, making it hard to follow instructions while looking at the grid.
+- **Solution**: Created `InstructionBar` component.
+  - Placed persistently above the stage area.
+  - Allows users to read instructions and interact with the game simultaneously.
+  - Updated `+page.svelte` layout to accommodate the new bar.
 
-### 3. Layout Refinement (Completed)
+### 3. Spotlight System
 
-- **Problem**: User reported "scrollable boxes" were hard to use and emojis looked unprofessional.
-- **Solution**: "IDE Layout" (Two-Column).
-  - **Left Column (Stage)**: The game grid, centered. Fixed scrolling issue by constraining height.
-  - **Right Column (Tray)**: Vertical sidebar containing the Palette (top) and Program (bottom).
-- **Changes**:
-  - `src/routes/game/+page.svelte`: Refactored to CSS Grid (`1fr 400px`). Added `overflow: hidden` and flex centering to stage area.
-  - `src/lib/components/game/Tray.svelte`: Updated to vertical layout.
-  - `src/lib/components/game/Block.svelte`: Replaced emojis with `lucide-svelte` icons.
-  - `src/lib/components/game/Character.svelte`: Replaced emoji with `Bot` icon.
-  - `src/lib/components/game/Cell.svelte`: Replaced emoji with `Star` icon.
+- **Problem**: Users need visual cues to know which blocks or grid cells to interact with during the tutorial.
+- **Solution**: Implemented a data-driven highlighting system.
+  - **Schema**: Added `highlight` field to `StorySegment` (e.g., `{ target: 'block:move-forward', type: 'pulse' }`).
+  - **Model**: Added `currentStorySegment` derived state to `GameModel` to expose the current highlight.
+  - **Components**:
+    - `Block.svelte`: Accepts `highlight` prop and applies pulsing outline.
+    - `Cell.svelte`: Accepts `highlight` prop and applies pulsing outline.
+    - `Tray.svelte`: Highlights palette items based on `target` (e.g., `block:move-forward`).
+  - **Visuals**: Added `@keyframes pulse-highlight` for attention-grabbing animations.
 
-## Next Steps
+### 4. Layout Stability & Dashboard
 
-- Create Levels 4-6 (Loops).
-- Implement Win/Loss States (Success/Failure modals).
+- **Problem**: The `InstructionBar` caused layout shifts when appearing/disappearing. The "chat" metaphor felt inconsistent without history.
+- **Solution**: Implemented a fixed-height "Dashboard" area.
+  - **Structure**: A persistent top panel (`.dashboard-area`) that houses either the `InstructionBar` (during story) or a new `StatusPanel` (during planning/running).
+  - **StatusPanel**: Displays current phase ("Planning", "Running", "Won") and level info, replacing the floating phase indicator.
+  - **Result**: The stage is now centered and stable. The UI feels more like a "Mission Control" dashboard.
 
-### 4. Content Creation (Levels 1-3)
+### 5. Interactive Triggers
 
-- **Architecture**: Refactored level system to use JSON + Zod for data storage and validation.
-- **Level 1 (Cross the River)**: Basic movement.
-- **Level 2 (The Long Walk)**: Longer path, introduces Loop concept (optional).
-- **Level 3 (Square Dance)**: Square path, requires Loop (or repetitive code).
-- **UI**: Added a level selector dropdown and "Next Level" button to the game interface.
+- **Problem**: Users had to manually click "Next" after performing an action (like dragging a block), which felt disconnected.
+- **Solution**: Implemented automatic story advancement based on game events.
+  - **Schema**: Added `advanceCondition` to `StorySegment` (e.g., `{ type: 'block-placed', blockType: 'move-forward' }`).
+  - **Model**: Added `checkTrigger()` to `GameModel` to validate actions against the current story segment.
+  - **UI**: `InstructionBar` hides the "Next" button when waiting for a trigger, guiding the user to perform the action instead.
 
-### 5. Drag and Drop Refactor (Completed)
+### 6. Visual Polish
 
-- **Problem**: `svelte-dnd-action` was causing issues with nested loops and touch interactions.
-- **Solution**: Migrated to `@atlaskit/pragmatic-drag-and-drop`.
-- **Implementation**:
-  - Created `src/lib/actions/dnd.ts` adapter.
-  - Updated `Tray.svelte` and `Block.svelte` to use `monitorForElements` and `dropTarget`.
-  - Implemented recursive drag and drop for nested loops.
-  - Added `DropIndicator` component for visual feedback.
+- **Problem**: The UI felt "gross" with clashing backgrounds, dark overlays, and disconnected cards.
+- **Solution**: Refined the visual design.
+  - **Dashboard**: Removed the "card-in-a-box" look. `StatusPanel` and `InstructionBar` now blend seamlessly into the dashboard area.
+  - **Modals**: Lightened the overlay opacity and used a blur effect for a cleaner, more modern look.
+  - **Tray**: Refined typography for headers (smaller, uppercase, wider tracking).
+  - **Colors**: Harmonized background colors (`surface-1` for dashboard and stage) to reduce visual noise.
+  - **Blocks**: Made loop count explicit (e.g., "Repeat 1x") to clarify the effect of the "Repeat" control.
+  - **Layout**: Fixed layout shifts by using CSS Grid for the dashboard area, ensuring smooth transitions between Story and Planning modes.
 
-### 6. UI Polish & Selection (Completed)
+### 7. Animation & Feedback
 
-- **Selection**: Added ability to select blocks by clicking.
-- **Inspector**: Implemented a "Sidebar/Inspector" in the Tray that appears when a block is selected.
-  - Allows deleting blocks.
-  - Allows editing Loop count.
-- **Visuals**:
-  - Centered the Drop Indicator line in the gap between blocks for better precision.
-  - Added `updateBlock` and `deleteBlock` to `GameModel` to support Undo/Redo for property changes.
-
-### 7. Interaction Refinement (Completed)
-
-- **Problem**: Dragging blocks into nested loops was difficult ("Dragging Step into Again doesn't work"). Layout shifts from the Inspector were jarring.
-- **Solution**:
-  - **Recursive Drop Fix**: Corrected the `findAndInsert` logic in `Tray.svelte` to properly handle dropping into `${block.id}-children` targets.
-  - **Floating Toolbar**: Moved the Trash and Inspector controls to a floating toolbar that appears to the left of the tray, preventing layout shifts when selecting blocks.
-  - **Click-to-Insert**: Added a "tap" interaction model. Clicking a block in the palette now appends it to the program.
-  - **Ghost Affordances**: When an "Again" block is selected, clicking a palette item shows "Ghost" blocks inside and after the loop, allowing the user to choose the insertion point explicitly.
-  - **Visual Polish**: Fixed the height of the "Again" block in the palette and centered the "Drop here" text in empty slots.
-
-### 8. Advanced Interaction (Completed)
-
-- **Multi-Select**:
-  - Implemented `Set`-based selection in `Tray.svelte`.
-  - Added "Multi-Select Mode" toggle to the floating toolbar.
-  - Enabled bulk deletion of selected blocks.
-- **Duplication (Copy/Paste)**:
-  - Added "Duplicate" button to the floating toolbar.
-  - Implemented "Paste Mode" using the Ghost system.
-  - Allows copying single or multiple blocks and pasting them anywhere in the program.
-
-### 9. Pedagogy UI (Completed)
-
-- **Goal View**: Implemented `GoalModal` to show level objectives before planning starts.
-- **Phase Indicators**: Added a visual status bar (`.phase-indicator`) to clearly distinguish between "Planning", "Running", and "Success" states.
-- **Feedback**: Verified `WinModal` provides clear success feedback.
-
-### 10. Advanced Debugging & Visual Feedback (Completed)
-
-- **Problem**: Users needed better visibility into the execution process to debug their programs.
-- **Solution**: Implemented a robust debugging system with visual cues and step-back capability.
-- **Implementation**:
-  - **Stack Interpreter**: Rewrote `mimic.ts` to use a stack-based interpreter instead of a generator. This enables state snapshots and "Step Back" functionality.
-  - **Visual State**: Added `executionState` (success/failure/running) and `loopProgress` maps to `GameModel`.
-  - **UI Feedback**:
-    - Blocks now show Green (Success), Red (Failure), or Blue (Running) borders/backgrounds during execution.
-    - Added `Check` and `XCircle` icons to blocks to indicate status.
-    - Loop blocks now display a progress counter (e.g., "1/3") during execution.
-  - **Controls**: Added a "Step Back" button to the toolbar to rewind execution one step at a time.
-  - **Fixes**: Resolved issues with Tray scrolling and Robot/Goal icon overlap.
-
-### 11. Sound & Polish (Completed)
-
-- **Sound Effects**:
-  - Implemented `SoundManager` using Web Audio API for procedural audio (no assets required).
-  - Added sounds for: Step, Turn, Win, Fail, Click, Pickup, Drop, Delete.
-  - Integrated sound triggers into `mimic.ts` (execution) and `Tray.svelte` (UI interactions).
-- **Loop UI Refinement**:
-  - Simplified loop counter to show just the current iteration number (e.g., "1", "2") instead of "1/3".
-  - Fixed logic to ensure loop counters reset correctly when loops restart.
-- **Technical Improvements**:
-  - Migrated `GameModel` to use `SvelteMap` and `SvelteSet` for fine-grained reactivity, fixing lint errors and improving performance.
-  - Resolved accessibility warnings in `Tray.svelte`.
+- **Problem**: The game felt static and unresponsive. Character movement was instant (teleporting), and winning felt anticlimactic.
+- **Solution**: Added smooth transitions and celebratory effects.
+  - **Character**: Implemented CSS transitions for character movement. Moved the character out of the grid cells into a dedicated overlay layer to allow smooth interpolation of position using `transform: translate(...)`.
+  - **Win State**: Added a "pop-in" animation to the Win Modal and a celebratory sound effect (`soundManager.play('win')`).
+  - **Transitions**: Added fade-in effects for the `StatusPanel` to smooth out state changes.
 
 ## Next Steps
 
-- Transition to Phase 5: Polish & Expansion.
+- **Phase Transition**: Prepare for Phase 6 (Content Expansion).

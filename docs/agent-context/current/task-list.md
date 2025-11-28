@@ -1,17 +1,31 @@
-# Phase 4 Task List
+# Phase 5 Task List
 
-- [x] Implement Loop Block Logic (Interpreter)
-- [x] Implement Loop Block UI (Nested DnD)
-- [x] Implement Narrative System (Data Structure)
-- [x] Implement Narrative UI (Overlay)
-- [x] Refactor Layout to "IDE Style" (2-Column)
-  - [x] Update `+page.svelte` grid structure
-  - [x] Update `Tray.svelte` for vertical sidebar
-  - [x] Replace Emojis with Lucide Icons (`Block`, `Character`, `Cell`)
-- [x] Create Levels 1-3 (Basic Movement)
-- [x] Create Levels 4-6 (Loops & Debugging)
-- [x] Implement Win/Loss States (Win Modal)
-- [x] Add Sound Effects (Optional)
-- [x] Implement Multi-Select Logic (Bulk Delete)
-- [x] Implement Duplication (Copy/Paste)
-- [x] Final Review & Polish
+- [x] **Technical Refactor**
+  - [x] Create `ReactiveMap` pattern / methods in `GameModel`.
+  - [x] Update `StackInterpreter` to use in-place updates.
+  - [x] Verify reactivity (green checks/badges) still works.
+
+- [x] **UI/UX: Persistent Tutorial**
+  - [x] Design `InstructionBar` component.
+  - [x] Update `+page.svelte` layout (Grid rows).
+  - [x] Replace `Dialogue` modal with `InstructionBar`.
+
+- [x] **Interaction: Spotlights**
+  - [x] Add `highlight` support to `StorySegment` schema.
+  - [x] Implement visual highlighting (CSS class/overlay) for Blocks and Grid Cells.
+
+- [x] **UI/UX: Layout Stability**
+  - [x] Create fixed-height Dashboard area.
+  - [x] Implement `StatusPanel` for non-story states.
+  - [x] Center stage and fix layout shifts.
+
+- [x] **Interaction: Triggers**
+  - [x] Add `advanceCondition` to `StorySegment`.
+  - [x] Wire up game events (Drag, Drop, Run) to Story engine.
+
+- [x] **Polish**
+  - [x] Visual cleanup (Dashboard, Modals, Tray).
+  - [x] Explicit loop count on blocks.
+  - [x] Fix story-to-planning transition layout shift.
+  - [x] Character CSS transitions (smooth movement).
+  - [x] Win state animations.

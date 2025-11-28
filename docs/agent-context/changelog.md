@@ -69,3 +69,22 @@ Expanded the prototype into a playable learning module with a narrative arc. Imp
   - Migrated to `SvelteMap`/`SvelteSet` for fine-grained reactivity.
   - Added `SoundManager` (Web Audio API) for procedural sound effects.
   - Fixed Accessibility issues (keyboard navigation, ARIA roles).
+
+## Phase 5: Interactive Pedagogy (Completed)
+
+**Date:** November 28, 2025
+
+**Summary:**
+Transformed the tutorial from a passive reading experience into an interactive, non-blocking coaching system. Implemented a persistent "Dashboard" layout to stabilize the UI and allow simultaneous reading and playing. Added a "Spotlight" system to visually guide users to specific UI elements. Refactored the state management to use in-place updates for `SvelteMap` to ensure robust reactivity. Polished the visual experience with smooth character animations, win state effects, and a harmonized color palette.
+
+**Key Deliverables:**
+
+- **Persistent Tutorial UI**: `InstructionBar` and `StatusPanel` integrated into a fixed-height Dashboard.
+- **Interactive Triggers**: Story advances automatically based on user actions (e.g., placing a block).
+- **Spotlight System**: Visual highlighting for blocks and grid cells driven by story data.
+- **Visual Polish**:
+  - Smooth CSS transitions for character movement.
+  - "Pop-in" animations for Win Modal.
+  - Explicit loop counts on blocks.
+  - Harmonized "Modern Matte" color usage.
+- **Technical Refactor**: Encapsulated `executionState` and `loopProgress` in `GameModel` to prevent reactivity bugs.

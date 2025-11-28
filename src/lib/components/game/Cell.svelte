@@ -4,12 +4,19 @@
 
 	interface Props {
 		type: CellType;
+		x?: number;
+		y?: number;
+		highlight?: { target: string; type?: 'pulse' | 'arrow' | 'dim' } | undefined;
 	}
 
-	let { type }: Props = $props();
+	let { type, x, y, highlight }: Props = $props();
+
+	const isHighlighted = $derived(
+		highlight && x !== undefined && y !== undefined && highlight.target === `cell:${x},${y}`
+	);
 </script>
 
-<div class="cell" data-type={type}>
+<div class="cell" data-type={type} class:highlighted={isHighlighted}>
 	{#if type === 'goal'}
 		<div class="goal-marker">
 			<Star size={24} color="var(--yellow-7)" fill="var(--yellow-4)" />
@@ -55,5 +62,24 @@
 	.goal-marker {
 		display: grid;
 		place-items: center;
+	}
+
+	.cell.highlighted {
+		outline: 3px solid var(--pink-5);
+		box-shadow: 0 0 15px var(--pink-5);
+		z-index: 10;
+		animation: pulse-highlight 1.5s infinite;
+	}
+
+	@keyframes pulse-highlight {
+		0% {
+			box-shadow: 0 0 0 0 rgba(var(--pink-5-rgb), 0.7);
+		}
+		70% {
+			box-shadow: 0 0 0 10px rgba(var(--pink-5-rgb), 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(var(--pink-5-rgb), 0);
+		}
 	}
 </style>

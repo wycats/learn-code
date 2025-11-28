@@ -29,6 +29,8 @@
 		game.level.maxBlocks !== undefined && game.blockCount >= game.level.maxBlocks
 	);
 
+	const highlight = $derived(game.currentStorySegment?.highlight);
+
 	// Drag State
 	const dragCtx = setDragContext();
 
@@ -556,7 +558,11 @@
 		<h3>Blocks</h3>
 		<div class="block-list" class:disabled={isFull}>
 			{#each paletteItems as item (item.id)}
-				<div class:opacity-50={isFull} use:draggableBlock={{ block: item, isPaletteItem: true }}>
+				<div
+					class:opacity-50={isFull}
+					class:highlighted={highlight?.target === `block:${item.type}`}
+					use:draggableBlock={{ block: item, isPaletteItem: true }}
+				>
 					<BlockComponent
 						block={item}
 						isPalette={true}
@@ -786,11 +792,12 @@
 	}
 
 	h3 {
-		font-size: var(--font-size-1);
+		font-size: var(--font-size-0);
 		text-transform: uppercase;
-		letter-spacing: var(--font-letterspacing-1);
-		color: var(--text-2);
-		margin-bottom: var(--size-2);
+		letter-spacing: 0.1em;
+		color: var(--text-3);
+		margin-bottom: var(--size-3);
+		font-weight: 700;
 	}
 
 	.program-header {
@@ -827,9 +834,9 @@
 		opacity: 0.5;
 	}
 
-	.palette {
-		/* Fixed height for palette or auto? Let's keep it auto but maybe grid */
-	}
+	/* .palette {
+		Fixed height for palette or auto? Let's keep it auto but maybe grid
+	} */
 
 	.block-list {
 		display: grid;
@@ -839,6 +846,26 @@
 		background-color: var(--surface-1);
 		border-radius: var(--radius-2);
 		align-items: start; /* Prevent stretching */
+	}
+
+	.highlighted {
+		outline: 3px solid var(--pink-5);
+		box-shadow: 0 0 15px var(--pink-5);
+		border-radius: var(--radius-2);
+		z-index: 10;
+		animation: pulse-highlight 1.5s infinite;
+	}
+
+	@keyframes pulse-highlight {
+		0% {
+			box-shadow: 0 0 0 0 rgba(var(--pink-5-rgb), 0.7);
+		}
+		70% {
+			box-shadow: 0 0 0 10px rgba(var(--pink-5-rgb), 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(var(--pink-5-rgb), 0);
+		}
 	}
 
 	.sequence {

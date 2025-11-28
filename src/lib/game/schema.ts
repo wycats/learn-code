@@ -48,7 +48,19 @@ export type GameStatus = z.infer<typeof GameStatusSchema>;
 export const StorySegmentSchema = z.object({
 	speaker: z.enum(['Zoey', 'Jonas', 'System']),
 	text: z.string(),
-	emotion: z.enum(['happy', 'neutral', 'concerned', 'excited']).optional()
+	emotion: z.enum(['happy', 'neutral', 'concerned', 'excited']).optional(),
+	highlight: z
+		.object({
+			target: z.string(), // e.g., 'block:move-forward', 'cell:2,2', 'ui:play-btn'
+			type: z.enum(['pulse', 'arrow', 'dim']).optional()
+		})
+		.optional(),
+	advanceCondition: z
+		.object({
+			type: z.enum(['block-placed', 'program-run', 'level-complete']),
+			blockType: BlockTypeSchema.optional()
+		})
+		.optional()
 });
 export type StorySegment = z.infer<typeof StorySegmentSchema>;
 

@@ -4,7 +4,8 @@
 	import { StackInterpreter } from '$lib/game/mimic';
 	import Grid from '$lib/components/game/Grid.svelte';
 	import Tray from '$lib/components/game/Tray.svelte';
-	import Dialogue from '$lib/components/game/Dialogue.svelte';
+	import InstructionBar from '$lib/components/game/InstructionBar.svelte';
+	import StatusPanel from '$lib/components/game/StatusPanel.svelte';
 	import WinModal from '$lib/components/game/WinModal.svelte';
 	import GoalModal from '$lib/components/game/GoalModal.svelte';
 	import { Cluster } from '$lib';
@@ -28,13 +29,11 @@
 	let isRunning = $state(false);
 	let isPaused = $state(false);
 	let interpreter = $state<StackInterpreter | null>(null);
-	let currentStoryIndex = $state(0);
 
 	function loadLevel(index: number) {
 		if (index >= 0 && index < LEVELS.length) {
 			currentLevelIndex = index;
 			game = new GameModel(LEVELS[index]);
-			currentStoryIndex = 0;
 			isRunning = false;
 			isPaused = false;
 			interpreter = null;
@@ -45,23 +44,8 @@
 		loadLevel(currentLevelIndex + 1);
 	}
 
-	// Derived state for current story segment
-	let currentStorySegment = $derived.by(() => {
-		if (game.status !== 'story') return null;
-		if (game.level.intro && currentStoryIndex < game.level.intro.length) {
-			return game.level.intro[currentStoryIndex];
-		}
-		return null;
-	});
-
 	function handleNextStory() {
-		if (game.level.intro && currentStoryIndex < game.level.intro.length - 1) {
-			currentStoryIndex++;
-		} else {
-			// End of story, show goal
-			game.status = 'goal';
-			currentStoryIndex = 0;
-		}
+		game.nextStorySegment();
 	}
 
 	function handleStartPlanning() {
@@ -93,6 +77,7 @@
 					isRunning = false;
 					isPaused = false;
 					interpreter = null;
+					soundManager.play('win');
 				}
 			}
 		}
@@ -114,6 +99,7 @@
 		}
 
 		if (!isRunning) {
+			game.checkTrigger('program-run');
 			await startExecution();
 		}
 
@@ -129,6 +115,7 @@
 						isRunning = false;
 						isPaused = false;
 						interpreter = null;
+						soundManager.play('win');
 					}
 					break;
 				}
@@ -168,11 +155,6 @@
 						<option value={i}>Level {i + 1}: {level.name}</option>
 					{/each}
 				</select>
-				{#if game.level.solutionPar}
-					<div class="target-badge" title="Try to solve it in {game.level.solutionPar} blocks">
-						Target: {game.level.solutionPar}
-					</div>
-				{/if}
 			</div>
 			<div class="controls">
 				<button class="btn-icon" onclick={() => (game.status = 'goal')} title="Level Info">
@@ -233,17 +215,15 @@
 
 	<div class="workspace">
 		<div class="stage-area">
-			<div class="stage-container">
-				<div class="phase-indicator" class:running={game.status === 'running'}>
-					{#if game.status === 'running'}
-						<span class="dot running"></span> Running...
-					{:else if game.status === 'planning'}
-						<span class="dot planning"></span> Planning
-					{:else if game.status === 'won'}
-						<span class="dot success"></span> Success!
-					{/if}
-				</div>
+			<div class="dashboard-area">
+				{#if game.status === 'story' && game.currentStorySegment}
+					<InstructionBar segment={game.currentStorySegment} onNext={handleNextStory} />
+				{:else if game.status !== 'goal'}
+					<StatusPanel {game} />
+				{/if}
+			</div>
 
+			<div class="stage-container">
 				{#key game.level.id}
 					<Grid {game} />
 				{/key}
@@ -254,10 +234,6 @@
 						onNext={handleNextLevel}
 						hasNextLevel={currentLevelIndex < LEVELS.length - 1}
 					/>
-				{/if}
-
-				{#if game.status === 'story' && currentStorySegment}
-					<Dialogue segment={currentStorySegment} onNext={handleNextStory} />
 				{/if}
 
 				{#if game.status === 'goal'}
@@ -309,16 +285,6 @@
 		gap: var(--size-3);
 	}
 
-	.target-badge {
-		font-size: var(--font-size-1);
-		font-weight: bold;
-		color: var(--indigo-7);
-		background-color: var(--indigo-1);
-		padding: var(--size-1) var(--size-3);
-		border-radius: var(--radius-round);
-		border: 1px solid var(--indigo-2);
-	}
-
 	.workspace {
 		display: grid;
 		grid-template-columns: 1fr 400px; /* Stage | Tray */
@@ -328,11 +294,28 @@
 
 	.stage-area {
 		display: flex;
-		justify-content: center;
+		flex-direction: column;
 		align-items: center;
-		padding: var(--size-5);
+		padding: 0;
 		background-color: var(--surface-1);
 		overflow: hidden;
+	}
+
+	.dashboard-area {
+		width: 100%;
+		height: 120px; /* Fixed budget */
+		background-color: var(--surface-1);
+		border-bottom: 1px solid var(--surface-3);
+		display: grid;
+		place-items: center;
+		flex-shrink: 0;
+		z-index: 20;
+	}
+
+	.dashboard-area > :global(*) {
+		grid-area: 1 / 1;
+		width: 100%;
+		height: 100%;
 	}
 
 	.tray-area {
@@ -346,12 +329,15 @@
 	.stage-container {
 		position: relative;
 		width: 100%;
-		max-width: 600px;
-		max-height: 100%;
+		max-width: 100%; /* Allow full width */
+		height: 100%; /* Fill remaining height */
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		flex: 1;
+		padding: var(--size-5);
+		overflow: hidden; /* Contain grid */
 	}
 
 	.btn-primary {
@@ -428,57 +414,5 @@
 		margin: 0 var(--size-2);
 	}
 
-	.phase-indicator {
-		margin-bottom: var(--size-3);
-		background-color: var(--surface-2);
-		padding: var(--size-1) var(--size-3);
-		border-radius: var(--radius-round);
-		font-size: var(--font-size-1);
-		font-weight: bold;
-		color: var(--text-2);
-		display: flex;
-		align-items: center;
-		gap: var(--size-2);
-		box-shadow: var(--shadow-2);
-		z-index: 20;
-		transition: all 0.3s ease;
-	}
-
-	.phase-indicator.running {
-		background-color: var(--surface-1);
-		border: 1px solid var(--green-3);
-		color: var(--green-7);
-	}
-
-	.dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background-color: var(--text-3);
-	}
-
-	.dot.planning {
-		background-color: var(--blue-5);
-	}
-
-	.dot.running {
-		background-color: var(--green-5);
-		animation: pulse 1s infinite;
-	}
-
-	.dot.success {
-		background-color: var(--yellow-5);
-	}
-
-	@keyframes pulse {
-		0% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0.5;
-		}
-		100% {
-			opacity: 1;
-		}
-	}
+	/* Removed .phase-indicator styles as they are now in StatusPanel */
 </style>

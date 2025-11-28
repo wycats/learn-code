@@ -103,6 +103,7 @@
 **Decision:** Switch from `SortableJS` to `@atlaskit/pragmatic-drag-and-drop`.
 **Context:** `SortableJS` caused layout shifts and had issues with nested "Again" blocks (dropping children vs. siblings). We needed a solution that strictly separates the "drag preview" from the "document flow" to prevent UI jumping.
 **Consequence:**
+
 - We implemented a "Blue Line" drop indicator system.
 - The drag operation is purely visual until the drop occurs (no DOM mutation during drag).
 - We gained better control over nested drop targets (header vs. body of loops).
@@ -112,6 +113,7 @@
 **Decision:** Refactor `Mimic` from Generator Functions to a Stack-Based Interpreter.
 **Context:** Generators are great for forward execution, but we needed "Step Back" functionality for debugging. A stack-based approach allows us to serialize the entire execution state (including call stacks for loops) into snapshots.
 **Consequence:**
+
 - We can now implement "Time Travel" debugging (Step Forward/Back).
 - The interpreter state is fully serializable.
 
@@ -120,6 +122,7 @@
 **Decision:** Use `svelte/reactivity`'s `SvelteMap` and `SvelteSet` instead of native `Map`/`Set`.
 **Context:** Svelte 5's `$state` proxying for native Maps is coarse-grained (updating a value triggers updates for all readers of the map). `SvelteMap` provides fine-grained reactivity.
 **Consequence:**
+
 - Improved performance for large collections.
 - Eliminated `svelte/prefer-svelte-reactivity` lint warnings.
 
@@ -128,6 +131,40 @@
 **Decision:** Use the Web Audio API to generate sound effects procedurally (oscillators, noise buffers) instead of loading MP3/WAV assets.
 **Context:** We want to keep the bundle size small and avoid asset management for simple UI sounds (clicks, pops, success chimes).
 **Consequence:**
+
 - Zero network requests for audio.
 - Sounds are synthesized in real-time (`src/lib/game/sound.ts`).
 
+## Phase 5: Interactive Pedagogy
+
+### 18. In-Place Reactivity for Maps
+
+**Decision:** Mutate `SvelteMap` instances in place using `clear()` and `set()` instead of reassigning the map reference.
+**Context:** Reassigning a `SvelteMap` property (e.g., `game.executionState = new SvelteMap()`) breaks reactivity for components that hold a reference to the old map.
+**Consequence:**
+- Added `resetExecutionState()` and `restoreExecutionState()` methods to `GameModel`.
+- Made map properties `readonly` to enforce this pattern.
+
+### 19. Persistent Dashboard Layout
+
+**Decision:** Allocate a fixed-height "Dashboard" area at the top of the game view for instructions and status.
+**Context:** The previous modal-based tutorial blocked the view of the grid, preventing users from following instructions while acting. A dynamic height bar caused layout shifts that were disorienting.
+**Consequence:**
+- The stage is stable and does not jump when switching between Story and Planning modes.
+- We have a dedicated space for "Mission Control" UI.
+
+### 20. Interactive Triggers
+
+**Decision:** Advance the story automatically based on game events (e.g., `block-placed`) rather than relying solely on a "Next" button.
+**Context:** Clicking "Next" after performing an action felt redundant and disconnected.
+**Consequence:**
+- Added `advanceCondition` to the `StorySegment` schema.
+- The `GameModel` now listens for and validates actions against the current story requirement.
+
+### 21. CSS Grid for Character Movement
+
+**Decision:** Move the Character component out of the grid cells and into a dedicated overlay layer, positioned via CSS Grid and `transform`.
+**Context:** Rendering the character *inside* a cell made smooth CSS transitions impossible because the DOM element was destroyed and recreated in a new parent on every move.
+**Consequence:**
+- We can use `transition: transform` for smooth movement.
+- We calculate position using `calc(var(--x) * (100% + var(--gap)))`.

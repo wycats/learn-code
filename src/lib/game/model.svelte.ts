@@ -8,14 +8,15 @@ export class GameModel {
 
 	// Execution State
 	activeBlockId = $state<string | null>(null);
-	executionState = new SvelteMap<string, 'success' | 'failure' | 'running'>();
-	loopProgress = new SvelteMap<string, number>();
+	readonly executionState = new SvelteMap<string, 'success' | 'failure' | 'running'>();
+	readonly loopProgress = new SvelteMap<string, number>();
 
 	// Level State
 	level: LevelDefinition;
 	characterPosition = $state<{ x: number; y: number }>({ x: 0, y: 0 });
 	characterOrientation = $state<Direction>('E');
 	lastEvent = $state<{ type: 'blocked' | 'win' | 'fail'; timestamp: number } | null>(null);
+	storyIndex = $state(0);
 
 	// History State
 	#history: Block[][] = [];
@@ -30,6 +31,7 @@ export class GameModel {
 		this.reset();
 		if (this.level.intro && this.level.intro.length > 0) {
 			this.status = 'story';
+			this.storyIndex = 0;
 		} else {
 			this.status = 'goal';
 		}
@@ -43,22 +45,78 @@ export class GameModel {
 		this.characterPosition = { ...this.level.start };
 		this.characterOrientation = this.level.startOrientation;
 		this.activeBlockId = null;
-		this.executionState = new SvelteMap();
-		this.loopProgress = new SvelteMap();
+		this.resetExecutionState();
 		// We don't clear program on reset, usually just execution state
 		// But if it's a "hard" reset, maybe? For now, let's keep program.
 	}
 
+	get currentStorySegment() {
+		if (this.status !== 'story') return null;
+		if (this.level.intro && this.storyIndex < this.level.intro.length) {
+			return this.level.intro[this.storyIndex];
+		}
+		return null;
+	}
+
+	nextStorySegment() {
+		if (this.level.intro && this.storyIndex < this.level.intro.length - 1) {
+			this.storyIndex++;
+		} else {
+			this.status = 'goal';
+			this.storyIndex = 0;
+		}
+	}
+
+	resetExecutionState() {
+		this.executionState.clear();
+		this.loopProgress.clear();
+	}
+
+	restoreExecutionState(
+		state:
+			| Map<string, 'success' | 'failure' | 'running'>
+			| SvelteMap<string, 'success' | 'failure' | 'running'>
+	) {
+		this.executionState.clear();
+		for (const [k, v] of state) {
+			this.executionState.set(k, v);
+		}
+	}
+
+	restoreLoopProgress(progress: Map<string, number> | SvelteMap<string, number>) {
+		this.loopProgress.clear();
+		for (const [k, v] of progress) {
+			this.loopProgress.set(k, v);
+		}
+	}
+
 	// --- Program Management ---
 
+	checkTrigger(type: 'block-placed' | 'program-run' | 'level-complete', payload?: Block) {
+		if (this.status !== 'story') return;
+		const segment = this.currentStorySegment;
+		if (!segment?.advanceCondition) return;
+
+		const condition = segment.advanceCondition;
+		if (condition.type !== type) return;
+
+		if (type === 'block-placed') {
+			if (condition.blockType && payload?.type !== condition.blockType) return;
+		}
+
+		// If we got here, condition is met!
+		this.nextStorySegment();
+	}
+
 	addBlock(block: Block) {
-		if (this.status !== 'planning') return;
+		if (this.status !== 'planning' && this.status !== 'story') return;
 		this.#pushHistory();
 		this.program.push(block);
+		this.checkTrigger('block-placed', block);
 	}
 
 	insertBlockAfter(targetId: string, newBlock: Block) {
-		if (this.status !== 'planning') return;
+		if (this.status !== 'planning' && this.status !== 'story') return;
 
 		const insertInList = (list: Block[]): boolean => {
 			const index = list.findIndex((b) => b.id === targetId);
@@ -75,11 +133,13 @@ export class GameModel {
 			return false;
 		};
 
-		insertInList(this.program);
+		if (insertInList(this.program)) {
+			this.checkTrigger('block-placed', newBlock);
+		}
 	}
 
 	insertBlockIntoContainer(containerId: string, newBlock: Block) {
-		if (this.status !== 'planning') return;
+		if (this.status !== 'planning' && this.status !== 'story') return;
 
 		const insertInList = (list: Block[]): boolean => {
 			for (const block of list) {
@@ -96,30 +156,32 @@ export class GameModel {
 			return false;
 		};
 
-		insertInList(this.program);
+		if (insertInList(this.program)) {
+			this.checkTrigger('block-placed', newBlock);
+		}
 	}
 
 	removeBlock(index: number) {
-		if (this.status !== 'planning') return;
+		if (this.status !== 'planning' && this.status !== 'story') return;
 		this.#pushHistory();
 		this.program.splice(index, 1);
 	}
 
 	reorderBlocks(fromIndex: number, toIndex: number) {
-		if (this.status !== 'planning') return;
+		if (this.status !== 'planning' && this.status !== 'story') return;
 		this.#pushHistory();
 		const [block] = this.program.splice(fromIndex, 1);
 		this.program.splice(toIndex, 0, block);
 	}
 
 	clearProgram() {
-		if (this.status !== 'planning') return;
+		if (this.status !== 'planning' && this.status !== 'story') return;
 		this.#pushHistory();
 		this.program = [];
 	}
 
 	updateBlock(id: string, updates: Partial<Block>) {
-		if (this.status !== 'planning') return;
+		if (this.status !== 'planning' && this.status !== 'story') return;
 
 		// Helper to find and update
 		const updateInList = (list: Block[]): boolean => {
@@ -140,7 +202,7 @@ export class GameModel {
 	}
 
 	deleteBlock(id: string) {
-		if (this.status !== 'planning') return;
+		if (this.status !== 'planning' && this.status !== 'story') return;
 
 		const deleteFromList = (list: Block[]): boolean => {
 			const index = list.findIndex((b) => b.id === id);
@@ -161,7 +223,7 @@ export class GameModel {
 	}
 
 	deleteBlocks(ids: string[]) {
-		if (this.status !== 'planning') return;
+		if (this.status !== 'planning' && this.status !== 'story') return;
 		if (ids.length === 0) return;
 
 		this.#pushHistory();
@@ -185,7 +247,7 @@ export class GameModel {
 	// --- History Management ---
 
 	commit() {
-		if (this.status !== 'planning') return;
+		if (this.status !== 'planning' && this.status !== 'story') return;
 		this.#pushHistory();
 	}
 

@@ -1,106 +1,68 @@
-# Phase 4 Implementation Plan: Content & Curriculum
+# Phase 5 Implementation Plan: Interactive Pedagogy
 
 ## Objective
 
-Develop the first narrative-driven learning module, introducing "Loop" blocks and the "Stop & Go" pedagogical framework.
+Transform the "Tutorial" from a passive reading experience into an interactive, non-blocking coaching system. Refine the technical architecture to support robust state management without reference-swapping pitfalls.
+
+## Design Philosophy
+
+- **"Don't Cover the Board"**: Instructions should live in the persistent space above the stage, allowing the user to read and act simultaneously.
+- **"Show, Don't Just Tell"**: Use visual spotlights and highlights to guide attention to specific blocks or grid cells.
+- **"In-Place Reactivity"**: State should be mutated in place, preserving object references to ensure stable reactivity and cleaner code.
 
 ## Detailed Steps
 
-### Step 1: Loop Block Logic & UI (The "Again" Block) (Completed)
+### Step 1: Technical Refactor (State Abstraction)
 
-- [x] **Data Model**: Update `Block` interface to support nested children.
-- [x] **Interpreter**: Update `Mimic` to handle `Loop` blocks.
-- [x] **UI Component**: Update `Block.svelte` for nested rendering.
-- [x] **Interaction**: Refactor `Tray` for nested DnD.
+**Goal:** Encapsulate `executionState` and `loopProgress` to prevent reactivity bugs caused by reference swapping.
 
-### Step 2: Narrative System (The Story) (Completed)
+- [ ] **Create `ReactiveMap` Abstraction** (or usage pattern):
+  - Instead of `game.executionState = new SvelteMap()`, implement `game.resetExecutionState()` and `game.restoreExecutionState(snapshot)`.
+  - Ensure `GameModel` properties are `readonly` where possible to enforce this pattern.
+- [ ] **Update `StackInterpreter`**:
+  - Refactor `restoreSnapshot` to update maps in-place.
+  - Refactor `reset` logic.
 
-- [x] **Types**: Define `StorySegment`.
-- [x] **State**: Update `GameModel` for story state.
-- [x] **Component**: Create `Dialogue.svelte`.
-- [x] **Integration**: Trigger intro/outro.
+### Step 2: Persistent Tutorial UI
 
-### Step 2.5: Layout Refinement (Current)
+**Goal:** Move the narrative out of the modal.
 
-**Goal:** Restructure the UI to eliminate global scrolling and optimize for touch/landscape.
+- [ ] **Component**: Create `InstructionBar.svelte` (or update `Dialogue.svelte`).
+  - **Placement**: Above the `Grid`, below the `Header`.
+  - **Layout**: Compact, readable text with a "Next" button (if needed) or auto-advance triggers.
+  - **Animations**: Smooth entry/exit.
+- [ ] **Layout Update**:
+  - Adjust `src/routes/game/+page.svelte` grid layout to allocate space for the instruction bar.
+  - Ensure it works on mobile/tablet (responsive height).
 
-- [ ] **Design**: Evaluate layout options (see `docs/design/layout-refinement.md`).
-- [ ] **Implementation**: Refactor `+page.svelte` and `Tray.svelte` to implement the chosen layout (likely Two-Column).
-- [ ] **Responsiveness**: Ensure it works on different aspect ratios.
+### Step 3: Interactive Spotlights
 
-### Step 3: Pedagogy UI (The Framework) (Completed)
+**Goal:** Allow the story to point at things.
 
-**Goal:** Guide the user through the "Goal -> Plan -> Try" cycle.
+- [ ] **Spotlight System**:
+  - Add `highlight` field to `StorySegment` (e.g., `{ target: 'block:move-forward', type: 'pulse' }`).
+  - Implement visual indicators (CSS pulsing, overlay dimming, or arrows) on the target elements.
+- [ ] **Target Resolution**:
+  - Need a way to resolve "UI IDs" (e.g., a specific block in the palette, a specific cell (2,2)).
 
-- [x] **Goal View**: Create a "Goal" overlay that appears before the level starts (or after the intro).
-- [x] **Phase Indicators**: Add clear visual cues for "Planning Mode" vs "Execution Mode".
-- [x] **Feedback**: Enhance `Success` and `Failure` modals with growth-mindset oriented copy and "Try Again" / "Next Level" actions.
+### Step 4: Interactive Triggers
 
-## Phase 4: Content & Curriculum
+**Goal:** Advance the story based on actions, not just clicks.
 
-### Goal
+- [ ] **Trigger System**:
+  - Add `advanceCondition` to `StorySegment` (e.g., `type: 'block-placed', blockType: 'move-forward'`).
+  - Update `GameModel` or `Tray` to emit events that the Story system listens to.
 
-Create a complete, narrative-driven learning module with 6 levels, a loop block, and a polished UI.
+### Step 5: Visual Polish
 
-### Tasks
+- [ ] **Character Animation**: Smooth CSS transitions for movement (remove "teleporting").
+- [ ] **Win Animation**: Particle effect or happy jump when reaching the goal.
 
-#### 1. Core Mechanics (Completed)
+## Phase 5 Task List
 
-- [x] **Loop Block ("Again")**: Implement nested execution logic in `Mimic`.
-- [x] **Block Limits**: Add `maxBlocks` constraint to Level schema and UI.
-- [x] **Win/Loss States**: Add `WinModal` and collision feedback.
-
-#### 2. Narrative System (Completed)
-
-- [x] **Dialogue Component**: Create a specialized component for character speech.
-- [x] **Story Integration**: Add `story` field to Level schema.
-
-#### 3. Content Creation (Completed)
-
-- [x] **Level 1-3**: Intro to movement.
-- [x] **Level 4**: "The Bug" (Debugging).
-- [x] **Level 5**: "Stairway" (Loops).
-- [x] **Level 6**: "Big Zig Zag" (Complex Loops).
-
-#### 4. UI Polish & Refactor (Completed)
-
-- [x] **Layout**: Implement "IDE" 2-column layout.
-- [x] **Controls**: Add "Stop" button.
-- [x] **Drag and Drop Refactor (Pragmatic DnD)**:
-  - [x] **Install**: `@atlaskit/pragmatic-drag-and-drop`.
-  - [x] **Core Actions**: Create `draggable` and `dropTarget` Svelte actions.
-  - [x] **Visuals**: Implement "Blue Line" drop indicator (No Layout Shift).
-  - [x] **Nesting**: Implement header/bottom hover logic for Loops.
-  - [x] **Toolbar/Trash**: Implement side toolbar with Trash Can (Select-to-delete & Drag-to-delete).
-  - [x] **Cleanup**: Remove `SortableJS` and legacy DnD code.
-- [x] **Interaction Polish**:
-  - [x] **Click-to-Insert**: Add tap-based block insertion for better accessibility/usability.
-  - [x] **Floating Toolbar**: Move Trash/Inspector to floating UI to prevent layout shifts.
-  - [x] **Visual Fixes**: Center drop indicators and fix Loop block height.
-
-### Step 5: Advanced Interaction (Multi-Select & Duplication) (Completed)
-
-**Goal:** Enable power-user workflows for refactoring code.
-
-- [x] **Multi-Select Logic**:
-  - [x] Update `Tray.svelte` to track `Set<string>` for selection.
-  - [x] Implement parent/child selection constraints (selecting parent selects children).
-  - [x] Add "Multi-Select" toggle to Floating Toolbar.
-- [x] **Bulk Actions**:
-  - [x] **Delete**: Update `handleDeleteSelected` to remove all selected blocks.
-  - [x] **Move (Drag)**: (Optional/Deferred) Support dragging multiple blocks. _Note: This is complex with the current DnD library._
-- [x] **Duplication (Copy/Paste)**:
-  - [x] **Clipboard State**: Add `clipboard` state to `Tray.svelte`.
-  - [x] **Duplicate Action**: Add "Duplicate" button to toolbar.
-  - [x] **Paste Mode**: Reuse "Ghost" logic to show paste preview.
-  - [x] **Interaction**: Clicking a target pastes the clipboard contents.
-
-#### 5. Final Review (Completed)
-
-- [x] **Playtest**: Verify all levels are solvable and fun.
-- [x] **Code Review**: Ensure strict typing and clean component hierarchy.
-
-## Technical Considerations
-
-- **Nested DnD**: This is the biggest technical risk. We might need to create a recursive `BlockList` component.
-- **State Machine**: The `GameModel` state machine is getting more complex (`Story` -> `Goal` -> `Planning` -> `Running` -> `Success`/`Fail`). We need to ensure transitions are clean.
+- [ ] Refactor `GameModel` to use in-place Map updates (Custom Abstraction).
+- [ ] Implement `InstructionBar` component (Top of Stage).
+- [ ] Update Layout to accommodate persistent instructions.
+- [ ] Implement Spotlight/Highlight system.
+- [ ] Implement Interactive Triggers (Advance story on action).
+- [ ] Add Character Movement Animations.

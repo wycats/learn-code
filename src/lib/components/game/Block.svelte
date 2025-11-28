@@ -49,6 +49,17 @@
 	const derivedLoopProgress = $derived(game ? game.loopProgress.get(block.id) : loopProgress);
 	const derivedActiveBlockId = $derived(game ? game.activeBlockId : activeBlockId);
 
+	// Highlight logic
+	const highlight = $derived(game?.currentStorySegment?.highlight);
+	const isHighlighted = $derived.by(() => {
+		if (!highlight) return false;
+		if (isPalette) {
+			return highlight.target === `block:${block.type}`;
+		} else {
+			return highlight.target === `block:${block.id}`;
+		}
+	});
+
 	function handleClick(e: MouseEvent) {
 		e.stopPropagation();
 		if (onSelect) {
@@ -74,6 +85,7 @@
 	class:ghost={block.isGhost}
 	class:blocked={derivedIsBlocked}
 	class:success={derivedIsSuccess}
+	class:highlighted={isHighlighted}
 	onclick={handleClick}
 >
 	<div class="header">
@@ -96,7 +108,7 @@
 			{:else if block.type === 'turn-right'}
 				Right
 			{:else if block.type === 'loop'}
-				Again {#if block.count && block.count > 1}x{block.count}{/if}
+				Repeat <span class="loop-badge">{block.count || 1}x</span>
 			{/if}
 		</span>
 		{#if block.type === 'loop' && derivedLoopProgress !== undefined && game?.status === 'running'}
@@ -250,6 +262,25 @@
 		z-index: 20;
 	}
 
+	.block.highlighted {
+		outline: 3px solid var(--pink-5);
+		box-shadow: 0 0 15px var(--pink-5);
+		animation: pulse-highlight 1.5s infinite;
+		z-index: 30;
+	}
+
+	@keyframes pulse-highlight {
+		0% {
+			box-shadow: 0 0 0 0 rgba(var(--pink-5-rgb), 0.7);
+		}
+		70% {
+			box-shadow: 0 0 0 10px rgba(var(--pink-5-rgb), 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(var(--pink-5-rgb), 0);
+		}
+	}
+
 	@keyframes shake {
 		10%,
 		90% {
@@ -322,5 +353,12 @@
 		border-radius: var(--radius-round);
 		margin-right: var(--size-2);
 		border: 1px solid var(--surface-3);
+	}
+
+	.loop-badge {
+		background-color: rgba(0, 0, 0, 0.1);
+		padding: 0 6px;
+		border-radius: var(--radius-round);
+		font-weight: 800;
 	}
 </style>

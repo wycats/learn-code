@@ -1,7 +1,6 @@
 import type { GameModel } from './model.svelte';
 import type { Block, Direction, GridPosition } from './types';
 import { soundManager } from './sound';
-import { SvelteMap } from 'svelte/reactivity';
 
 const DIRECTIONS: Direction[] = ['N', 'E', 'S', 'W'];
 
@@ -81,8 +80,7 @@ export class StackInterpreter {
 	start() {
 		this.game.status = 'running';
 		this.game.activeBlockId = null;
-		this.game.executionState.clear();
-		this.game.loopProgress.clear();
+		this.game.resetExecutionState();
 
 		this.stack = [{ blocks: this.game.program, index: 0 }];
 		this.history = [];
@@ -112,8 +110,8 @@ export class StackInterpreter {
 		this.game.characterPosition = { ...snapshot.characterPosition };
 		this.game.characterOrientation = snapshot.characterOrientation;
 		this.game.activeBlockId = snapshot.activeBlockId;
-		this.game.executionState = new SvelteMap(snapshot.executionState);
-		this.game.loopProgress = new SvelteMap(snapshot.loopProgress);
+		this.game.restoreExecutionState(snapshot.executionState);
+		this.game.restoreLoopProgress(snapshot.loopProgress);
 		this.game.lastEvent = snapshot.lastEvent;
 		this.stack = snapshot.stack.map((f) => ({ ...f }));
 		this.phase = snapshot.phase;

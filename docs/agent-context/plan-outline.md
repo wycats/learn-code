@@ -39,11 +39,19 @@
 - [x] Add "Again" (Loop) blocks.
 - [x] Create a "Debugging" scenario.
 
-## Phase 5: Polish & Expansion (Next)
+## Phase 5: Interactive Pedagogy (Completed)
 
-**Goal:** Refine the experience and expand content.
+**Goal:** Transform the "Tutorial" from a passive reading experience into an interactive, non-blocking coaching system.
 
-- [ ] Add animations and character assets.
-- [ ] Implement voiceover/audio cues (critical for pre-readers).
-- [ ] Add "Function" blocks (Decomposition).
-- [ ] User testing and iteration.
+- [x] **Technical Refactor**: Encapsulate state maps for in-place reactivity.
+- [x] **UI**: Implement persistent "Instruction Bar" above the stage.
+- [x] **Interaction**: Add "Spotlight" system to highlight UI elements.
+- [x] **Triggers**: Allow story to advance based on user actions.
+- [x] **Polish**: Smooth character animations.
+
+## Phase 6: Advanced Concepts (Next)
+
+**Goal:** Introduce complex programming concepts.
+
+- [ ] **Functions**: "Higher Order Blocks" (Callbacks).
+- [ ] **Audio**: Voiceover and soundscapes.

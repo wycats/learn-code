@@ -39,20 +39,24 @@
 		}
 		return c;
 	});
+
+	const highlight = $derived(game.currentStorySegment?.highlight);
 </script>
 
 <div class="grid-stage" style:--grid-width={width} style:--grid-height={height}>
 	{#each cells as cell (`${cell.x},${cell.y}`)}
 		<div class="grid-cell-wrapper">
-			<Cell type={cell.type} />
-
-			{#if game.characterPosition.x === cell.x && game.characterPosition.y === cell.y}
-				<div class="character-layer">
-					<Character direction={game.characterOrientation} {game} />
-				</div>
-			{/if}
+			<Cell type={cell.type} x={cell.x} y={cell.y} {highlight} />
 		</div>
 	{/each}
+
+	<div
+		class="character-container"
+		style:--x={game.characterPosition.x}
+		style:--y={game.characterPosition.y}
+	>
+		<Character direction={game.characterOrientation} {game} />
+	</div>
 </div>
 
 <style>
@@ -68,6 +72,7 @@
 		aspect-ratio: var(--grid-width) / var(--grid-height);
 		max-width: 100%;
 		max-height: 100%;
+		position: relative;
 	}
 
 	.grid-cell-wrapper {
@@ -76,11 +81,21 @@
 		height: 100%;
 	}
 
-	.character-layer {
-		position: absolute;
-		inset: 0;
+	.character-container {
+		grid-area: 1 / 1;
+		width: 100%;
+		height: 100%;
 		display: grid;
 		place-items: center;
 		pointer-events: none;
+		z-index: 10;
+
+		/* Movement logic */
+		--gap: var(--size-2);
+		transform: translate(
+			calc(var(--x) * (100% + var(--gap))),
+			calc(var(--y) * (100% + var(--gap)))
+		);
+		transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
 	}
 </style>

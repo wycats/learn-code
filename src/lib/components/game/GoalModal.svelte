@@ -35,14 +35,14 @@
 	.overlay {
 		position: absolute;
 		inset: 0;
-		background-color: rgba(0, 0, 0, 0.7);
+		background-color: rgba(255, 255, 255, 0.5);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		color: white;
 		border-radius: var(--radius-3);
-		backdrop-filter: blur(5px);
+		backdrop-filter: blur(8px);
 		animation: fade-in 0.3s ease;
 		z-index: 50;
 	}

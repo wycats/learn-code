@@ -36,14 +36,14 @@
 	.overlay {
 		position: absolute;
 		inset: 0;
-		background-color: rgba(0, 0, 0, 0.7);
+		background-color: rgba(255, 255, 255, 0.5);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		color: white;
 		border-radius: var(--radius-3);
-		backdrop-filter: blur(5px);
+		backdrop-filter: blur(8px);
 		animation: fade-in 0.3s ease;
 		z-index: 50;
 	}
@@ -56,6 +56,8 @@
 		box-shadow: var(--shadow-4);
 		text-align: center;
 		min-width: 300px;
+		animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+		animation-delay: 0.1s;
 	}
 
 	h2 {
@@ -65,6 +67,10 @@
 		gap: var(--size-2);
 		color: var(--green-7);
 		margin: 0;
+	}
+
+	h2 :global(svg) {
+		animation: shake-rotate 0.5s ease-in-out 0.5s;
 	}
 
 	.actions {
@@ -110,6 +116,30 @@
 		}
 		to {
 			opacity: 1;
+		}
+	}
+
+	@keyframes pop-in {
+		from {
+			opacity: 0;
+			transform: scale(0.8) translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1) translateY(0);
+		}
+	}
+
+	@keyframes shake-rotate {
+		0%,
+		100% {
+			transform: rotate(0deg);
+		}
+		25% {
+			transform: rotate(-15deg);
+		}
+		75% {
+			transform: rotate(15deg);
 		}
 	}
 </style>
