@@ -1,0 +1,41 @@
+{
+	"id": "level-2",
+	"name": "The Long Walk",
+	"gridSize": { "width": 6, "height": 3 },
+	"start": { "x": 0, "y": 1 },
+	"startOrientation": "E",
+	"goal": { "x": 5, "y": 1 },
+	"layout": {
+		"0,0": "wall",
+		"1,0": "wall",
+		"2,0": "wall",
+		"3,0": "wall",
+		"4,0": "wall",
+		"5,0": "wall",
+		"0,2": "wall",
+		"1,2": "wall",
+		"2,2": "wall",
+		"3,2": "wall",
+		"4,2": "wall",
+		"5,2": "wall"
+	},
+	"availableBlocks": ["move-forward", "loop"],
+	"solutionPar": 2,
+	"intro": [
+		{
+			"speaker": "Zoey",
+			"text": "Whoa, that's a long way to the other side!",
+			"emotion": "concerned"
+		},
+		{
+			"speaker": "Jonas",
+			"text": "Walking one step at a time is tiring. Maybe we can do something... again and again?",
+			"emotion": "neutral"
+		},
+		{
+			"speaker": "System",
+			"text": "Try using the 'Again' block to repeat actions!",
+			"emotion": "neutral"
+		}
+	]
+}

@@ -1,0 +1,45 @@
+{
+	"id": "level-5",
+	"name": "Stairway to the Stars",
+	"gridSize": { "width": 5, "height": 5 },
+	"start": { "x": 0, "y": 4 },
+	"startOrientation": "N",
+	"goal": { "x": 4, "y": 0 },
+	"layout": {
+		"0,0": "wall",
+		"1,0": "wall",
+		"2,0": "wall",
+		"3,0": "wall",
+		"0,1": "wall",
+		"1,1": "wall",
+		"2,1": "wall",
+		"4,1": "wall",
+		"0,2": "wall",
+		"1,2": "wall",
+		"3,2": "wall",
+		"4,2": "wall",
+		"0,3": "wall",
+		"2,3": "wall",
+		"3,3": "wall",
+		"4,3": "wall",
+		"1,4": "wall",
+		"2,4": "wall",
+		"3,4": "wall",
+		"4,4": "wall"
+	},
+	"availableBlocks": ["move-forward", "turn-left", "turn-right", "loop"],
+	"maxBlocks": 6,
+	"solutionPar": 5,
+	"intro": [
+		{
+			"speaker": "Zoey",
+			"text": "It looks like a staircase! Up, Right, Up, Right...",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "Jonas",
+			"text": "We only have enough energy for 6 blocks. We HAVE to use a loop!",
+			"emotion": "excited"
+		}
+	]
+}

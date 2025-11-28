@@ -1,30 +1,17 @@
-# Phase 3 Task List
+# Phase 4 Task List
 
-- [x] **Step 1: Core Game State (Model)**
-  - [x] Define Types (`Grid`, `Cell`, `Block`, `Program`, `GameState`)
-  - [x] Implement `GameModel` with Svelte 5 Runes
-  - [x] Implement `HistoryManager` (Undo/Redo)
-
-- [x] **Step 2: The Stage (View)**
-  - [x] Create `Cell` component
-  - [x] Create `Grid` component
-  - [x] Create `Character` component
-
-- [x] **Step 3: The Interpreter (Logic)**
-  - [x] Implement `Mimic` engine (`runProgram` generator)
-  - [x] Implement `MoveForward`, `TurnLeft`, `TurnRight` logic
-
-- [x] **Step 4: Drag & Drop (Interaction)**
-  - [x] Install `svelte-dnd-action`
-  - [x] Create `Block` component
-  - [x] Create `Tray` component (Palette & Sequence)
-
-- [x] **Step 5: Integration & Game Loop**
-  - [x] Implement Play/Stop/Reset controls
-  - [x] Connect UI to `Mimic` interpreter
-  - [x] Implement execution visualization (highlighting)
-  - [x] Implement Win/Loss detection
-
-- [x] **Step 6: Content (Level 1)**
-  - [x] Define "Cross the River" level
-  - [x] Load level in `GameModel`
+- [x] Implement Loop Block Logic (Interpreter)
+- [x] Implement Loop Block UI (Nested DnD)
+- [x] Implement Narrative System (Data Structure)
+- [x] Implement Narrative UI (Overlay)
+- [x] Refactor Layout to "IDE Style" (2-Column)
+  - [x] Update `+page.svelte` grid structure
+  - [x] Update `Tray.svelte` for vertical sidebar
+  - [x] Replace Emojis with Lucide Icons (`Block`, `Character`, `Cell`)
+- [x] Create Levels 1-3 (Basic Movement)
+- [x] Create Levels 4-6 (Loops & Debugging)
+- [x] Implement Win/Loss States (Win Modal)
+- [x] Add Sound Effects (Optional)
+- [x] Implement Multi-Select Logic (Bulk Delete)
+- [x] Implement Duplication (Copy/Paste)
+- [x] Final Review & Polish

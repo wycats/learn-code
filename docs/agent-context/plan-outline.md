@@ -30,16 +30,16 @@
 - [x] Build a simple level/scenario (e.g., "Cross the River").
 - [x] Implement the "Play" execution engine.
 
-## Phase 4: Content & Curriculum
+## Phase 4: Content & Curriculum (Completed)
 
 **Goal:** Develop the first narrative-driven learning module.
 
-- [ ] Design the first story arc.
-- [ ] Implement the 11-step problem-solving framework in the UI.
-- [ ] Add "Again" (Loop) blocks.
-- [ ] Create a "Debugging" scenario.
+- [x] Design the first story arc.
+- [x] Implement the 11-step problem-solving framework in the UI.
+- [x] Add "Again" (Loop) blocks.
+- [x] Create a "Debugging" scenario.
 
-## Phase 5: Polish & Expansion
+## Phase 5: Polish & Expansion (Next)
 
 **Goal:** Refine the experience and expand content.
 

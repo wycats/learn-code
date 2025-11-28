@@ -20,14 +20,20 @@
 				const key = `${x},${y}`;
 				const type = game.level.layout[key] || 'grass';
 
-				// Check if this is the goal position (override layout if needed, or just ensure it matches)
-				// Actually, goal is separate in definition, but we might want to render it as a cell type
+				// Check if this is the goal position
 				const isGoal = game.level.goal.x === x && game.level.goal.y === y;
+
+				// If character is ON the goal, don't render the goal icon (so they don't overlap weirdly)
+				// Or maybe render it but we handle it in Cell?
+				// Let's just pass 'grass' if character is on goal, assuming goal is on grass.
+				// But wait, the goal might be on a specific tile.
+				// Let's keep it simple: if character is on goal, show 'grass' (or underlying type) instead of 'goal'.
+				const isCharacterHere = game.characterPosition.x === x && game.characterPosition.y === y;
 
 				c.push({
 					x,
 					y,
-					type: isGoal ? 'goal' : type
+					type: isGoal && !isCharacterHere ? 'goal' : isGoal ? 'grass' : type
 				});
 			}
 		}
@@ -42,7 +48,7 @@
 
 			{#if game.characterPosition.x === cell.x && game.characterPosition.y === cell.y}
 				<div class="character-layer">
-					<Character direction={game.characterOrientation} />
+					<Character direction={game.characterOrientation} {game} />
 				</div>
 			{/if}
 		</div>

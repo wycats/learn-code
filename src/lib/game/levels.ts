@@ -1,23 +1,16 @@
-import type { LevelDefinition } from './types';
+import { LevelDefinitionSchema } from './schema';
+import level1Data from './levels/level-1.json';
+import level2Data from './levels/level-2.json';
+import level3Data from './levels/level-3.json';
+import level4Data from './levels/level-4.json';
+import level5Data from './levels/level-5.json';
+import level6Data from './levels/level-6.json';
 
-export const LEVEL_1: LevelDefinition = {
-	id: 'level-1',
-	name: 'Cross the River',
-	gridSize: { width: 5, height: 5 },
-	start: { x: 0, y: 2 },
-	startOrientation: 'E',
-	goal: { x: 4, y: 2 },
-	layout: {
-		'1,0': 'water',
-		'1,1': 'water',
-		'1,2': 'grass',
-		'1,3': 'water',
-		'1,4': 'water',
-		'3,0': 'wall',
-		'3,1': 'wall',
-		'3,3': 'wall',
-		'3,4': 'wall'
-	},
-	availableBlocks: ['move-forward', 'turn-left', 'turn-right'],
-	solutionPar: 5
-};
+export const LEVEL_1 = LevelDefinitionSchema.parse(level1Data);
+export const LEVEL_2 = LevelDefinitionSchema.parse(level2Data);
+export const LEVEL_3 = LevelDefinitionSchema.parse(level3Data);
+export const LEVEL_4 = LevelDefinitionSchema.parse(level4Data);
+export const LEVEL_5 = LevelDefinitionSchema.parse(level5Data);
+export const LEVEL_6 = LevelDefinitionSchema.parse(level6Data);
+
+export const LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6];

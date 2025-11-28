@@ -1,0 +1,56 @@
+{
+	"id": "level-4",
+	"name": "The Bug",
+	"gridSize": { "width": 5, "height": 5 },
+	"start": { "x": 0, "y": 4 },
+	"startOrientation": "E",
+	"goal": { "x": 4, "y": 0 },
+	"layout": {
+		"0,0": "wall",
+		"1,0": "wall",
+		"2,0": "wall",
+		"3,0": "wall",
+		"0,1": "wall",
+		"1,1": "wall",
+		"2,1": "wall",
+		"3,1": "wall",
+		"0,2": "wall",
+		"1,2": "wall",
+		"0,3": "wall",
+		"1,3": "wall",
+		"3,3": "wall",
+		"4,3": "wall"
+	},
+	"availableBlocks": ["move-forward", "turn-left", "turn-right"],
+	"initialProgram": [
+		{ "id": "b1", "type": "move-forward" },
+		{ "id": "b2", "type": "move-forward" },
+		{ "id": "b3", "type": "turn-left" },
+		{ "id": "b4", "type": "move-forward" },
+		{ "id": "b5", "type": "move-forward" },
+		{ "id": "b6", "type": "turn-left" },
+		{ "id": "b7", "type": "move-forward" },
+		{ "id": "b8", "type": "move-forward" },
+		{ "id": "b9", "type": "turn-left" },
+		{ "id": "b10", "type": "move-forward" },
+		{ "id": "b11", "type": "move-forward" }
+	],
+	"solutionPar": 11,
+	"intro": [
+		{
+			"speaker": "Zoey",
+			"text": "I tried to write the code to get to the star, but I keep hitting a wall!",
+			"emotion": "concerned"
+		},
+		{
+			"speaker": "Jonas",
+			"text": "That's called a 'bug'. Let's read the code step-by-step and find the mistake.",
+			"emotion": "neutral"
+		},
+		{
+			"speaker": "System",
+			"text": "Find the wrong block and fix it!",
+			"emotion": "neutral"
+		}
+	]
+}

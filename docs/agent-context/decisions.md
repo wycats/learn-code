@@ -76,8 +76,58 @@
 **Context:** This aligns with standard pedagogical progression (Logo, Bee-Bot) which emphasizes spatial reasoning and perspective taking ("body syntonicity").
 **Consequence:** The `GameModel` must track `orientation` in addition to `position`.
 
-### 12. Drag & Drop Library: `svelte-dnd-action`
+### 12. Drag & Drop Library: `SortableJS`
 
-**Decision:** Use `svelte-dnd-action` for the block coding interface.
-**Context:** We needed a Svelte-friendly library that supports sorting and moving items between lists. While it relies on HTML5 DnD (requiring a polyfill for mobile), it offers the best developer experience for list-based interactions compared to writing raw pointer events.
-**Consequence:** We accept a dependency on `svelte-dnd-action` and will need to ensure `mobile-drag-drop` polyfill is added for touch device support in later phases.
+**Decision:** Use `SortableJS` (via a custom Svelte action) for the block coding interface.
+**Context:** We initially used `svelte-dnd-action` but found the UX to be "finicky" and "bouncy," especially with nested lists and layout shifts. `SortableJS` is a mature, robust library that handles these interactions more smoothly.
+**Consequence:**
+
+- We replaced `svelte-dnd-action` with `sortablejs`.
+- We implemented a custom Svelte action (`src/lib/actions/sortable.ts`) to integrate it.
+- We manage drag state manually (`src/lib/game/drag.svelte.ts`) to handle complex moves (like dragging from palette vs. moving existing blocks) and to sync Svelte state with Sortable's DOM mutations.
+
+## Phase 4: Content & Curriculum
+
+### 13. Data-Driven Levels (JSON + Zod)
+
+**Decision:** Define levels in JSON files and validate them at runtime using Zod schemas.
+**Context:** We initially hardcoded levels in TypeScript. However, to support future features like a Level Editor, database storage, or over-the-wire updates, we need a serializable format.
+**Consequence:**
+
+- `src/lib/game/schema.ts` is the source of truth for data types.
+- Levels are stored in `src/lib/game/levels/*.json`.
+- The application is robust against malformed data.
+
+### 14. Drag & Drop Library: `@atlaskit/pragmatic-drag-and-drop`
+
+**Decision:** Switch from `SortableJS` to `@atlaskit/pragmatic-drag-and-drop`.
+**Context:** `SortableJS` caused layout shifts and had issues with nested "Again" blocks (dropping children vs. siblings). We needed a solution that strictly separates the "drag preview" from the "document flow" to prevent UI jumping.
+**Consequence:**
+- We implemented a "Blue Line" drop indicator system.
+- The drag operation is purely visual until the drop occurs (no DOM mutation during drag).
+- We gained better control over nested drop targets (header vs. body of loops).
+
+### 15. Execution Engine: Stack-Based Interpreter
+
+**Decision:** Refactor `Mimic` from Generator Functions to a Stack-Based Interpreter.
+**Context:** Generators are great for forward execution, but we needed "Step Back" functionality for debugging. A stack-based approach allows us to serialize the entire execution state (including call stacks for loops) into snapshots.
+**Consequence:**
+- We can now implement "Time Travel" debugging (Step Forward/Back).
+- The interpreter state is fully serializable.
+
+### 16. Reactivity: `SvelteMap` and `SvelteSet`
+
+**Decision:** Use `svelte/reactivity`'s `SvelteMap` and `SvelteSet` instead of native `Map`/`Set`.
+**Context:** Svelte 5's `$state` proxying for native Maps is coarse-grained (updating a value triggers updates for all readers of the map). `SvelteMap` provides fine-grained reactivity.
+**Consequence:**
+- Improved performance for large collections.
+- Eliminated `svelte/prefer-svelte-reactivity` lint warnings.
+
+### 17. Audio: Procedural Web Audio API
+
+**Decision:** Use the Web Audio API to generate sound effects procedurally (oscillators, noise buffers) instead of loading MP3/WAV assets.
+**Context:** We want to keep the bundle size small and avoid asset management for simple UI sounds (clicks, pops, success chimes).
+**Consequence:**
+- Zero network requests for audio.
+- Sounds are synthesized in real-time (`src/lib/game/sound.ts`).
+

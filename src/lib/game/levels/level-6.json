@@ -1,0 +1,41 @@
+{
+	"id": "level-6",
+	"name": "The Big Zig Zag",
+	"gridSize": { "width": 5, "height": 5 },
+	"start": { "x": 0, "y": 4 },
+	"startOrientation": "E",
+	"goal": { "x": 4, "y": 0 },
+	"layout": {
+		"3,4": "wall",
+		"4,4": "wall",
+		"0,3": "wall",
+		"1,3": "wall",
+		"3,3": "wall",
+		"4,3": "wall",
+		"0,2": "wall",
+		"1,2": "wall",
+		"0,1": "wall",
+		"1,1": "wall",
+		"2,1": "wall",
+		"3,1": "wall",
+		"0,0": "wall",
+		"1,0": "wall",
+		"2,0": "wall",
+		"3,0": "wall"
+	},
+	"availableBlocks": ["move-forward", "turn-left", "turn-right", "loop"],
+	"maxBlocks": 8,
+	"solutionPar": 7,
+	"intro": [
+		{
+			"speaker": "Zoey",
+			"text": "This looks like the stairs, but bigger steps!",
+			"emotion": "neutral"
+		},
+		{
+			"speaker": "Jonas",
+			"text": "Move twice, turn... Move twice, turn... I think we can loop this too!",
+			"emotion": "excited"
+		}
+	]
+}

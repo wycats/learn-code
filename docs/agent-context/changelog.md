@@ -44,3 +44,28 @@ Built the functional "unplugged-digital" prototype implementing the core "Stop &
 - `src/lib/components/game/Grid.svelte`: 5x5 Game Stage.
 - `src/routes/game/+page.svelte`: Integrated game prototype.
 - `src/lib/game/levels.ts`: Level 1 definition.
+
+## Phase 4: Content & Curriculum (Completed)
+
+**Date:** November 27, 2025
+
+**Summary:**
+Expanded the prototype into a playable learning module with a narrative arc. Implemented the "Again" (Loop) block with nested drag-and-drop, a dialogue system for storytelling, and a "Block Limit" mechanic to enforce efficient coding. Created Levels 1-6 covering basic movement, loops, and debugging. Refined the UI into a responsive "IDE-style" layout. Migrated the drag-and-drop system to `@atlaskit/pragmatic-drag-and-drop` for a robust, no-layout-shift experience. Implemented a Stack-Based Interpreter to support "Step Back" debugging. Added procedural sound effects and ensured full accessibility compliance.
+
+**Key Deliverables:**
+
+- **Loop Block**: Nested drag-and-drop support and interpreter logic.
+- **Narrative System**: `Dialogue` component and story segments in levels.
+- **Levels 1-6**:
+  - 1-3: Basic Movement & Intro.
+  - 4: "The Bug" (Debugging pre-filled code).
+  - 5: "Stairway" (Forced Loop via Block Limit).
+  - 6: "Big Zig Zag" (Complex Patterns).
+- **UI Refinement**: Two-column layout, "Stop" button, "Ghost" drag effect.
+- **Win/Loss States**: `WinModal` and visual feedback for collisions.
+- **Technical Refactor**:
+  - Replaced `SortableJS` with `@atlaskit/pragmatic-drag-and-drop`.
+  - Implemented Stack-Based Interpreter for "Step Back" capability.
+  - Migrated to `SvelteMap`/`SvelteSet` for fine-grained reactivity.
+  - Added `SoundManager` (Web Audio API) for procedural sound effects.
+  - Fixed Accessibility issues (keyboard navigation, ARIA roles).

@@ -54,6 +54,32 @@ The Goal of the MVP is to prove the "Stop & Go" interaction loop with the simple
 - **Play Button**: The trigger to switch from STOP to GO.
 - **Stop/Reset Button**: The trigger to switch from GO back to STOP (resets character to start).
 - **Trash Can**: To remove blocks.
+- **Insertion Mode (Click-Click)**:
+  - Tapping a block in the palette enters "Insertion Mode".
+  - Visual "Insertion Points" appear between all blocks in the program.
+  - Tapping an insertion point places the block there.
+  - Tapping elsewhere cancels.
+  - This supports precise editing on touch devices without complex drag-and-drop maneuvers.
+
+### Advanced Interaction (Multi-Select & Clipboard)
+
+To support power users and complex refactoring, we introduce advanced selection and clipboard mechanics.
+
+- **Multi-Select Mode**:
+  - Activated via a toggle in the Floating Toolbar.
+  - When active, clicking blocks adds/removes them from the selection.
+  - **Constraint**: Selecting a parent block (e.g., Loop) implicitly selects all its children. Children cannot be deselected independently while the parent is selected.
+  - **Constraint**: Selecting a child block does _not_ select the parent.
+  - **Visuals**: Selected blocks share a common highlight border.
+
+- **Bulk Actions**:
+  - **Delete**: Deletes all selected blocks.
+  - **Move (Drag)**: Dragging one selected block moves the entire selection.
+    - _Behavior_: If non-adjacent blocks are selected, they "collapse" into a contiguous sequence upon drop.
+  - **Duplicate (Copy/Paste)**:
+    - Clicking "Duplicate" copies the selected blocks to a clipboard.
+    - Enters "Paste Mode" (similar to Insertion Mode).
+    - Clicking a target inserts the copied sequence.
 
 ### Success Criteria
 

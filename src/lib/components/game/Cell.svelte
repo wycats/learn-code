@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { CellType } from '$lib/game/types';
+	import { Star, BrickWall } from 'lucide-svelte';
 
 	interface Props {
 		type: CellType;
@@ -10,7 +11,13 @@
 
 <div class="cell" data-type={type}>
 	{#if type === 'goal'}
-		<div class="goal-marker">★</div>
+		<div class="goal-marker">
+			<Star size={24} color="var(--yellow-7)" fill="var(--yellow-4)" />
+		</div>
+	{:else if type === 'wall'}
+		<div class="wall-marker">
+			<BrickWall size={28} color="var(--stone-6)" />
+		</div>
 	{/if}
 </div>
 
@@ -35,7 +42,8 @@
 	}
 
 	.cell[data-type='wall'] {
-		background-color: var(--stone-4);
+		background-color: var(--stone-3);
+		border: 2px solid var(--stone-4);
 		box-shadow: var(--shadow-2);
 	}
 
@@ -45,7 +53,7 @@
 	}
 
 	.goal-marker {
-		font-size: var(--font-size-4);
-		color: var(--yellow-7);
+		display: grid;
+		place-items: center;
 	}
 </style>
