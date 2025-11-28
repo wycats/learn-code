@@ -48,14 +48,22 @@ export const GameStatusSchema = z.enum(['planning', 'running', 'won', 'lost', 's
 export type GameStatus = z.infer<typeof GameStatusSchema>;
 
 export const StorySegmentSchema = z.object({
-	speaker: z.enum(['Zoey', 'Jonas', 'System']),
+	id: z.string().optional(),
+	speaker: z.enum(['Zoey', 'Jonas', 'System', 'Guide']),
 	text: z.string(),
 	audioId: z.string().optional(),
-	emotion: z.enum(['happy', 'neutral', 'concerned', 'excited']).optional(),
+	emotion: z.enum(['happy', 'neutral', 'concerned', 'excited', 'thinking', 'celebrating']).optional(),
 	highlight: z
 		.object({
 			target: z.string(), // e.g., 'block:move-forward', 'cell:2,2', 'ui:play-btn'
 			type: z.enum(['pulse', 'arrow', 'dim']).optional()
+		})
+		.optional(),
+	media: z
+		.object({
+			type: z.enum(['image', 'video']),
+			src: z.string(),
+			alt: z.string()
 		})
 		.optional(),
 	advanceCondition: z
@@ -67,9 +75,25 @@ export const StorySegmentSchema = z.object({
 });
 export type StorySegment = z.infer<typeof StorySegmentSchema>;
 
+export const HintTriggerSchema = z.discriminatedUnion('type', [
+	z.object({ type: z.literal('time'), value: z.number() }),
+	z.object({ type: z.literal('attempts'), value: z.number() }),
+	z.object({ type: z.literal('idle'), value: z.number() }),
+	z.object({ type: z.literal('story-step'), segmentId: z.string() })
+]);
+
+export const HintSchema = z.object({
+	id: z.string(),
+	text: z.string(),
+	trigger: HintTriggerSchema,
+	highlight: z.string().optional()
+});
+export type Hint = z.infer<typeof HintSchema>;
+
 export const LevelDefinitionSchema = z.object({
 	id: z.string(),
 	name: z.string(),
+	description: z.string().optional(),
 	gridSize: z.object({
 		width: z.number(),
 		height: z.number()
@@ -78,13 +102,30 @@ export const LevelDefinitionSchema = z.object({
 	startOrientation: DirectionSchema,
 	goal: GridPositionSchema,
 	layout: z.record(z.string(), CellTypeSchema), // Key is "x,y"
-	availableBlocks: z.array(BlockTypeSchema),
+	availableBlocks: z
+		.union([
+			z.array(BlockTypeSchema),
+			z.record(z.string(), z.union([z.number(), z.literal('unlimited')]))
+		])
+		.transform((val) => {
+			if (Array.isArray(val)) {
+				return val.reduce(
+					(acc, type) => {
+						acc[type] = 'unlimited';
+						return acc;
+					},
+					{} as Record<string, number | 'unlimited'>
+				);
+			}
+			return val;
+		}),
 	maxBlocks: z.number().optional(),
 	ambientSoundId: z.string().optional(),
 	initialProgram: z.array(BlockSchema).optional(),
 	functions: z.record(z.string(), z.array(BlockSchema)).optional(),
 	solutionPar: z.number().optional(),
 	intro: z.array(StorySegmentSchema).optional(),
-	outro: z.array(StorySegmentSchema).optional()
+	outro: z.array(StorySegmentSchema).optional(),
+	hints: z.array(HintSchema).optional()
 });
 export type LevelDefinition = z.infer<typeof LevelDefinitionSchema>;

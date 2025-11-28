@@ -20,7 +20,11 @@ const mockLevel: LevelDefinition = {
 	start: { x: 0, y: 0 },
 	startOrientation: 'E',
 	goal: { x: 2, y: 0 },
-	availableBlocks: ['move-forward', 'turn-left', 'turn-right'],
+	availableBlocks: {
+		'move-forward': 'unlimited',
+		'turn-left': 'unlimited',
+		'turn-right': 'unlimited'
+	},
 	initialProgram: []
 };
 

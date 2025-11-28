@@ -199,3 +199,36 @@
 - Blocks are cleaner and easier to read.
 - Configuration options can be larger and more descriptive.
 - We adopted a new visual layer (glass effect) to distinguish this "meta-UI" from the game UI.
+
+## Phase 7: Tutorial System Expansion
+
+### 26. Hint System: Idle & Attempt Triggers
+
+**Decision:** Trigger hints based on "Idle Time" (no interaction) and "Failed Attempts" (running code that fails).
+**Context:** We need to detect struggle without being annoying. Explicitly tracking "errors" is hard in a sandbox, but "failure to solve" is easy to track.
+**Consequence:**
+- Added `failedAttempts` and `lastInteractionTime` to `GameModel`.
+- The game loop now checks these counters every second.
+
+### 27. Guide Character: Dynamic Avatar
+
+**Decision:** Represent the Guide as a distinct entity in the `InstructionBar` using a dynamic avatar system.
+**Context:** The tutorial text felt impersonal. A character (Robot) builds a connection and fits the narrative.
+**Consequence:**
+- `InstructionBar` now accepts a `speaker` prop and renders different icons/images.
+- We introduced a "Guide" persona in the content.
+
+### 28. Story Segment IDs
+
+**Decision:** Use explicit string `id`s for Story Segments instead of array indices.
+**Context:** Array indices are brittle; inserting a new segment breaks all saved progress or logic that depends on "step 5".
+**Consequence:**
+- Updated `StorySegmentSchema` to require (or optionally allow) `id`.
+- Updated trigger logic to reference segments by ID.
+
+### 29. Rich Media in Instructions
+
+**Decision:** Allow `StorySegment` to contain a `media` field (image URL) to be rendered inline.
+**Context:** Text alone is insufficient for explaining spatial concepts like "loops" or "turns".
+**Consequence:**
+- `InstructionBar` layout updated to support an optional image slot.

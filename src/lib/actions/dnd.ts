@@ -9,28 +9,39 @@ import type { Block } from '$lib/game/types';
 export interface DraggableOptions {
 	block: Block;
 	isPaletteItem?: boolean;
+	disabled?: boolean;
 }
 
 export function draggableBlock(node: HTMLElement, options: DraggableOptions) {
-	const cleanup = draggable({
-		element: node,
-		getInitialData: () => ({
-			type: 'block',
-			block: options.block,
-			isPaletteItem: options.isPaletteItem
-		}),
-		onDragStart: () => {
-			setDraggedBlock(options.block);
-			node.classList.add('dragging');
-		},
-		onDrop: () => {
-			setDraggedBlock(null);
-			node.classList.remove('dragging');
-		}
-	});
+	let cleanup = setup();
+
+	function setup() {
+		return draggable({
+			element: node,
+			canDrag: () => !options.disabled,
+			getInitialData: () => ({
+				type: 'block',
+				block: options.block,
+				isPaletteItem: options.isPaletteItem
+			}),
+			onDragStart: () => {
+				setDraggedBlock(options.block);
+				node.classList.add('dragging');
+			},
+			onDrop: () => {
+				setDraggedBlock(null);
+				node.classList.remove('dragging');
+			}
+		});
+	}
 
 	return {
-		destroy: cleanup
+		update(newOptions: DraggableOptions) {
+			options = newOptions;
+			cleanup();
+			cleanup = setup();
+		},
+		destroy: () => cleanup()
 	};
 }
 

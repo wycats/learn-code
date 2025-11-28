@@ -24,6 +24,12 @@ export class GameModel {
 	#history: { program: Block[]; functions: Record<string, Block[]> }[] = [];
 	#future: { program: Block[]; functions: Record<string, Block[]> }[] = [];
 
+	// Hint State
+	startTime = Date.now();
+	failedAttempts = $state(0);
+	lastInteractionTime = $state(Date.now());
+	activeHintId = $state<string | null>(null);
+
 	constructor(level: LevelDefinition) {
 		this.level = level;
 		// Load initial program if defined
@@ -41,6 +47,8 @@ export class GameModel {
 		} else {
 			this.status = 'goal';
 		}
+		this.startTime = Date.now();
+		this.lastInteractionTime = Date.now();
 	}
 
 	reset() {
@@ -57,12 +65,77 @@ export class GameModel {
 		// But if it's a "hard" reset, maybe? For now, let's keep program.
 	}
 
+	recordInteraction() {
+		this.lastInteractionTime = Date.now();
+	}
+
+	recordFailure() {
+		this.failedAttempts++;
+	}
+
+	checkHints() {
+		if (!this.level.hints) return;
+		const now = Date.now();
+		const elapsed = (now - this.startTime) / 1000;
+		const idle = (now - this.lastInteractionTime) / 1000;
+
+		// If we already have a hint, do we keep it?
+		// For now, let's allow new hints to override if they trigger later.
+		// But we should probably track which hints have been shown to avoid spam.
+		// Let's just show the first valid one for now.
+
+		for (const hint of this.level.hints) {
+			// Simple logic: if trigger met, show it.
+			// Ideally we'd have a "shown" set.
+			let triggered = false;
+			if (hint.trigger.type === 'time' && elapsed >= hint.trigger.value) triggered = true;
+			if (hint.trigger.type === 'attempts' && this.failedAttempts >= hint.trigger.value)
+				triggered = true;
+			if (hint.trigger.type === 'idle' && idle >= hint.trigger.value) triggered = true;
+			if (hint.trigger.type === 'story-step') {
+				const currentSegment = this.currentStorySegment;
+				if (currentSegment && currentSegment.id === hint.trigger.segmentId) {
+					triggered = true;
+				}
+			}
+
+			if (triggered) {
+				// Only set if different (to avoid reactivity loops if we use this in effect)
+				if (this.activeHintId !== hint.id) {
+					this.activeHintId = hint.id;
+				}
+				return; // Show highest priority (first in list)
+			}
+		}
+	}
+
+
 	get currentStorySegment() {
 		if (this.status !== 'story') return null;
 		if (this.level.intro && this.storyIndex < this.level.intro.length) {
 			return this.level.intro[this.storyIndex];
 		}
 		return null;
+	}
+
+	get displaySegment(): import('./types').StorySegment | null {
+		// Priority: Hint > Story
+		if (this.activeHintId && this.level.hints) {
+			const hint = this.level.hints.find((h) => h.id === this.activeHintId);
+			if (hint) {
+				return {
+					speaker: 'Guide',
+					text: hint.text,
+					emotion: 'thinking',
+					highlight: hint.highlight ? { target: hint.highlight, type: 'pulse' } : undefined
+				};
+			}
+		}
+		return this.currentStorySegment;
+	}
+
+	dismissHint() {
+		this.activeHintId = null;
 	}
 
 	nextStorySegment() {
@@ -132,6 +205,7 @@ export class GameModel {
 
 	addBlock(block: Block) {
 		if (this.status !== 'planning' && this.status !== 'story') return;
+		this.recordInteraction();
 		this.#pushHistory();
 		this.activeProgram.push(block);
 		this.checkTrigger('block-placed', block);
@@ -139,6 +213,7 @@ export class GameModel {
 
 	insertBlockAfter(targetId: string, newBlock: Block) {
 		if (this.status !== 'planning' && this.status !== 'story') return;
+		this.recordInteraction();
 
 		const insertInList = (list: Block[]): boolean => {
 			const index = list.findIndex((b) => b.id === targetId);
@@ -162,6 +237,7 @@ export class GameModel {
 
 	insertBlockIntoContainer(containerId: string, newBlock: Block) {
 		if (this.status !== 'planning' && this.status !== 'story') return;
+		this.recordInteraction();
 
 		const insertInList = (list: Block[]): boolean => {
 			for (const block of list) {
@@ -185,12 +261,14 @@ export class GameModel {
 
 	removeBlock(index: number) {
 		if (this.status !== 'planning' && this.status !== 'story') return;
+		this.recordInteraction();
 		this.#pushHistory();
 		this.activeProgram.splice(index, 1);
 	}
 
 	reorderBlocks(fromIndex: number, toIndex: number) {
 		if (this.status !== 'planning' && this.status !== 'story') return;
+		this.recordInteraction();
 		this.#pushHistory();
 		const [block] = this.activeProgram.splice(fromIndex, 1);
 		this.activeProgram.splice(toIndex, 0, block);
@@ -198,6 +276,7 @@ export class GameModel {
 
 	clearProgram() {
 		if (this.status !== 'planning' && this.status !== 'story') return;
+		this.recordInteraction();
 		this.#pushHistory();
 		// We can't reassign activeProgram if it's a proxy property, but we can clear the array
 		this.activeProgram.length = 0;
@@ -205,6 +284,7 @@ export class GameModel {
 
 	updateBlock(id: string, updates: Partial<Block>) {
 		if (this.status !== 'planning' && this.status !== 'story') return;
+		this.recordInteraction();
 
 		// Helper to find and update
 		const updateInList = (list: Block[]): boolean => {
@@ -226,6 +306,7 @@ export class GameModel {
 
 	deleteBlock(id: string) {
 		if (this.status !== 'planning' && this.status !== 'story') return;
+		this.recordInteraction();
 
 		const deleteFromList = (list: Block[]): boolean => {
 			const index = list.findIndex((b) => b.id === id);
@@ -248,6 +329,7 @@ export class GameModel {
 	deleteBlocks(ids: string[]) {
 		if (this.status !== 'planning' && this.status !== 'story') return;
 		if (ids.length === 0) return;
+		this.recordInteraction();
 
 		this.#pushHistory();
 

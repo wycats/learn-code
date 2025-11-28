@@ -57,18 +57,20 @@
 - [x] **Audio**: Voiceover and soundscapes.
 - [x] **UI Polish**: Contextual Configuration for blocks.
 
-## Phase 7: Tutorial System Expansion (Next)
+## Phase 7: Tutorial System Expansion (Completed)
 
 **Goal:** Flesh out the interactive tutorial system to support complex, multi-stage guidance and non-linear progression.
 
-- [ ] **Contextual Hints**: System for detecting user struggle and offering specific hints.
-- [ ] **Rich Media**: Support for diagrams/animations within the instruction bar.
-- [ ] **Guide Character**: Introduce a "Guide" character (e.g., a robot helper) who delivers the tutorial content.
+- [x] **Fresh Eyes Review**: Conduct a holistic review of the current UX/UI and codebase to identify friction points before adding new complexity.
+- [x] **Contextual Hints**: System for detecting user struggle and offering specific hints.
+- [x] **Rich Media**: Support for diagrams/animations within the instruction bar.
+- [x] **Guide Character**: Introduce a "Guide" character (e.g., a robot helper) who delivers the tutorial content.
 
-## Phase 8: Level Builder
+## Phase 8: Level Builder (Completed)
 
-**Goal:** Create an in-game editor to allow users to create, test, and share custom levels.
+**Goal:** Create an in-game editor to allow users to create, test, and share custom levels with a "Super Mario Maker" feel.
 
-- [ ] **Editor UI**: Drag-and-drop interface for placing walls, characters, and goals.
-- [ ] **Serialization**: Export/Import levels as JSON.
-- [ ] **Playtesting**: "Test Level" mode within the editor.
+- [x] **Editor UI**: "Builder Tray" for painting terrain and placing actors.
+- [x] **Interaction**: Seamless switching between "Edit" and "Test" modes.
+- [x] **Configuration**: "Backpack" UI for defining available blocks.
+- [x] **Serialization**: Export/Import levels as JSON.

@@ -292,6 +292,7 @@ export class StackInterpreter {
 				} else {
 					console.log('Blocked!');
 					this.game.lastEvent = { type: 'blocked', timestamp: Date.now() };
+					this.game.recordFailure();
 					soundManager.play('fail');
 					return false;
 				}
@@ -311,6 +312,7 @@ export class StackInterpreter {
 	finish() {
 		if (this.game.status !== 'won') {
 			this.game.status = 'planning';
+			this.game.recordFailure();
 		}
 		this.game.activeBlockId = null;
 	}

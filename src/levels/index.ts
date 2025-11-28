@@ -8,7 +8,11 @@ export const Level1: LevelDefinition = {
 	startOrientation: 'E',
 	goal: { x: 3, y: 2 },
 	layout: {},
-	availableBlocks: ['move-forward', 'turn-left', 'turn-right'],
+	availableBlocks: {
+		'move-forward': 'unlimited',
+		'turn-left': 'unlimited',
+		'turn-right': 'unlimited'
+	},
 	solutionPar: 2
 };
 

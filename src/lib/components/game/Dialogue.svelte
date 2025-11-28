@@ -15,7 +15,9 @@
 		happy: '😊',
 		neutral: '😐',
 		concerned: '😟',
-		excited: '🤩'
+		excited: '🤩',
+		thinking: '🤔',
+		celebrating: '🥳'
 	};
 
 	$effect(() => {

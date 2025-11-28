@@ -1,31 +1,29 @@
-# Phase 6 Task List: Advanced Concepts
+# Phase 8 Task List: Level Builder
 
-## 1. Functions ("Magic Blocks") - Core Logic
+## 1. Foundation & State
+- [x] **Route Setup**: Create `/builder` route and layout.
+- [x] **Builder Model**: Implement `BuilderModel` using Svelte 5 Runes.
+- [x] **Canvas Interaction**: Update `Grid.svelte` to handle click/drag events in "Edit Mode".
 
-- [x] **Schema Update**: Extend `LevelSchema` in `src/lib/game/schema.ts` to support a `functions` dictionary (name -> block list).
-- [x] **Block Types**: Add `CallBlock` to `BlockType` union in `src/lib/game/types.ts`.
-- [x] **Interpreter - Call Stack**: Update `StackMachine` in `src/lib/game/mimic.ts` to handle `CALL` (push frame) and `RETURN` (pop frame) operations.
-- [x] **Interpreter - Scope**: Ensure variable/state lookup respects the new stack structure.
+## 2. The Builder Tray (UI)
+- [x] **Tool Palette**: Create UI for selecting tools (Terrain, Actors).
+- [x] **Configuration Panel**: UI for level properties.
+- [x] **Backpack**: UI for block configuration.
 
-## 2. Functions - UI & Interaction
+## 3. Story Editor
+- [x] **Chat UI**: Component for editing story segments.
 
-- [x] **Function Editor UI**: Create a UI component (e.g., `FunctionTray` or `MagicWorkspace`) for editing the function definition.
-- [x] **Magic Block Component**: Create `MagicBlock.svelte` (visual representation of the `CallBlock`).
-- [x] **Integration**: Connect the Function Editor to the `GameModel` so edits update the level state.
-- [x] **Visual Execution**: Update the "Active Block" highlighting to work when execution jumps into a function.
+## 4. Interaction & Polish
+- [x] **Painting**: Implement drag-to-paint and range painting.
+- [x] **Mode Switching**: Implement transitions.
 
-## 3. Audio System
+## 5. Test Mode
+- [x] **Cheats**: Teleport, Rotate, Onion Skinning (Rotate/Reset implemented).
 
-- [x] **Audio Manager**: Create `src/lib/game/audio-manager.ts` to handle loading and playing audio files (MP3/WAV).
-- [x] **Voiceover Support**: Update `Dialogue` component to trigger audio playback when a segment is shown.
-- [x] **Soundscapes**: Add support for looping background ambient tracks in `LevelSchema`.
+## 6. Serialization
+- [x] **Export/Import**: JSON handling.
+- [ ] **Persistence**: LocalStorage auto-save. (Deferred to future polish)
 
-## 4. Content (Levels 7 & 8)
-
-- [x] **Level 7 ("The Magic Spell")**: Design a level that requires defining a simple function (e.g., "Jump") and calling it multiple times.
-- [x] **Level 8 ("Pattern Recognition")**: Design a level with a repeating complex pattern that requires a function to solve within the block limit.
-
-## 5. Polish & Refinement
-
-- [x] **Function Transition**: Add a visual effect when the execution jumps to/from a function.
-- [x] **Accessibility**: Ensure voiceovers have synchronized captions (using existing Dialogue text).
+## 7. UX Refinements (Current)
+- [x] **Toolbar Refactor**: Move tools to top bar, implement "Architect Mode".
+- [x] **Direct Manipulation**: Remove Start/Goal tools, implement click-to-move/rotate for actors.

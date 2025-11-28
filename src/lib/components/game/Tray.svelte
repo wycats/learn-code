@@ -23,8 +23,46 @@
 
 	// Palette items (derived from game level)
 	const paletteItems = $derived(
-		game.level.availableBlocks.map((type) => ({ id: `palette-${type}`, type }) as Block)
+		Object.keys(game.level.availableBlocks).map(
+			(type) => ({ id: `palette-${type}`, type: type as BlockType }) as Block
+		)
 	);
+
+	// Helper to count blocks by type across the entire solution (program + functions)
+	function countBlocksByType(
+		program: Block[],
+		functions: Record<string, Block[]>
+	): Record<string, number> {
+		const counts: Record<string, number> = {};
+
+		function recurse(list: Block[]) {
+			for (const block of list) {
+				counts[block.type] = (counts[block.type] || 0) + 1;
+				if (block.children) recurse(block.children);
+			}
+		}
+
+		recurse(program);
+		for (const funcName in functions) {
+			recurse(functions[funcName]);
+		}
+		return counts;
+	}
+
+	const usedCounts = $derived(countBlocksByType(game.program, game.functions));
+
+	function getLimit(type: BlockType): number | 'unlimited' {
+		// @ts-ignore - we know it's a record now due to schema transform
+		return game.level.availableBlocks[type] ?? 0;
+	}
+
+	function isTypeFull(type: BlockType): boolean {
+		if (isFull) return true; // Global limit
+		const limit = getLimit(type);
+		if (limit === 'unlimited') return false;
+		const used = usedCounts[type] || 0;
+		return used >= limit;
+	}
 
 	const isFull = $derived(
 		game.level.maxBlocks !== undefined && game.blockCount >= game.level.maxBlocks
@@ -321,7 +359,7 @@
 	}
 
 	function handlePaletteClick(type: BlockType) {
-		if (isFull) return;
+		if (isTypeFull(type)) return;
 		soundManager.play('click');
 
 		// If we have a selected block, show ghosts around it
@@ -438,6 +476,16 @@
 		game.activeProgram = [...game.activeProgram];
 		// Keep selected so user sees where it went
 	}
+
+	$effect(() => {
+		if (game.status === 'running') {
+			selectedBlockIds.clear();
+			isMoveMode = false;
+			isPasteMode = false;
+			isMultiSelectMode = false;
+			insertionMode = null;
+		}
+	});
 
 	$effect(() => {
 		if (game.activeBlockId) {
@@ -582,16 +630,25 @@
 		<h3>Blocks</h3>
 		<div class="block-list" class:disabled={isFull}>
 			{#each paletteItems as item (item.id)}
+				{@const limit = getLimit(item.type)}
+				{@const used = usedCounts[item.type] || 0}
+				{@const typeFull = isTypeFull(item.type)}
 				<div
-					class:opacity-50={isFull}
+					class:opacity-50={typeFull}
 					class:highlighted={highlight?.target === `block:${item.type}`}
-					use:draggableBlock={{ block: item, isPaletteItem: true }}
+					use:draggableBlock={{ block: item, isPaletteItem: true, disabled: typeFull }}
+					style:position="relative"
 				>
 					<BlockComponent
 						block={item}
 						isPalette={true}
 						onSelect={() => handlePaletteClick(item.type)}
 					/>
+					{#if limit !== 'unlimited'}
+						<div class="limit-badge" class:full={typeFull}>
+							{limit - used}
+						</div>
+					{/if}
 				</div>
 			{/each}
 		</div>
@@ -1120,5 +1177,28 @@
 
 	.context-tabs button:hover {
 		background-color: var(--surface-2);
+	}
+
+	.limit-badge {
+		position: absolute;
+		top: -5px;
+		right: -5px;
+		background-color: var(--blue-5);
+		color: white;
+		font-size: var(--font-size-00);
+		font-weight: bold;
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: var(--shadow-2);
+		z-index: 5;
+	}
+
+	.limit-badge.full {
+		background-color: var(--surface-4);
+		color: var(--text-3);
 	}
 </style>

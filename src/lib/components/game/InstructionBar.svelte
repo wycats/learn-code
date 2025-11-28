@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { StorySegment } from '$lib/game/types';
 	import { fly } from 'svelte/transition';
-	import { ArrowRight } from 'lucide-svelte';
+	import { ArrowRight, Bot } from 'lucide-svelte';
 
 	interface Props {
 		segment: StorySegment;
@@ -14,7 +14,9 @@
 		happy: '😊',
 		neutral: '😐',
 		concerned: '😟',
-		excited: '🤩'
+		excited: '🤩',
+		thinking: '🤔',
+		celebrating: '🥳'
 	};
 
 	const hasAdvanceCondition = $derived(segment.advanceCondition !== undefined);
@@ -24,7 +26,11 @@
 	<div class="instruction-content">
 		<div class="character-portrait" data-character={segment.speaker}>
 			<div class="avatar">
-				{segment.speaker[0]}
+				{#if segment.speaker === 'Guide'}
+					<Bot size={24} />
+				{:else}
+					{segment.speaker[0]}
+				{/if}
 				{#if segment.emotion}
 					<div class="emotion-badge" title={segment.emotion}>
 						{emotions[segment.emotion] || ''}
@@ -32,9 +38,16 @@
 				{/if}
 			</div>
 		</div>
-		<div class="content">
+		<div class="content" aria-live="polite">
 			<div class="speaker-name">{segment.speaker}</div>
 			<p class="text">{segment.text}</p>
+			{#if segment.media}
+				<div class="media-container">
+					{#if segment.media.type === 'image'}
+						<img src={segment.media.src} alt={segment.media.alt} />
+					{/if}
+				</div>
+			{/if}
 		</div>
 		{#if !hasAdvanceCondition}
 			<button class="next-btn" onclick={onNext}>
@@ -51,7 +64,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 0 var(--size-4);
+		padding: var(--size-2) var(--size-4);
 	}
 
 	.instruction-content {
@@ -64,6 +77,8 @@
 
 	.character-portrait {
 		flex-shrink: 0;
+		align-self: flex-start; /* Align to top if content grows */
+		margin-top: var(--size-1);
 	}
 
 	.avatar {
@@ -107,11 +122,31 @@
 		color: var(--blue-9);
 	}
 
+	.character-portrait[data-character='Guide'] .avatar {
+		background-color: var(--teal-3);
+		color: var(--teal-9);
+	}
+
 	.content {
 		flex: 1;
 		display: flex;
 		flex-direction: column;
 		gap: var(--size-1);
+	}
+
+	.media-container {
+		margin-top: var(--size-2);
+		border-radius: var(--radius-2);
+		overflow: hidden;
+		border: 1px solid var(--surface-3);
+		max-width: 300px;
+		background-color: white;
+	}
+
+	.media-container img {
+		display: block;
+		width: 100%;
+		height: auto;
 	}
 
 	.speaker-name {
@@ -143,6 +178,7 @@
 		font-size: var(--font-size-1);
 		transition: transform 0.1s;
 		box-shadow: var(--shadow-2);
+		align-self: center; /* Keep centered vertically */
 	}
 
 	.next-btn:hover {

@@ -119,3 +119,24 @@ Implemented "Functions" (Magic Blocks) to introduce the concept of reusable code
 - **UI Refinements**:
   - Implemented "Infinite Loop" logic and UI.
   - Refactored Loop Block configuration into a "Contextual Configuration Panel" in the Tray using Glassomorphism and Popover API.
+
+## Phase 8: Level Builder (Completed)
+
+**Date:** November 28, 2025
+
+**Summary:**
+Implemented a comprehensive "Level Builder" inspired by Super Mario Maker, enabling users to create, test, and share custom levels. The builder features a tactile "drag-to-paint" interface, a dedicated Story Editor for narrative elements, and seamless switching between Edit and Test modes. This phase also introduced serialization (Export/Import) to allow sharing of level files.
+
+**Key Deliverables:**
+
+- **Builder Core**:
+  - `BuilderModel`: Svelte 5 Runes-based state management for the editor.
+  - `Grid` Updates: Added support for "Edit Mode" with drag-to-paint interactions and hover effects.
+- **Builder UI**:
+  - `BuilderTray`: A comprehensive tool palette with Terrain/Actor tools, Level Config, and Backpack (Block limits).
+  - `StoryEditor`: A dedicated interface for crafting Intro/Outro dialogue sequences.
+  - **Mode Switching**: Seamless toggle between "Edit" (Builder UI) and "Test" (Game UI) modes.
+- **Test Mode Features**:
+  - **Cheats**: Added "Rotate Character" and "Reset Position" tools to facilitate rapid debugging.
+- **Serialization**:
+  - Implemented JSON Export and Import functionality for level sharing.

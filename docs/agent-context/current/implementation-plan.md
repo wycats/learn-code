@@ -1,54 +1,38 @@
-# Implementation Plan - Phase 6: Advanced Concepts
+# Phase 8 Implementation Plan: Level Builder
 
-**Goal:** Introduce "Magic Blocks" (Functions) to teach code reuse and abstraction, and enhance the immersive experience with a comprehensive Audio System (Voiceover & Soundscapes).
+## Goal
+Create an in-game editor that allows users to design, test, and export custom levels with a "Super Mario Maker" feel—seamless, tactile, and integrated.
 
-## 1. Functions ("Magic Blocks")
+## 1. Foundation & State
+- [ ] **Route Setup**: Create `/builder` route.
+- [ ] **Builder Model**: Implement `BuilderModel` using Svelte 5 Runes.
+  - Wraps a `LevelDefinition`.
+  - Tracks `activeTool` (e.g., 'wall', 'goal').
+  - Tracks `mode` ('edit' | 'test').
+- [ ] **Canvas Interaction**: Update `Grid.svelte` (or create a wrapper) to handle click/drag events when in "Edit Mode".
 
-The "Magic Block" allows users to define a sequence of actions once and reuse them. This introduces the concept of functions/subroutines.
+## 2. The Builder Tray (UI)
+- [ ] **Tool Palette**: Create a UI component to select tools.
+  - **Terrain**: Grass, Water, Wall.
+  - **Actors**: Start Position, Goal.
+- [ ] **Configuration Panel**: UI to set level properties (Name, Size).
+- [ ] **Backpack (Block Config)**: UI to define `availableBlocks` and `maxBlocks`.
 
-### 1.1. Data Model & Schema
+## 3. Story Editor (Script)
+- [ ] **Chat UI**: Create a component to list and edit `StorySegment`s.
+- [ ] **Inline Editing**: Allow editing text, speaker, and emotion directly in the list.
+- [ ] **Reordering**: Implement drag-and-drop reordering for script rows.
 
-- [ ] **Extend Schema**: Update `LevelSchema` to support `functions` definitions (separate from the main `initialCode`).
-- [ ] **Block Types**:
-  - `CallBlock`: A block that executes a named function.
-  - `DefineBlock` (Internal/UI): A container representing the function definition.
+## 4. Interaction & Polish
+- [ ] **Painting**: Implement "drag to paint" and "click-click" range painting for terrain.
+- [ ] **Feedback**: Add sound effects and visual cues for placing elements.
+- [ ] **Mode Switching**: Implement smooth transitions between "Edit" and "Test" modes.
 
-### 1.2. UI/UX for Function Definition
+## 5. Test Mode Enhancements
+- [ ] **Cheats**: Implement Teleport (drag character) and Rotate (tap character) in Test Mode.
+- [ ] **Onion Skinning**: Visualize previous character positions during execution.
 
-- [ ] **Function Editor**:
-  - Decide on the UI pattern: A separate "tab" for the function definition, or a secondary workspace on the screen?
-  - _Proposal_: A "Magic Workspace" that can be toggled or is always visible in specific levels.
-- [ ] **Magic Block**:
-  - Create a distinct visual style for the "Call" block (e.g., a purple "Star" block).
-
-### 1.3. Interpreter Updates
-
-- [ ] **Call Stack**: Ensure the `StackMachine` correctly handles `CALL` and `RETURN` operations.
-- [ ] **Step-by-Step**: Ensure the "Step Forward" and "Step Back" actions work seamlessly across function boundaries (entering and exiting the function).
-
-## 2. Audio System
-
-Transform the silent/procedural-only experience into a fully voiced narrative.
-
-### 2.1. Audio Architecture
-
-- [ ] **Asset Management**: System for loading and caching audio files (MP3/WAV) for voiceovers.
-- [ ] **Soundscapes**: Support for looping background ambient tracks.
-- [ ] **Settings**: Global Mute/Volume controls (persisted).
-
-### 2.2. Narrative Integration
-
-- [ ] **Voiceover Triggers**: Play specific audio clips when `Dialogue` segments appear.
-- [ ] **Character Voices**: Distinct sounds/voices for different characters.
-
-## 3. Content (Level 7+)
-
-Create levels that specifically require using Functions.
-
-- [ ] **Level 7: "The Magic Spell"**: Introduce the Magic Block. The player must define a pattern (e.g., "Jump Over") and use it multiple times.
-- [ ] **Level 8: "Pattern Recognition"**: A complex path that requires identifying repeating sub-patterns.
-
-## 4. Refinement & Polish
-
-- [ ] **Visual Feedback**: When a function is called, visually indicate that execution has jumped to the function definition.
-- [ ] **Accessibility**: Captions for voiceovers (already handled by Dialogue text, but ensure sync).
+## 6. Serialization
+- [ ] **Export**: Button to download/copy the current level as JSON.
+- [ ] **Import**: Ability to paste JSON to load a level.
+- [ ] **Persistence**: Auto-save to `localStorage` so work isn't lost on refresh.

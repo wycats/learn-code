@@ -45,7 +45,11 @@
 	}
 
 	function handleNextStory() {
-		game.nextStorySegment();
+		if (game.activeHintId) {
+			game.dismissHint();
+		} else {
+			game.nextStorySegment();
+		}
 	}
 
 	function handleStartPlanning() {
@@ -106,6 +110,15 @@
 			return;
 		}
 
+		// If we are paused in a failure state, restart instead of resuming
+		if (
+			isRunning &&
+			isPaused &&
+			(game.lastEvent?.type === 'blocked' || game.lastEvent?.type === 'fail')
+		) {
+			handleStop();
+		}
+
 		if (!isRunning) {
 			game.checkTrigger('program-run');
 			await startExecution();
@@ -157,6 +170,13 @@
 		} else {
 			soundManager.stopAmbient();
 		}
+	});
+
+	$effect(() => {
+		const interval = setInterval(() => {
+			game.checkHints();
+		}, 1000);
+		return () => clearInterval(interval);
 	});
 </script>
 
@@ -233,8 +253,8 @@
 	<div class="workspace">
 		<div class="stage-area">
 			<div class="dashboard-area">
-				{#if game.status === 'story' && game.currentStorySegment}
-					<InstructionBar segment={game.currentStorySegment} onNext={handleNextStory} />
+				{#if game.displaySegment}
+					<InstructionBar segment={game.displaySegment} onNext={handleNextStory} />
 				{:else if game.status !== 'goal'}
 					<StatusPanel {game} />
 				{/if}
@@ -320,7 +340,7 @@
 
 	.dashboard-area {
 		width: 100%;
-		height: 120px; /* Fixed budget */
+		min-height: 120px; /* Allow growth */
 		background-color: var(--surface-1);
 		border-bottom: 1px solid var(--surface-3);
 		display: grid;
