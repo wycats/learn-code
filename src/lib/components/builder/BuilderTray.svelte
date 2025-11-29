@@ -59,7 +59,13 @@
 	}
 </script>
 
-<div class="builder-tray-container" onclick={() => (editingLimitFor = null)} role="button" tabindex="-1" onkeydown={() => {}}>
+<div
+	class="builder-tray-container"
+	onclick={() => (editingLimitFor = null)}
+	role="button"
+	tabindex="-1"
+	onkeydown={() => {}}
+>
 	<div class="backpack-section">
 		<h3>Backpack</h3>
 		<div class="block-list">
@@ -77,11 +83,7 @@
 					onkeydown={(e) => {
 						if (e.key === 'Enter') toggleBlock(type, comingSoon);
 					}}
-					title={comingSoon
-						? 'Coming Soon!'
-						: isIncluded
-							? 'Click to remove'
-							: 'Click to add'}
+					title={comingSoon ? 'Coming Soon!' : isIncluded ? 'Click to remove' : 'Click to add'}
 				>
 					<div class="block-content">
 						<BlockComponent block={{ id: 'preview', type }} isPalette={true} />
@@ -99,9 +101,11 @@
 								<div class="limit-editor" transition:scale={{ duration: 150, start: 0.8 }}>
 									<button
 										class="limit-btn small"
-										onclick={() => setLimit(type, typeof limit === 'number' ? Math.max(1, limit - 1) : 1)}
-									>-</button>
-									
+										onclick={() =>
+											setLimit(type, typeof limit === 'number' ? Math.max(1, limit - 1) : 1)}
+										>-</button
+									>
+
 									<span class="limit-value">
 										{#if limit === 'unlimited'}
 											<InfinityIcon size={14} />
@@ -113,7 +117,8 @@
 									<button
 										class="limit-btn small"
 										onclick={() => setLimit(type, typeof limit === 'number' ? limit + 1 : 1)}
-									>+</button>
+										>+</button
+									>
 
 									<button
 										class="limit-btn text"
@@ -125,8 +130,8 @@
 									</button>
 								</div>
 							{:else}
-								<button 
-									class="limit-badge" 
+								<button
+									class="limit-badge"
 									onclick={(e) => toggleEditLimit(type, e)}
 									transition:scale={{ duration: 150 }}
 									title="Click to set limit"
@@ -202,12 +207,12 @@
 		opacity: 0.4;
 		filter: grayscale(1);
 	}
-	
+
 	.block-wrapper:hover {
 		transform: scale(1.02);
 		z-index: 1;
 	}
-	
+
 	.block-wrapper.disabled:hover {
 		opacity: 0.6;
 		filter: grayscale(0.5);

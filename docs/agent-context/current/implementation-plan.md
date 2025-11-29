@@ -1,38 +1,58 @@
-# Phase 8 Implementation Plan: Level Builder
+# Implementation Plan - Phase 8: Intelligent Tutoring System
 
-## Goal
-Create an in-game editor that allows users to design, test, and export custom levels with a "Super Mario Maker" feel—seamless, tactile, and integrated.
+**Goal:** Create a responsive "Guide" that helps users when they struggle, and provide tools to author these guided experiences.
+**Success Criteria:** Reimplement Levels 1-8 (including "The Bug" and "Pattern Recognition") using ONLY the Architect Mode tools.
 
-## 1. Foundation & State
-- [ ] **Route Setup**: Create `/builder` route.
-- [ ] **Builder Model**: Implement `BuilderModel` using Svelte 5 Runes.
-  - Wraps a `LevelDefinition`.
-  - Tracks `activeTool` (e.g., 'wall', 'goal').
-  - Tracks `mode` ('edit' | 'test').
-- [ ] **Canvas Interaction**: Update `Grid.svelte` (or create a wrapper) to handle click/drag events when in "Edit Mode".
+## 1. Program Analysis Engine
+We need a way to "read" the user's code to provide intelligent feedback.
+- **`src/lib/game/analysis.ts`**:
+    - `countBlocks(program, type)`: Count occurrences of a block type.
+    - `hasSequence(program, types[])`: Check if a specific sequence exists.
+    - `findPattern(program, pattern)`: More complex structural matching (e.g., "Loop containing Move").
+    - `detectAntiPattern(program)`: Identify common mistakes (e.g., "Move Forward immediately after Turn" without a loop in a long path).
 
-## 2. The Builder Tray (UI)
-- [ ] **Tool Palette**: Create a UI component to select tools.
-  - **Terrain**: Grass, Water, Wall.
-  - **Actors**: Start Position, Goal.
-- [ ] **Configuration Panel**: UI to set level properties (Name, Size).
-- [ ] **Backpack (Block Config)**: UI to define `availableBlocks` and `maxBlocks`.
+## 2. Hint Engine
+The brain that decides *when* to show a hint.
+- **`src/lib/game/hints.svelte.ts`**:
+    - `HintManager` class.
+    - **Triggers**:
+        - `IdleTrigger`: User hasn't interacted for X seconds.
+        - `FailTrigger`: User has failed the level X times.
+        - `AnalysisTrigger`: User's code matches a specific pattern (or anti-pattern).
+    - **State**: Tracks which hints have been shown to avoid repetition.
 
-## 3. Story Editor (Script)
-- [ ] **Chat UI**: Create a component to list and edit `StorySegment`s.
-- [ ] **Inline Editing**: Allow editing text, speaker, and emotion directly in the list.
-- [ ] **Reordering**: Implement drag-and-drop reordering for script rows.
+## 3. Guide Character ("The Robot")
+A friendly face to deliver the bad news (and the good news).
+- **Design**:
+    - Simple SVG character.
+    - States: `Idle`, `Thinking` (processing), `Talking` (hinting), `Happy` (success), `Sad` (failure).
+- **Component**: `src/lib/components/game/Guide.svelte`.
+- **Integration**: Embed into the `InstructionBar` or a floating overlay.
 
-## 4. Interaction & Polish
-- [ ] **Painting**: Implement "drag to paint" and "click-click" range painting for terrain.
-- [ ] **Feedback**: Add sound effects and visual cues for placing elements.
-- [ ] **Mode Switching**: Implement smooth transitions between "Edit" and "Test" modes.
+## 4. Authoring Tools (Builder Integration)
+Empower the "Architect" to create guided levels.
+- **Initial Code Snapshot**:
+    - Add a "Snapshot" button to the Level Configuration modal.
+    - Saves the current contents of the Tray as `initialProgram`.
+- **Story Scripting UI**:
+    - Enhance `StoryEditor` to allow selecting "Spotlight" targets.
+    - UI: A picker that lets you click a block in the tray or a cell in the grid to capture its ID/coordinates.
+- **Hint Editor**:
+    - A new tab in the Builder UI.
+    - List of hints for the level.
+    - Form to edit Hint Text and Trigger Conditions (Time, Attempts, Pattern).
 
-## 5. Test Mode Enhancements
-- [ ] **Cheats**: Implement Teleport (drag character) and Rotate (tap character) in Test Mode.
-- [ ] **Onion Skinning**: Visualize previous character positions during execution.
+## 5. Content & Polish
+- **Retrofit Levels**:
+    - Update Level 1 to use the new Hint system for basic movement.
+    - Update Level 4 ("The Bug") to use the new Hint system for debugging.
+- **Verification**:
+    - Ensure "The Bug" can be recreated from scratch using the Builder (requires Initial Code Snapshot).
+    - Ensure "Pattern Recognition" can be recreated (requires Spotlights).
 
-## 6. Serialization
-- [ ] **Export**: Button to download/copy the current level as JSON.
-- [ ] **Import**: Ability to paste JSON to load a level.
-- [ ] **Persistence**: Auto-save to `localStorage` so work isn't lost on refresh.
+## Execution Order
+1.  **Analysis Engine**: Core logic first.
+2.  **Hint Engine**: State management.
+3.  **Guide UI**: Visuals.
+4.  **Builder Tools**: The complex UI work.
+5.  **Content**: Putting it all together.

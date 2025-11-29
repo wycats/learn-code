@@ -1,16 +1,18 @@
 <script lang="ts">
-	import type { StorySegment } from '$lib/game/types';
+	import type { StorySegment, Character } from '$lib/game/types';
 	import { fly } from 'svelte/transition';
-	import { ArrowRight, Bot } from 'lucide-svelte';
+	import { ArrowRight } from 'lucide-svelte';
+	import Avatar from './Avatar.svelte';
 
 	interface Props {
 		segment: StorySegment;
+		characters?: Character[];
 		onNext: () => void;
 	}
 
-	let { segment, onNext }: Props = $props();
+	let { segment, characters = [], onNext }: Props = $props();
 
-	const emotions = {
+	const emotions: Record<string, string> = {
 		happy: '😊',
 		neutral: '😐',
 		concerned: '😟',
@@ -20,17 +22,34 @@
 	};
 
 	const hasAdvanceCondition = $derived(segment.advanceCondition !== undefined);
+
+	function getCharacterColor(name: string) {
+		const char = characters.find((c) => c.name === name);
+		if (char) return char.color;
+
+		// Fallback for default characters if not in list (though they should be)
+		if (name === 'Zoey') return 'var(--pink-3)';
+		if (name === 'Jonas') return 'var(--blue-3)';
+		if (name === 'Guide') return 'var(--teal-3)';
+		return 'var(--surface-3)';
+	}
+
+	function getCharacterAvatar(name: string) {
+		const char = characters.find((c) => c.name === name);
+		if (char) return char.avatar;
+
+		if (name === 'Zoey') return 'Z';
+		if (name === 'Jonas') return 'J';
+		if (name === 'Guide') return 'Bot';
+		return name[0];
+	}
 </script>
 
-<div class="instruction-bar" transition:fly={{ y: -20, duration: 300 }}>
+<div class="instruction-bar">
 	<div class="instruction-content">
 		<div class="character-portrait" data-character={segment.speaker}>
-			<div class="avatar">
-				{#if segment.speaker === 'Guide'}
-					<Bot size={24} />
-				{:else}
-					{segment.speaker[0]}
-				{/if}
+			<div class="avatar" style:background-color={getCharacterColor(segment.speaker)}>
+				<Avatar value={getCharacterAvatar(segment.speaker) || '?'} size={24} />
 				{#if segment.emotion}
 					<div class="emotion-badge" title={segment.emotion}>
 						{emotions[segment.emotion] || ''}
@@ -94,37 +113,7 @@
 		border: 2px solid white;
 		box-shadow: var(--shadow-2);
 		position: relative;
-	}
-
-	.emotion-badge {
-		position: absolute;
-		bottom: -2px;
-		right: -2px;
-		width: 20px;
-		height: 20px;
-		background-color: white;
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: var(--font-size-1);
-		box-shadow: var(--shadow-1);
-		border: 1px solid var(--surface-2);
-	}
-
-	.character-portrait[data-character='Zoey'] .avatar {
-		background-color: var(--pink-3);
-		color: var(--pink-9);
-	}
-
-	.character-portrait[data-character='Jonas'] .avatar {
-		background-color: var(--blue-3);
-		color: var(--blue-9);
-	}
-
-	.character-portrait[data-character='Guide'] .avatar {
-		background-color: var(--teal-3);
-		color: var(--teal-9);
+		line-height: 1;
 	}
 
 	.content {
@@ -188,5 +177,27 @@
 
 	.next-btn:active {
 		transform: scale(0.95);
+	}
+
+	.avatar:hover {
+		transform: scale(1.05);
+	}
+
+	.emotion-badge {
+		position: absolute;
+		bottom: -2px;
+		right: -2px;
+		width: 20px;
+		height: 20px;
+		background-color: white;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: var(--font-size-1);
+		box-shadow: var(--shadow-1);
+		border: 1px solid var(--surface-2);
+		padding: 0;
+		line-height: 1;
 	}
 </style>

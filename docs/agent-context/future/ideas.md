@@ -9,11 +9,6 @@
 
 - **PXT / MakeCode Integration**: Use Microsoft's PXT (Programming Experience Toolkit) as the underlying engine. This would allow us to support the "Kinetic Architect" persona by providing a robust Blocks-to-TypeScript bridge out of the box. It handles the AST, block rendering, and compilation.
 
-## Hint System Conditions
-- **Program Analysis**: We need a robust way to analyze the user's program to give specific hints (e.g., "You're missing a turn", "Your loop is too short").
-  - Consider a "Program Query Language" or simple pattern matching.
-  - Triggers: `missing-block`, `has-block`, `program-length`, `pattern-match`.
-
 ## Improvements Suggested by the Kids
 
 - [ ] **Boat**: A boat that allows the character to cross water tiles. (Suggested by Zoey)
@@ -31,7 +26,6 @@ A "Kit of Parts" approach to custom terrain to ensure "Modern Matte" consistency
 - [ ] **Difficulty Indicators**: Show difficulty level on the level overlay/card.
 - [ ] **Selectable Icons**: Allow choosing an icon for the level.
 - [ ] **Speaker Avatars**: Show avatars for speakers in the story/dialogue system.
-- [ ] **Tutorial Builder**: Support for highlighting specific blocks or grid cells in the builder to create guided tutorials.
 - [ ] **Level Packs**: Group levels into packs/campaigns.
 - [ ] **Publishing**: A way to share levels (maybe a simple file-based repo or lightweight backend).
 - [ ] **Feedback Button**: A way for players to send feedback to level creators (e.g., "Too hard", "Fun!", "Broken").
@@ -39,5 +33,8 @@ A "Kit of Parts" approach to custom terrain to ensure "Modern Matte" consistency
 ## Mechanics & Blocks
 - [ ] **Hazard Block**: A block that kills the player on contact (like a spike or fire).
 - [ ] **Lives System**: A mechanic where the player has a limited number of lives. Walking into a hazard loses a life. This adds a "survival" challenge to levels.
+
+## Storage & Persistence
+- [ ] **OPFS for Level Storage**: Use the Origin Private File System (OPFS) to store user-created levels locally in the browser. This provides a more robust and performant storage solution than localStorage, especially for larger levels or assets.
 
 

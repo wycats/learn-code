@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { CellType } from '$lib/game/types';
-	import { Star, BrickWall } from 'lucide-svelte';
+	import { Star, BrickWall, Trees, Waves, Snowflake, Mountain, Leaf, Sun } from 'lucide-svelte';
 
 	interface Props {
 		type: CellType;
@@ -25,6 +25,30 @@
 		<div class="wall-marker">
 			<BrickWall size={28} color="var(--stone-6)" />
 		</div>
+	{:else if type === 'forest'}
+		<div class="marker">
+			<Trees size={24} color="var(--green-3)" />
+		</div>
+	{:else if type === 'sand'}
+		<div class="marker">
+			<Sun size={24} color="var(--orange-4)" />
+		</div>
+	{:else if type === 'water'}
+		<div class="marker">
+			<Waves size={24} color="var(--blue-5)" />
+		</div>
+	{:else if type === 'snow'}
+		<div class="marker">
+			<Snowflake size={24} color="var(--blue-2)" />
+		</div>
+	{:else if type === 'dirt'}
+		<div class="marker">
+			<Mountain size={24} color="var(--orange-7)" />
+		</div>
+	{:else if type === 'grass'}
+		<div class="marker">
+			<Leaf size={20} color="var(--green-4)" style="opacity: 0.5" />
+		</div>
 	{/if}
 </div>
 
@@ -44,6 +68,22 @@
 		background-color: var(--green-2);
 	}
 
+	.cell[data-type='forest'] {
+		background-color: var(--green-8);
+	}
+
+	.cell[data-type='sand'] {
+		background-color: var(--yellow-2);
+	}
+
+	.cell[data-type='snow'] {
+		background-color: var(--gray-1);
+	}
+
+	.cell[data-type='dirt'] {
+		background-color: var(--orange-3);
+	}
+
 	.cell[data-type='water'] {
 		background-color: var(--blue-3);
 	}
@@ -59,7 +99,8 @@
 		border: 2px solid var(--yellow-5);
 	}
 
-	.goal-marker {
+	.goal-marker,
+	.marker {
 		display: grid;
 		place-items: center;
 	}

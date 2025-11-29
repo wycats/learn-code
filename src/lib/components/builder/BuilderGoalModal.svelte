@@ -41,9 +41,9 @@
 						title="Target number of blocks for 3 stars"
 					/>
 					<span>blocks</span>
-					
+
 					<span class="separator">•</span>
-					
+
 					<span>Limit:</span>
 					<input
 						type="number"
@@ -77,6 +77,21 @@
 						onchange={() => builder.syncGame()}
 						title="Grid Height"
 					/>
+				</div>
+
+				<div class="hint-row">
+					<span>Biome:</span>
+					<select
+						class="biome-select"
+						bind:value={builder.level.defaultTerrain}
+						onchange={() => builder.syncGame()}
+					>
+						<option value="grass">Grass</option>
+						<option value="sand">Sand</option>
+						<option value="snow">Snow</option>
+						<option value="forest">Forest</option>
+						<option value="dirt">Dirt</option>
+					</select>
 				</div>
 			</div>
 			<button class="btn-primary" onclick={onClose}>
@@ -188,6 +203,15 @@
 		border-radius: var(--radius-1);
 		padding: var(--size-1);
 		background-color: var(--surface-1);
+	}
+
+	.biome-select {
+		background-color: var(--surface-1);
+		border: 1px solid var(--surface-3);
+		color: var(--text-1);
+		padding: var(--size-1) var(--size-2);
+		border-radius: var(--radius-1);
+		font-size: var(--font-size-1);
 	}
 
 	.btn-primary {

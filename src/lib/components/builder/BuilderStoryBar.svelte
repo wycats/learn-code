@@ -1,8 +1,20 @@
 <script lang="ts">
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
 	import type { StorySegment } from '$lib/game/types';
-	import { ArrowRight, Bot, Trash2, Plus, ChevronLeft, ChevronRight, List, X } from 'lucide-svelte';
+	import {
+		ArrowRight,
+		Trash2,
+		Plus,
+		ChevronLeft,
+		ChevronRight,
+		List,
+		X,
+		Edit,
+		Settings2
+	} from 'lucide-svelte';
 	import { fly, fade } from 'svelte/transition';
+	import StoryConfigModal from './StoryConfigModal.svelte';
+	import Avatar from '$lib/components/game/Avatar.svelte';
 
 	interface Props {
 		builder: BuilderModel;
@@ -10,22 +22,58 @@
 
 	let { builder }: Props = $props();
 	let isExpanded = $state(false);
+	let isConfigOpen = $state(false);
+	let configTab = $state<'characters' | 'emotions'>('characters');
+	let dialog: HTMLDialogElement;
+	let charPopover = $state<HTMLElement>();
+	let emotionPopover = $state<HTMLElement>();
+
+	const defaultCharacters = [
+		{ id: 'Zoey', name: 'Zoey', color: 'var(--pink-3)', avatar: 'Z' },
+		{ id: 'Jonas', name: 'Jonas', color: 'var(--blue-3)', avatar: 'J' },
+		{ id: 'Guide', name: 'Guide', color: 'var(--teal-3)', avatar: 'Bot' },
+		{ id: 'System', name: 'System', color: 'var(--surface-3)', avatar: 'S' }
+	];
+
+	const defaultEmotions = [
+		{ id: 'neutral', name: 'Neutral', icon: '😐' },
+		{ id: 'happy', name: 'Happy', icon: '😊' },
+		{ id: 'concerned', name: 'Concerned', icon: '😟' },
+		{ id: 'excited', name: 'Excited', icon: '🤩' },
+		{ id: 'thinking', name: 'Thinking', icon: '🤔' },
+		{ id: 'celebrating', name: 'Celebrating', icon: '🥳' }
+	];
+
+	let characters = $derived(builder.level.characters || defaultCharacters);
+	let emotions = $derived(builder.level.emotions || defaultEmotions);
+
+	$effect(() => {
+		if (isExpanded) {
+			dialog?.showPopover();
+		} else {
+			dialog?.hidePopover();
+		}
+	});
 
 	// Helper to find segment index and list
 	function findSegment(): { list: 'intro' | 'outro'; index: number; segment: StorySegment } | null {
 		if (!builder.activeSegmentId) return null;
-		
-		const introIndex = builder.level.intro?.findIndex(s => s.id === builder.activeSegmentId) ?? -1;
-		if (introIndex !== -1) return { list: 'intro', index: introIndex, segment: builder.level.intro![introIndex] };
-		
-		const outroIndex = builder.level.outro?.findIndex(s => s.id === builder.activeSegmentId) ?? -1;
-		if (outroIndex !== -1) return { list: 'outro', index: outroIndex, segment: builder.level.outro![outroIndex] };
-		
+
+		const introIndex =
+			builder.level.intro?.findIndex((s) => s.id === builder.activeSegmentId) ?? -1;
+		if (introIndex !== -1)
+			return { list: 'intro', index: introIndex, segment: builder.level.intro![introIndex] };
+
+		const outroIndex =
+			builder.level.outro?.findIndex((s) => s.id === builder.activeSegmentId) ?? -1;
+		if (outroIndex !== -1)
+			return { list: 'outro', index: outroIndex, segment: builder.level.outro![outroIndex] };
+
 		return null;
 	}
 
 	let current = $derived(findSegment());
-	
+
 	function nextSegment() {
 		if (!current) return;
 		const list = current.list === 'intro' ? builder.level.intro : builder.level.outro;
@@ -50,7 +98,7 @@
 			text: '',
 			emotion: 'neutral'
 		};
-		
+
 		if (current.list === 'intro') {
 			const newIntro = [...(builder.level.intro || [])];
 			newIntro.splice(current.index + 1, 0, newSegment);
@@ -60,12 +108,17 @@
 			newOutro.splice(current.index + 1, 0, newSegment);
 			builder.level.outro = newOutro;
 		}
-		
+
 		builder.activeSegmentId = newSegment.id!;
 	}
 
 	function addSegment(list: 'intro' | 'outro') {
-		const newSegment = { id: crypto.randomUUID(), speaker: 'System', text: '', emotion: 'neutral' } as const;
+		const newSegment = {
+			id: crypto.randomUUID(),
+			speaker: 'System',
+			text: '',
+			emotion: 'neutral'
+		} as const;
 		if (list === 'intro') {
 			builder.level.intro = [...(builder.level.intro || []), newSegment];
 		} else {
@@ -76,9 +129,9 @@
 
 	function deleteSegment() {
 		if (!current) return;
-		
+
 		if (current.list === 'intro') {
-			builder.level.intro = builder.level.intro?.filter(s => s.id !== builder.activeSegmentId);
+			builder.level.intro = builder.level.intro?.filter((s) => s.id !== builder.activeSegmentId);
 			// Select previous or next if available
 			if (builder.level.intro?.length) {
 				builder.activeSegmentId = builder.level.intro[Math.max(0, current.index - 1)].id!;
@@ -86,7 +139,7 @@
 				builder.activeSegmentId = null; // No segments left
 			}
 		} else {
-			builder.level.outro = builder.level.outro?.filter(s => s.id !== builder.activeSegmentId);
+			builder.level.outro = builder.level.outro?.filter((s) => s.id !== builder.activeSegmentId);
 			if (builder.level.outro?.length) {
 				builder.activeSegmentId = builder.level.outro[Math.max(0, current.index - 1)].id!;
 			} else {
@@ -95,41 +148,65 @@
 		}
 	}
 
-	function cycleSpeaker() {
+	function setSpeaker(name: string) {
 		if (!current) return;
-		const speakers = ['System', 'Zoey', 'Jonas', 'Guide'] as const;
-		const idx = speakers.indexOf(current.segment.speaker);
-		current.segment.speaker = speakers[(idx + 1) % speakers.length];
+		current.segment.speaker = name;
+		charPopover?.hidePopover();
 	}
 
-	function cycleEmotion() {
+	function setEmotion(emotionId: string) {
 		if (!current) return;
-		const emotions = ['neutral', 'happy', 'concerned', 'excited', 'thinking', 'celebrating'] as const;
-		const idx = emotions.indexOf(current.segment.emotion || 'neutral');
-		current.segment.emotion = emotions[(idx + 1) % emotions.length];
+		current.segment.emotion = emotionId;
+		emotionPopover?.hidePopover();
 	}
 
 	function selectSegment(id: string) {
 		builder.activeSegmentId = id;
 		// Optional: Close expanded view on select?
-		// isExpanded = false; 
+		// isExpanded = false;
 	}
 
-	const emotionsMap = {
-		happy: '😊',
-		neutral: '😐',
-		concerned: '😟',
-		excited: '🤩',
-		thinking: '🤔',
-		celebrating: '🥳'
-	};
+	function getCharacter(name: string) {
+		return (
+			characters.find((c) => c.name === name) ||
+			defaultCharacters.find((c) => c.name === name) || {
+				color: 'var(--surface-3)',
+				avatar: name[0]
+			}
+		);
+	}
+
+	function getEmotion(id: string) {
+		return (
+			emotions.find((e) => e.id === id) ||
+			defaultEmotions.find((e) => e.id === id) || { icon: '😐' }
+		);
+	}
+
+	function openConfig(tab: 'characters' | 'emotions') {
+		configTab = tab;
+		isConfigOpen = true;
+		charPopover?.hidePopover();
+		emotionPopover?.hidePopover();
+	}
 </script>
 
 <div class="story-bar-container">
+	<StoryConfigModal
+		{builder}
+		isOpen={isConfigOpen}
+		onClose={() => (isConfigOpen = false)}
+		initialTab={configTab}
+	/>
+
 	{#if current}
 		<div class="instruction-bar-editor" transition:fly={{ y: -20, duration: 300 }}>
 			<div class="editor-controls left">
-				<button class="nav-btn" onclick={() => isExpanded = !isExpanded} title="Toggle Timeline List">
+				<button
+					class="nav-btn"
+					onclick={() => (isExpanded = !isExpanded)}
+					title="Toggle Timeline List"
+				>
 					{#if isExpanded}
 						<X size={20} />
 					{:else}
@@ -137,40 +214,100 @@
 					{/if}
 				</button>
 				<div class="separator"></div>
-				<button class="nav-btn" onclick={prevSegment} disabled={current.index === 0} title="Previous Segment">
+				<button
+					class="nav-btn"
+					onclick={prevSegment}
+					disabled={current.index === 0}
+					title="Previous Segment"
+				>
 					<ChevronLeft size={20} />
 				</button>
 			</div>
 
 			<div class="instruction-content">
 				<div class="character-portrait" data-character={current.segment.speaker}>
-					<div class="avatar-container">
-						<button class="avatar" onclick={cycleSpeaker} title="Click to change speaker">
-							{#if current.segment.speaker === 'Guide'}
-								<Bot size={24} />
-							{:else}
-								{current.segment.speaker[0]}
-							{/if}
-						</button>
-						<button 
-							class="emotion-badge" 
-							onclick={(e) => { e.stopPropagation(); cycleEmotion(); }}
-							title="Click to change emotion"
+					<div class="avatar-container" style:anchor-name="--char-trigger">
+						<button
+							class="avatar"
+							popovertarget="character-popover"
+							title="Change speaker"
+							style:background-color={getCharacter(current.segment.speaker).color}
 						>
-							{emotionsMap[current.segment.emotion || 'neutral'] || ''}
+							<Avatar value={getCharacter(current.segment.speaker).avatar || '?'} size={24} />
 						</button>
+
+						<button
+							class="emotion-badge"
+							popovertarget="emotion-popover"
+							title="Change emotion"
+							style:anchor-name="--emo-trigger"
+						>
+							{getEmotion(current.segment.emotion || 'neutral').icon}
+						</button>
+					</div>
+
+					<!-- Character Popover -->
+					<div
+						id="character-popover"
+						bind:this={charPopover}
+						popover="auto"
+						class="selection-popover"
+					>
+						<div class="popover-list">
+							{#each characters as char}
+								<button
+									class="selection-item"
+									onclick={() => setSpeaker(char.name)}
+									title={char.name}
+								>
+									<div class="mini-avatar-circle" style:background-color={char.color}>
+										<Avatar value={char.avatar || '?'} size={14} />
+									</div>
+								</button>
+							{/each}
+						</div>
+						<div class="popover-footer">
+							<button
+								class="edit-btn"
+								title="Edit Characters"
+								onclick={() => openConfig('characters')}
+							>
+								<Settings2 size={14} />
+							</button>
+						</div>
+					</div>
+
+					<!-- Emotion Popover -->
+					<div
+						id="emotion-popover"
+						bind:this={emotionPopover}
+						popover="auto"
+						class="selection-popover emotion-popover"
+					>
+						<div class="popover-list">
+							{#each emotions as emo}
+								<button class="selection-item" onclick={() => setEmotion(emo.id)} title={emo.name}>
+									<span class="emoji">{emo.icon}</span>
+								</button>
+							{/each}
+						</div>
+						<div class="popover-footer">
+							<button class="edit-btn" title="Edit Emotions" onclick={() => openConfig('emotions')}>
+								<Settings2 size={14} />
+							</button>
+						</div>
 					</div>
 				</div>
 				<div class="content">
 					<div class="speaker-name">{current.segment.speaker}</div>
-					<textarea 
-						class="text-editor" 
-						bind:value={current.segment.text} 
+					<textarea
+						class="text-editor"
+						bind:value={current.segment.text}
 						rows="2"
 						placeholder="Enter dialogue..."
 					></textarea>
 				</div>
-				
+
 				<div class="segment-actions">
 					<button class="action-btn add" onclick={addSegmentAfter} title="Add Segment After">
 						<Plus size={16} />
@@ -182,7 +319,15 @@
 			</div>
 
 			<div class="editor-controls right">
-				<button class="nav-btn" onclick={nextSegment} disabled={(current.list === 'intro' ? builder.level.intro?.length : builder.level.outro?.length) === current.index + 1} title="Next Segment">
+				<button
+					class="nav-btn"
+					onclick={nextSegment}
+					disabled={(current.list === 'intro'
+						? builder.level.intro?.length
+						: builder.level.outro?.length) ===
+						current.index + 1}
+					title="Next Segment"
+				>
 					<ChevronRight size={20} />
 				</button>
 			</div>
@@ -198,7 +343,7 @@
 				{:else}
 					<p class="text-2">Select a segment to edit or add a new one.</p>
 					<div class="actions">
-						<button class="btn-secondary" onclick={() => isExpanded = true}>
+						<button class="btn-secondary" onclick={() => (isExpanded = true)}>
 							<List size={16} /> View Timeline
 						</button>
 						<button class="btn-primary" onclick={() => addSegment('intro')}>
@@ -207,9 +352,13 @@
 					</div>
 				{/if}
 			</div>
-			
+
 			<div class="editor-controls right">
-				<button class="nav-btn" onclick={() => isExpanded = !isExpanded} title="Toggle Timeline List">
+				<button
+					class="nav-btn"
+					onclick={() => (isExpanded = !isExpanded)}
+					title="Toggle Timeline List"
+				>
 					{#if isExpanded}
 						<X size={20} />
 					{:else}
@@ -220,18 +369,28 @@
 		</div>
 	{/if}
 
-	{#if isExpanded}
-		<div class="timeline-popover" transition:fade={{ duration: 200 }}>
+	<dialog
+		bind:this={dialog}
+		class="timeline-dialog"
+		popover="manual"
+		ontoggle={(e) => {
+			if (e.newState === 'closed') isExpanded = false;
+		}}
+	>
+		<div class="timeline-popover">
 			<div class="timeline-column">
 				<h3>Intro</h3>
 				<div class="timeline-list">
 					{#each builder.level.intro || [] as segment, i}
-						<button 
-							class="timeline-item" 
+						<button
+							class="timeline-item"
 							class:active={builder.activeSegmentId === segment.id}
 							onclick={() => selectSegment(segment.id!)}
 						>
 							<span class="index">{i + 1}</span>
+							<div class="mini-avatar" data-character={segment.speaker}>
+								<Avatar value={getCharacter(segment.speaker).avatar || '?'} size={14} />
+							</div>
 							<div class="item-content">
 								<span class="speaker">{segment.speaker}</span>
 								<span class="preview">{segment.text || '(Empty)'}</span>
@@ -243,17 +402,20 @@
 					</button>
 				</div>
 			</div>
-			
+
 			<div class="timeline-column">
 				<h3>Outro</h3>
 				<div class="timeline-list">
 					{#each builder.level.outro || [] as segment, i}
-						<button 
-							class="timeline-item" 
+						<button
+							class="timeline-item"
 							class:active={builder.activeSegmentId === segment.id}
 							onclick={() => selectSegment(segment.id!)}
 						>
 							<span class="index">{i + 1}</span>
+							<div class="mini-avatar" data-character={segment.speaker}>
+								<Avatar value={getCharacter(segment.speaker).avatar || '?'} size={14} />
+							</div>
 							<div class="item-content">
 								<span class="speaker">{segment.speaker}</span>
 								<span class="preview">{segment.text || '(Empty)'}</span>
@@ -266,7 +428,7 @@
 				</div>
 			</div>
 		</div>
-	{/if}
+	</dialog>
 </div>
 
 <style>
@@ -275,9 +437,12 @@
 		width: 100%;
 		height: 100%;
 		z-index: 50;
+		display: grid;
+		grid-template-areas: 'stack';
 	}
 
 	.instruction-bar-editor {
+		grid-area: stack;
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -289,13 +454,29 @@
 		gap: var(--size-2);
 		position: relative;
 		z-index: 60; /* Above popover */
+		anchor-name: --story-bar;
+	}
+
+	.timeline-dialog {
+		position: fixed;
+		position-anchor: --story-bar;
+		top: anchor(bottom);
+		left: anchor(left);
+		right: anchor(right);
+		width: anchor-size(width);
+		margin: 0;
+		padding: 0;
+		border: none;
+		background: transparent;
+		max-width: none;
+		overflow: visible;
+	}
+
+	.timeline-dialog::backdrop {
+		background: transparent;
 	}
 
 	.timeline-popover {
-		position: absolute;
-		top: 100%;
-		left: 0;
-		right: 0;
 		height: 400px; /* Fixed height or max-height */
 		background-color: rgba(255, 255, 255, 0.95);
 		backdrop-filter: blur(10px);
@@ -306,7 +487,6 @@
 		gap: var(--size-4);
 		padding: var(--size-4);
 		overflow-y: auto;
-		z-index: 50;
 	}
 
 	.timeline-column {
@@ -355,11 +535,42 @@
 		box-shadow: var(--shadow-1);
 	}
 
+	.mini-avatar {
+		width: 24px;
+		height: 24px;
+		border-radius: var(--radius-round);
+		background-color: var(--surface-3);
+		display: grid;
+		place-items: center;
+		font-size: 10px;
+		font-weight: bold;
+		color: var(--text-2);
+		flex-shrink: 0;
+		border: 1px solid white;
+		box-shadow: var(--shadow-1);
+	}
+
+	.mini-avatar[data-character='Zoey'] {
+		background-color: var(--pink-3);
+		color: var(--pink-9);
+	}
+
+	.mini-avatar[data-character='Jonas'] {
+		background-color: var(--blue-3);
+		color: var(--blue-9);
+	}
+
+	.mini-avatar[data-character='Guide'] {
+		background-color: var(--teal-3);
+		color: var(--teal-9);
+	}
+
 	.item-content {
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
+		gap: 0;
 		overflow: hidden;
+		flex: 1;
 	}
 
 	.speaker {
@@ -367,6 +578,7 @@
 		font-weight: bold;
 		color: var(--text-3);
 		text-transform: uppercase;
+		line-height: 1.2;
 	}
 
 	.editor-controls {
@@ -426,6 +638,110 @@
 		height: 48px;
 	}
 
+	.selection-popover {
+		/* Reset UA styles */
+		margin: 0;
+		inset: auto;
+
+		position: fixed;
+		background-color: var(--surface-1);
+		border: 1px solid var(--surface-3);
+		border-radius: var(--radius-3);
+		box-shadow: var(--shadow-3);
+		padding: var(--size-1);
+		display: none;
+		flex-direction: column;
+		gap: var(--size-1);
+		min-width: 40px;
+		z-index: 100;
+	}
+
+	.selection-popover:popover-open {
+		display: flex;
+	}
+
+	#character-popover {
+		position-anchor: --char-trigger;
+		top: anchor(top);
+		left: anchor(right);
+		margin-left: var(--size-2);
+	}
+
+	#emotion-popover {
+		position-anchor: --emo-trigger;
+		top: anchor(top);
+		left: anchor(right);
+		margin-left: var(--size-2);
+	}
+
+	.popover-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-1);
+		max-height: 300px;
+		flex-wrap: wrap;
+	}
+
+	.selection-item {
+		background: none;
+		border: none;
+		padding: var(--size-1);
+		border-radius: var(--radius-round);
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: background-color 0.1s;
+		width: 40px;
+		height: 40px;
+	}
+
+	.selection-item:hover {
+		background-color: var(--surface-2);
+	}
+
+	.mini-avatar-circle {
+		width: 32px;
+		height: 32px;
+		border-radius: var(--radius-round);
+		display: grid;
+		place-items: center;
+		font-size: 12px;
+		font-weight: bold;
+		color: var(--text-2);
+		border: 1px solid white;
+		box-shadow: var(--shadow-1);
+	}
+
+	.emoji {
+		font-size: 24px;
+		line-height: 1;
+	}
+
+	.popover-footer {
+		border-top: 1px solid var(--surface-3);
+		padding-top: var(--size-1);
+		display: flex;
+		justify-content: center;
+	}
+
+	.edit-btn {
+		background: none;
+		border: none;
+		padding: var(--size-1);
+		border-radius: var(--radius-round);
+		cursor: pointer;
+		color: var(--text-3);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.edit-btn:hover {
+		background-color: var(--surface-2);
+		color: var(--text-1);
+	}
+
 	.avatar {
 		width: 100%;
 		height: 100%;
@@ -465,20 +781,8 @@
 		padding: 0;
 	}
 
-	.character-portrait[data-character='Zoey'] .avatar {
-		background-color: var(--pink-3);
-		color: var(--pink-9);
-	}
-
-	.character-portrait[data-character='Jonas'] .avatar {
-		background-color: var(--blue-3);
-		color: var(--blue-9);
-	}
-
-	.character-portrait[data-character='Guide'] .avatar {
-		background-color: var(--teal-3);
-		color: var(--teal-9);
-	}
+	/* Remove old character specific styles as we use dynamic colors now */
+	/* .character-portrait[data-character='Zoey'] .avatar { ... } */
 
 	.content {
 		flex: 1;
@@ -508,7 +812,8 @@
 		width: 100%;
 	}
 
-	.text-editor:hover, .text-editor:focus {
+	.text-editor:hover,
+	.text-editor:focus {
 		background-color: var(--surface-1);
 		border-color: var(--surface-3);
 	}

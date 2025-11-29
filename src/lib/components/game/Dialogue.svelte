@@ -11,7 +11,7 @@
 
 	let { segment, onNext }: Props = $props();
 
-	const emotions = {
+	const emotions: Record<string, string> = {
 		happy: '😊',
 		neutral: '😐',
 		concerned: '😟',

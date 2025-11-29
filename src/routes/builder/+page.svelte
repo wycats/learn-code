@@ -7,65 +7,69 @@
 	import BuilderStoryTrigger from '$lib/components/builder/BuilderStoryTrigger.svelte';
 	import BuilderGoalModal from '$lib/components/builder/BuilderGoalModal.svelte';
 	import BuilderToolbar from '$lib/components/builder/BuilderToolbar.svelte';
-	import InstructionBar from '$lib/components/game/InstructionBar.svelte';
-	import Tray from '$lib/components/game/Tray.svelte';
+	import Game from '$lib/components/game/Game.svelte';
 	import { GameModel } from '$lib/game/model.svelte';
 	import { LEVELS } from '$lib/game/levels';
+	import { fly, fade } from 'svelte/transition';
 
 	// Initialize with a default empty level
 	let builder = $state(new BuilderModel());
 	let showSettings = $state(false);
+
+	onMount(() => {
+		builder.init();
+	});
 
 	// We need a GameModel to render the Grid.
 	// The BuilderModel will maintain a live GameModel instance that reflects the current edit state.
 	let game = $derived(builder.game);
 </script>
 
-<div class="builder-interface">
-	<BuilderToolbar 
-		{builder} 
-		{showSettings} 
-		onToggleSettings={() => showSettings = !showSettings} 
-	/>
+{#if builder.mode === 'test'}
+	<Game game={builder.game} architectMode={true} onExit={() => builder.setMode('edit')} />
+{:else}
+	<div class="builder-interface">
+		<BuilderToolbar
+			{builder}
+			{showSettings}
+			onToggleSettings={() => (showSettings = !showSettings)}
+		/>
 
-	<div class="workspace">
-		<div class="stage-area">
-			<div class="dashboard-area">
-				{#if builder.mode === 'story'}
-					<BuilderStoryBar {builder} />
-				{:else if builder.mode === 'edit'}
-					<BuilderStoryTrigger {builder} />
+		<div class="workspace">
+			<div class="stage-area">
+				<div class="dashboard-area">
+					{#if builder.mode === 'story'}
+						<BuilderStoryBar {builder} />
+					{:else if builder.mode === 'edit'}
+						<BuilderStoryTrigger {builder} />
+					{/if}
+				</div>
+
+				<div class="grid-container">
+					<Grid
+						{game}
+						isBuilder={true}
+						selectedActor={builder.selectedActor}
+						onCellClick={(pos) => builder.handleCellClick(pos)}
+						onRotateStart={() => builder.rotateStartActor()}
+						onActorDrop={() => builder.selectActor(null)}
+						onActorSelect={(actor) => builder.selectActor(actor)}
+					/>
+				</div>
+
+				{#if showSettings}
+					<div class="settings-overlay">
+						<BuilderGoalModal {builder} onClose={() => (showSettings = false)} />
+					</div>
 				{/if}
 			</div>
 
-			<div class="grid-container">
-				<Grid 
-					{game} 
-					isBuilder={builder.mode === 'edit'} 
-					selectedActor={builder.selectedActor}
-					onCellClick={(pos) => builder.handleCellClick(pos)} 
-					onRotateStart={() => builder.rotateStartActor()}
-					onActorDrop={() => builder.selectActor(null)}
-					onActorSelect={(actor) => builder.selectActor(actor)}
-				/>
-			</div>
-
-			{#if showSettings}
-				<div class="settings-overlay">
-					<BuilderGoalModal {builder} onClose={() => showSettings = false} />
-				</div>
-			{/if}
-		</div>
-		
-		<div class="tray-area">
-			{#if builder.mode === 'edit' || builder.mode === 'story'}
+			<div class="tray-area">
 				<BuilderTray {builder} />
-			{:else}
-				<Tray {game} />
-			{/if}
+			</div>
 		</div>
 	</div>
-</div>
+{/if}
 
 <style>
 	.builder-interface {
@@ -98,6 +102,18 @@
 		display: grid;
 		place-items: center;
 		z-index: 10;
+		grid-template-columns: 1fr;
+		grid-template-rows: 1fr;
+		grid-template-areas: 'layer';
+	}
+
+	.dashboard-layer {
+		grid-area: layer;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 
 	.grid-container {

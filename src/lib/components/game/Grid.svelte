@@ -16,7 +16,15 @@
 		onRotateStart?: () => void;
 	}
 
-	let { game, isBuilder = false, selectedActor = null, onCellClick, onActorSelect, onActorDrop, onRotateStart }: Props = $props();
+	let {
+		game,
+		isBuilder = false,
+		selectedActor = null,
+		onCellClick,
+		onActorSelect,
+		onActorDrop,
+		onRotateStart
+	}: Props = $props();
 
 	let isDragging = $state(false);
 	let dragStartPos = $state<GridPosition | null>(null);
@@ -24,7 +32,7 @@
 
 	function handleMouseDown(x: number, y: number) {
 		if (!isBuilder) return;
-		
+
 		// Check if clicking on goal
 		if (game.level.goal.x === x && game.level.goal.y === y) {
 			onActorSelect?.('goal');
@@ -35,7 +43,8 @@
 
 		if (selectedActor) {
 			// If we are placing an existing selection, record start pos
-			dragStartPos = selectedActor === 'start' ? { ...game.characterPosition } : { ...game.level.goal };
+			dragStartPos =
+				selectedActor === 'start' ? { ...game.characterPosition } : { ...game.level.goal };
 		}
 
 		isDragging = true;
@@ -61,11 +70,11 @@
 	function handleCharacterMouseDown(e: MouseEvent) {
 		if (!isBuilder) return;
 		e.stopPropagation(); // Prevent cell click
-		
+
 		dragStartPos = { ...game.characterPosition };
 		isDragging = true;
 
-		// Only select if not already selected. 
+		// Only select if not already selected.
 		// If already selected, we wait for mouseup to determine if it's a click (rotate) or drag.
 		if (selectedActor !== 'start') {
 			onActorSelect?.('start');
@@ -81,7 +90,7 @@
 		for (let y = 0; y < height; y++) {
 			for (let x = 0; x < width; x++) {
 				const key = `${x},${y}`;
-				const type = game.level.layout[key] || 'grass';
+				const type = game.level.layout[key] || game.level.defaultTerrain || 'grass';
 
 				// Check if this is the goal position
 				const isGoal = game.level.goal.x === x && game.level.goal.y === y;
@@ -144,11 +153,14 @@
 		tabindex="0"
 	>
 		<Character direction={game.characterOrientation} {game} />
-		
+
 		{#if isBuilder && (selectedActor === 'start' || isHoveringCharacter)}
-			<button 
+			<button
 				class="rotate-handle"
-				onmousedown={(e) => { e.stopPropagation(); onRotateStart?.(); }}
+				onmousedown={(e) => {
+					e.stopPropagation();
+					onRotateStart?.();
+				}}
 				transition:fade={{ duration: 150 }}
 				title="Rotate Character"
 			>

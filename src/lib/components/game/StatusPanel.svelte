@@ -10,7 +10,7 @@
 	let { game }: Props = $props();
 </script>
 
-<div class="status-panel" in:fade={{ duration: 300, delay: 150 }}>
+<div class="status-panel">
 	{#if game.status === 'running'}
 		<div class="status-content running">
 			<div class="icon-wrapper">

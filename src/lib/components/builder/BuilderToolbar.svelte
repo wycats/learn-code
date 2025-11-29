@@ -1,21 +1,30 @@
 <script lang="ts">
 	import type { BuilderModel, BuilderTool } from '$lib/game/builder-model.svelte';
-	import { 
-		Play, 
-		SquarePen, 
-		Download, 
-		Upload, 
-		RotateCw, 
-		RefreshCcw, 
+	import {
+		Play,
+		SquarePen,
+		Download,
+		Upload,
+		RotateCw,
+		RefreshCcw,
 		Settings,
 		Box,
 		MapPin,
 		Eraser,
 		Star,
 		ChevronDown,
-		Bot
+		Bot,
+		Save,
+		FolderOpen,
+		Plus,
+		Trees,
+		Snowflake,
+		Mountain,
+		Sun,
+		Leaf
 	} from 'lucide-svelte';
 	import { fade, fly } from 'svelte/transition';
+	import PackManagerModal from './PackManagerModal.svelte';
 
 	interface Props {
 		builder: BuilderModel;
@@ -25,18 +34,34 @@
 
 	let { builder, showSettings, onToggleSettings }: Props = $props();
 
-	let isTerrainPickerOpen = $state(false);
+	let pickerPopover = $state<HTMLElement>();
+	let showPackManager = $state(false);
 
 	// Terrain tools (grouped)
-	const terrainTools: { id: string; tool: BuilderTool; icon: any; label: string; color?: string }[] = [
+	const terrainTools: {
+		id: string;
+		tool: BuilderTool;
+		icon: any;
+		label: string;
+		color?: string;
+	}[] = [
 		{ id: 'wall', tool: { type: 'terrain', value: 'wall' }, icon: Box, label: 'Wall' },
 		{ id: 'water', tool: { type: 'terrain', value: 'water' }, icon: Box, label: 'Water' },
+		{ id: 'grass', tool: { type: 'terrain', value: 'grass' }, icon: Leaf, label: 'Grass' },
+		{ id: 'forest', tool: { type: 'terrain', value: 'forest' }, icon: Trees, label: 'Forest' },
+		{ id: 'sand', tool: { type: 'terrain', value: 'sand' }, icon: Sun, label: 'Sand' },
+		{ id: 'snow', tool: { type: 'terrain', value: 'snow' }, icon: Snowflake, label: 'Snow' },
+		{ id: 'dirt', tool: { type: 'terrain', value: 'dirt' }, icon: Mountain, label: 'Dirt' }
 	];
 
 	// Special tools (top level)
-	const specialTools: { id: string; tool: BuilderTool; icon: any; label: string; color?: string }[] = [
-		{ id: 'grass', tool: { type: 'terrain', value: 'grass' }, icon: Eraser, label: 'Erase' },
-	];
+	const specialTools: {
+		id: string;
+		tool: BuilderTool;
+		icon: any;
+		label: string;
+		color?: string;
+	}[] = [{ id: 'erase', tool: { type: 'erase' }, icon: Eraser, label: 'Erase' }];
 
 	// Determine which terrain tool is "active" in the picker (last selected or default)
 	let activeTerrainTool = $state(terrainTools[0]);
@@ -45,8 +70,10 @@
 	// Update activeTerrainTool when builder.activeTool changes to a terrain type
 	$effect(() => {
 		const tool = builder.activeTool;
-		if (tool.type === 'terrain' && tool.value !== 'grass') {
-			const found = terrainTools.find(t => t.tool.type === 'terrain' && t.tool.value === tool.value);
+		if (tool.type === 'terrain') {
+			const found = terrainTools.find(
+				(t) => t.tool.type === 'terrain' && t.tool.value === tool.value
+			);
 			if (found) activeTerrainTool = found;
 		}
 	});
@@ -62,12 +89,12 @@
 	function selectTool(tool: BuilderTool) {
 		builder.activeTool = tool;
 		builder.selectedActor = null;
-		isTerrainPickerOpen = false;
+		pickerPopover?.hidePopover();
 	}
 
 	function handleMainPickerClick() {
 		if (isToolActive(activeTerrainTool.tool)) {
-			isTerrainPickerOpen = !isTerrainPickerOpen;
+			pickerPopover?.togglePopover();
 		} else {
 			selectTool(activeTerrainTool.tool);
 		}
@@ -126,19 +153,56 @@
 		};
 		input.click();
 	}
+
+	async function savePack() {
+		try {
+			await builder.save();
+			// Optional: toast notification
+		} catch (e) {
+			alert('Failed to save pack');
+		}
+	}
 </script>
+
+{#if showPackManager}
+	<PackManagerModal {builder} onClose={() => (showPackManager = false)} />
+{/if}
 
 <div class="toolbar">
 	<div class="left-group">
 		<div class="actions">
-			<button class="action-btn" onclick={importLevel} title="Import Level">
-				<Upload size={20} />
+			<button class="action-btn" onclick={() => (showPackManager = true)} title="Open Pack Manager">
+				<FolderOpen size={20} />
 			</button>
-			<button class="action-btn" onclick={exportLevel} title="Export Level">
-				<Download size={20} />
+			<button class="action-btn" onclick={savePack} title="Save Pack">
+				<Save size={20} />
 			</button>
+
 			<div class="separator"></div>
-			<button class="action-btn" class:active={showSettings} onclick={onToggleSettings} title="Level Settings">
+
+			<div class="level-controls">
+				<select
+					class="level-select"
+					value={builder.level.id}
+					onchange={(e) => builder.switchLevel(e.currentTarget.value)}
+				>
+					{#each builder.pack.levels as level}
+						<option value={level.id}>{level.name}</option>
+					{/each}
+				</select>
+				<button class="action-btn" onclick={() => builder.createNewLevel()} title="New Level">
+					<Plus size={18} />
+				</button>
+			</div>
+
+			<div class="separator"></div>
+
+			<button
+				class="action-btn"
+				class:active={showSettings}
+				onclick={onToggleSettings}
+				title="Level Settings"
+			>
 				<Settings size={20} />
 			</button>
 		</div>
@@ -147,36 +211,40 @@
 			<div class="separator"></div>
 			<div class="tools-group">
 				<!-- Terrain Picker -->
-				<div class="tool-picker-container" class:active={isToolActive(activeTerrainTool.tool)}>
-					<button 
-						class="tool-btn picker-btn" 
+				<div
+					class="tool-picker-container"
+					class:active={isToolActive(activeTerrainTool.tool)}
+					style:anchor-name="--terrain-trigger"
+				>
+					<button
+						class="tool-btn picker-btn"
 						onclick={handleMainPickerClick}
 						title={activeTerrainTool.label}
 					>
 						<ActiveIcon size={20} />
 						<span class="tool-label">{activeTerrainTool.label}</span>
 					</button>
-					<button 
-						class="picker-trigger"
-						onclick={(e) => { e.stopPropagation(); isTerrainPickerOpen = !isTerrainPickerOpen; }}
-					>
+					<button class="picker-trigger" popovertarget="terrain-picker-popover">
 						<ChevronDown size={14} />
 					</button>
 
-					{#if isTerrainPickerOpen}
-						<div class="tool-popover" transition:fly={{ y: 10, duration: 200 }}>
-							{#each terrainTools as { id, tool, icon: Icon, label, color }}
-								<button
-									class="tool-option"
-									class:active={isToolActive(tool)}
-									onclick={() => selectTool(tool)}
-								>
-									<Icon size={20} />
-									<span>{label}</span>
-								</button>
-							{/each}
-						</div>
-					{/if}
+					<div
+						id="terrain-picker-popover"
+						bind:this={pickerPopover}
+						popover="auto"
+						class="tool-popover"
+					>
+						{#each terrainTools as { id, tool, icon: Icon, label, color }}
+							<button
+								class="tool-option"
+								class:active={isToolActive(tool)}
+								onclick={() => selectTool(tool)}
+							>
+								<Icon size={20} />
+								<span>{label}</span>
+							</button>
+						{/each}
+					</div>
 				</div>
 
 				<!-- Special Tools -->
@@ -221,10 +289,6 @@
 		</button>
 	</div>
 </div>
-
-{#if isTerrainPickerOpen}
-	<button class="backdrop" onclick={() => isTerrainPickerOpen = false} transition:fade={{ duration: 100 }} aria-label="Close picker"></button>
-{/if}
 
 <style>
 	.toolbar {
@@ -359,7 +423,7 @@
 		background: transparent;
 		color: inherit;
 	}
-	
+
 	.picker-btn:hover {
 		background-color: transparent;
 	}
@@ -383,19 +447,29 @@
 	}
 
 	.tool-popover {
-		position: absolute;
-		top: calc(100% + var(--size-2));
-		left: 0;
+		/* Reset UA styles */
+		margin: 0;
+		inset: auto;
+
+		position: fixed;
+		position-anchor: --terrain-trigger;
+		top: anchor(bottom);
+		left: anchor(left);
+		margin-top: var(--size-2);
+
 		background-color: var(--surface-1);
 		border: 1px solid var(--surface-3);
 		border-radius: var(--radius-2);
 		box-shadow: var(--shadow-3);
 		padding: var(--size-1);
-		display: flex;
+		display: none;
 		flex-direction: column;
 		gap: var(--size-1);
 		min-width: 150px;
-		z-index: 101;
+	}
+
+	.tool-popover:popover-open {
+		display: flex;
 	}
 
 	.tool-option {
@@ -446,14 +520,19 @@
 		gap: var(--size-1);
 	}
 
-	.backdrop {
-		position: fixed;
-		inset: 0;
-		z-index: 99;
-		background: transparent;
-		border: none;
-		cursor: default;
-		width: 100%;
-		height: 100%;
+	.level-controls {
+		display: flex;
+		align-items: center;
+		gap: var(--size-1);
+	}
+
+	.level-select {
+		background-color: var(--surface-1);
+		border: 1px solid var(--surface-3);
+		color: var(--text-1);
+		padding: var(--size-1) var(--size-2);
+		border-radius: var(--radius-2);
+		font-size: var(--font-size-1);
+		max-width: 150px;
 	}
 </style>

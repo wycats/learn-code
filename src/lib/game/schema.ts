@@ -35,7 +35,7 @@ export const GridPositionSchema = z.object({
 });
 export type GridPosition = z.infer<typeof GridPositionSchema>;
 
-export const CellTypeSchema = z.enum(['grass', 'water', 'wall', 'goal']);
+export const CellTypeSchema = z.enum(['grass', 'water', 'wall', 'goal', 'sand', 'snow', 'forest', 'dirt']);
 export type CellType = z.infer<typeof CellTypeSchema>;
 
 export const CellSchema = z.object({
@@ -47,12 +47,27 @@ export type Cell = z.infer<typeof CellSchema>;
 export const GameStatusSchema = z.enum(['planning', 'running', 'won', 'lost', 'story', 'goal']);
 export type GameStatus = z.infer<typeof GameStatusSchema>;
 
+export const CharacterSchema = z.object({
+	id: z.string(),
+	name: z.string(),
+	color: z.string(),
+	avatar: z.string().optional()
+});
+export type Character = z.infer<typeof CharacterSchema>;
+
+export const EmotionSchema = z.object({
+	id: z.string(),
+	name: z.string(),
+	icon: z.string()
+});
+export type Emotion = z.infer<typeof EmotionSchema>;
+
 export const StorySegmentSchema = z.object({
 	id: z.string().optional(),
-	speaker: z.enum(['Zoey', 'Jonas', 'System', 'Guide']),
+	speaker: z.string(),
 	text: z.string(),
 	audioId: z.string().optional(),
-	emotion: z.enum(['happy', 'neutral', 'concerned', 'excited', 'thinking', 'celebrating']).optional(),
+	emotion: z.string().optional(),
 	highlight: z
 		.object({
 			target: z.string(), // e.g., 'block:move-forward', 'cell:2,2', 'ui:play-btn'
@@ -101,6 +116,7 @@ export const LevelDefinitionSchema = z.object({
 	start: GridPositionSchema,
 	startOrientation: DirectionSchema,
 	goal: GridPositionSchema,
+	defaultTerrain: CellTypeSchema.optional(),
 	layout: z.record(z.string(), CellTypeSchema), // Key is "x,y"
 	availableBlocks: z
 		.union([
@@ -126,6 +142,19 @@ export const LevelDefinitionSchema = z.object({
 	solutionPar: z.number().optional(),
 	intro: z.array(StorySegmentSchema).optional(),
 	outro: z.array(StorySegmentSchema).optional(),
-	hints: z.array(HintSchema).optional()
+	hints: z.array(HintSchema).optional(),
+	characters: z.array(CharacterSchema).optional(),
+	emotions: z.array(EmotionSchema).optional()
 });
 export type LevelDefinition = z.infer<typeof LevelDefinitionSchema>;
+
+export const LevelPackSchema = z.object({
+	id: z.string(),
+	name: z.string(),
+	description: z.string().optional(),
+	version: z.string().default('1.0.0'),
+	levels: z.array(LevelDefinitionSchema),
+	characters: z.array(CharacterSchema).optional(),
+	emotions: z.array(EmotionSchema).optional()
+});
+export type LevelPack = z.infer<typeof LevelPackSchema>;
