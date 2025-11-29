@@ -1,30 +1,27 @@
-# Task List: Phase 9 - The Tile Lab
+# Task List: Phase 10 - The Librarian
 
-- [x] **Data-Driven Terrain**
-  - [x] Update `src/lib/game/schema.ts` with `TileDefinition`.
-  - [x] Update `LevelSchema` to include `customTiles` registry.
-  - [x] Refactor `Grid.svelte` to use dynamic tile lookup.
-  - [x] Create default tile registry (migration for existing 'wall', 'water', etc.) - *Handled via backward compatibility in Cell.svelte*.
+- [x] **Data Architecture**
+  - [x] Define `LevelPackSchema` in `src/lib/game/schema.ts`.
+  - [x] Create `src/lib/game/packs/index.ts` registry.
+  - [x] Migrate Levels 1-8 into "The Basics" pack.
+  - [x] Create "The Gauntlet" pack with Level 9.
 
-- [x] **Mechanics**
-  - [x] Implement `Hazard` logic in `GameModel` (collision detection).
-  - [x] Implement `Ice` logic in `GameModel` (sliding movement).
-  - [ ] Add visual feedback for Hazard death (particle effect or animation).
+- [x] **Persistence**
+  - [x] Create `src/lib/game/progress.ts`.
+  - [x] Implement `saveLevelProgress` and `getPackProgress`.
+  - [x] Update `GameModel` to load/save from the new service.
 
-- [x] **Tile Designer UI**
-  - [x] Create `TileEditorModal.svelte`.
-  - [x] Implement Color Picker (using semantic tokens).
-  - [x] Implement Pattern Picker (SVG assets) - *Placeholder for now*.
-  - [x] Implement Decal Picker (Lucide icons).
-  - [x] Add "Manage Tiles" button to `BuilderTray`.
-  - [x] Refactor to use Native HTML APIs (`<dialog>`, `popover`).
+- [x] **UI Components**
+  - [x] Create `PackCard.svelte` (Cover, Title, Progress bar).
+  - [x] Create `LevelMap.svelte` (Visual path or grid of levels).
+  - [x] Create `CampaignShelf.svelte` (Container for packs).
 
-- [x] **Builder Integration**
-  - [x] Update `BuilderModel` to handle custom tile selection.
-  - [x] Ensure `drag-to-paint` works with custom tile IDs.
-  - [x] Update `Export/Import` to include custom tile definitions - *Automatic via Schema*.
-  - [x] Add custom tiles to `BuilderToolbar` selector.
+- [x] **Home Screen Overhaul**
+  - [x] Refactor `src/routes/+page.svelte`.
+  - [x] Implement "Continue Playing" hero section.
+  - [x] Implement Campaign browsing.
 
-- [x] **Content**
-  - [x] Create "The Gauntlet" demo level.
-  - [x] Verify backward compatibility with old levels.
+- [x] **Polish**
+  - [x] Add difficulty indicators to Level Cards.
+  - [ ] Add "New" badges for unlocked content.
+

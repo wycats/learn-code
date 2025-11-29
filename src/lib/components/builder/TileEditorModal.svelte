@@ -81,12 +81,7 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-<dialog
-	bind:this={dialog}
-	class="modal"
-	onclose={onClose}
-	onclick={handleBackdropClick}
->
+<dialog bind:this={dialog} class="modal" onclose={onClose} onclick={handleBackdropClick}>
 	<div class="modal-header">
 		<h2>{tile ? 'Edit Tile' : 'New Tile'}</h2>
 		<button class="close-btn" onclick={onClose} aria-label="Close">
@@ -112,11 +107,7 @@
 
 				<!-- Decal Satellite Trigger -->
 				<div class="satellite-container top-right">
-					<button
-						class="satellite-trigger"
-						popovertarget="decal-popover"
-						title="Change Icon"
-					>
+					<button class="satellite-trigger" popovertarget="decal-popover" title="Change Icon">
 						{#if decal && decal in AVATAR_ICONS}
 							{@const Icon = AVATAR_ICONS[decal as keyof typeof AVATAR_ICONS]}
 							<Icon size={14} />
@@ -522,21 +513,21 @@
 		box-shadow: var(--shadow-4);
 		padding: var(--size-3);
 		min-width: 240px;
-		
+
 		/* Anchor positioning attempt */
 		position-anchor: --trigger;
 		top: anchor(bottom);
 		left: anchor(left);
 	}
-	
+
 	/* We need to define anchor names on triggers. 
 	   Since we have two triggers, we need unique names.
 	*/
-	
-	.satellite-trigger[popovertarget="decal-popover"] {
+
+	.satellite-trigger[popovertarget='decal-popover'] {
 		anchor-name: --decal-trigger;
 	}
-	
+
 	.decal-popover {
 		position-anchor: --decal-trigger;
 		top: anchor(bottom);
@@ -545,10 +536,10 @@
 		margin-top: 8px;
 	}
 
-	.satellite-trigger[popovertarget="color-popover"] {
+	.satellite-trigger[popovertarget='color-popover'] {
 		anchor-name: --color-trigger;
 	}
-	
+
 	.color-popover {
 		position-anchor: --color-trigger;
 		top: anchor(bottom);
@@ -556,7 +547,7 @@
 		transform: translateX(-50%);
 		margin-top: 8px;
 	}
-	
+
 	/* Fallback for browsers without anchor positioning: Center on screen */
 	@supports not (anchor-name: --foo) {
 		.popover:popover-open {

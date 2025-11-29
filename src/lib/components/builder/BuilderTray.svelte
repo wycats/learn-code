@@ -153,7 +153,6 @@
 	<div class="tray-content">
 		{#if activeTab === 'backpack'}
 			<div class="backpack-section" transition:fade={{ duration: 200 }}>
-				<h3>Backpack</h3>
 				<div class="block-list">
 					{#each blockTypes as { type, comingSoon } (type)}
 						{@const isIncluded = type in builder.level.availableBlocks}
@@ -243,7 +242,6 @@
 			</div>
 		{:else if activeTab === 'tiles'}
 			<div class="tiles-section" transition:fade={{ duration: 200 }}>
-				<h3>Custom Tiles</h3>
 				<div class="tiles-list">
 					{#if builder.level.customTiles}
 						{#each Object.values(builder.level.customTiles) as tile (tile.id)}

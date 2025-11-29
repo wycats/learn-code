@@ -1,60 +1,63 @@
-# Implementation Plan - Phase 9: The Tile Lab
+# Implementation Plan - Phase 10: The Librarian
 
-**Goal:** Empower users to customize the game world, fostering ownership and creativity.
-**Success Criteria:** Create a custom level featuring at least 3 custom tile types (e.g., "Lava", "Ice", "Gold Brick") and successfully play through it.
+**Goal:** Organize content into cohesive collections and improve the discovery experience.
+**Success Criteria:** A redesigned Home Screen displaying distinct "Campaigns" (e.g., "The Basics", "The Gauntlet") and a robust system for saving/loading user progress across these packs.
 
-## 1. Data-Driven Terrain Engine
+## 1. Data Architecture (Level Packs)
 
-Refactor the hardcoded `CellType` system to support dynamic properties.
+We need to move from a flat list of levels to a hierarchical structure.
 
 - [ ] **Schema Update**:
-  - [ ] Define `TileDefinition` schema:
-    - `id`: string (unique)
-    - `name`: string
-    - `type`: 'wall' | 'floor' | 'hazard' | 'water' | 'ice'
-    - `visuals`:
-      - `color`: string (css var or hex)
-      - `pattern`: string (svg id)
-      - `decal`: string (icon name)
-  - [ ] Update `LevelSchema` to include a `tiles` registry (map of ID -> Definition).
-  - [ ] Update `Grid` component to render cells based on the registry lookup, not just CSS classes.
+  - [ ] Define `LevelPackSchema`:
+    - `id`: string
+    - `title`: string
+    - `description`: string
+    - `coverImage`: string (icon/color)
+    - `levels`: LevelDefinition[] (or IDs)
+    - `difficulty`: 'beginner' | 'intermediate' | 'advanced'
+    - `tags`: string[]
+  - [ ] Update `UserProgressSchema` to track progress *per pack*.
 
-## 2. The Tile Designer (UI)
+- [ ] **Content Organization**:
+  - [ ] Create `src/lib/game/packs/basics.ts` (Levels 1-8).
+  - [ ] Create `src/lib/game/packs/gauntlet.ts` (Level 9 + new variations).
+  - [ ] Create a `PackRegistry` to manage available content.
 
-A "Badge Maker" interface for creating custom terrain.
+## 2. Persistence Layer (The Bookshelf)
 
-- [ ] **Tile Editor Modal**:
-  - [ ] **Preview**: Large, live preview of the tile being designed.
-  - [ ] **Base Layer**: Color picker (using our semantic palette).
-  - [ ] **Pattern Layer**: Grid of SVG patterns (Bricks, Waves, Dots, Pavers).
-  - [ ] **Decal Layer**: Icon picker (Lucide icons).
-  - [ ] **Behavior**: Dropdown to select physics (Wall, Floor, Hazard, Ice).
-- [ ] **Builder Integration**:
-  - [ ] Add "Edit Tiles" button to the Terrain section of the `BuilderTray`.
-  - [ ] Allow selecting custom tiles to paint with.
+Upgrade our storage to handle more complex data.
 
-## 3. New Mechanics (Hazards & Physics)
+- [ ] **Storage Service**:
+  - [ ] Abstract `localStorage` calls into a `PersistenceService`.
+  - [ ] Implement `saveProgress(packId, levelId, result)`.
+  - [ ] Implement `getProgress(packId)`.
+  - [ ] (Optional) Prepare for IndexedDB if data size warrants it, but `localStorage` is likely fine for metadata.
 
-Implement the behaviors for the new tile types.
+## 3. UI Redesign (The Library)
 
-- [ ] **Hazards (Spikes/Lava)**:
-  - [ ] Update `GameModel` movement logic.
-  - [ ] If character enters a `hazard` tile -> Trigger "Loss" state (burn/spike animation).
-- [ ] **Ice (Sliding)**:
-  - [ ] Update `GameModel` movement logic.
-  - [ ] If character enters `ice` -> Continue moving in the same direction until hitting a non-ice tile or wall.
-  - [ ] Visuals: Slide animation (faster, no step delay).
-- [ ] **Water (Optional/Stretch)**:
-  - [ ] Fatal unless character has "Boat" status (future). For now, treat as Hazard or Wall depending on design.
+Replace the simple list on the Home Page with a rich, card-based interface.
 
-## 4. Content & Polish
+- [ ] **Home Page (`src/routes/+page.svelte`)**:
+  - [ ] **Hero Section**: "Continue Playing" (most recent level).
+  - [ ] **Campaign Shelf**: Horizontal scroll or grid of "Official Campaigns".
+  - [ ] **Community Shelf**: (Placeholder) for user-generated content.
+  - [ ] **Builder Entry**: Distinct card/button to enter the Level Builder.
 
-- [ ] **Default Tiles**: Create a set of nice presets (Grass, Dirt, Stone, Water, Lava).
-- [ ] **Demo Level**: "The Gauntlet" - A level showcasing Ice slides and Lava pits.
+- [ ] **Pack Detail View**:
+  - [ ] When clicking a pack, show a "Map" or list of levels within it.
+  - [ ] Visual progress indicators (stars/checks) for each level.
+
+## 4. Metadata & Polish
+
+- [ ] **Level Metadata**:
+  - [ ] Add `difficulty` rating to `LevelDefinition`.
+  - [ ] Add `estimatedTime` to `LevelDefinition`.
+- [ ] **Visuals**:
+  - [ ] Create distinct icons/colors for the "Basics" vs "Gauntlet" packs.
 
 ## Execution Order
 
-1.  **Schema & Engine**: Refactor `CellType` to be data-driven.
-2.  **Mechanics**: Implement Hazard and Ice logic (using hardcoded test tiles).
-3.  **UI**: Build the Tile Designer to let users create these tiles.
-4.  **Integration**: Connect the UI to the Level data.
+1.  **Data**: Define the `LevelPack` schema and migrate existing levels into the "Basics" pack.
+2.  **Persistence**: Refactor the storage layer to support packs.
+3.  **UI**: Build the new Home Screen components (`PackCard`, `LevelGrid`).
+4.  **Integration**: Wire it all together.

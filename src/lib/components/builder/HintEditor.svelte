@@ -76,11 +76,6 @@
 </script>
 
 <div class="hint-editor">
-	<div class="header">
-		<h3>Hints</h3>
-		<p class="subtitle">Guide players when they get stuck.</p>
-	</div>
-
 	<div class="hint-list">
 		{#if !builder.level.hints || builder.level.hints.length === 0}
 			<div class="empty-state">
@@ -94,7 +89,7 @@
 		{#each builder.level.hints || [] as hint (hint.id)}
 			{@const isExpanded = expandedHintId === hint.id}
 			{@const TriggerIcon = getTriggerIcon(hint.trigger.type)}
-			
+
 			<div class="hint-card" class:expanded={isExpanded} style="anchor-name: --hint-card-{hint.id}">
 				{#if !isExpanded}
 					<div
@@ -124,7 +119,11 @@
 							</span>
 						</div>
 						<div class="header-actions">
-							<button class="icon-btn delete" onclick={(e) => deleteHint(hint.id, e)} title="Delete Hint">
+							<button
+								class="icon-btn delete"
+								onclick={(e) => deleteHint(hint.id, e)}
+								title="Delete Hint"
+							>
 								<Trash2 size={16} />
 							</button>
 							<div class="expand-icon">
@@ -137,19 +136,19 @@
 					<div class="expanded-card">
 						<div class="expanded-header">
 							<!-- Trigger Selector -->
-							<button 
-								class="trigger-select-btn compact" 
+							<button
+								class="trigger-select-btn compact"
 								popovertarget={`trigger-popover-${hint.id}`}
 								title="Change Trigger"
 							>
 								<TriggerIcon size={14} />
 								<span>{getTriggerLabel(hint.trigger.type)}</span>
 							</button>
-							
+
 							<!-- Popover Menu (Same as before, just anchored) -->
-							<div 
-								id={`trigger-popover-${hint.id}`} 
-								popover="auto" 
+							<div
+								id={`trigger-popover-${hint.id}`}
+								popover="auto"
 								class="popover-menu"
 								style="position-anchor: --hint-card-{hint.id}"
 							>
@@ -178,7 +177,11 @@
 
 							<!-- Actions -->
 							<div class="header-actions">
-								<button class="icon-btn delete" onclick={(e) => deleteHint(hint.id, e)} title="Delete Hint">
+								<button
+									class="icon-btn delete"
+									onclick={(e) => deleteHint(hint.id, e)}
+									title="Delete Hint"
+								>
 									<Trash2 size={16} />
 								</button>
 								<button class="icon-btn" onclick={() => toggleExpand(hint.id)} title="Collapse">
@@ -200,15 +203,30 @@
 								<div class="trigger-config">
 									{#if hint.trigger.type === 'time'}
 										<Clock size={16} class="config-icon" />
-										<input type="number" bind:value={hint.trigger.value} min="1" class="matte-input inline" />
+										<input
+											type="number"
+											bind:value={hint.trigger.value}
+											min="1"
+											class="matte-input inline"
+										/>
 										<span class="unit">sec</span>
 									{:else if hint.trigger.type === 'attempts'}
 										<AlertTriangle size={16} class="config-icon" />
-										<input type="number" bind:value={hint.trigger.value} min="1" class="matte-input inline" />
+										<input
+											type="number"
+											bind:value={hint.trigger.value}
+											min="1"
+											class="matte-input inline"
+										/>
 										<span class="unit">fails</span>
 									{:else if hint.trigger.type === 'idle'}
 										<MousePointer size={16} class="config-icon" />
-										<input type="number" bind:value={hint.trigger.value} min="1" class="matte-input inline" />
+										<input
+											type="number"
+											bind:value={hint.trigger.value}
+											min="1"
+											class="matte-input inline"
+										/>
 										<span class="unit">sec</span>
 									{:else if hint.trigger.type === 'story-step'}
 										<BookOpen size={16} class="config-icon" />
@@ -240,8 +258,8 @@
 								<!-- Highlight Control (Compact) -->
 								<div class="highlight-control">
 									{#if hint.highlight}
-										<div 
-											class="highlight-chip icon-only" 
+										<div
+											class="highlight-chip icon-only"
 											title={`Target: ${hint.highlight}`}
 											role="button"
 											tabindex="0"
@@ -521,7 +539,8 @@
 		gap: var(--size-2);
 	}
 
-	.matte-input.inline, .matte-select.inline {
+	.matte-input.inline,
+	.matte-select.inline {
 		padding: 2px 6px;
 		font-size: var(--font-size-0);
 		height: 24px;
@@ -583,7 +602,7 @@
 		flex-direction: column;
 		gap: 2px;
 		min-width: 160px;
-		
+
 		/* Fallback: center if anchor not supported */
 		position: fixed;
 		top: 50%;
@@ -600,7 +619,7 @@
 			margin-right: var(--size-2);
 		}
 	}
-	
+
 	/* If anchor positioning is supported, we could use it here, 
 	   but for simplicity in this list context, fixed centering or 
 	   simple absolute positioning relative to viewport is safer 
@@ -635,7 +654,9 @@
 	}
 
 	/* Inputs */
-	.matte-input, .matte-select, .matte-textarea {
+	.matte-input,
+	.matte-select,
+	.matte-textarea {
 		background-color: var(--surface-2);
 		border: 2px solid transparent;
 		border-radius: var(--radius-2);
@@ -646,11 +667,15 @@
 		transition: all 0.2s;
 	}
 
-	.matte-input:hover, .matte-select:hover, .matte-textarea:hover {
+	.matte-input:hover,
+	.matte-select:hover,
+	.matte-textarea:hover {
 		background-color: var(--surface-3);
 	}
 
-	.matte-input:focus, .matte-select:focus, .matte-textarea:focus {
+	.matte-input:focus,
+	.matte-select:focus,
+	.matte-textarea:focus {
 		background-color: var(--surface-1);
 		border-color: var(--brand);
 		outline: none;
@@ -693,7 +718,7 @@
 	}
 
 	.chip-remove:hover {
-		background-color: rgba(0,0,0,0.1);
+		background-color: rgba(0, 0, 0, 0.1);
 	}
 
 	/* Add Button */

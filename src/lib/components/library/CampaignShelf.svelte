@@ -1,0 +1,58 @@
+<script lang="ts">
+	import type { LevelPack } from '$lib/game/schema';
+	import type { UserProgress } from '$lib/game/progress';
+	import PackCard from './PackCard.svelte';
+
+	interface Props {
+		packs: LevelPack[];
+		progress: UserProgress;
+		onPackSelect: (packId: string) => void;
+	}
+
+	let { packs, progress, onPackSelect }: Props = $props();
+</script>
+
+<div class="campaign-shelf">
+	<div class="shelf-header">
+		<h2>Campaigns</h2>
+		<p>Master the basics and take on new challenges.</p>
+	</div>
+
+	<div class="pack-grid">
+		{#each packs as pack}
+			<PackCard
+				{pack}
+				progress={progress.packs[pack.id]}
+				onClick={() => onPackSelect(pack.id)}
+			/>
+		{/each}
+	</div>
+</div>
+
+<style>
+	.campaign-shelf {
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-6);
+	}
+
+	.shelf-header h2 {
+		font-size: var(--font-size-5);
+		font-weight: 800;
+		margin: 0 0 var(--size-2);
+		color: var(--text-1);
+	}
+
+	.shelf-header p {
+		font-size: var(--font-size-2);
+		color: var(--text-2);
+		margin: 0;
+		max-width: 60ch;
+	}
+
+	.pack-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: var(--size-5);
+	}
+</style>

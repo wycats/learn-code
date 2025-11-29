@@ -68,22 +68,22 @@
   - [x] **Hint Editor**: UI to define and configure hints for a level.
 - [x] **Rich Media Instructions**: Support for diagrams and animations within the instruction stream.
 
-## Phase 9: The Tile Lab (Current)
+## Phase 9: The Tile Lab (Completed)
 
 **Goal:** Empower users to customize the game world, fostering ownership and creativity.
 
-- [ ] **Data-Driven Terrain**: Refactor `CellType` to support properties (walkable, swimable, hazard) rather than hardcoded strings.
-- [ ] **Tile Designer UI**: A "Badge Maker" interface for creating custom terrain (Base + Pattern + Decal).
-- [ ] **Hazards & Mechanics**: Implement new tile behaviors (Spikes, Water, Ice).
+- [x] **Data-Driven Terrain**: Refactor `CellType` to support properties (walkable, swimable, hazard) rather than hardcoded strings.
+- [x] **Tile Designer UI**: A "Badge Maker" interface for creating custom terrain (Base + Pattern + Decal).
+- [x] **Hazards & Mechanics**: Implement new tile behaviors (Spikes, Water, Ice).
 
-## Phase 10: Community & Polish
+## Phase 10: The Librarian (Current)
 
-**Goal:** Prepare the platform for wider distribution and sharing.
+**Goal:** Organize content into cohesive collections and improve the discovery experience.
 
 - [ ] **Level Packs**: Support for grouping levels into Campaigns/Packs.
-- [ ] **OPFS Storage**: robust local storage for user content.
-- [ ] **Accessibility Audit**: Comprehensive review and fix of ARIA roles and keyboard navigation.
-- [ ] **Performance Tuning**: Optimization of large level rendering and interpreter speed.
+- [ ] **Home Screen Redesign**: A visual overhaul of the level selection screen.
+- [ ] **Metadata & Ratings**: Difficulty, tags, and descriptions for levels.
+- [ ] **Persistence Upgrade**: Robust local storage (IndexedDB/OPFS) for user progress and content.
 
 ## Phase 11: Advanced Builder Features
 

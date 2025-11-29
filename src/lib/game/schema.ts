@@ -185,6 +185,9 @@ export const LevelPackSchema = z.object({
 	id: z.string(),
 	name: z.string(),
 	description: z.string().optional(),
+	coverImage: z.string().optional(), // Icon name or color
+	difficulty: z.enum(['beginner', 'intermediate', 'advanced']).default('beginner'),
+	tags: z.array(z.string()).default([]),
 	version: z.string().default('1.0.0'),
 	levels: z.array(LevelDefinitionSchema),
 	characters: z.array(CharacterSchema).optional(),
