@@ -63,3 +63,13 @@ The visual language aims to feel like a high-end, digital educational tool. It a
   - **Glassomorphism**: `backdrop-filter: blur(12px)`, semi-transparent white background.
   - **Positioning**: Floats to the left of the primary toolbar.
   - **Grid Layout**: Options are arranged in a grid for easy scanning.
+
+### Popovers & Dialogs
+
+- **Native & Matte**: We use native HTML `<dialog>` and `popover` elements styled with our "Modern Matte" aesthetic.
+- **Appearance**:
+  - **Background**: Solid `var(--surface-1)` (no glassomorphism for heavy editing tasks to ensure readability).
+  - **Borders**: Thin, subtle borders (`var(--surface-3)`).
+  - **Shadows**: Deep, soft shadows (`var(--shadow-4)` or `var(--shadow-6)`) to clearly separate them from the layer below.
+  - **Backdrop**: For modals, a dark, blurred backdrop (`backdrop-filter: blur(8px)`) focuses attention on the task.
+

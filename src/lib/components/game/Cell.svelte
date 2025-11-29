@@ -1,15 +1,18 @@
 <script lang="ts">
 	import type { CellType } from '$lib/game/types';
+	import type { TileDefinition } from '$lib/game/schema';
+	import { AVATAR_ICONS } from '$lib/game/icons';
 	import { Star, BrickWall, Trees, Waves, Snowflake, Mountain, Leaf, Sun } from 'lucide-svelte';
 
 	interface Props {
 		type: CellType;
+		customTile?: TileDefinition;
 		x?: number;
 		y?: number;
 		highlight?: { target: string; type?: 'pulse' | 'arrow' | 'dim'; fading?: boolean } | undefined;
 	}
 
-	let { type, x, y, highlight }: Props = $props();
+	let { type, customTile, x, y, highlight }: Props = $props();
 
 	const isHighlighted = $derived(
 		highlight && x !== undefined && y !== undefined && highlight.target === `cell:${x},${y}`
@@ -17,8 +20,24 @@
 	const isFading = $derived(isHighlighted && highlight?.fading);
 </script>
 
-<div class="cell" data-type={type} class:highlighted={isHighlighted} class:fading={isFading}>
-	{#if type === 'goal'}
+<div
+	class="cell"
+	data-type={type}
+	class:highlighted={isHighlighted}
+	class:fading={isFading}
+	style:background-color={customTile?.visuals.color}
+	style:border-color={customTile?.type === 'wall' ? 'rgba(0,0,0,0.2)' : undefined}
+	style:border-width={customTile?.type === 'wall' ? '2px' : undefined}
+	style:border-style={customTile?.type === 'wall' ? 'solid' : undefined}
+>
+	{#if customTile}
+		{#if customTile.visuals.decal && customTile.visuals.decal in AVATAR_ICONS}
+			{@const Icon = AVATAR_ICONS[customTile.visuals.decal as keyof typeof AVATAR_ICONS]}
+			<div class="marker">
+				<Icon size={24} color="rgba(0,0,0,0.5)" />
+			</div>
+		{/if}
+	{:else if type === 'goal'}
 		<div class="goal-marker">
 			<Star size={24} color="var(--yellow-7)" fill="var(--yellow-4)" />
 		</div>

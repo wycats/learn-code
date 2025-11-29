@@ -68,7 +68,7 @@
   - [x] **Hint Editor**: UI to define and configure hints for a level.
 - [x] **Rich Media Instructions**: Support for diagrams and animations within the instruction stream.
 
-## Phase 9: The Tile Lab (Creative Expansion)
+## Phase 9: The Tile Lab (Current)
 
 **Goal:** Empower users to customize the game world, fostering ownership and creativity.
 

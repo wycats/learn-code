@@ -79,6 +79,7 @@ export class BuilderModel {
 				startOrientation: 'E',
 				goal: { x: 4, y: 4 },
 				layout: {},
+				customTiles: {},
 				availableBlocks: {
 					'move-forward': 'unlimited',
 					'turn-left': 'unlimited',
@@ -173,6 +174,7 @@ export class BuilderModel {
 					startOrientation: 'E',
 					goal: { x: 4, y: 4 },
 					layout: {},
+					customTiles: {},
 					availableBlocks: {
 						'move-forward': 'unlimited',
 						'turn-left': 'unlimited',
@@ -202,6 +204,7 @@ export class BuilderModel {
 			startOrientation: 'E',
 			goal: { x: 4, y: 4 },
 			layout: {},
+			customTiles: {},
 			availableBlocks: {
 				'move-forward': 'unlimited',
 				'turn-left': 'unlimited',

@@ -4,6 +4,18 @@ import { soundManager } from './sound';
 
 const DIRECTIONS: Direction[] = ['N', 'E', 'S', 'W'];
 
+function getTileType(game: GameModel, x: number, y: number): string {
+	const key = `${x},${y}`;
+	const typeId = game.level.layout[key] || game.level.defaultTerrain || 'grass';
+
+	// Check if it's a custom tile
+	if (game.level.customTiles && game.level.customTiles[typeId]) {
+		return game.level.customTiles[typeId].type; // 'wall', 'floor', 'hazard', 'ice'
+	}
+
+	return typeId;
+}
+
 function getNextPosition(pos: GridPosition, dir: Direction): GridPosition {
 	switch (dir) {
 		case 'N':
@@ -38,8 +50,8 @@ function isValidMove(pos: GridPosition, game: GameModel): boolean {
 	}
 
 	// Check walls
-	const key = `${pos.x},${pos.y}`;
-	if (game.level.layout[key] === 'wall') {
+	const type = getTileType(game, pos.x, pos.y);
+	if (type === 'wall') {
 		return false;
 	}
 
@@ -286,6 +298,49 @@ export class StackInterpreter {
 					this.game.characterOrientation
 				);
 				if (isValidMove(nextPos, this.game)) {
+					// Check for Hazard or Ice
+					const tileType = getTileType(this.game, nextPos.x, nextPos.y);
+
+					if (tileType === 'hazard') {
+						this.game.characterPosition = nextPos;
+						soundManager.play('fail');
+						this.game.lastEvent = { type: 'fail', timestamp: Date.now() };
+						this.game.recordFailure();
+						return false;
+					}
+
+					if (tileType === 'ice') {
+						// Slide logic
+						let currentSlidePos = nextPos;
+						// Limit slide to prevent infinite loops (though unlikely with bounds)
+						for (let i = 0; i < 20; i++) {
+							const slideNext = getNextPosition(currentSlidePos, this.game.characterOrientation);
+							if (isValidMove(slideNext, this.game)) {
+								currentSlidePos = slideNext;
+								// Check if we slid into a hazard
+								const slideType = getTileType(this.game, currentSlidePos.x, currentSlidePos.y);
+								if (slideType === 'hazard') {
+									this.game.characterPosition = currentSlidePos;
+									soundManager.play('fail');
+									this.game.lastEvent = { type: 'fail', timestamp: Date.now() };
+									this.game.recordFailure();
+									return false;
+								}
+								if (slideType !== 'ice') {
+									// Stopped sliding
+									break;
+								}
+							} else {
+								// Hit a wall
+								break;
+							}
+						}
+						this.game.characterPosition = currentSlidePos;
+						// soundManager.play('slide'); // TODO: Add slide sound
+						soundManager.play('step');
+						return true;
+					}
+
 					this.game.characterPosition = nextPos;
 					soundManager.play('step');
 					return true;

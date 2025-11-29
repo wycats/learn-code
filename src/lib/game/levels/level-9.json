@@ -1,0 +1,83 @@
+{
+	"id": "level-9",
+	"name": "The Gauntlet",
+	"description": "Watch your step! Ice is slippery and lava is hot.",
+	"gridSize": {
+		"width": 8,
+		"height": 8
+	},
+	"start": {
+		"x": 0,
+		"y": 0
+	},
+	"startOrientation": "E",
+	"goal": {
+		"x": 7,
+		"y": 7
+	},
+	"defaultTerrain": "floor",
+	"customTiles": {
+		"lava": {
+			"id": "lava",
+			"name": "Lava",
+			"type": "hazard",
+			"visuals": {
+				"color": "var(--red-5)",
+				"decal": "flame"
+			}
+		},
+		"ice": {
+			"id": "ice",
+			"name": "Ice",
+			"type": "ice",
+			"visuals": {
+				"color": "var(--cyan-2)",
+				"decal": "snowflake"
+			}
+		},
+		"stone": {
+			"id": "stone",
+			"name": "Stone Wall",
+			"type": "wall",
+			"visuals": {
+				"color": "var(--stone-6)",
+				"decal": "mountain"
+			}
+		}
+	},
+	"layout": {
+		"1,0": "ice",
+		"2,0": "ice",
+		"3,0": "floor",
+		"4,0": "lava",
+		"5,0": "lava",
+		"6,0": "lava",
+		"7,0": "lava",
+		
+		"3,1": "ice",
+		"3,2": "ice",
+		"3,3": "floor",
+		
+		"2,1": "lava",
+		"2,2": "lava",
+		"2,3": "lava",
+		
+		"4,3": "floor",
+		"5,3": "ice",
+		"6,3": "ice",
+		"7,3": "stone",
+		
+		"6,4": "floor",
+		"6,5": "ice",
+		"6,6": "ice",
+		"6,7": "floor",
+		
+		"5,4": "lava",
+		"5,5": "lava",
+		"5,6": "lava",
+		
+		"7,7": "goal"
+	},
+	"availableBlocks": ["move-forward", "turn-left", "turn-right", "loop"],
+	"solutionPar": 12
+}

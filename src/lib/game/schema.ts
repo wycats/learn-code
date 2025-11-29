@@ -35,7 +35,23 @@ export const GridPositionSchema = z.object({
 });
 export type GridPosition = z.infer<typeof GridPositionSchema>;
 
-export const CellTypeSchema = z.enum([
+export const TileTypeSchema = z.enum(['wall', 'floor', 'hazard', 'water', 'ice']);
+export type TileType = z.infer<typeof TileTypeSchema>;
+
+export const TileDefinitionSchema = z.object({
+	id: z.string(),
+	name: z.string(),
+	type: TileTypeSchema,
+	visuals: z.object({
+		color: z.string(),
+		pattern: z.string().optional(),
+		decal: z.string().optional()
+	})
+});
+export type TileDefinition = z.infer<typeof TileDefinitionSchema>;
+
+// We allow any string now to support custom tile IDs, but keep the enum for reference/defaults
+export const BuiltInCellTypeSchema = z.enum([
 	'grass',
 	'water',
 	'wall',
@@ -45,6 +61,7 @@ export const CellTypeSchema = z.enum([
 	'forest',
 	'dirt'
 ]);
+export const CellTypeSchema = z.string();
 export type CellType = z.infer<typeof CellTypeSchema>;
 
 export const CellSchema = z.object({
@@ -113,6 +130,7 @@ export type HintTrigger = z.infer<typeof HintTriggerSchema>;
 
 export const HintSchema = z.object({
 	id: z.string(),
+	title: z.string().optional(),
 	text: z.string(),
 	trigger: HintTriggerSchema,
 	highlight: z.string().optional()
@@ -152,6 +170,7 @@ export const LevelDefinitionSchema = z.object({
 	maxBlocks: z.number().optional(),
 	ambientSoundId: z.string().optional(),
 	initialProgram: z.array(BlockSchema).optional(),
+	customTiles: z.record(z.string(), TileDefinitionSchema).optional(),
 	functions: z.record(z.string(), z.array(BlockSchema)).optional(),
 	solutionPar: z.number().optional(),
 	intro: z.array(StorySegmentSchema).optional(),

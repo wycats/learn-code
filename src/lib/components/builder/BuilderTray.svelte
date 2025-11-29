@@ -1,10 +1,21 @@
 <script lang="ts">
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
 	import type { BlockType } from '$lib/game/types';
+	import type { TileDefinition } from '$lib/game/schema';
 	import BlockComponent from '$lib/components/game/Block.svelte';
 	import HintEditor from './HintEditor.svelte';
+	import TileEditorModal from './TileEditorModal.svelte';
+	import Cell from '$lib/components/game/Cell.svelte';
 
-	import { Infinity as InfinityIcon, Backpack, Lightbulb } from 'lucide-svelte';
+	import {
+		Infinity as InfinityIcon,
+		Backpack,
+		Lightbulb,
+		Paintbrush,
+		Plus,
+		Pencil,
+		Trash2
+	} from 'lucide-svelte';
 	import { fade, scale } from 'svelte/transition';
 
 	interface Props {
@@ -13,10 +24,14 @@
 
 	let { builder }: Props = $props();
 
-	let activeTab = $state<'backpack' | 'hints'>('backpack');
+	let activeTab = $state<'backpack' | 'tiles' | 'hints'>('backpack');
 	let editingLimitFor = $state<BlockType | null>(null);
 	// Store previous limits to restore them when re-enabling
 	let previousLimits = $state<Record<string, number | 'unlimited'>>({});
+
+	// Tile Editor State
+	let showTileEditor = $state(false);
+	let editingTile = $state<TileDefinition | undefined>(undefined);
 
 	const blockTypes: { type: BlockType; label: string; comingSoon?: boolean }[] = [
 		{ type: 'move-forward', label: 'Move' },
@@ -69,6 +84,39 @@
 			editingLimitFor = null;
 		}
 	}
+
+	// Tile Functions
+	function openNewTile() {
+		editingTile = undefined;
+		showTileEditor = true;
+	}
+
+	function editTile(tile: TileDefinition, e: MouseEvent) {
+		e.stopPropagation();
+		editingTile = tile;
+		showTileEditor = true;
+	}
+
+	function saveTile(tile: TileDefinition) {
+		if (!builder.level.customTiles) builder.level.customTiles = {};
+		builder.level.customTiles[tile.id] = tile;
+		showTileEditor = false;
+		builder.syncGame();
+	}
+
+	function deleteTile(id: string, e: MouseEvent) {
+		e.stopPropagation();
+		if (builder.level.customTiles) {
+			const newTiles = { ...builder.level.customTiles };
+			delete newTiles[id];
+			builder.level.customTiles = newTiles;
+			builder.syncGame();
+		}
+	}
+
+	function selectTile(id: string) {
+		builder.activeTool = { type: 'terrain', value: id };
+	}
 </script>
 
 <div
@@ -85,6 +133,13 @@
 			onclick={() => (activeTab = 'backpack')}
 		>
 			<Backpack size={16} /> Backpack
+		</button>
+		<button
+			class="tab-btn"
+			class:active={activeTab === 'tiles'}
+			onclick={() => (activeTab = 'tiles')}
+		>
+			<Paintbrush size={16} /> Tiles
 		</button>
 		<button
 			class="tab-btn"
@@ -186,6 +241,46 @@
 					{/each}
 				</div>
 			</div>
+		{:else if activeTab === 'tiles'}
+			<div class="tiles-section" transition:fade={{ duration: 200 }}>
+				<h3>Custom Tiles</h3>
+				<div class="tiles-list">
+					{#if builder.level.customTiles}
+						{#each Object.values(builder.level.customTiles) as tile (tile.id)}
+							<div
+								class="tile-wrapper"
+								class:active={builder.activeTool.type === 'terrain' &&
+									builder.activeTool.value === tile.id}
+								onclick={() => selectTile(tile.id)}
+								role="button"
+								tabindex="0"
+								onkeydown={(e) => e.key === 'Enter' && selectTile(tile.id)}
+							>
+								<div class="tile-preview">
+									<Cell type="grass" customTile={tile} />
+								</div>
+								<div class="tile-info">
+									<span class="tile-name">{tile.name}</span>
+									<span class="tile-type">{tile.type}</span>
+								</div>
+								<div class="tile-actions">
+									<button class="action-btn" onclick={(e) => editTile(tile, e)} title="Edit">
+										<Pencil size={14} />
+									</button>
+									<button class="action-btn delete" onclick={(e) => deleteTile(tile.id, e)} title="Delete">
+										<Trash2 size={14} />
+									</button>
+								</div>
+							</div>
+						{/each}
+					{/if}
+
+					<button class="new-tile-btn" onclick={openNewTile}>
+						<Plus size={20} />
+						<span>Create New Tile</span>
+					</button>
+				</div>
+			</div>
 		{:else}
 			<div class="hints-section" transition:fade={{ duration: 200 }}>
 				<HintEditor {builder} />
@@ -193,6 +288,14 @@
 		{/if}
 	</div>
 </div>
+
+{#if showTileEditor}
+	<TileEditorModal
+		tile={editingTile}
+		onSave={saveTile}
+		onClose={() => (showTileEditor = false)}
+	/>
+{/if}
 
 <style>
 	.builder-tray-container {
@@ -246,11 +349,16 @@
 		color: var(--brand);
 	}
 
-	.hints-section {
+	.hints-section,
+	.backpack-section,
+	.tiles-section {
 		grid-area: content;
 		width: 100%;
 		height: 100%;
 		overflow-y: auto;
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-2);
 	}
 
 	h3 {
@@ -260,16 +368,6 @@
 		color: var(--text-3);
 		margin-bottom: var(--size-2);
 		font-weight: 700;
-	}
-
-	.backpack-section {
-		grid-area: content;
-		width: 100%;
-		height: 100%;
-		overflow-y: auto;
-		display: flex;
-		flex-direction: column;
-		gap: var(--size-2);
 	}
 
 	.block-list {
@@ -437,5 +535,109 @@
 		text-align: center;
 		display: flex;
 		justify-content: center;
+	}
+
+	/* Tiles Styles */
+	.tiles-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-2);
+		padding: var(--size-2);
+		background-color: var(--surface-1);
+		border-radius: var(--radius-2);
+		flex: 1;
+	}
+
+	.tile-wrapper {
+		display: flex;
+		align-items: center;
+		gap: var(--size-3);
+		padding: var(--size-2);
+		border: 1px solid var(--surface-3);
+		border-radius: var(--radius-2);
+		cursor: pointer;
+		transition: all 0.2s;
+		background-color: var(--surface-2);
+	}
+
+	.tile-wrapper:hover {
+		background-color: var(--surface-3);
+	}
+
+	.tile-wrapper.active {
+		border-color: var(--brand);
+		background-color: var(--blue-1);
+	}
+
+	.tile-preview {
+		width: 40px;
+		height: 40px;
+		border-radius: var(--radius-2);
+		overflow: hidden;
+		flex-shrink: 0;
+	}
+
+	.tile-info {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.tile-name {
+		font-weight: bold;
+		color: var(--text-1);
+		font-size: var(--font-size-1);
+	}
+
+	.tile-type {
+		font-size: var(--font-size-0);
+		color: var(--text-2);
+		text-transform: capitalize;
+	}
+
+	.tile-actions {
+		display: flex;
+		gap: var(--size-1);
+	}
+
+	.action-btn {
+		background: none;
+		border: none;
+		cursor: pointer;
+		padding: var(--size-1);
+		border-radius: var(--radius-1);
+		color: var(--text-2);
+		transition: all 0.2s;
+	}
+
+	.action-btn:hover {
+		background-color: var(--surface-3);
+		color: var(--text-1);
+	}
+
+	.action-btn.delete:hover {
+		background-color: var(--red-1);
+		color: var(--red-7);
+	}
+
+	.new-tile-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--size-2);
+		padding: var(--size-3);
+		background-color: var(--surface-2);
+		border: 2px dashed var(--surface-3);
+		border-radius: var(--radius-2);
+		color: var(--text-2);
+		font-weight: bold;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.new-tile-btn:hover {
+		background-color: var(--surface-3);
+		border-color: var(--text-2);
+		color: var(--text-1);
 	}
 </style>

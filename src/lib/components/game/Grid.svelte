@@ -91,6 +91,7 @@
 			for (let x = 0; x < width; x++) {
 				const key = `${x},${y}`;
 				const type = game.level.layout[key] || game.level.defaultTerrain || 'grass';
+				const customTile = game.level.customTiles?.[type];
 
 				// Check if this is the goal position
 				const isGoal = game.level.goal.x === x && game.level.goal.y === y;
@@ -105,7 +106,8 @@
 				c.push({
 					x,
 					y,
-					type: isGoal && !isCharacterHere ? 'goal' : isGoal ? 'grass' : type
+					type: isGoal && !isCharacterHere ? 'goal' : isGoal ? 'grass' : type,
+					customTile
 				});
 			}
 		}
@@ -135,7 +137,7 @@
 			onmousedown={() => handleMouseDown(cell.x, cell.y)}
 			onmouseenter={() => handleMouseEnter(cell.x, cell.y)}
 		>
-			<Cell type={cell.type} x={cell.x} y={cell.y} {highlight} />
+			<Cell type={cell.type} customTile={cell.customTile} x={cell.x} y={cell.y} {highlight} />
 		</div>
 	{/each}
 

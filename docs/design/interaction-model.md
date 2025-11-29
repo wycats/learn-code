@@ -104,3 +104,18 @@ The "Again" (Loop) block introduces hierarchy.
   - We use a recursive search (`findAndInsert`) to locate the correct parent list.
   - Dropping into a Loop targets its internal `children` array.
 - **Visuals**: Empty loops show a centered "Drop here" text to invite interaction.
+
+## Configuration & Progressive Disclosure
+
+As the application grows in complexity (e.g., Tile Lab, Hint Editor), we must avoid cluttering the primary workspace with dense configuration forms.
+
+### The Popover Pattern
+
+_Best for: Complex editing tasks, secondary configuration, "Inspector" views._
+
+- **Principle**: "Details on Demand." The primary view remains clean and focused on the high-level structure (the list of hints, the grid of tiles). Complex details are hidden until explicitly requested.
+- **Implementation**:
+  - **Native APIs**: We use the standard HTML `<dialog>` and `popover` APIs. This ensures accessible focus management, "light dismiss" (click-outside to close), and correct z-indexing without custom JavaScript state.
+  - **Satellite Triggers**: For small, contextual tweaks (like changing a color or icon), use small "satellite" buttons attached to the main element that trigger a popover menu.
+  - **Accordion Lists**: For managing lists of complex objects (like Hints), use a collapsed summary view by default. Expanding an item reveals the full editor inline or in a popover, preventing the "wall of inputs" effect.
+

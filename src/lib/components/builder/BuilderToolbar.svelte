@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { BuilderModel, BuilderTool } from '$lib/game/builder-model.svelte';
+	import { AVATAR_ICONS } from '$lib/game/icons';
 	import {
 		Play,
 		SquarePen,
@@ -32,7 +33,7 @@
 	let showPackManager = $state(false);
 
 	// Terrain tools (grouped)
-	const terrainTools: {
+	const standardTerrainTools: {
 		id: string;
 		tool: BuilderTool;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,6 +50,25 @@
 		{ id: 'dirt', tool: { type: 'terrain', value: 'dirt' }, icon: Mountain, label: 'Dirt' }
 	];
 
+	let terrainTools = $derived.by(() => {
+		const customTools = Object.values(builder.level.customTiles || {}).map((tile) => {
+			const Icon =
+				tile.visuals.decal && tile.visuals.decal in AVATAR_ICONS
+					? AVATAR_ICONS[tile.visuals.decal as keyof typeof AVATAR_ICONS]
+					: Box;
+
+			return {
+				id: tile.id,
+				tool: { type: 'terrain', value: tile.id } as BuilderTool,
+				icon: Icon,
+				label: tile.name,
+				color: tile.visuals.color
+			};
+		});
+
+		return [...standardTerrainTools, ...customTools];
+	});
+
 	// Special tools (top level)
 	const specialTools: {
 		id: string;
@@ -60,7 +80,7 @@
 	}[] = [{ id: 'erase', tool: { type: 'erase' }, icon: Eraser, label: 'Erase' }];
 
 	// Determine which terrain tool is "active" in the picker (last selected or default)
-	let activeTerrainTool = $state(terrainTools[0]);
+	let activeTerrainTool = $state(standardTerrainTools[0]);
 	let ActiveIcon = $derived(activeTerrainTool.icon);
 
 	// Update activeTerrainTool when builder.activeTool changes to a terrain type
@@ -196,11 +216,12 @@
 						popover="auto"
 						class="tool-popover"
 					>
-						{#each terrainTools as { id, tool, icon: Icon, label } (id)}
+						{#each terrainTools as { id, tool, icon: Icon, label, color } (id)}
 							<button
 								class="tool-option"
 								class:active={isToolActive(tool)}
 								onclick={() => selectTool(tool)}
+								style:--tool-color={color}
 							>
 								<Icon size={20} />
 								<span>{label}</span>
@@ -444,19 +465,19 @@
 		border-radius: var(--radius-1);
 		cursor: pointer;
 		text-align: left;
-		color: var(--text-2);
+		color: var(--tool-color, var(--text-2));
 		font-weight: 500;
 		transition: all 0.1s;
 	}
 
 	.tool-option:hover {
 		background-color: var(--surface-2);
-		color: var(--text-1);
+		color: var(--tool-color, var(--text-1));
 	}
 
 	.tool-option.active {
-		background-color: var(--blue-1);
-		color: var(--blue-7);
+		background-color: color-mix(in srgb, var(--tool-color, var(--blue-5)) 10%, transparent);
+		color: var(--tool-color, var(--blue-7));
 		font-weight: bold;
 	}
 
