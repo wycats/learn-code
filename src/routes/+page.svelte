@@ -14,7 +14,7 @@
 		</div>
 		<h1>Code Climber</h1>
 		<p class="tagline">Master the logic of code, one block at a time.</p>
-		
+
 		<button class="cta-button" onclick={handleStart}>
 			<span>Start Coding</span>
 			<ArrowRight size={20} />
@@ -77,7 +77,9 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
-		transition: transform 0.2s var(--ease-3), box-shadow 0.2s var(--ease-3);
+		transition:
+			transform 0.2s var(--ease-3),
+			box-shadow 0.2s var(--ease-3);
 		box-shadow: var(--shadow-3);
 	}
 

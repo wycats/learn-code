@@ -34,10 +34,10 @@ export async function loadPack(id: string): Promise<LevelPack | null> {
 	}
 }
 
-export async function listPacks(): Promise<{ id: string; name: string; description?: string }[]> {
+export async function listPacks(): Promise<{ id: string; name: string; description?: string; coverImage?: string; difficulty?: string }[]> {
 	try {
 		const root = await getRoot();
-		const packs: { id: string; name: string; description?: string }[] = [];
+		const packs: { id: string; name: string; description?: string; coverImage?: string; difficulty?: string }[] = [];
 
 		// @ts-expect-error - FileSystemDirectoryHandle is async iterable in modern browsers
 		for await (const [name, handle] of root.entries()) {
@@ -51,7 +51,9 @@ export async function listPacks(): Promise<{ id: string; name: string; descripti
 						packs.push({
 							id: json.id,
 							name: json.name,
-							description: json.description
+							description: json.description,
+							coverImage: json.coverImage,
+							difficulty: json.difficulty
 						});
 					}
 				} catch (e) {
@@ -82,6 +84,8 @@ export function createDefaultPack(): LevelPack {
 		name: 'My First Adventure',
 		description: 'A collection of custom levels.',
 		version: '1.0.0',
+		difficulty: 'beginner',
+		tags: [],
 		levels: [],
 		characters: [
 			{ id: 'Zoey', name: 'Zoey', color: 'var(--pink-3)', avatar: 'Z' },

@@ -20,11 +20,7 @@
 
 	<div class="pack-grid">
 		{#each packs as pack}
-			<PackCard
-				{pack}
-				progress={progress.packs[pack.id]}
-				onClick={() => onPackSelect(pack.id)}
-			/>
+			<PackCard {pack} progress={progress.packs[pack.id]} onClick={() => onPackSelect(pack.id)} />
 		{/each}
 	</div>
 </div>

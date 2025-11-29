@@ -1,27 +1,23 @@
-# Task List: Phase 10 - The Librarian
+# Task List: Phase 11 - The Campaign Builder
 
-- [x] **Data Architecture**
-  - [x] Define `LevelPackSchema` in `src/lib/game/schema.ts`.
-  - [x] Create `src/lib/game/packs/index.ts` registry.
-  - [x] Migrate Levels 1-8 into "The Basics" pack.
-  - [x] Create "The Gauntlet" pack with Level 9.
+- [ ] **Data Layer**
+  - [ ] Extend `LevelPackSchema` to support user-created packs (IDs, mutable properties).
+  - [ ] Create `CampaignService` (or extend `ProgressService`) to manage CRUD operations for custom packs.
+  - [ ] Implement `clonePack` functionality to fork built-in campaigns.
+  - [ ] Ensure custom packs are persisted to `localStorage`.
 
-- [x] **Persistence**
-  - [x] Create `src/lib/game/progress.ts`.
-  - [x] Implement `saveLevelProgress` and `getPackProgress`.
-  - [x] Update `GameModel` to load/save from the new service.
+- [ ] **Architect's Library**
+  - [ ] Create `src/routes/builder/campaigns/+page.svelte`.
+  - [ ] Implement "My Campaigns" shelf (similar to `CampaignShelf` but with edit controls).
+  - [ ] Add "Create New Campaign" button.
+  - [ ] Add "Clone Existing Campaign" option.
 
-- [x] **UI Components**
-  - [x] Create `PackCard.svelte` (Cover, Title, Progress bar).
-  - [x] Create `LevelMap.svelte` (Visual path or grid of levels).
-  - [x] Create `CampaignShelf.svelte` (Container for packs).
+- [ ] **Pack Editor UI**
+  - [ ] Create `src/routes/builder/campaigns/[packId]/+page.svelte`.
+  - [ ] Implement `PackMetadataEditor` (Title, Description, Cover Art selector).
+  - [ ] Implement `LevelOrganizer` (List of levels, Drag-and-Drop reordering, Add/Remove levels).
 
-- [x] **Home Screen Overhaul**
-  - [x] Refactor `src/routes/+page.svelte`.
-  - [x] Implement "Continue Playing" hero section.
-  - [x] Implement Campaign browsing.
-
-- [x] **Polish**
-  - [x] Add difficulty indicators to Level Cards.
-  - [ ] Add "New" badges for unlocked content.
-
+- [ ] **Integration**
+  - [ ] Add "Campaign Builder" link to the main Library or Builder landing page.
+  - [ ] Allow launching the Level Builder from the Pack Editor (to edit a specific level within a pack).
+  - [ ] Allow "Playtesting" a whole campaign.

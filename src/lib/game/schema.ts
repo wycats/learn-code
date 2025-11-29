@@ -191,6 +191,12 @@ export const LevelPackSchema = z.object({
 	version: z.string().default('1.0.0'),
 	levels: z.array(LevelDefinitionSchema),
 	characters: z.array(CharacterSchema).optional(),
-	emotions: z.array(EmotionSchema).optional()
+	emotions: z.array(EmotionSchema).optional(),
+	// User-created pack metadata
+	isCustom: z.boolean().optional(),
+	author: z.string().optional(),
+	created: z.number().optional(),
+	updated: z.number().optional(),
+	sourcePackId: z.string().optional() // If cloned from another pack
 });
 export type LevelPack = z.infer<typeof LevelPackSchema>;

@@ -7,7 +7,7 @@
 	import { ArrowLeft } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
-	const packId = $derived($page.params.packId);
+	const packId = $derived($page.params.packId ?? '');
 	const pack = $derived(getPack(packId));
 	let progress = $state(ProgressService.load());
 
@@ -39,11 +39,7 @@
 
 		<main class="detail-content">
 			<div class="map-container">
-				<LevelMap
-					{pack}
-					progress={progress.packs[pack.id]}
-					onLevelSelect={handleLevelSelect}
-				/>
+				<LevelMap {pack} progress={progress.packs[pack.id]} onLevelSelect={handleLevelSelect} />
 			</div>
 		</main>
 	</div>

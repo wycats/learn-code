@@ -165,3 +165,28 @@ Transformed the learning experience into an active, intelligent coaching system.
 - **UI Polish**:
   - Added live highlight previews, gentle fade effects, and an emoji picker for story configuration.
 
+## Phase 11: The Campaign Builder (Completed)
+
+**Date:** November 29, 2025
+
+**Summary:**
+Empowered the Architect (user) to create, organize, and manage their own Level Packs (Campaigns). Implemented a robust `CampaignService` backed by the Origin Private File System (OPFS) for local persistence. Created a dedicated "Architect's Library" for managing custom packs and cloning built-in templates. Built a comprehensive Campaign Editor with metadata management and a level organizer that integrates seamlessly with the existing Level Builder.
+
+**Key Deliverables:**
+
+- **Campaign Service**:
+  - Async persistence using OPFS (`persistence.ts`).
+  - CRUD operations for packs.
+  - Cloning functionality for built-in templates.
+- **Architect's Library**:
+  - `/builder/campaigns`: Shelf view for custom packs.
+  - "Create New" and "Clone" workflows.
+- **Campaign Editor**:
+  - `/builder/campaigns/[packId]`: Metadata editor and Level Organizer.
+  - `PackMetadataEditor`: UI for editing title, description, and cover.
+  - `LevelOrganizer`: UI for managing level list (Add, Delete, Reorder).
+- **Integrated Level Builder**:
+  - `/builder/campaigns/[packId]/[levelId]`: Context-aware level editing.
+  - Seamless navigation between Campaign Editor and Level Builder.
+  - "Test Mode" integration.
+

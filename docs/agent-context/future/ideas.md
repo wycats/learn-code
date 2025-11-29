@@ -12,24 +12,13 @@
 ## Improvements Suggested by the Kids
 
 - [ ] **Boat**: A boat that allows the character to cross water tiles. (Suggested by Zoey)
-- [ ] **Custom Terrain**: A "Tile Designer" to let users create their own terrain visuals (not pixel art, maybe pattern/color composition).
 - [ ] **Custom Core Blocks**: Allow advanced users (like Jonas leveling up) to define their own core blocks. This would be a "ZPD" (Zone of Proximal Development) feature, bridging the gap between using blocks and understanding their implementation.
-
-## The Tile Lab (Brainstorm)
-
-A "Kit of Parts" approach to custom terrain to ensure "Modern Matte" consistency.
-
-- **Layer 1: Base Material** (Color + Physics): Solid (Wall), Ground (Walkable), Liquid (Swimable).
-- **Layer 2: Texture** (Pattern): SVG overlays like dots, waves, bricks, grid.
-- **Layer 3: Decal** (Icon/Prop): Centered vector icons (Tree, Rock, Star).
-- **UI**: A "Badge Maker" style interface with large previews and instant feedback.
 
 ## Jonas's Wishlist (Nov 2025)
 
 - [ ] **Difficulty Indicators**: Show difficulty level on the level overlay/card.
 - [ ] **Selectable Icons**: Allow choosing an icon for the level.
 - [ ] **Speaker Avatars**: Show avatars for speakers in the story/dialogue system.
-- [ ] **Level Packs**: Group levels into packs/campaigns.
 - [ ] **Publishing**: A way to share levels (maybe a simple file-based repo or lightweight backend).
 - [ ] **Feedback Button**: A way for players to send feedback to level creators (e.g., "Too hard", "Fun!", "Broken").
 

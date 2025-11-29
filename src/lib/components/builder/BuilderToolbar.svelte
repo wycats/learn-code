@@ -17,7 +17,8 @@
 		Snowflake,
 		Mountain,
 		Sun,
-		Leaf
+		Leaf,
+		ArrowLeft
 	} from 'lucide-svelte';
 	import PackManagerModal from './PackManagerModal.svelte';
 
@@ -25,9 +26,10 @@
 		builder: BuilderModel;
 		showSettings: boolean;
 		onToggleSettings: () => void;
+		onExit?: () => void;
 	}
 
-	let { builder, showSettings, onToggleSettings }: Props = $props();
+	let { builder, showSettings, onToggleSettings, onExit }: Props = $props();
 
 	let pickerPopover = $state<HTMLElement>();
 	let showPackManager = $state(false);
@@ -152,6 +154,12 @@
 
 <div class="toolbar">
 	<div class="left-group">
+		{#if onExit}
+			<button class="action-btn" onclick={onExit} title="Exit Builder">
+				<ArrowLeft size={20} />
+			</button>
+			<div class="separator"></div>
+		{/if}
 		<div class="actions">
 			<button class="action-btn" onclick={() => (showPackManager = true)} title="Open Pack Manager">
 				<FolderOpen size={20} />

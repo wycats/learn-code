@@ -1,58 +1,39 @@
-# Technical Architecture Plan
+# Technical Architecture: Phase 11
 
-## 1. The "Brain": Execution Engine
+## Data Storage
+We will continue to use `localStorage` for this phase, but structure the data to allow for easy migration to IndexedDB or OPFS later.
 
-We will build a **"Mimic" Interpreter** (Custom TypeScript Runtime) for the MVP.
+### Schema Extensions
+```typescript
+// src/lib/game/schema.ts
 
-- **Why**: It allows us to decouple the _visual execution_ (animations, delays) from the _logical execution_. We need precise control over the "step" timing to match the "Stop/Go" pedagogy.
-- **Structure**:
-  - `Block`: A JSON object representing an instruction (compatible with PXT AST structure where possible).
-  - `Program`: An array of Blocks.
-  - `Interpreter`: A class that takes a `Program` and a `WorldState`, and yields a sequence of `Frame` objects (or async steps).
-- **Future-Proofing**: We will keep the Block data structure serializable and strictly typed, making a future migration to PXT (or generating PXT code from our blocks) straightforward.
+// Existing
+export interface LevelPack {
+  id: string;
+  name: string;
+  description: string;
+  coverImage?: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  levels: LevelDefinition[]; // Or LevelReference?
+}
 
-## 2. The "Heart": State Management & Undo
+// New: UserCampaign
+// We might need to separate "Level Definition" from "Level Reference" to avoid duplicating huge level blobs in the pack definition if we want to re-use levels.
+// For now, to keep it simple, we might just store the full level definitions inside the pack, OR store a list of IDs and look them up.
+// Given the current "Level Builder" saves levels individually, a "Pack" should probably just be a list of Level IDs + Metadata.
+```
 
-We will use **Svelte 5 Runes** combined with a **Snapshot History** pattern.
+## Component Architecture
 
-- **The Model**: A `GameModel` class using `$state` runes for fine-grained reactivity.
-  - `grid`: The 2D world state.
-  - `program`: The list of blocks in the tray.
-  - `status`: 'planning' | 'running' | 'won' | 'lost'.
-- **The History**:
-  - We will implement a `HistoryManager` that stores **non-reactive snapshots** of the `GameModel` data.
-  - **Strategy**: Since our state is small (a 5x5 grid and <50 blocks), we can simply serialize (or structuredClone) the relevant state before any user mutation.
-  - **Undo**: To undo, we pop the previous snapshot and bulk-update the `GameModel` runes. This triggers the UI to update automatically.
-  - **Why**: This avoids the boilerplate of the Command Pattern (writing `undo()` logic for every action) and avoids the performance cost of keeping the entire history reactive.
+### `PackEditor`
+*   **State**: Local state for the form (title, description).
+*   **Sync**: Saves to `CampaignService` on blur or explicit save.
 
-## 3. The "World": Level Format
+### `LevelOrganizer`
+*   **Interaction**: Uses `svelte-dnd-action` (or similar, or custom) for reordering.
+*   **Visuals**: Uses `LevelMap` nodes but in a linear or grid list with "Edit" controls.
 
-We will use **TypeScript-as-Data**.
-
-- **Format**: `.ts` files that export a `LevelDefinition` object (or a pure function returning one).
-- **Structure**:
-  ```typescript
-  export const Level1: LevelDefinition = {
-  	id: 'level-1',
-  	name: 'First Steps',
-  	grid: createGrid(5, 5), // Helper function
-  	start: { x: 2, y: 2 },
-  	goal: { x: 4, y: 2 },
-  	availableBlocks: ['move-right', 'move-up'],
-  	solutionPar: 3
-  };
-  ```
-- **Pros**:
-  - **Type Safety**: Immediate feedback on broken levels.
-  - **Idempotency**: The level definition is a recipe; the `GameModel` instantiates a fresh copy for the session.
-  - **No Parsing**: It's just code.
-
-## 4. Tech Stack Summary
-
-- **Framework**: SvelteKit (Svelte 5).
-- **Styling**:
-  - **System**: **Open Props** for design tokens (colors, shadows, spacing).
-  - **Methodology**: **Scoped CSS** (Standard Svelte) for component styles.
-  - **Layouts**: **Every Layout** primitives implemented as Svelte components (e.g., `<Stack>`, `<Cluster>`, `<Grid>`) to handle composition without writing repetitive CSS.
-- **Icons**: Material Icons (via a lightweight wrapper or SVG assets).
-- **Testing**: Vitest for logic (Interpreter), Playwright for E2E.
+## Routing Strategy
+*   **Standard Play**: `/library/[packId]` -> `/play/[packId]/[levelId]`
+*   **Builder**: `/builder/campaigns/[packId]` -> (Edit Level) -> `/builder?levelId=...&returnTo=/builder/campaigns/[packId]`
+    *   We need to ensure the Builder knows where to return to.

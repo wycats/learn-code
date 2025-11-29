@@ -265,7 +265,11 @@
 									<button class="action-btn" onclick={(e) => editTile(tile, e)} title="Edit">
 										<Pencil size={14} />
 									</button>
-									<button class="action-btn delete" onclick={(e) => deleteTile(tile.id, e)} title="Delete">
+									<button
+										class="action-btn delete"
+										onclick={(e) => deleteTile(tile.id, e)}
+										title="Delete"
+									>
 										<Trash2 size={14} />
 									</button>
 								</div>
@@ -288,11 +292,7 @@
 </div>
 
 {#if showTileEditor}
-	<TileEditorModal
-		tile={editingTile}
-		onSave={saveTile}
-		onClose={() => (showTileEditor = false)}
-	/>
+	<TileEditorModal tile={editingTile} onSave={saveTile} onClose={() => (showTileEditor = false)} />
 {/if}
 
 <style>

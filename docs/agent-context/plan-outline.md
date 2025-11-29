@@ -76,16 +76,25 @@
 - [x] **Tile Designer UI**: A "Badge Maker" interface for creating custom terrain (Base + Pattern + Decal).
 - [x] **Hazards & Mechanics**: Implement new tile behaviors (Spikes, Water, Ice).
 
-## Phase 10: The Librarian (Current)
+## Phase 10: The Librarian (Completed)
 
 **Goal:** Organize content into cohesive collections and improve the discovery experience.
 
-- [ ] **Level Packs**: Support for grouping levels into Campaigns/Packs.
-- [ ] **Home Screen Redesign**: A visual overhaul of the level selection screen.
-- [ ] **Metadata & Ratings**: Difficulty, tags, and descriptions for levels.
-- [ ] **Persistence Upgrade**: Robust local storage (IndexedDB/OPFS) for user progress and content.
+- [x] **Level Packs**: Support for grouping levels into Campaigns/Packs.
+- [x] **Home Screen Redesign**: A visual overhaul of the level selection screen.
+- [x] **Metadata & Ratings**: Difficulty, tags, and descriptions for levels.
+- [x] **Persistence Upgrade**: Robust local storage for user progress and content.
 
-## Phase 11: Advanced Builder Features
+## Phase 11: The Campaign Builder (Current)
+
+**Goal:** Empower the Architect to create, edit, and organize Level Packs using a diagetic interface.
+
+- [ ] **Pack Editor**: UI to create/edit packs (Title, Description, Cover).
+- [ ] **Level Organizer**: Drag-and-drop interface to manage levels within a pack.
+- [ ] **Architect's Library**: A management screen for user-created campaigns.
+- [ ] **Diagetic Integration**: Seamless transition between playing and building.
+
+## Phase 12: Advanced Builder Features
 
 **Goal:** Bring advanced game mechanics into the Builder to support complex level design.
 

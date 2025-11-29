@@ -1,63 +1,46 @@
-# Implementation Plan - Phase 10: The Librarian
+# Implementation Plan: Phase 11 - The Campaign Builder
 
-**Goal:** Organize content into cohesive collections and improve the discovery experience.
-**Success Criteria:** A redesigned Home Screen displaying distinct "Campaigns" (e.g., "The Basics", "The Gauntlet") and a robust system for saving/loading user progress across these packs.
+## Goal
+Empower the Architect (user) to create, organize, and manage their own Level Packs (Campaigns) using a high-quality, diagetic interface that mirrors the game's Library.
 
-## 1. Data Architecture (Level Packs)
+## User Experience
+1.  **Entry Point**: From the main Library or a dedicated "Architect Mode" toggle, the user accesses "My Campaigns".
+2.  **Management**: The user sees a shelf of their custom packs. They can create a new one or edit an existing one.
+3.  **Editing**:
+    *   **Metadata**: Clicking a pack opens the Editor. The user can set the Title, Description, and choose a Cover Icon (using the same visual style as the `PackCard`).
+    *   **Content**: The user sees a list of levels in the pack. They can:
+        *   Create a new level (launches Level Builder).
+        *   Import an existing level (from their local storage).
+        *   Reorder levels (Drag & Drop).
+        *   Remove levels.
+    *   **Cloning**: The user can clone any built-in campaign to use as a starting point for their own pack.
+4.  **Play**: The user can play their own campaign just like a built-in one.
 
-We need to move from a flat list of levels to a hierarchical structure.
+## Technical Architecture
 
-- [ ] **Schema Update**:
-  - [ ] Define `LevelPackSchema`:
-    - `id`: string
-    - `title`: string
-    - `description`: string
-    - `coverImage`: string (icon/color)
-    - `levels`: LevelDefinition[] (or IDs)
-    - `difficulty`: 'beginner' | 'intermediate' | 'advanced'
-    - `tags`: string[]
-  - [ ] Update `UserProgressSchema` to track progress *per pack*.
+### Data Model
+*   **`UserPack`**: Extends `LevelPack` but stored in `localStorage`.
+*   **`CampaignService`**: A new service (or extension of `ProgressService`) to handle:
+    *   `createPack()`
+    *   `clonePack(sourcePackId)`
+    *   `updatePack(id, data)`
+    *   `deletePack(id)`
+    *   `addLevelToPack(packId, levelId)`
+    *   `reorderLevels(packId, newOrder)`
 
-- [ ] **Content Organization**:
-  - [ ] Create `src/lib/game/packs/basics.ts` (Levels 1-8).
-  - [ ] Create `src/lib/game/packs/gauntlet.ts` (Level 9 + new variations).
-  - [ ] Create a `PackRegistry` to manage available content.
+### UI Components
+*   **`PackEditorLayout`**: A split view or focused view for editing pack details.
+*   **`LevelList`**: A sortable list component for the levels within a pack.
+*   **`CoverSelector`**: A component to choose the visual theme/icon for the pack.
 
-## 2. Persistence Layer (The Bookshelf)
+### Routing
+*   `/builder/campaigns`: List of user campaigns.
+*   `/builder/campaigns/[packId]`: Editor for a specific campaign.
+*   `/builder/campaigns/[packId]/[levelId]`: Deep link to edit a specific level within a campaign context.
 
-Upgrade our storage to handle more complex data.
+## Step-by-Step Implementation
 
-- [ ] **Storage Service**:
-  - [ ] Abstract `localStorage` calls into a `PersistenceService`.
-  - [ ] Implement `saveProgress(packId, levelId, result)`.
-  - [ ] Implement `getProgress(packId)`.
-  - [ ] (Optional) Prepare for IndexedDB if data size warrants it, but `localStorage` is likely fine for metadata.
-
-## 3. UI Redesign (The Library)
-
-Replace the simple list on the Home Page with a rich, card-based interface.
-
-- [ ] **Home Page (`src/routes/+page.svelte`)**:
-  - [ ] **Hero Section**: "Continue Playing" (most recent level).
-  - [ ] **Campaign Shelf**: Horizontal scroll or grid of "Official Campaigns".
-  - [ ] **Community Shelf**: (Placeholder) for user-generated content.
-  - [ ] **Builder Entry**: Distinct card/button to enter the Level Builder.
-
-- [ ] **Pack Detail View**:
-  - [ ] When clicking a pack, show a "Map" or list of levels within it.
-  - [ ] Visual progress indicators (stars/checks) for each level.
-
-## 4. Metadata & Polish
-
-- [ ] **Level Metadata**:
-  - [ ] Add `difficulty` rating to `LevelDefinition`.
-  - [ ] Add `estimatedTime` to `LevelDefinition`.
-- [ ] **Visuals**:
-  - [ ] Create distinct icons/colors for the "Basics" vs "Gauntlet" packs.
-
-## Execution Order
-
-1.  **Data**: Define the `LevelPack` schema and migrate existing levels into the "Basics" pack.
-2.  **Persistence**: Refactor the storage layer to support packs.
-3.  **UI**: Build the new Home Screen components (`PackCard`, `LevelGrid`).
-4.  **Integration**: Wire it all together.
+1.  **Service Layer**: Implement `CampaignService` and update schemas.
+2.  **Library View**: Build the "My Campaigns" page.
+3.  **Editor View**: Build the Pack Editor (Metadata + Level List).
+4.  **Integration**: Connect the Level Builder to the Campaign flow.
