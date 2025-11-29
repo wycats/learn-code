@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { StorySegment, Character } from '$lib/game/types';
-	import { fly } from 'svelte/transition';
 	import { ArrowRight } from 'lucide-svelte';
 	import Avatar from './Avatar.svelte';
+	import Guide from './Guide.svelte';
 
 	interface Props {
 		segment: StorySegment;
@@ -48,14 +48,21 @@
 <div class="instruction-bar">
 	<div class="instruction-content">
 		<div class="character-portrait" data-character={segment.speaker}>
-			<div class="avatar" style:background-color={getCharacterColor(segment.speaker)}>
-				<Avatar value={getCharacterAvatar(segment.speaker) || '?'} size={24} />
-				{#if segment.emotion}
-					<div class="emotion-badge" title={segment.emotion}>
-						{emotions[segment.emotion] || ''}
-					</div>
-				{/if}
-			</div>
+			{#if segment.speaker === 'Guide'}
+				<Guide
+					emotion={segment.emotion as 'idle' | 'thinking' | 'talking' | 'happy' | 'sad'}
+					size={56}
+				/>
+			{:else}
+				<div class="avatar" style:background-color={getCharacterColor(segment.speaker)}>
+					<Avatar value={getCharacterAvatar(segment.speaker) || '?'} size={24} />
+					{#if segment.emotion}
+						<div class="emotion-badge" title={segment.emotion}>
+							{emotions[segment.emotion] || ''}
+						</div>
+					{/if}
+				</div>
+			{/if}
 		</div>
 		<div class="content" aria-live="polite">
 			<div class="speaker-name">{segment.speaker}</div>

@@ -120,7 +120,7 @@ Implemented "Functions" (Magic Blocks) to introduce the concept of reusable code
   - Implemented "Infinite Loop" logic and UI.
   - Refactored Loop Block configuration into a "Contextual Configuration Panel" in the Tray using Glassomorphism and Popover API.
 
-## Phase 8: Level Builder (Completed)
+## Phase 7: Level Builder (Completed)
 
 **Date:** November 28, 2025
 
@@ -140,3 +140,28 @@ Implemented a comprehensive "Level Builder" inspired by Super Mario Maker, enabl
   - **Cheats**: Added "Rotate Character" and "Reset Position" tools to facilitate rapid debugging.
 - **Serialization**:
   - Implemented JSON Export and Import functionality for level sharing.
+
+## Phase 8: Intelligent Tutoring System (Completed)
+
+**Date:** November 28, 2025
+
+**Summary:**
+Transformed the learning experience into an active, intelligent coaching system. Introduced a "Guide" character (a friendly robot) who provides context-aware hints when users struggle. Empowered level creators to author these guided experiences using new tools in the Level Builder, including a Hint Editor, Snapshot Tool, and Spotlight targeting system.
+
+**Key Deliverables:**
+
+- **Program Analysis Engine**:
+  - Implemented static analysis utilities (`countBlocks`, `hasSequence`, `detectAntiPatterns`) to inspect user code.
+- **Hint Engine**:
+  - Created `HintManager` to trigger hints based on Time, Idle, Attempts, or Code Analysis.
+- **Guide Character**:
+  - Implemented `Guide.svelte`, an animated SVG robot with emotional states (Idle, Thinking, Talking, Happy, Sad).
+- **Authoring Tools**:
+  - **Hint Editor**: UI in `BuilderTray` to define hints and triggers.
+  - **Snapshot Tool**: Ability to save the current tray as `initialProgram` for debugging levels.
+  - **Spotlight Targeting**: "Map Pin" tool in Story Editor to select grid/block targets.
+- **Content Updates**:
+  - Updated Level 1 and Level 4 ("The Bug") to use the new hint system.
+- **UI Polish**:
+  - Added live highlight previews, gentle fade effects, and an emoji picker for story configuration.
+

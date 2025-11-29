@@ -52,5 +52,18 @@
 			"text": "Find the wrong block and fix it!",
 			"emotion": "neutral"
 		}
+	],
+	"hints": [
+		{
+			"id": "hint-debug-1",
+			"text": "Use the 'Step' button (next to Play) to run the code one block at a time.",
+			"trigger": { "type": "idle", "value": 20 },
+			"highlight": "ui:step-btn"
+		},
+		{
+			"id": "hint-debug-2",
+			"text": "Look closely at the third turn. Is it turning the right way?",
+			"trigger": { "type": "attempts", "value": 2 }
+		}
 	]
 }

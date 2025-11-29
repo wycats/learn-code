@@ -8,7 +8,7 @@
 		savePack
 	} from '$lib/game/persistence';
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
-	import { X, Trash2, FolderOpen, Plus, Save, Pencil, Check } from 'lucide-svelte';
+	import { X, Trash2, FolderOpen, Plus, Pencil, Check } from 'lucide-svelte';
 
 	interface Props {
 		builder: BuilderModel;
@@ -113,7 +113,7 @@
 				maxBlocks: 10
 			});
 		}
-		builder.level = builder.pack.levels[0];
+		builder.activeLevelId = builder.pack.levels[0].id;
 		builder.syncGame();
 
 		// Save the new pack immediately so it appears in the list next time
@@ -137,7 +137,7 @@
 	</div>
 
 	<div class="pack-list">
-		{#each packs as pack}
+		{#each packs as pack (pack.id)}
 			<div class="pack-item" class:active={builder.pack.id === pack.id}>
 				{#if editingPackId === pack.id}
 					<div class="pack-info">

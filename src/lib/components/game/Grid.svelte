@@ -112,7 +112,7 @@
 		return c;
 	});
 
-	const highlight = $derived(game.currentStorySegment?.highlight);
+	const highlight = $derived(game.previewHighlight || game.displaySegment?.highlight);
 </script>
 
 <div
@@ -125,7 +125,6 @@
 	tabindex="0"
 >
 	{#each cells as cell (`${cell.x},${cell.y}`)}
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			class="grid-cell-wrapper"

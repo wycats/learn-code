@@ -73,7 +73,6 @@ import {
 	Mountain,
 	Tent
 } from 'lucide-svelte';
-import type { Component } from 'svelte';
 
 export const AVATAR_ICONS = {
 	bot: Bot,

@@ -3,17 +3,12 @@
 	import {
 		Play,
 		SquarePen,
-		Download,
-		Upload,
 		RotateCw,
 		RefreshCcw,
 		Settings,
 		Box,
-		MapPin,
 		Eraser,
-		Star,
 		ChevronDown,
-		Bot,
 		Save,
 		FolderOpen,
 		Plus,
@@ -23,7 +18,6 @@
 		Sun,
 		Leaf
 	} from 'lucide-svelte';
-	import { fade, fly } from 'svelte/transition';
 	import PackManagerModal from './PackManagerModal.svelte';
 
 	interface Props {
@@ -41,6 +35,7 @@
 	const terrainTools: {
 		id: string;
 		tool: BuilderTool;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		icon: any;
 		label: string;
 		color?: string;
@@ -58,6 +53,7 @@
 	const specialTools: {
 		id: string;
 		tool: BuilderTool;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		icon: any;
 		label: string;
 		color?: string;
@@ -111,54 +107,20 @@
 	}
 
 	function rotateCharacter() {
-		const dirs = ['N', 'E', 'S', 'W'];
+		const dirs = ['N', 'E', 'S', 'W'] as const;
 		const currentIdx = dirs.indexOf(builder.game.characterOrientation);
-		builder.game.characterOrientation = dirs[(currentIdx + 1) % 4] as any;
+		builder.game.characterOrientation = dirs[(currentIdx + 1) % 4];
 	}
 
 	function resetCharacter() {
 		builder.game.reset();
 	}
 
-	function exportLevel() {
-		const data = JSON.stringify(builder.level, null, 2);
-		const blob = new Blob([data], { type: 'application/json' });
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = `${builder.level.name.replace(/\s+/g, '-').toLowerCase()}.json`;
-		a.click();
-		URL.revokeObjectURL(url);
-	}
-
-	function importLevel() {
-		const input = document.createElement('input');
-		input.type = 'file';
-		input.accept = '.json';
-		input.onchange = (e) => {
-			const file = (e.target as HTMLInputElement).files?.[0];
-			if (!file) return;
-			const reader = new FileReader();
-			reader.onload = (e) => {
-				try {
-					const json = JSON.parse(e.target?.result as string);
-					builder.level = json;
-					builder.syncGame();
-				} catch (err) {
-					console.error('Failed to parse level file', err);
-					alert('Invalid level file');
-				}
-			};
-			reader.readAsText(file);
-		};
-		input.click();
-	}
-
 	async function savePack() {
 		try {
 			await builder.save();
 			// Optional: toast notification
-		} catch (e) {
+		} catch {
 			alert('Failed to save pack');
 		}
 	}
@@ -184,9 +146,9 @@
 				<select
 					class="level-select"
 					value={builder.level.id}
-					onchange={(e) => builder.switchLevel(e.currentTarget.value)}
+					onchange={({ currentTarget }) => builder.switchLevel(currentTarget.value)}
 				>
-					{#each builder.pack.levels as level}
+					{#each builder.pack.levels as level (level.id)}
 						<option value={level.id}>{level.name}</option>
 					{/each}
 				</select>
@@ -234,7 +196,7 @@
 						popover="auto"
 						class="tool-popover"
 					>
-						{#each terrainTools as { id, tool, icon: Icon, label, color }}
+						{#each terrainTools as { id, tool, icon: Icon, label } (id)}
 							<button
 								class="tool-option"
 								class:active={isToolActive(tool)}
@@ -248,7 +210,7 @@
 				</div>
 
 				<!-- Special Tools -->
-				{#each specialTools as { id, tool, icon: Icon, label, color }}
+				{#each specialTools as { id, tool, icon: Icon, label, color } (id)}
 					<button
 						class="tool-btn"
 						class:active={isToolActive(tool)}

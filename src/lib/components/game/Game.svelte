@@ -21,7 +21,7 @@
 		RefreshCcw
 	} from 'lucide-svelte';
 	import { soundManager } from '$lib/game/sound';
-	import { fly, fade } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 
 	interface Props {
 		game: GameModel;
@@ -268,7 +268,7 @@
 		<div class="stage-area">
 			<div class="dashboard-area">
 				{#if game.displaySegment}
-					<div class="dashboard-layer" transition:fly={{ y: -20, duration: 300 }}>
+					<div class="dashboard-layer" transition:fade={{ duration: 200 }}>
 						<InstructionBar
 							segment={game.displaySegment}
 							characters={game.level.characters}
@@ -276,7 +276,7 @@
 						/>
 					</div>
 				{:else if game.status !== 'goal'}
-					<div class="dashboard-layer" transition:fade={{ duration: 300 }}>
+					<div class="dashboard-layer" transition:fade={{ duration: 200 }}>
 						<StatusPanel {game} />
 					</div>
 				{/if}
@@ -288,7 +288,7 @@
 				{/key}
 
 				{#if game.status === 'won'}
-					<WinModal onReplay={handleReset} onNext={onNextLevel} {hasNextLevel} />
+					<WinModal onReplay={handleReset} onNext={onNextLevel || (() => {})} {hasNextLevel} />
 				{/if}
 
 				{#if game.status === 'goal'}

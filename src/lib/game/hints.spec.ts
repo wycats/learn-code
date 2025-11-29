@@ -46,9 +46,9 @@ describe('GameModel Hints', () => {
 	it('should trigger time-based hint', () => {
 		// Advance time by 11 seconds
 		vi.advanceTimersByTime(11000);
-		
+
 		model.checkHints();
-		
+
 		expect(model.activeHintId).toBe('hint-time');
 		expect(model.displaySegment?.text).toBe('Time hint');
 		expect(model.displaySegment?.speaker).toBe('Guide');
@@ -60,7 +60,7 @@ describe('GameModel Hints', () => {
 
 		model.recordFailure();
 		model.checkHints();
-		expect(model.activeHintId).toBeNull(); 
+		expect(model.activeHintId).toBeNull();
 
 		model.recordFailure();
 		model.checkHints();
@@ -79,9 +79,9 @@ describe('GameModel Hints', () => {
 
 		// Advance time by 6 seconds without interaction
 		vi.advanceTimersByTime(6000);
-		
+
 		model.checkHints();
-		
+
 		expect(model.activeHintId).toBe('hint-idle');
 	});
 
@@ -98,13 +98,13 @@ describe('GameModel Hints', () => {
 		// Advance 3 seconds
 		vi.advanceTimersByTime(3000);
 		model.recordInteraction();
-		
+
 		// Advance another 3 seconds (total 6, but only 3 since interaction)
 		vi.advanceTimersByTime(3000);
-		
+
 		model.checkHints();
 		expect(model.activeHintId).toBeNull();
-		
+
 		// Advance another 3 seconds (total 6 since interaction)
 		vi.advanceTimersByTime(3000);
 		model.checkHints();

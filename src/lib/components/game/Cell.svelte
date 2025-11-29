@@ -6,7 +6,7 @@
 		type: CellType;
 		x?: number;
 		y?: number;
-		highlight?: { target: string; type?: 'pulse' | 'arrow' | 'dim' } | undefined;
+		highlight?: { target: string; type?: 'pulse' | 'arrow' | 'dim'; fading?: boolean } | undefined;
 	}
 
 	let { type, x, y, highlight }: Props = $props();
@@ -14,9 +14,10 @@
 	const isHighlighted = $derived(
 		highlight && x !== undefined && y !== undefined && highlight.target === `cell:${x},${y}`
 	);
+	const isFading = $derived(isHighlighted && highlight?.fading);
 </script>
 
-<div class="cell" data-type={type} class:highlighted={isHighlighted}>
+<div class="cell" data-type={type} class:highlighted={isHighlighted} class:fading={isFading}>
 	{#if type === 'goal'}
 		<div class="goal-marker">
 			<Star size={24} color="var(--yellow-7)" fill="var(--yellow-4)" />
@@ -110,6 +111,15 @@
 		box-shadow: 0 0 15px var(--pink-5);
 		z-index: 10;
 		animation: pulse-highlight 1.5s infinite;
+	}
+
+	.cell.highlighted.fading {
+		animation: none;
+		outline-color: transparent;
+		box-shadow: none;
+		transition:
+			outline-color 2s ease-out,
+			box-shadow 2s ease-out;
 	}
 
 	@keyframes pulse-highlight {

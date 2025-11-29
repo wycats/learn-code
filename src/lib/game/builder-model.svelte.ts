@@ -2,25 +2,23 @@ import { GameModel } from './model.svelte';
 import type { LevelDefinition, CellType, GridPosition, LevelPack } from './types';
 import { createDefaultPack, savePack, loadPack, listPacks } from './persistence';
 
-export type BuilderTool = 
-	| { type: 'terrain'; value: CellType }
-	| { type: 'erase' };
+export type BuilderTool = { type: 'terrain'; value: CellType } | { type: 'erase' };
 
 export class BuilderModel {
 	// The pack we are currently editing
 	pack = $state<LevelPack>(createDefaultPack());
-	
+
 	// The ID of the currently active level
 	activeLevelId = $state<string>('');
 
 	// Derived level object - this ensures we are always editing the object inside the pack
 	get level(): LevelDefinition {
-		const found = this.pack.levels.find(l => l.id === this.activeLevelId);
+		const found = this.pack.levels.find((l) => l.id === this.activeLevelId);
 		if (found) return found;
-		
+
 		// Fallback if ID not found (shouldn't happen if logic is correct)
 		if (this.pack.levels.length > 0) return this.pack.levels[0];
-		
+
 		// Absolute fallback
 		return {
 			id: 'fallback',
@@ -40,21 +38,36 @@ export class BuilderModel {
 	activeTool = $state<BuilderTool>({ type: 'terrain', value: 'wall' });
 	activeSegmentId = $state<string | null>(null);
 	selectedActor = $state<'start' | 'goal' | null>(null);
-	
+	onTargetSelect = $state<((target: string) => void) | null>(null);
+
+	get targetSelectionMode() {
+		return this.onTargetSelect !== null;
+	}
+
+	startTargetSelection(callback: (target: string) => void) {
+		this.onTargetSelect = callback;
+	}
+
+	cancelTargetSelection() {
+		this.onTargetSelect = null;
+	}
+
 	// The GameModel instance used for rendering (and testing)
-	game = $state<GameModel>(new GameModel({
-		id: 'temp',
-		name: 'Temp',
-		gridSize: { width: 5, height: 5 },
-		start: { x: 0, y: 0 },
-		startOrientation: 'E',
-		goal: { x: 4, y: 4 },
-		layout: {},
-		availableBlocks: {}
-	}));
+	game = $state<GameModel>(
+		new GameModel({
+			id: 'temp',
+			name: 'Temp',
+			gridSize: { width: 5, height: 5 },
+			start: { x: 0, y: 0 },
+			startOrientation: 'E',
+			goal: { x: 4, y: 4 },
+			layout: {},
+			availableBlocks: {}
+		})
+	);
 
 	constructor() {
-		// Initialize with the first level of the default pack if available, 
+		// Initialize with the first level of the default pack if available,
 		// otherwise keep the default new level.
 		if (this.pack.levels.length === 0) {
 			// Ensure the default level is in the pack
@@ -70,21 +83,29 @@ export class BuilderModel {
 					'move-forward': 'unlimited',
 					'turn-left': 'unlimited',
 					'turn-right': 'unlimited',
-					'loop': 'unlimited'
+					loop: 'unlimited'
 				},
 				maxBlocks: 10
 			};
 			this.pack.levels.push(defaultLevel);
 		}
-		
+
 		this.activeLevelId = this.pack.levels[0].id;
 		this.syncGame();
+		this.restoreActiveSegment();
 
 		// Autosave effect
 		$effect(() => {
 			// Track dependencies
 			const packData = $state.snapshot(this.pack);
 			this.debouncedSave(packData);
+		});
+
+		// Persist active segment
+		$effect(() => {
+			if (this.activeSegmentId && typeof localStorage !== 'undefined') {
+				localStorage.setItem(`lastActiveSegment:${this.activeLevelId}`, this.activeSegmentId);
+			}
 		});
 	}
 
@@ -103,6 +124,7 @@ export class BuilderModel {
 					this.activeLevelId = this.pack.levels[0].id;
 				}
 				this.syncGame();
+				this.restoreActiveSegment();
 				return;
 			}
 		}
@@ -155,7 +177,7 @@ export class BuilderModel {
 						'move-forward': 'unlimited',
 						'turn-left': 'unlimited',
 						'turn-right': 'unlimited',
-						'loop': 'unlimited'
+						loop: 'unlimited'
 					},
 					maxBlocks: 10
 				};
@@ -163,7 +185,8 @@ export class BuilderModel {
 			}
 			this.activeLevelId = this.pack.levels[0].id;
 			this.syncGame();
-			
+			this.restoreActiveSegment();
+
 			if (typeof localStorage !== 'undefined') {
 				localStorage.setItem('lastActivePackId', loaded.id);
 			}
@@ -183,21 +206,23 @@ export class BuilderModel {
 				'move-forward': 'unlimited',
 				'turn-left': 'unlimited',
 				'turn-right': 'unlimited',
-				'loop': 'unlimited'
+				loop: 'unlimited'
 			},
 			maxBlocks: 10
 		};
-		
+
 		this.pack.levels.push(newLevel);
 		this.activeLevelId = newLevel.id;
 		this.syncGame();
+		this.restoreActiveSegment();
 	}
 
 	switchLevel(levelId: string) {
-		const nextLevel = this.pack.levels.find(l => l.id === levelId);
+		const nextLevel = this.pack.levels.find((l) => l.id === levelId);
 		if (nextLevel) {
 			this.activeLevelId = nextLevel.id;
 			this.syncGame();
+			this.restoreActiveSegment();
 		}
 	}
 
@@ -222,14 +247,74 @@ export class BuilderModel {
 		this.syncGame();
 	}
 
+	snapshotTray() {
+		// Save the current program from the game model to the level definition
+		this.level.initialProgram = $state.snapshot(this.game.program);
+		// Also save functions if we want to support pre-filled functions
+		this.level.functions = $state.snapshot(this.game.functions);
+	}
+
+	setStoryHighlight(target: string) {
+		if (!this.activeSegmentId) return;
+
+		const findAndSet = (list: import('./types').StorySegment[] | undefined) => {
+			if (!list) return false;
+			const segment = list.find((s) => s.id === this.activeSegmentId);
+			if (segment) {
+				segment.highlight = { target, type: 'pulse' };
+				this.game.triggerPreviewHighlight(target);
+				return true;
+			}
+			return false;
+		};
+
+		if (!findAndSet(this.level.intro)) {
+			findAndSet(this.level.outro);
+		}
+	}
+
+	restoreActiveSegment() {
+		if (typeof window === 'undefined') return;
+
+		const savedId = localStorage.getItem(`lastActiveSegment:${this.activeLevelId}`);
+
+		// Helper to check existence
+		const exists = (id: string) => {
+			return (
+				this.level.intro?.some((s) => s.id === id) || this.level.outro?.some((s) => s.id === id)
+			);
+		};
+
+		if (savedId && exists(savedId)) {
+			this.activeSegmentId = savedId;
+			return;
+		}
+
+		// Default to first available
+		if (this.level.intro && this.level.intro.length > 0) {
+			this.activeSegmentId = this.level.intro[0].id!;
+		} else if (this.level.outro && this.level.outro.length > 0) {
+			this.activeSegmentId = this.level.outro[0].id!;
+		} else {
+			this.activeSegmentId = null;
+		}
+	}
+
 	handleCellClick(pos: GridPosition) {
 		if (this.mode !== 'edit' && this.mode !== 'story') return;
+
+		if (this.onTargetSelect) {
+			const target = `cell:${pos.x},${pos.y}`;
+			this.onTargetSelect(target);
+			this.onTargetSelect = null;
+			return;
+		}
 
 		// If an actor is selected, move it to this position
 		if (this.selectedActor) {
 			const key = `${pos.x},${pos.y}`;
 			const cellType = this.level.layout[key] || 'grass';
-			
+
 			// Prevent placing actors on walls or water
 			// TODO: Future idea - configurable overlap rules
 			if (cellType === 'wall' || cellType === 'water') {
@@ -265,7 +350,7 @@ export class BuilderModel {
 		// Since level is a $state object, mutations should trigger updates.
 		// However, GameModel copies the level data in its constructor.
 		// So we need to update the GameModel's internal state too.
-		
+
 		// For now, let's just re-sync the whole game model to be safe and simple.
 		// Optimization: Update the specific part of GameModel.
 		this.syncGame();

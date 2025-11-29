@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
-	import type { Character, Emotion } from '$lib/game/schema';
-	import { Plus, Trash2, X, Bot, Palette, Smile } from 'lucide-svelte';
+	import { Plus, Trash2, X, Smile } from 'lucide-svelte';
 	import Avatar from '$lib/components/game/Avatar.svelte';
 	import { isAvatarIcon, AVATAR_ICONS } from '$lib/game/icons';
 
@@ -12,7 +11,7 @@
 		initialTab?: 'characters' | 'emotions';
 	}
 
-	let { builder, isOpen, onClose, initialTab = 'characters' } = $props();
+	let { builder, isOpen, onClose, initialTab = 'characters' }: Props = $props();
 	let dialog: HTMLDialogElement;
 	let activeTab = $state(initialTab);
 
@@ -109,6 +108,77 @@
 		'var(--pink-3)',
 		'var(--surface-3)'
 	];
+
+	const COMMON_EMOJIS = [
+		'😐',
+		'🙂',
+		'😊',
+		'😃',
+		'😄',
+		'😆',
+		'🤣',
+		'😇',
+		'😉',
+		'😌',
+		'😍',
+		'🥰',
+		'😎',
+		'🤩',
+		'🥳',
+		'😒',
+		'😞',
+		'😔',
+		'😟',
+		'😕',
+		'🙁',
+		'☹️',
+		'😣',
+		'😖',
+		'😫',
+		'😩',
+		'🥺',
+		'😢',
+		'😭',
+		'😤',
+		'😠',
+		'😡',
+		'🤬',
+		'🤯',
+		'😳',
+		'😱',
+		'😨',
+		'😰',
+		'😥',
+		'😓',
+		'🤔',
+		'🤨',
+		'🧐',
+		'🤓',
+		'😏',
+		'🙄',
+		'😬',
+		'😶',
+		'😑',
+		'😴',
+		'😵',
+		'🤢',
+		'😷',
+		'😈',
+		'👻',
+		'💀',
+		'👽',
+		'🤖',
+		'👋',
+		'👍',
+		'👎',
+		'👏',
+		'🙏',
+		'❤️',
+		'✨',
+		'💡',
+		'❓',
+		'❗️'
+	];
 </script>
 
 <dialog
@@ -145,18 +215,18 @@
 	<div class="modal-content">
 		{#if activeTab === 'characters'}
 			<div class="list-container">
-				{#each builder.level.characters || [] as char, i}
+				{#each builder.level.characters || [] as char, i (char.id)}
 					<div class="config-item compact">
 						<div class="avatar-wrapper">
 							<div class="avatar-circle" style:background-color={char.color}>
-								{#if isAvatarIcon(char.avatar)}
+								{#if isAvatarIcon(char.avatar ?? '')}
 									<div class="bot-icon-preview">
-										<Avatar value={char.avatar} size={20} />
+										<Avatar value={char.avatar ?? '?'} size={20} />
 									</div>
 								{/if}
 								<input
 									class="avatar-input"
-									class:is-icon={isAvatarIcon(char.avatar)}
+									class:is-icon={isAvatarIcon(char.avatar ?? '')}
 									bind:value={char.avatar}
 									maxlength="15"
 									onclick={(e) => e.currentTarget.select()}
@@ -173,7 +243,7 @@
 
 							<div id="icon-popover-{i}" popover="auto" class="icon-popover">
 								<div class="icon-grid">
-									{#each Object.entries(AVATAR_ICONS) as [name, Icon]}
+									{#each Object.entries(AVATAR_ICONS) as [name, Icon] (name)}
 										<button
 											class="icon-option"
 											class:selected={char.avatar === name}
@@ -198,7 +268,7 @@
 							></button>
 
 							<div id="color-popover-{i}" popover="auto" class="color-popover">
-								{#each colors as color}
+								{#each colors as color (color)}
 									<button
 										class="color-swatch"
 										style:background-color={color}
@@ -232,7 +302,7 @@
 			</div>
 		{:else}
 			<div class="list-container">
-				{#each builder.level.emotions || [] as emo, i}
+				{#each builder.level.emotions || [] as emo, i (emo.id)}
 					<div class="config-item compact">
 						<div class="emoji-wrapper">
 							<input
@@ -241,6 +311,32 @@
 								maxlength="2"
 								aria-label="Emoji for {emo.name}"
 							/>
+							<button
+								class="icon-trigger"
+								popovertarget="emoji-popover-{i}"
+								aria-label="Choose emoji for {emo.name}"
+							>
+								<Smile size={10} />
+							</button>
+
+							<div id="emoji-popover-{i}" popover="auto" class="icon-popover">
+								<div class="icon-grid">
+									{#each COMMON_EMOJIS as emoji (emoji)}
+										<button
+											class="icon-option emoji-option"
+											class:selected={emo.icon === emoji}
+											onclick={(e) => {
+												emo.icon = emoji;
+												const popover = e.currentTarget.closest('[popover]') as HTMLElement | null;
+												popover?.hidePopover();
+											}}
+											title={emoji}
+										>
+											{emoji}
+										</button>
+									{/each}
+								</div>
+							</div>
 						</div>
 
 						<input
@@ -488,6 +584,7 @@
 	}
 
 	.emoji-wrapper {
+		position: relative;
 		width: 48px;
 		height: 48px;
 		display: grid;
@@ -505,6 +602,10 @@
 		text-align: center;
 		font-size: 24px;
 		padding: 0;
+	}
+
+	.emoji-option {
+		font-size: 20px;
 	}
 
 	.id-input {

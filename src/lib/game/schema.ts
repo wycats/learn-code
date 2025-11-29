@@ -35,7 +35,16 @@ export const GridPositionSchema = z.object({
 });
 export type GridPosition = z.infer<typeof GridPositionSchema>;
 
-export const CellTypeSchema = z.enum(['grass', 'water', 'wall', 'goal', 'sand', 'snow', 'forest', 'dirt']);
+export const CellTypeSchema = z.enum([
+	'grass',
+	'water',
+	'wall',
+	'goal',
+	'sand',
+	'snow',
+	'forest',
+	'dirt'
+]);
 export type CellType = z.infer<typeof CellTypeSchema>;
 
 export const CellSchema = z.object({
@@ -94,8 +103,13 @@ export const HintTriggerSchema = z.discriminatedUnion('type', [
 	z.object({ type: z.literal('time'), value: z.number() }),
 	z.object({ type: z.literal('attempts'), value: z.number() }),
 	z.object({ type: z.literal('idle'), value: z.number() }),
-	z.object({ type: z.literal('story-step'), segmentId: z.string() })
+	z.object({ type: z.literal('story-step'), segmentId: z.string() }),
+	z.object({
+		type: z.literal('analysis'),
+		pattern: z.enum(['redundant-turn', '360-turn', 'empty-loop', 'missed-loop'])
+	})
 ]);
+export type HintTrigger = z.infer<typeof HintTriggerSchema>;
 
 export const HintSchema = z.object({
 	id: z.string(),

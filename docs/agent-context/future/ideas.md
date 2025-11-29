@@ -16,13 +16,16 @@
 - [ ] **Custom Core Blocks**: Allow advanced users (like Jonas leveling up) to define their own core blocks. This would be a "ZPD" (Zone of Proximal Development) feature, bridging the gap between using blocks and understanding their implementation.
 
 ## The Tile Lab (Brainstorm)
+
 A "Kit of Parts" approach to custom terrain to ensure "Modern Matte" consistency.
+
 - **Layer 1: Base Material** (Color + Physics): Solid (Wall), Ground (Walkable), Liquid (Swimable).
 - **Layer 2: Texture** (Pattern): SVG overlays like dots, waves, bricks, grid.
 - **Layer 3: Decal** (Icon/Prop): Centered vector icons (Tree, Rock, Star).
 - **UI**: A "Badge Maker" style interface with large previews and instant feedback.
 
 ## Jonas's Wishlist (Nov 2025)
+
 - [ ] **Difficulty Indicators**: Show difficulty level on the level overlay/card.
 - [ ] **Selectable Icons**: Allow choosing an icon for the level.
 - [ ] **Speaker Avatars**: Show avatars for speakers in the story/dialogue system.
@@ -31,10 +34,10 @@ A "Kit of Parts" approach to custom terrain to ensure "Modern Matte" consistency
 - [ ] **Feedback Button**: A way for players to send feedback to level creators (e.g., "Too hard", "Fun!", "Broken").
 
 ## Mechanics & Blocks
+
 - [ ] **Hazard Block**: A block that kills the player on contact (like a spike or fire).
 - [ ] **Lives System**: A mechanic where the player has a limited number of lives. Walking into a hazard loses a life. This adds a "survival" challenge to levels.
 
 ## Storage & Persistence
+
 - [ ] **OPFS for Level Storage**: Use the Origin Private File System (OPFS) to store user-created levels locally in the browser. This provides a more robust and performant storage solution than localStorage, especially for larger levels or assets.
-
-

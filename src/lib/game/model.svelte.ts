@@ -1,5 +1,6 @@
 import type { LevelDefinition, GameStatus, Block, Direction } from './types';
 import { SvelteMap, SvelteSet } from 'svelte/reactivity';
+import { HintManager } from './hints.svelte';
 
 export class GameModel {
 	// Game State
@@ -29,9 +30,35 @@ export class GameModel {
 	failedAttempts = $state(0);
 	lastInteractionTime = $state(Date.now());
 	activeHintId = $state<string | null>(null);
+	hintManager: HintManager;
+
+	// Preview State (for Builder)
+	previewHighlight = $state<{
+		target: string;
+		type?: 'pulse' | 'arrow' | 'dim';
+		fading?: boolean;
+	} | null>(null);
+	#previewTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	triggerPreviewHighlight(target: string) {
+		if (this.#previewTimeout) clearTimeout(this.#previewTimeout);
+		// Reset to full opacity first
+		this.previewHighlight = { target, type: 'pulse', fading: false };
+
+		this.#previewTimeout = setTimeout(() => {
+			if (this.previewHighlight) {
+				this.previewHighlight = { ...this.previewHighlight, fading: true };
+			}
+			this.#previewTimeout = setTimeout(() => {
+				this.previewHighlight = null;
+				this.#previewTimeout = null;
+			}, 2000); // Match CSS transition duration
+		}, 50);
+	}
 
 	constructor(level: LevelDefinition) {
 		this.level = level;
+		this.hintManager = new HintManager(this);
 		// Load initial program if defined
 		if (this.level.initialProgram) {
 			this.program = JSON.parse(JSON.stringify(this.level.initialProgram));
@@ -61,6 +88,7 @@ export class GameModel {
 		this.activeBlockId = null;
 		this.lastEvent = null; // Clear last event (e.g. blocked/fail)
 		this.resetExecutionState();
+		this.hintManager.reset();
 		// We don't clear program on reset, usually just execution state
 		// But if it's a "hard" reset, maybe? For now, let's keep program.
 	}
@@ -74,41 +102,8 @@ export class GameModel {
 	}
 
 	checkHints() {
-		if (!this.level.hints) return;
-		const now = Date.now();
-		const elapsed = (now - this.startTime) / 1000;
-		const idle = (now - this.lastInteractionTime) / 1000;
-
-		// If we already have a hint, do we keep it?
-		// For now, let's allow new hints to override if they trigger later.
-		// But we should probably track which hints have been shown to avoid spam.
-		// Let's just show the first valid one for now.
-
-		for (const hint of this.level.hints) {
-			// Simple logic: if trigger met, show it.
-			// Ideally we'd have a "shown" set.
-			let triggered = false;
-			if (hint.trigger.type === 'time' && elapsed >= hint.trigger.value) triggered = true;
-			if (hint.trigger.type === 'attempts' && this.failedAttempts >= hint.trigger.value)
-				triggered = true;
-			if (hint.trigger.type === 'idle' && idle >= hint.trigger.value) triggered = true;
-			if (hint.trigger.type === 'story-step') {
-				const currentSegment = this.currentStorySegment;
-				if (currentSegment && currentSegment.id === hint.trigger.segmentId) {
-					triggered = true;
-				}
-			}
-
-			if (triggered) {
-				// Only set if different (to avoid reactivity loops if we use this in effect)
-				if (this.activeHintId !== hint.id) {
-					this.activeHintId = hint.id;
-				}
-				return; // Show highest priority (first in list)
-			}
-		}
+		this.hintManager.checkHints();
 	}
-
 
 	get currentStorySegment() {
 		if (this.status !== 'story') return null;

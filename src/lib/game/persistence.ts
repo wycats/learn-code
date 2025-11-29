@@ -38,7 +38,7 @@ export async function listPacks(): Promise<{ id: string; name: string; descripti
 	try {
 		const root = await getRoot();
 		const packs: { id: string; name: string; description?: string }[] = [];
-		
+
 		// @ts-expect-error - FileSystemDirectoryHandle is async iterable in modern browsers
 		for await (const [name, handle] of root.entries()) {
 			if (handle.kind === 'file' && name.endsWith('.json')) {

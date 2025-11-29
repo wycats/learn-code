@@ -8,9 +8,6 @@
 	import BuilderGoalModal from '$lib/components/builder/BuilderGoalModal.svelte';
 	import BuilderToolbar from '$lib/components/builder/BuilderToolbar.svelte';
 	import Game from '$lib/components/game/Game.svelte';
-	import { GameModel } from '$lib/game/model.svelte';
-	import { LEVELS } from '$lib/game/levels';
-	import { fly, fade } from 'svelte/transition';
 
 	// Initialize with a default empty level
 	let builder = $state(new BuilderModel());
@@ -105,15 +102,6 @@
 		grid-template-columns: 1fr;
 		grid-template-rows: 1fr;
 		grid-template-areas: 'layer';
-	}
-
-	.dashboard-layer {
-		grid-area: layer;
-		width: 100%;
-		height: 100%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
 	}
 
 	.grid-container {

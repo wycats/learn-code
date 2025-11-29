@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { GameModel } from '$lib/game/model.svelte';
 	import { Play, CheckCircle2, BrainCircuit } from 'lucide-svelte';
-	import { fade } from 'svelte/transition';
 
 	interface Props {
 		game: GameModel;

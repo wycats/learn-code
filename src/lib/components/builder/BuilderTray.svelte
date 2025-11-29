@@ -2,8 +2,9 @@
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
 	import type { BlockType } from '$lib/game/types';
 	import BlockComponent from '$lib/components/game/Block.svelte';
+	import HintEditor from './HintEditor.svelte';
 
-	import { Infinity as InfinityIcon } from 'lucide-svelte';
+	import { Infinity as InfinityIcon, Backpack, Lightbulb } from 'lucide-svelte';
 	import { fade, scale } from 'svelte/transition';
 
 	interface Props {
@@ -12,6 +13,7 @@
 
 	let { builder }: Props = $props();
 
+	let activeTab = $state<'backpack' | 'hints'>('backpack');
 	let editingLimitFor = $state<BlockType | null>(null);
 	// Store previous limits to restore them when re-enabling
 	let previousLimits = $state<Record<string, number | 'unlimited'>>({});
@@ -27,14 +29,17 @@
 	function toggleBlock(type: BlockType, comingSoon?: boolean) {
 		if (comingSoon) return;
 
-		// @ts-ignore - schema transform
+		if (builder.onTargetSelect) {
+			builder.onTargetSelect(`block:${type}`);
+			builder.onTargetSelect = null;
+			return;
+		}
+
 		if (type in builder.level.availableBlocks) {
 			// Save current limit before removing
-			// @ts-ignore
 			previousLimits[type] = builder.level.availableBlocks[type];
 
 			const newBlocks = { ...builder.level.availableBlocks };
-			// @ts-ignore
 			delete newBlocks[type];
 			builder.level.availableBlocks = newBlocks;
 			if (editingLimitFor === type) editingLimitFor = null;
@@ -57,6 +62,13 @@
 			editingLimitFor = type;
 		}
 	}
+
+	function handleKeydown(e: KeyboardEvent) {
+		// No-op for now, just to satisfy a11y
+		if (e.key === 'Escape') {
+			editingLimitFor = null;
+		}
+	}
 </script>
 
 <div
@@ -64,95 +76,121 @@
 	onclick={() => (editingLimitFor = null)}
 	role="button"
 	tabindex="-1"
-	onkeydown={() => {}}
+	onkeydown={handleKeydown}
 >
-	<div class="backpack-section">
-		<h3>Backpack</h3>
-		<div class="block-list">
-			{#each blockTypes as { type, label, comingSoon }}
-				{@const isIncluded = type in builder.level.availableBlocks}
-				{@const limit = builder.level.availableBlocks[type]}
-				{@const isEditing = editingLimitFor === type}
-				<div
-					class="block-wrapper"
-					class:disabled={!isIncluded && !comingSoon}
-					class:coming-soon={comingSoon}
-					onclick={() => toggleBlock(type, comingSoon)}
-					role="button"
-					tabindex="0"
-					onkeydown={(e) => {
-						if (e.key === 'Enter') toggleBlock(type, comingSoon);
-					}}
-					title={comingSoon ? 'Coming Soon!' : isIncluded ? 'Click to remove' : 'Click to add'}
-				>
-					<div class="block-content">
-						<BlockComponent block={{ id: 'preview', type }} isPalette={true} />
-					</div>
-					{#if isIncluded}
-						<!-- Limit Badge / Editor -->
+	<div class="tray-tabs">
+		<button
+			class="tab-btn"
+			class:active={activeTab === 'backpack'}
+			onclick={() => (activeTab = 'backpack')}
+		>
+			<Backpack size={16} /> Backpack
+		</button>
+		<button
+			class="tab-btn"
+			class:active={activeTab === 'hints'}
+			onclick={() => (activeTab = 'hints')}
+		>
+			<Lightbulb size={16} /> Hints
+		</button>
+	</div>
+
+	<div class="tray-content">
+		{#if activeTab === 'backpack'}
+			<div class="backpack-section" transition:fade={{ duration: 200 }}>
+				<h3>Backpack</h3>
+				<div class="block-list">
+					{#each blockTypes as { type, comingSoon } (type)}
+						{@const isIncluded = type in builder.level.availableBlocks}
+						{@const limit = builder.level.availableBlocks[type]}
+						{@const isEditing = editingLimitFor === type}
 						<div
-							class="limit-badge-container"
-							onclick={(e) => e.stopPropagation()}
-							role="group"
-							tabindex="-1"
-							onkeydown={(e) => e.stopPropagation()}
+							class="block-wrapper"
+							class:disabled={!isIncluded && !comingSoon}
+							class:coming-soon={comingSoon}
+							onclick={() => toggleBlock(type, comingSoon)}
+							role="button"
+							tabindex="0"
+							onkeydown={(e) => {
+								if (e.key === 'Enter') toggleBlock(type, comingSoon);
+							}}
+							title={comingSoon ? 'Coming Soon!' : isIncluded ? 'Click to remove' : 'Click to add'}
 						>
-							{#if isEditing}
-								<div class="limit-editor" transition:scale={{ duration: 150, start: 0.8 }}>
-									<button
-										class="limit-btn small"
-										onclick={() =>
-											setLimit(type, typeof limit === 'number' ? Math.max(1, limit - 1) : 1)}
-										>-</button
-									>
-
-									<span class="limit-value">
-										{#if limit === 'unlimited'}
-											<InfinityIcon size={14} />
-										{:else}
-											{limit}
-										{/if}
-									</span>
-
-									<button
-										class="limit-btn small"
-										onclick={() => setLimit(type, typeof limit === 'number' ? limit + 1 : 1)}
-										>+</button
-									>
-
-									<button
-										class="limit-btn text"
-										class:active={limit === 'unlimited'}
-										onclick={() => setLimit(type, 'unlimited')}
-										title="Set to Unlimited"
-									>
-										<InfinityIcon size={14} />
-									</button>
-								</div>
-							{:else}
-								<button
-									class="limit-badge"
-									onclick={(e) => toggleEditLimit(type, e)}
-									transition:scale={{ duration: 150 }}
-									title="Click to set limit"
+							<div class="block-content">
+								<BlockComponent block={{ id: 'preview', type }} isPalette={true} />
+							</div>
+							{#if isIncluded}
+								<!-- Limit Badge / Editor -->
+								<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+								<div
+									class="limit-badge-container"
+									onclick={(e) => e.stopPropagation()}
+									role="group"
+									tabindex="-1"
+									onkeydown={(e) => e.stopPropagation()}
 								>
-									{#if limit === 'unlimited'}
-										<InfinityIcon size={12} />
+									{#if isEditing}
+										<div class="limit-editor" transition:scale={{ duration: 150, start: 0.8 }}>
+											<button
+												class="limit-btn small"
+												onclick={() =>
+													setLimit(type, typeof limit === 'number' ? Math.max(1, limit - 1) : 1)}
+												>-</button
+											>
+
+											<span class="limit-value">
+												{#if limit === 'unlimited'}
+													<InfinityIcon size={14} />
+												{:else}
+													{limit}
+												{/if}
+											</span>
+
+											<button
+												class="limit-btn small"
+												onclick={() => setLimit(type, typeof limit === 'number' ? limit + 1 : 1)}
+												>+</button
+											>
+
+											<button
+												class="limit-btn text"
+												class:active={limit === 'unlimited'}
+												onclick={() => setLimit(type, 'unlimited')}
+												title="Set to Unlimited"
+											>
+												<InfinityIcon size={14} />
+											</button>
+										</div>
 									{:else}
-										{limit}
+										<button
+											class="limit-badge"
+											onclick={(e) => toggleEditLimit(type, e)}
+											transition:scale={{ duration: 150 }}
+											title="Click to set limit"
+										>
+											{#if limit === 'unlimited'}
+												<InfinityIcon size={12} />
+											{:else}
+												{limit}
+											{/if}
+										</button>
 									{/if}
-								</button>
+								</div>
+							{/if}
+							{#if comingSoon}
+								<div class="coming-soon-overlay">
+									<span>SOON</span>
+								</div>
 							{/if}
 						</div>
-					{/if}
-					{#if comingSoon}
-						<div class="coming-soon-overlay">
-							<span>SOON</span>
-						</div>
-					{/if}
+					{/each}
 				</div>
-			{/each}
-		</div>
+			</div>
+		{:else}
+			<div class="hints-section" transition:fade={{ duration: 200 }}>
+				<HintEditor {builder} />
+			</div>
+		{/if}
 	</div>
 </div>
 
@@ -161,8 +199,57 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-		gap: var(--size-4);
+		gap: var(--size-2);
 		padding: var(--size-3);
+		overflow: hidden;
+	}
+
+	.tray-content {
+		display: grid;
+		grid-template-areas: 'content';
+		flex: 1;
+		overflow: hidden;
+		position: relative;
+	}
+
+	.tray-tabs {
+		display: flex;
+		gap: var(--size-2);
+		border-bottom: 1px solid var(--surface-3);
+		padding-bottom: var(--size-2);
+		flex-shrink: 0;
+	}
+
+	.tab-btn {
+		flex: 1;
+		background: none;
+		border: none;
+		padding: var(--size-2);
+		border-radius: var(--radius-2);
+		cursor: pointer;
+		color: var(--text-2);
+		font-weight: bold;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--size-2);
+		transition: all 0.2s;
+	}
+
+	.tab-btn:hover {
+		background-color: var(--surface-2);
+		color: var(--text-1);
+	}
+
+	.tab-btn.active {
+		background-color: var(--surface-3);
+		color: var(--brand);
+	}
+
+	.hints-section {
+		grid-area: content;
+		width: 100%;
+		height: 100%;
 		overflow-y: auto;
 	}
 
@@ -176,10 +263,13 @@
 	}
 
 	.backpack-section {
+		grid-area: content;
+		width: 100%;
+		height: 100%;
+		overflow-y: auto;
 		display: flex;
 		flex-direction: column;
 		gap: var(--size-2);
-		flex: 1;
 	}
 
 	.block-list {

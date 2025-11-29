@@ -2,17 +2,16 @@
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
 	import type { StorySegment } from '$lib/game/types';
 	import {
-		ArrowRight,
 		Trash2,
 		Plus,
 		ChevronLeft,
 		ChevronRight,
 		List,
 		X,
-		Edit,
-		Settings2
+		Settings2,
+		Target
 	} from 'lucide-svelte';
-	import { fly, fade } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 	import StoryConfigModal from './StoryConfigModal.svelte';
 	import Avatar from '$lib/components/game/Avatar.svelte';
 
@@ -24,7 +23,7 @@
 	let isExpanded = $state(false);
 	let isConfigOpen = $state(false);
 	let configTab = $state<'characters' | 'emotions'>('characters');
-	let dialog: HTMLDialogElement;
+	let timelinePopover = $state<HTMLElement>();
 	let charPopover = $state<HTMLElement>();
 	let emotionPopover = $state<HTMLElement>();
 
@@ -49,9 +48,9 @@
 
 	$effect(() => {
 		if (isExpanded) {
-			dialog?.showPopover();
+			timelinePopover?.showPopover();
 		} else {
-			dialog?.hidePopover();
+			timelinePopover?.hidePopover();
 		}
 	});
 
@@ -135,6 +134,8 @@
 			// Select previous or next if available
 			if (builder.level.intro?.length) {
 				builder.activeSegmentId = builder.level.intro[Math.max(0, current.index - 1)].id!;
+			} else if (builder.level.outro?.length) {
+				builder.activeSegmentId = builder.level.outro[0].id!;
 			} else {
 				builder.activeSegmentId = null; // No segments left
 			}
@@ -142,6 +143,8 @@
 			builder.level.outro = builder.level.outro?.filter((s) => s.id !== builder.activeSegmentId);
 			if (builder.level.outro?.length) {
 				builder.activeSegmentId = builder.level.outro[Math.max(0, current.index - 1)].id!;
+			} else if (builder.level.intro?.length) {
+				builder.activeSegmentId = builder.level.intro[builder.level.intro.length - 1].id!;
 			} else {
 				builder.activeSegmentId = null;
 			}
@@ -204,14 +207,11 @@
 			<div class="editor-controls left">
 				<button
 					class="nav-btn"
-					onclick={() => (isExpanded = !isExpanded)}
+					popovertarget="timeline-popover"
 					title="Toggle Timeline List"
+					style:anchor-name="--timeline-trigger"
 				>
-					{#if isExpanded}
-						<X size={20} />
-					{:else}
-						<List size={20} />
-					{/if}
+					<List size={20} />
 				</button>
 				<div class="separator"></div>
 				<button
@@ -254,7 +254,7 @@
 						class="selection-popover"
 					>
 						<div class="popover-list">
-							{#each characters as char}
+							{#each characters as char (char.id)}
 								<button
 									class="selection-item"
 									onclick={() => setSpeaker(char.name)}
@@ -285,7 +285,7 @@
 						class="selection-popover emotion-popover"
 					>
 						<div class="popover-list">
-							{#each emotions as emo}
+							{#each emotions as emo (emo.id)}
 								<button class="selection-item" onclick={() => setEmotion(emo.id)} title={emo.name}>
 									<span class="emoji">{emo.icon}</span>
 								</button>
@@ -309,6 +309,47 @@
 				</div>
 
 				<div class="segment-actions">
+					{#if current.segment.highlight}
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<div
+							class="highlight-badge"
+							onmouseenter={() =>
+								builder.game.triggerPreviewHighlight(current!.segment.highlight!.target)}
+							onclick={() =>
+								builder.game.triggerPreviewHighlight(current!.segment.highlight!.target)}
+						>
+							<Target size={14} />
+							<button
+								class="clear-highlight-btn"
+								onclick={(e) => {
+									e.stopPropagation();
+									current!.segment.highlight = undefined;
+									builder.game.previewHighlight = null;
+								}}
+								title="Clear Target"
+							>
+								<X size={12} />
+							</button>
+						</div>
+					{:else}
+						<button
+							class="action-btn"
+							class:active={builder.targetSelectionMode}
+							onclick={() => {
+								if (builder.targetSelectionMode) {
+									builder.cancelTargetSelection();
+								} else {
+									builder.startTargetSelection((target) => {
+										builder.setStoryHighlight(target);
+									});
+								}
+							}}
+							title="Select Highlight Target (Click on Grid)"
+						>
+							<Target size={16} />
+						</button>
+					{/if}
 					<button class="action-btn add" onclick={addSegmentAfter} title="Add Segment After">
 						<Plus size={16} />
 					</button>
@@ -356,79 +397,79 @@
 			<div class="editor-controls right">
 				<button
 					class="nav-btn"
-					onclick={() => (isExpanded = !isExpanded)}
+					popovertarget="timeline-popover"
 					title="Toggle Timeline List"
+					style:anchor-name="--timeline-trigger"
 				>
-					{#if isExpanded}
-						<X size={20} />
-					{:else}
-						<List size={20} />
-					{/if}
+					<List size={20} />
 				</button>
 			</div>
 		</div>
 	{/if}
 
-	<dialog
-		bind:this={dialog}
-		class="timeline-dialog"
+	<div
+		id="timeline-popover"
+		bind:this={timelinePopover}
+		class="timeline-popover"
 		popover="manual"
 		ontoggle={(e) => {
 			if (e.newState === 'closed') isExpanded = false;
+			else isExpanded = true;
 		}}
 	>
-		<div class="timeline-popover">
-			<div class="timeline-column">
-				<h3>Intro</h3>
-				<div class="timeline-list">
-					{#each builder.level.intro || [] as segment, i}
-						<button
-							class="timeline-item"
-							class:active={builder.activeSegmentId === segment.id}
-							onclick={() => selectSegment(segment.id!)}
-						>
-							<span class="index">{i + 1}</span>
-							<div class="mini-avatar" data-character={segment.speaker}>
-								<Avatar value={getCharacter(segment.speaker).avatar || '?'} size={14} />
-							</div>
-							<div class="item-content">
-								<span class="speaker">{segment.speaker}</span>
-								<span class="preview">{segment.text || '(Empty)'}</span>
-							</div>
-						</button>
-					{/each}
-					<button class="add-btn" onclick={() => addSegment('intro')}>
-						<Plus size={14} /> Add Intro Segment
+		<button class="close-popover-btn" popovertarget="timeline-popover" aria-label="Close">
+			<X size={16} />
+		</button>
+		<div class="timeline-column">
+			<h3>Intro</h3>
+			<div class="timeline-list">
+				{#each builder.level.intro || [] as segment, i (segment.id)}
+					<button
+						class="timeline-item"
+						class:active={builder.activeSegmentId === segment.id}
+						onclick={() => selectSegment(segment.id!)}
+					>
+						<span class="index">{i + 1}</span>
+						<div class="mini-avatar" data-character={segment.speaker}>
+							<Avatar value={getCharacter(segment.speaker).avatar || '?'} size={14} />
+						</div>
+						<div class="item-content">
+							<span class="speaker">{segment.speaker}</span>
+							<span class="preview">{segment.text || '(Empty)'}</span>
+						</div>
 					</button>
-				</div>
-			</div>
-
-			<div class="timeline-column">
-				<h3>Outro</h3>
-				<div class="timeline-list">
-					{#each builder.level.outro || [] as segment, i}
-						<button
-							class="timeline-item"
-							class:active={builder.activeSegmentId === segment.id}
-							onclick={() => selectSegment(segment.id!)}
-						>
-							<span class="index">{i + 1}</span>
-							<div class="mini-avatar" data-character={segment.speaker}>
-								<Avatar value={getCharacter(segment.speaker).avatar || '?'} size={14} />
-							</div>
-							<div class="item-content">
-								<span class="speaker">{segment.speaker}</span>
-								<span class="preview">{segment.text || '(Empty)'}</span>
-							</div>
-						</button>
-					{/each}
-					<button class="add-btn" onclick={() => addSegment('outro')}>
-						<Plus size={14} /> Add Outro Segment
-					</button>
-				</div>
+				{/each}
+				<button class="add-btn" onclick={() => addSegment('intro')}>
+					<Plus size={14} /> Add Intro Segment
+				</button>
 			</div>
 		</div>
-	</dialog>
+
+		<div class="timeline-column">
+			<h3>Outro</h3>
+			<div class="timeline-list">
+				{#each builder.level.outro || [] as segment, i (segment.id)}
+					<button
+						class="timeline-item"
+						class:active={builder.activeSegmentId === segment.id}
+						onclick={() => selectSegment(segment.id!)}
+					>
+						<span class="index">{i + 1}</span>
+						<div class="mini-avatar" data-character={segment.speaker}>
+							<Avatar value={getCharacter(segment.speaker).avatar || '?'} size={14} />
+						</div>
+						<div class="item-content">
+							<span class="speaker">{segment.speaker}</span>
+							<span class="preview">{segment.text || '(Empty)'}</span>
+						</div>
+					</button>
+				{/each}
+				<button class="add-btn" onclick={() => addSegment('outro')}>
+					<Plus size={14} /> Add Outro Segment
+				</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 <style>
@@ -457,36 +498,53 @@
 		anchor-name: --story-bar;
 	}
 
-	.timeline-dialog {
+	.timeline-popover {
 		position: fixed;
 		position-anchor: --story-bar;
 		top: anchor(bottom);
-		left: anchor(left);
-		right: anchor(right);
-		width: anchor-size(width);
+		left: 50%;
+		translate: -50% 0;
 		margin: 0;
-		padding: 0;
-		border: none;
-		background: transparent;
-		max-width: none;
-		overflow: visible;
-	}
+		margin-top: var(--size-2);
 
-	.timeline-dialog::backdrop {
-		background: transparent;
-	}
+		height: auto;
+		max-height: 60vh;
+		width: calc(100vw - var(--size-8));
+		max-width: 1400px;
 
-	.timeline-popover {
-		height: 400px; /* Fixed height or max-height */
 		background-color: rgba(255, 255, 255, 0.95);
 		backdrop-filter: blur(10px);
-		border-bottom: 1px solid var(--surface-3);
+		border: 1px solid var(--surface-3);
+		border-radius: var(--radius-3);
 		box-shadow: var(--shadow-4);
-		display: grid;
+		display: none; /* Hidden by default, shown by popover */
 		grid-template-columns: 1fr 1fr;
 		gap: var(--size-4);
 		padding: var(--size-4);
 		overflow-y: auto;
+		z-index: 100;
+	}
+
+	.timeline-popover:popover-open {
+		display: grid;
+	}
+
+	.close-popover-btn {
+		position: absolute;
+		top: var(--size-2);
+		right: var(--size-2);
+		background: none;
+		border: none;
+		color: var(--text-3);
+		cursor: pointer;
+		padding: var(--size-1);
+		border-radius: var(--radius-round);
+		z-index: 10;
+	}
+
+	.close-popover-btn:hover {
+		background-color: var(--surface-2);
+		color: var(--text-1);
 	}
 
 	.timeline-column {
@@ -831,6 +889,10 @@
 		border-radius: var(--radius-1);
 		cursor: pointer;
 		color: var(--text-3);
+		width: 32px;
+		height: 32px;
+		display: grid;
+		place-items: center;
 	}
 
 	.action-btn:hover {
@@ -841,6 +903,51 @@
 	.action-btn.delete:hover {
 		background-color: var(--red-1);
 		color: var(--red-7);
+	}
+
+	.highlight-badge {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 4px;
+		background-color: var(--brand-surface);
+		padding: var(--size-1);
+		border-radius: var(--radius-1);
+		font-size: var(--font-size-00);
+		color: var(--brand);
+		border: 1px solid var(--brand);
+		cursor: pointer;
+		width: 32px;
+		height: 32px;
+		position: relative;
+	}
+
+	.highlight-badge:hover {
+		background-color: var(--brand-light);
+	}
+
+	.clear-highlight-btn {
+		background: none;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+		color: var(--text-3);
+		display: flex;
+		align-items: center;
+		position: absolute;
+		top: -4px;
+		right: -4px;
+		background-color: var(--surface-1);
+		border-radius: 50%;
+		border: 1px solid var(--surface-3);
+		width: 14px;
+		height: 14px;
+		justify-content: center;
+	}
+
+	.clear-highlight-btn:hover {
+		color: var(--red-6);
+		border-color: var(--red-3);
 	}
 
 	.index {

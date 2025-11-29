@@ -171,6 +171,7 @@
 **Decision:** Use a single "Tray" component that switches context (Main Program vs. Function) rather than showing multiple editors side-by-side.
 **Context:** Screen real estate is limited, especially on tablets. Showing multiple block lists simultaneously would clutter the UI.
 **Consequence:**
+
 - Added "Context Tabs" to the Tray.
 - The `GameModel` tracks `editingContext`.
 - Users focus on one scope at a time, reducing cognitive load.
@@ -180,6 +181,7 @@
 **Decision:** Automatically switch the editor view to the active function during execution.
 **Context:** The concept of a "Call Stack" is abstract. By visually jumping to the function definition when it is called, we make the flow of control concrete and observable.
 **Consequence:**
+
 - The `StackInterpreter` updates `game.editingContext` on every step.
 - The UI must handle rapid context switching smoothly (using transitions).
 
@@ -188,6 +190,7 @@
 **Decision:** Expand the `SoundManager` to support loading external assets (MP3/WAV) for voiceovers and music, while keeping procedural synthesis for UI SFX.
 **Context:** While procedural audio is great for UI, we need high-quality recorded audio for character dialogue and ambient music to achieve the desired immersion.
 **Consequence:**
+
 - Added `playFile` and `playAmbient` methods to `SoundManager`.
 - We now manage a mix of synthesized and asset-based audio.
 
@@ -196,39 +199,79 @@
 **Decision:** Move block configuration (e.g., Loop counts) to a floating "Glassomorphism" panel in the Tray, triggered by selection.
 **Context:** Inline controls on blocks were too small for touch and cluttered the block design. A modal would be too heavy. A contextual panel offers a balance of accessibility and unobtrusiveness.
 **Consequence:**
+
 - Blocks are cleaner and easier to read.
 - Configuration options can be larger and more descriptive.
 - We adopted a new visual layer (glass effect) to distinguish this "meta-UI" from the game UI.
 
-## Phase 7: Tutorial System Expansion
+## Phase 7: Level Builder
 
-### 26. Hint System: Idle & Attempt Triggers
+### 26. BuilderModel Separation
+
+**Decision:** Create a dedicated `BuilderModel` class separate from `GameModel`.
+**Context:** The Builder has unique state (selected tool, palette, history) that doesn't belong in the gameplay model. Overloading `GameModel` would make it brittle.
+**Consequence:**
+- `BuilderModel` wraps a `GameModel` instance for the preview but manages its own editing state.
+- Clear separation of concerns between "Playing" and "Authoring".
+
+### 27. Drag-to-Paint Interaction
+
+**Decision:** Implement a "Drag-to-Paint" interaction model for the Grid Editor.
+**Context:** Clicking individual cells to place terrain is tedious. Users expect to "draw" walls or water.
+**Consequence:**
+- Implemented `pointerdown`, `pointerenter`, and `pointerup` handlers on the Grid to support continuous painting.
+- Added visual feedback (hover states) for the active tool.
+
+### 28. JSON Serialization for Levels
+
+**Decision:** Use standard JSON for level export/import.
+**Context:** We need a portable format for sharing levels. TypeScript files are great for built-in levels but can't be easily shared or loaded dynamically by users.
+**Consequence:**
+- Created `serializeLevel` and `deserializeLevel` utilities.
+- Levels can be saved to disk or shared via clipboard.
+
+## Phase 8: Intelligent Tutoring System
+
+### 29. Hint System: Idle & Attempt Triggers
 
 **Decision:** Trigger hints based on "Idle Time" (no interaction) and "Failed Attempts" (running code that fails).
 **Context:** We need to detect struggle without being annoying. Explicitly tracking "errors" is hard in a sandbox, but "failure to solve" is easy to track.
 **Consequence:**
+
 - Added `failedAttempts` and `lastInteractionTime` to `GameModel`.
 - The game loop now checks these counters every second.
 
-### 27. Guide Character: Dynamic Avatar
+### 30. Guide Character: Dynamic SVG Avatar
 
-**Decision:** Represent the Guide as a distinct entity in the `InstructionBar` using a dynamic avatar system.
-**Context:** The tutorial text felt impersonal. A character (Robot) builds a connection and fits the narrative.
+**Decision:** Represent the Guide as a distinct entity using a dynamic SVG component (`Guide.svelte`).
+**Context:** The tutorial text felt impersonal. A character (Robot) builds a connection. SVG allows for lightweight, scalable, and animatable emotions without heavy assets.
 **Consequence:**
-- `InstructionBar` now accepts a `speaker` prop and renders different icons/images.
-- We introduced a "Guide" persona in the content.
 
-### 28. Story Segment IDs
+- `InstructionBar` now accepts a `speaker` prop.
+- `Guide.svelte` handles internal animation states (blinking, talking) via CSS.
+
+### 31. Story Segment IDs
 
 **Decision:** Use explicit string `id`s for Story Segments instead of array indices.
 **Context:** Array indices are brittle; inserting a new segment breaks all saved progress or logic that depends on "step 5".
 **Consequence:**
+
 - Updated `StorySegmentSchema` to require (or optionally allow) `id`.
 - Updated trigger logic to reference segments by ID.
 
-### 29. Rich Media in Instructions
+### 32. Rich Media in Instructions
 
 **Decision:** Allow `StorySegment` to contain a `media` field (image URL) to be rendered inline.
 **Context:** Text alone is insufficient for explaining spatial concepts like "loops" or "turns".
 **Consequence:**
+
 - `InstructionBar` layout updated to support an optional image slot.
+
+### 33. Snapshot Strategy for Debugging Levels
+
+**Decision:** Store `initialProgram` as part of the Level definition.
+**Context:** We want to create "Fix the Bug" levels where the user starts with broken code.
+**Consequence:**
+- Added `initialProgram` to `LevelSchema`.
+- Added a "Snapshot" tool in the Builder to capture the current tray state.
+

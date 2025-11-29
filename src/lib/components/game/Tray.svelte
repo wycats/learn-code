@@ -52,7 +52,6 @@
 	const usedCounts = $derived(countBlocksByType(game.program, game.functions));
 
 	function getLimit(type: BlockType): number | 'unlimited' {
-		// @ts-ignore - we know it's a record now due to schema transform
 		return game.level.availableBlocks[type] ?? 0;
 	}
 
@@ -71,7 +70,10 @@
 	const hasFunctions = $derived(Object.keys(game.functions).length > 0);
 	const functionNames = $derived(Object.keys(game.functions));
 
-	const highlight = $derived(game.currentStorySegment?.highlight);
+	type Highlight = { target: string; type?: 'pulse' | 'arrow' | 'dim'; fading?: boolean };
+	const highlight = $derived(
+		(game.previewHighlight || game.displaySegment?.highlight) as Highlight | undefined
+	);
 
 	// Drag State
 	const dragCtx = setDragContext();
@@ -636,6 +638,7 @@
 				<div
 					class:opacity-50={typeFull}
 					class:highlighted={highlight?.target === `block:${item.type}`}
+					class:fading={highlight?.target === `block:${item.type}` && highlight?.fading}
 					use:draggableBlock={{ block: item, isPaletteItem: true, disabled: typeFull }}
 					style:position="relative"
 				>
@@ -1093,6 +1096,15 @@
 		border-radius: var(--radius-2);
 		z-index: 10;
 		animation: pulse-highlight 1.5s infinite;
+	}
+
+	.highlighted.fading {
+		animation: none;
+		outline-color: transparent;
+		box-shadow: none;
+		transition:
+			outline-color 2s ease-out,
+			box-shadow 2s ease-out;
 	}
 
 	@keyframes pulse-highlight {

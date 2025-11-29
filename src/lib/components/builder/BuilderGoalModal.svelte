@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
-	import { Star, Play } from 'lucide-svelte';
+	import { Star, Play, Camera } from 'lucide-svelte';
 	import { Stack } from '$lib';
 
 	interface Props {
@@ -92,6 +92,12 @@
 						<option value="forest">Forest</option>
 						<option value="dirt">Dirt</option>
 					</select>
+				</div>
+
+				<div class="hint-row">
+					<button class="btn-secondary" onclick={() => builder.snapshotTray()}>
+						<Camera size={16} /> Snapshot Tray
+					</button>
 				</div>
 			</div>
 			<button class="btn-primary" onclick={onClose}>
@@ -234,6 +240,30 @@
 	}
 
 	.btn-primary:active {
+		transform: scale(0.95);
+	}
+
+	.btn-secondary {
+		background-color: var(--surface-2);
+		color: var(--text-1);
+		padding: var(--size-2) var(--size-4);
+		border-radius: var(--radius-round);
+		font-weight: bold;
+		font-size: var(--font-size-1);
+		border: 1px solid var(--surface-3);
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		transition: all 0.1s;
+	}
+
+	.btn-secondary:hover {
+		background-color: var(--surface-3);
+		border-color: var(--text-2);
+	}
+
+	.btn-secondary:active {
 		transform: scale(0.95);
 	}
 
