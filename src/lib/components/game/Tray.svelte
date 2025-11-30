@@ -1151,8 +1151,9 @@
 
 	.program-list {
 		flex: 1;
-		display: flex;
-		flex-direction: column; /* Vertical list */
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		align-content: start;
 		gap: var(--size-2);
 		padding: var(--size-2);
 		background-color: var(--surface-1);

@@ -21,6 +21,7 @@
 
 	let { builder, onClose }: Props = $props();
 	let showBiomePicker = $state(false);
+	let snapshotStatus = $state<'idle' | 'saved'>('idle');
 
 	const BIOME_OPTIONS = [
 		{ value: 'grass', icon: Flower, color: 'var(--green-5)', label: 'Grass' },
@@ -38,6 +39,14 @@
 		builder.level.defaultTerrain = value;
 		builder.syncGame();
 		showBiomePicker = false;
+	}
+
+	function handleSnapshot() {
+		builder.snapshotTray();
+		snapshotStatus = 'saved';
+		setTimeout(() => {
+			snapshotStatus = 'idle';
+		}, 2000);
 	}
 </script>
 
@@ -62,34 +71,6 @@
 				></textarea>
 
 				<div class="settings-grid">
-					<div class="setting-item">
-						<span class="label">Par:</span>
-						<div class="inline-edit">
-							<input
-								type="number"
-								bind:value={builder.level.solutionPar}
-								min="1"
-								max="99"
-								title="Target number of blocks for 3 stars"
-							/>
-							<span class="unit">blocks</span>
-						</div>
-					</div>
-
-					<div class="setting-item">
-						<span class="label">Limit:</span>
-						<div class="inline-edit">
-							<input
-								type="number"
-								bind:value={builder.level.maxBlocks}
-								min="1"
-								max="50"
-								title="Maximum blocks allowed in the workspace"
-							/>
-							<span class="unit">blocks</span>
-						</div>
-					</div>
-
 					<div class="setting-item">
 						<span class="label">Biome:</span>
 						<div class="biome-picker-wrapper">
@@ -120,11 +101,42 @@
 							{/if}
 						</div>
 					</div>
+
+					<div class="constraints">
+						<div class="constraint-line">
+							Try to solve it in
+							<div class="inline-edit">
+								<input
+									type="number"
+									bind:value={builder.level.solutionPar}
+									min="1"
+									max="99"
+									title="Target number of blocks for 3 stars"
+								/>
+							</div>
+							<strong>blocks</strong>.
+						</div>
+
+						<div class="constraint-line">
+							Maximum
+							<div class="inline-edit">
+								<input
+									type="number"
+									bind:value={builder.level.maxBlocks}
+									min="1"
+									max="50"
+									title="Maximum blocks allowed in the workspace"
+								/>
+							</div>
+							<strong>blocks</strong> allowed.
+						</div>
+					</div>
 				</div>
 
 				<div class="hint-row">
-					<button class="btn-secondary" onclick={() => builder.snapshotTray()}>
-						<Camera size={16} /> Set Starting Code
+					<button class="btn-secondary" onclick={handleSnapshot}>
+						<Camera size={16} />
+						{snapshotStatus === 'saved' ? 'Saved!' : 'Set Starting Code'}
 					</button>
 				</div>
 			</div>
@@ -227,6 +239,22 @@
 		gap: var(--size-2);
 		font-size: var(--font-size-1);
 		color: var(--text-2);
+	}
+
+	.constraints {
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-2);
+		align-items: center;
+		margin-top: var(--size-2);
+		color: var(--text-2);
+	}
+
+	.constraint-line {
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		font-size: var(--font-size-1);
 	}
 
 	.label {
