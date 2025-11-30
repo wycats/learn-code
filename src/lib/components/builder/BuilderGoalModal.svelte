@@ -21,7 +21,6 @@
 
 	let { builder, onClose }: Props = $props();
 	let showBiomePicker = $state(false);
-	let showDifficultyPicker = $state(false);
 	let snapshotStatus = $state<'idle' | 'saved'>('idle');
 
 	// Local state for constraints toggles
@@ -81,9 +80,14 @@
 		showBiomePicker = false;
 	}
 
-	function selectDifficulty(value: 'beginner' | 'intermediate' | 'advanced') {
-		builder.level.difficulty = value;
-		showDifficultyPicker = false;
+	function toggleDifficulty() {
+		const current = builder.level.difficulty || 'beginner';
+		const currentIndex = DIFFICULTY_OPTIONS.findIndex((o) => o.value === current);
+		const nextIndex = (currentIndex + 1) % DIFFICULTY_OPTIONS.length;
+		builder.level.difficulty = DIFFICULTY_OPTIONS[nextIndex].value as
+			| 'beginner'
+			| 'intermediate'
+			| 'advanced';
 	}
 
 	function handleSnapshot() {
@@ -124,26 +128,9 @@
 				<div class="settings-grid">
 					<div class="setting-item">
 						<div class="picker-wrapper">
-							<button
-								class="difficulty-badge"
-								onclick={() => (showDifficultyPicker = !showDifficultyPicker)}
-							>
+							<button class="difficulty-badge" onclick={toggleDifficulty}>
 								{builder.level.difficulty || 'beginner'}
 							</button>
-
-							{#if showDifficultyPicker}
-								<div class="popover" transition:slide={{ duration: 200 }}>
-									{#each DIFFICULTY_OPTIONS as option (option.value)}
-										<button
-											class="option"
-											class:selected={option.value === builder.level.difficulty}
-											onclick={() => selectDifficulty(option.value as any)}
-										>
-											<span>{option.label}</span>
-										</button>
-									{/each}
-								</div>
-							{/if}
 						</div>
 					</div>
 
