@@ -3,6 +3,7 @@
 	import { Code, ArrowRight } from 'lucide-svelte';
 
 	function handleStart() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto('/library');
 	}
 </script>

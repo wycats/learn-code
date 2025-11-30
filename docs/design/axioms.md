@@ -51,3 +51,36 @@ The interface should help the user _think_.
   - **Zoey**: Use icons instead of text.
   - **Jonas**: Use "Ghost Blocks" to suggest patterns.
   - **Facilitator**: Show the "Solution Path" to help them guide the child.
+
+## 7. Touch First, Mouse Second
+
+The finger is the primary input device.
+
+- **Principle**: If it feels clunky on an iPad, it is broken.
+- **Application**:
+  - Minimum touch target size: 44px.
+  - No hover-dependent interactions (hover is a bonus, not a requirement).
+  - Drag-and-drop must handle "fat fingers" and occlusion.
+- **Anti-Pattern**: Tooltips that contain critical information.
+
+## 8. Modern Matte & Diegetic UI
+
+The interface should feel like a physical toy, not a website.
+
+- **Principle**: "Modern Matte" aesthetic—flat, tactile, low-glare.
+- **Application**:
+  - Use `Open Props` for consistent design tokens.
+  - UI elements should exist "in the world" where possible (e.g., the "Guide" is a character, not a modal).
+  - Motion conveys meaning (e.g., a block "snaps" into place).
+- **Anti-Pattern**: Glossy "Web 2.0" buttons, system alerts, or jarring modal popups.
+
+## 9. Zero Backend, Local First
+
+The user owns their data.
+
+- **Principle**: The app should be fully functional offline.
+- **Application**:
+  - Use `OPFS` (Origin Private File System) for persistence.
+  - No required login or server round-trips for core gameplay.
+  - "Cloud" features are for sharing, not saving.
+- **Anti-Pattern**: "Loading..." spinners for local actions.

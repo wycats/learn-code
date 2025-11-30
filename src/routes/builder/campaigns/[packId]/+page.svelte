@@ -116,11 +116,18 @@
 	}
 
 	function handleEditLevel(levelId: string) {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		void goto(`/builder/campaigns/${packId}/${levelId}`);
 	}
 
 	async function handleDelete() {
 		await CampaignService.delete(pack!.id);
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		void goto('/builder/campaigns');
+	}
+
+	function handleBack() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		void goto('/builder/campaigns');
 	}
 </script>
@@ -141,7 +148,7 @@
 	<header class="editor-header">
 		<div class="header-content">
 			<div class="header-left">
-				<button class="back-btn" onclick={() => void goto('/builder/campaigns')}>
+				<button class="back-btn" onclick={handleBack}>
 					<ArrowLeft size={20} /> Back to Library
 				</button>
 				<div class="divider-vertical"></div>

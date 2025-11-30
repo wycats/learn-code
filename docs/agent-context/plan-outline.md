@@ -109,13 +109,13 @@
 - [x] **E2E Testing**: Playwright tests for the Builder and Game Loop.
 - [x] **CI/CD**: Automated testing pipeline.
 
-## Phase 13: Design & Reflection
+## Phase 13: Design & Reflection (Completed)
 
 **Goal:** Deepen our understanding of the users (Personas) and the system's core laws (Axioms) to ensure the product remains coherent as it grows.
 
-- [ ] **Persona Enrichment**: Review and update personas based on the current implementation and "Builder" context.
-- [ ] **Fresh Eyes Review**: Conduct a comprehensive design review of the current app through the lens of each persona.
-- [ ] **The Constitution**: Flesh out `axioms.md` to define the immutable laws of the system.
+- [x] **Persona Enrichment**: Review and update personas based on the current implementation and "Builder" context.
+- [x] **Fresh Eyes Review**: Conduct a comprehensive design review of the current app through the lens of each persona.
+- [x] **The Constitution**: Flesh out `axioms.md` to define the immutable laws of the system.
 
 ## Phase 14: Advanced Builder Features
 

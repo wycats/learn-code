@@ -23,12 +23,14 @@
 **Age**: 4-5
 **Description**: A precocious learner who is fluent in reading and eager to prove their competence. She enjoys the narrative but also wants to understand the "rules" of the system. She might get bored if the pace is set strictly for non-readers.
 **Evolution (The Narrative Designer)**: As she grows, Zoey becomes interested in _telling_ stories. She sees the Builder not just as a puzzle maker, but as a way to write dialogue and create scenarios for characters.
+**Relationship with the Guide**: Zoey treats the "Robot Helper" (Guide) as a character in the story. She talks back to it. She appreciates the hints but sometimes dismisses them ("I know, I know!") to prove she can do it herself.
 **Needs**:
 
 - **Text Reinforcement**: Labels on blocks (e.g., "Hop", "Loop") to connect actions to words.
 - **Narrative Depth**: Engages more deeply with the _story_ reasons for solving the problem.
 - **Story Tools**: A robust Dialogue/Story editor where she can script what characters say.
 - **Efficiency Challenges**: "Can you do this in fewer blocks?"
+- **Interactive Coaching**: A Guide that doesn't just give answers but asks questions ("What happens if you turn left here?").
   **Frustrations**:
 - Unskippable, slow voiceovers explaining things she already read.
 - Repetitive tasks that feel like "baby work."
@@ -40,6 +42,7 @@
 **Age**: 8
 **Description**: A bright, high-energy child who has seen code before (maybe Scratch or Minecraft commands) but lacks foundational discipline. He wants to feel like a "real programmer."
 **Evolution (The Social Creator)**: Jonas is motivated by _sharing_. He wants to build levels specifically to challenge his sister (Zoey) or his friends. He wants to be a "Game Dev."
+**The Architect**: Jonas spends 80% of his time in the Builder. He loves the "God Mode" feeling of placing terrain and creating impossible challenges. He uses the Campaign Builder to organize his "Master Levels" into a "Super Hard Pack."
 **Note on Neurodiversity**: The app is designed with ADHD in mind (short feedback loops, clear "Stop/Plan" transitions, engaging but not over-stimulating visuals). This benefits Jonas specifically but helps all learners.
 **Needs**:
 
@@ -49,6 +52,7 @@
 - **Impulse Management**: The "Stop" phase is crucial here as a mechanism to slow down and plan, not just a tutorial.
 - **Short Loops**: Quick, bite-sized challenges to maintain focus.
 - **Sandbox Mode**: Freedom to experiment beyond the puzzles.
+- **Campaign Management**: Tools to group levels, add cover art, and write descriptions for his "Game."
   **Frustrations**:
 - Slow animations he can't speed up.
 - Being forced to solve a problem in only one specific way.
@@ -64,6 +68,7 @@
 
 **Description**: A parent or teacher with no technical background. They want to help their child but are afraid of teaching the "wrong" thing or getting confused themselves.
 **Evolution (The Anxious Validator)**: With the Builder, they are terrified of creating "broken" or "impossible" levels. They need the system to hold their hand.
+**The Librarian**: They use the "Architect's Library" to find and organize content. They rely on "Official Packs" and "Cloning" to ensure quality. They are the primary user of the "Campaign" features to curate a safe list of levels for their child.
 **Needs**:
 
 - **Jargon-Free Context**: "This level teaches 'Patterns', which is like noticing that red-blue-red-blue repeats."
@@ -71,6 +76,7 @@
 - **Solvability Verification**: A "Check" button in the Builder that proves the level is possible.
 - **Templates**: High-quality starting points (cloning "The Basics") so they don't have to start from scratch.
 - **Confidence**: Reassurance that they are doing a good job facilitating.
+- **Curated Collections**: Easy access to pre-made campaigns that are age-appropriate.
   **Frustrations**:
 - Technical error messages.
 - Abstract CS terminology (e.g., "recursion", "boolean") without analogies.

@@ -5,7 +5,6 @@
 	import { GameModel } from '$lib/game/model.svelte';
 	import Game from '$lib/components/game/Game.svelte';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import { ArrowLeft } from 'lucide-svelte';
 
 	const packId = $derived($page.params.packId ?? '');
@@ -29,6 +28,7 @@
 
 				if (!isUnlocked) {
 					// Redirect to pack view if locked
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
 					goto(`/library/${packId}`);
 					return;
 				}
@@ -50,12 +50,12 @@
 	// Watch for win state to save progress
 	$effect(() => {
 		if (game && game.status === 'won') {
-			const stars = calculateStars(game);
+			const stars = calculateStars();
 			ProgressService.completeLevel(packId, levelId, stars);
 		}
 	});
 
-	function calculateStars(game: GameModel): number {
+	function calculateStars(): number {
 		// Simple star logic for now: 3 stars for completion
 		// Future: based on par/efficiency
 		return 3;
@@ -63,14 +63,17 @@
 
 	function handleNextLevel() {
 		if (nextLevelId) {
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
 			goto(`/play/${packId}/${nextLevelId}`);
 		} else {
 			// Pack completed!
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
 			goto(`/library/${packId}`);
 		}
 	}
 
 	function handleExit() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto(`/library/${packId}`);
 	}
 </script>

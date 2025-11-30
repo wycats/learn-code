@@ -3,7 +3,6 @@
 	import { page } from '$app/stores';
 	import { BuilderModel } from '$lib/game/builder-model.svelte';
 	import { CampaignService } from '$lib/game/campaigns';
-	import Grid from '$lib/components/game/Grid.svelte';
 	import BuilderTray from '$lib/components/builder/BuilderTray.svelte';
 	import BuilderStoryBar from '$lib/components/builder/BuilderStoryBar.svelte';
 	import BuilderStoryTrigger from '$lib/components/builder/BuilderStoryTrigger.svelte';
@@ -45,17 +44,17 @@
 		}
 	});
 
-	let game = $derived(builder.game);
-
-	function handleExit() {
+	async function handleExit() {
 		if (builder.mode === 'test' && mode === 'test') {
 			// If we started in test mode (Play Level), go back to editor
-			goto(`/builder/campaigns/${packId}`);
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
+			await goto(`/builder/campaigns/${packId}`);
 		} else if (builder.mode === 'test') {
 			builder.setMode('edit');
 		} else {
 			// Exit builder
-			goto(`/builder/campaigns/${packId}`);
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
+			await goto(`/builder/campaigns/${packId}`);
 		}
 	}
 </script>

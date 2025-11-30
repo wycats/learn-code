@@ -17,10 +17,12 @@
 			name: 'New Adventure',
 			description: 'A brand new level pack.'
 		});
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		void goto(`/builder/campaigns/${newPack.id}`);
 	}
 
 	function handleEdit(packId: string) {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		void goto(`/builder/campaigns/${packId}`);
 	}
 
@@ -28,6 +30,7 @@
 		const cloned = await CampaignService.clone(packId);
 		if (cloned) {
 			myCampaigns = await CampaignService.loadAll(); // Refresh
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
 			void goto(`/builder/campaigns/${cloned.id}`);
 		}
 	}

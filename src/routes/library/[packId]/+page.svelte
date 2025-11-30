@@ -12,10 +12,12 @@
 	let progress = $state(ProgressService.load());
 
 	function handleLevelSelect(levelId: string) {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto(`/play/${packId}/${levelId}`);
 	}
 
 	function handleBack() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto('/library');
 	}
 

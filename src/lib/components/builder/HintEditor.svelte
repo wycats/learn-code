@@ -15,7 +15,6 @@
 		ChevronRight,
 		Lightbulb
 	} from 'lucide-svelte';
-	import { slide } from 'svelte/transition';
 
 	interface Props {
 		builder: BuilderModel;
@@ -318,24 +317,6 @@
 		gap: var(--size-4);
 		padding: var(--size-4);
 		overflow-y: auto;
-	}
-
-	.header {
-		margin-bottom: var(--size-2);
-	}
-
-	h3 {
-		font-size: var(--font-size-2);
-		font-weight: 800;
-		color: var(--text-1);
-		margin: 0;
-		letter-spacing: -0.02em;
-	}
-
-	.subtitle {
-		font-size: var(--font-size-1);
-		color: var(--text-2);
-		margin: 0;
 	}
 
 	.hint-list {

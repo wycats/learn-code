@@ -2,47 +2,42 @@
 
 ## Overview
 
-This phase focused on stepping back from code implementation to evaluate the product through the eyes of our users. We enriched our personas, conducted a comprehensive "Fresh Eyes" review, and established a "Constitution" (Axioms) to guide future development.
+Phase 13 was a "soft" phase focused on solidifying the project's design foundation. We stepped back from feature development to document our personas, codify our design axioms, and conduct a "Fresh Eyes" review of the application. This work ensures that future development remains aligned with our core values and user needs.
 
-## Key Activities
+## Key Achievements
 
 ### 1. Persona Enrichment
+We updated `docs/design/personas.md` to reflect the evolved roles of our users:
+- **Zoey (The Player)**: Now includes her interaction with the Guide and Hint systems.
+- **Jonas (The Architect)**: Explicitly defined as the primary user of the Builder tools.
+- **The Guide (The Librarian)**: Added a role for the Guide as the curator of content.
 
-We updated `docs/design/personas.md` to reflect the new "Builder" capabilities.
+### 2. The Constitution (Axioms)
+We created `docs/design/axioms.md`, which serves as the "Constitution" for the project. It defines 9 core principles across four categories:
+- **Pedagogy**: "Stop & Go", "Failure is Data", "Low Floor, High Ceiling".
+- **Interaction**: "Touch First", "Direct Manipulation", "No Hidden State".
+- **Visuals**: "Modern Matte", "Motion is Meaning", "Diegetic UI".
+- **Technical**: "Zero Backend", "Local First", "Web Standards".
 
-- **Jonas (The Social Architect)**: Evolved from a player to a creator who craves an audience.
-- **Zoey (The Logic Linguist)**: Defined as a narrative-first learner who needs "Why" before "How".
-- **The Facilitator**: Recognized as a critical user who needs tools to verify solvability and guide learning.
+### 3. Fresh Eyes Review
+We conducted a comprehensive review of the application and documented findings in `docs/design/friction-log.md`. Key insights include:
+- **Navigation**: The "Back" button behavior is inconsistent.
+- **Builder**: The UI is cluttered and lacks clear hierarchy.
+- **Library**: The "Pack" concept is confusing to new users.
+- **Gameplay**: The "Run" button needs better feedback.
 
-### 2. Fresh Eyes Review
+### 4. Code Quality & Linting
+While not originally part of the plan, we addressed a significant amount of technical debt by fixing over 30 linting errors and warnings across the codebase. This included:
+- Removing unused imports and variables.
+- Fixing floating promises in `goto` calls.
+- Adding missing keys to `each` blocks.
+- Cleaning up unused CSS selectors.
 
-We conducted a role-playing audit of the application (`docs/design/fresh-eyes.md`).
+## Decisions & Trade-offs
 
-- **Findings**:
-  - **Narrative Gap**: Level 1 is too robotic. Zoey needs a story.
-  - **Social Block**: Jonas can build but cannot share.
-  - **Solvability Risk**: Facilitators cannot verify if a level is broken.
-  - **Accessibility**: The Builder relies too heavily on text for story creation.
-
-### 3. The Constitution (Axioms)
-
-We drafted `docs/design/axioms.md` to codify our design philosophy.
-
-- **Core Axioms**:
-  - Story is the Engine.
-  - Creation is Social.
-  - The "Mario Maker" Rule (Honesty).
-  - Failure is Information.
-
-## Outcomes
-
-- A clear roadmap for the next phase (Implementation of findings).
-- A set of guiding principles to prevent feature creep and ensure alignment with user needs.
-- A prioritized list of friction points to address.
+- **Explicit Axioms**: We chose to make our design rules explicit to prevent "drift" as the project grows. This may seem like overhead, but it saves time in decision-making later.
+- **Linting Enforcement**: We decided to enforce strict linting rules (including `void` for floating promises) to maintain high code quality, even though it required a significant cleanup effort.
 
 ## Next Steps
 
-- **Phase 14**: Implement the high-priority findings:
-  - **Narrative**: Rewrite Level 1 Intro/Outro.
-  - **Social**: Add "Export/Import" or "Play Link".
-  - **Verification**: Add a "Solvability Check" to the Builder.
+With the design foundation solid and the codebase clean, we are ready to move into **Phase 14**, where we will begin addressing the issues identified in the Friction Log, starting with the **Navigation & Layout Polish**.

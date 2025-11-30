@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
 	import Grid from '$lib/components/game/Grid.svelte';
-	import { Plus, Trash2, Grid3x3 } from 'lucide-svelte';
+	import { Plus, Trash2 } from 'lucide-svelte';
 	import { fade, fly } from 'svelte/transition';
 
 	interface Props {
@@ -53,7 +53,7 @@
 				</div>
 
 				<!-- Trash Buttons (Overlay) -->
-				{#each cols as col}
+				{#each cols as col (col)}
 					<div class="trash-cell">
 						{#if activeCol === col}
 							<button
@@ -81,7 +81,7 @@
 				</div>
 
 				<!-- Trash Buttons (Overlay) -->
-				{#each rows as row}
+				{#each rows as row (row)}
 					<div class="trash-cell">
 						{#if activeRow === row}
 							<button

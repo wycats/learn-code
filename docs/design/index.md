@@ -2,18 +2,30 @@
 
 This directory contains design documents, philosophy, and analysis for the project.
 
-## Core Pedagogy
+## Core Philosophy
 
-- [Wonderblocks Pedagogy](wonderblocks.md): The core educational philosophy and framework for the project.
+- [The Constitution (Axioms)](axioms.md): The immutable laws guiding our design decisions.
+- [Wonderblocks Pedagogy](wonderblocks.md): The core educational philosophy and framework.
 - [Personas](personas.md): The target audience (Learners and Facilitators).
+- [Builder Philosophy](builder-philosophy.md): The guiding principles for the Level Builder tools.
+
+## System Design
+
 - [Core Mechanics](mechanics.md): The game rules, interaction modes, and MVP scope.
-- [Interaction Model](interaction-model.md): Detailed philosophy on touch interactions, insertion modes, and power tools.
 - [Visual Style](visual-style.md): The "Modern Matte" design language and principles.
-- [Terminology](terminology.md): Standardized naming conventions (e.g., "Pack" vs. "Campaign").
+- [Interaction Model](interaction-model.md): Detailed philosophy on touch interactions.
+- [Terminology](terminology.md): Standardized naming conventions.
+- [Layout Refinement](layout-refinement.md): Evolution of the UI layout.
 
-## Research & Analysis
+## Feature Specifications
 
-- [Prior Art](prior-art.md): Analysis of existing coding tools for early childhood (3-6 years).
+- [Level Builder](level-builder.md): Detailed design for the Level Builder and Campaign tools.
+
+## Process & Analysis
+
+- [Friction Log](friction-log.md): A living record of UX friction points and bugs.
+- [Fresh Eyes Review](fresh-eyes.md): Periodic comprehensive design reviews.
+- [Prior Art](prior-art.md): Analysis of existing coding tools.
 
 ## Archive
 

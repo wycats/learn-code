@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { LevelPack } from '$lib/game/schema';
 	import type { PackProgress } from '$lib/game/progress';
-	import { Book, Flame, Star, Lock, Play } from 'lucide-svelte';
+	import { Book, Flame } from 'lucide-svelte';
 
 	interface Props {
 		pack: LevelPack;

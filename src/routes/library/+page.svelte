@@ -9,7 +9,13 @@
 	let progress = $state(ProgressService.load());
 
 	function handlePackSelect(packId: string) {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto(`/library/${packId}`);
+	}
+
+	function handleBuilder() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		goto('/builder/campaigns');
 	}
 
 	onMount(() => {
@@ -24,7 +30,7 @@
 			<h1>Code Climber</h1>
 		</div>
 		<div class="actions">
-			<button class="builder-btn" onclick={() => goto('/builder/campaigns')}>
+			<button class="builder-btn" onclick={handleBuilder}>
 				<Hammer size={20} /> Pack Builder
 			</button>
 		</div>

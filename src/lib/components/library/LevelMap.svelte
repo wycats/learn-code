@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { LevelPack } from '$lib/game/schema';
 	import type { PackProgress } from '$lib/game/progress';
-	import { Check, Lock, Star } from 'lucide-svelte';
+	import { Lock, Star } from 'lucide-svelte';
 
 	interface Props {
 		pack: LevelPack;
@@ -20,7 +20,7 @@
 </script>
 
 <div class="level-map">
-	{#each pack.levels as level, i}
+	{#each pack.levels as level, i (level.id)}
 		{@const unlocked = isUnlocked(i)}
 		{@const levelProgress = progress?.levels[level.id]}
 		{@const completed = levelProgress?.completed}
@@ -38,7 +38,7 @@
 					<Lock size={20} />
 				{:else if completed}
 					<div class="stars">
-						{#each Array(3) as _, s}
+						{#each [0, 1, 2] as s (s)}
 							<Star
 								size={12}
 								class={s < stars ? 'star-filled' : 'star-empty'}

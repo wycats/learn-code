@@ -12,7 +12,7 @@
 		ChevronDown
 	} from 'lucide-svelte';
 	import { Stack } from '$lib';
-	import { fade, slide } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 
 	interface Props {
 		builder: BuilderModel;
@@ -105,7 +105,7 @@
 
 							{#if showBiomePicker}
 								<div class="biome-popover" transition:slide={{ duration: 200 }}>
-									{#each BIOME_OPTIONS as option}
+									{#each BIOME_OPTIONS as option (option.value)}
 										<button
 											class="biome-option"
 											class:selected={option.value === builder.level.defaultTerrain}

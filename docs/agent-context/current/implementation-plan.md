@@ -1,19 +1,40 @@
-# Phase 13 Implementation Plan: Design & Reflection
+# Implementation Plan - Phase 13: Design & Reflection
 
-## Goal
+**Goal:** Deepen our understanding of the users (Personas) and the system's core laws (Axioms) to ensure the product remains coherent as it grows. This is a "soft" phase focused on documentation, analysis, and design philosophy rather than writing code.
 
-To ground the project's future development in a deep understanding of its users (Personas) and its fundamental principles (Axioms). This phase is about "thinking" and "defining" rather than just "building".
+## 1. Persona Enrichment
 
-## Strategy
+**Objective:** Update our user personas to reflect the reality of the "Builder" features. We now have two distinct modes of engagement: "Player" (Zoey) and "Architect" (Jonas/Zoey).
 
-We will proceed in three distinct steps, engaging in a dialogue for each:
+- [x] **Review `docs/design/personas.md`**:
+  - Update "Zoey" to reflect her experience with the new "Guide" and "Hint" systems.
+  - Update "Jonas" (or create a new persona) to specifically address the "Architect" role (using the Level Builder and Campaign Builder).
+  - Define the "Teacher/Parent" role more clearly if necessary, specifically regarding the "Librarian" features.
 
-1.  **Persona Enrichment**: We will revisit `docs/design/personas.md`. We will analyze how the introduction of the **Builder** (Phase 7-12) impacts our personas. For example, Jonas is no longer just a _player_; he is now an _architect_. How does that change his needs? We will also refine the "Co-Pilot" personas.
-2.  **Fresh Eyes Review**: We will "roleplay" as each persona and walk through the current application (Game, Library, Builder). We will document friction points and "magic moments" in a new `docs/design/fresh-eyes.md` document.
-3.  **The Constitution (Axioms)**: We will draft `docs/design/axioms.md`. This will not be a list of features, but a list of _laws_ (e.g., "The Law of Direct Manipulation", "The Law of No Magic"). These axioms will serve as the tie-breaker for future design decisions.
+## 2. The Constitution (Axioms)
 
-## Deliverables
+**Objective:** Codify the implicit design rules we've been following into explicit "Axioms". This will serve as our "Constitution" for future decision making.
 
-- Updated `docs/design/personas.md`
-- New `docs/design/fresh-eyes.md` (Review findings)
-- Populated `docs/design/axioms.md`
+- [x] **Draft `docs/design/axioms.md`**:
+  - **Pedagogy**: Define the "Stop & Go" philosophy, the role of failure, and the "Low Floor, High Ceiling" principle.
+  - **Interaction**: Codify "Touch First", "Direct Manipulation", and "No Hidden State".
+  - **Visuals**: Define the "Modern Matte" aesthetic, the use of motion, and the "Diegetic UI" preference.
+  - **Technical**: Document our stance on "Zero Backend", "Local First", and "Web Standards".
+
+## 3. Fresh Eyes Review
+
+**Objective:** Conduct a comprehensive design review of the current application state through the lens of our updated personas.
+
+- [x] **Conduct Review**:
+  - Walk through the entire "Player" flow (Campaign -> Level -> Win) as Zoey.
+  - Walk through the entire "Architect" flow (Create Pack -> Build Level -> Test) as Jonas.
+  - Document friction points, inconsistencies, and opportunities in `docs/design/friction-log.md`.
+- [x] **Synthesize Findings**:
+  - Create a prioritized list of design debt and polish tasks for future phases.
+
+## 4. Documentation Cleanup
+
+**Objective:** Ensure all design documentation is up-to-date and organized.
+
+- [x] **Update `docs/design/index.md`**: Ensure all new documents are linked and categorized.
+- [x] **Archive Obsolete Docs**: Move any outdated design docs to `docs/design/archive/`.

@@ -278,3 +278,22 @@
 
 - Added `initialProgram` to `LevelSchema`.
 - Added a "Snapshot" tool in the Builder to capture the current tray state.
+
+## Phase 13: Design & Reflection
+
+### 34. Explicit Axioms ("The Constitution")
+
+**Decision:** Codify implicit design rules into an explicit `axioms.md` document.
+**Context:** As the project grows, "tribal knowledge" about design values (e.g., "No Hidden State", "Touch First") risks being lost or diluted.
+**Consequence:**
+- Future decisions must be weighed against these axioms.
+- New contributors (or agents) have a clear "Constitution" to follow.
+
+### 35. Strict Linting for Code Quality
+
+**Decision:** Enforce strict linting rules, including `void` for floating promises and removing unused variables.
+**Context:** The codebase had accumulated technical debt in the form of unused code and potential race conditions (unawaited `goto`).
+**Consequence:**
+- We spent significant time cleaning up the codebase.
+- The CI pipeline is now stricter, preventing future regressions.
+- We use `void goto(...)` to explicitly acknowledge that we are not awaiting navigation in certain fire-and-forget contexts.
