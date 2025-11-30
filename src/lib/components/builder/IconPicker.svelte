@@ -37,6 +37,10 @@
 			isOpen = false;
 		}
 	}
+
+	function focusOnMount(node: HTMLElement) {
+		node.focus();
+	}
 </script>
 
 <svelte:window onkeydown={handleKeydown} onclick={handleClickOutside} />
@@ -50,7 +54,12 @@
 		<div class="popover">
 			<div class="search-bar">
 				<Search size={16} class="search-icon" />
-				<input type="text" placeholder="Search icons..." bind:value={searchQuery} autofocus />
+				<input
+					type="text"
+					placeholder="Search icons..."
+					bind:value={searchQuery}
+					use:focusOnMount
+				/>
 			</div>
 			<div class="grid">
 				{#each filteredIcons as iconName (iconName)}
