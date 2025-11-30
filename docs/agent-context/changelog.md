@@ -266,3 +266,46 @@ Addressed critical bugs and unified the Builder UI to align with the "Diagetic A
     - Fixed execution visualization persistence (green checks).
     - Improved "Call" block feedback (immediate success mark).
 
+## Phase 17: Deployment & Distribution (Completed)
+
+**Date:** November 30, 2025
+
+**Summary:**
+Prepared the application for public release by implementing a robust Progressive Web App (PWA) strategy and configuring the deployment pipeline. Implemented a custom Service Worker with a "Kill Switch" for emergency updates and offline-first caching. Configured Vercel hosting with Postgres database integration.
+
+**Key Deliverables:**
+
+- **PWA Implementation**:
+  - Custom `service-worker.ts` with precaching and runtime caching.
+  - "Kill Switch" logic to force updates when critical bugs are fixed.
+  - `manifest.json` and app icons for installability.
+  - `OfflineIndicator` component for network status feedback.
+- **Deployment Setup**:
+  - Configured `adapter-auto` for Vercel deployment.
+  - Set up Drizzle ORM with Postgres (local Docker + Vercel Postgres).
+  - Created `docker-compose.yml` for local development database.
+- **Infrastructure**:
+  - `sw-manager.ts` for client-side Service Worker lifecycle management.
+  - `feedback.ts` service with offline queueing support.
+
+## Phase 18: Visual Regression Testing (Completed)
+
+**Date:** November 30, 2025
+
+**Summary:**
+Established a "Design Review" workflow using automated visual regression testing with Playwright. This system acts as a safety net for UI changes and a tool for reviewing design updates. Configured the testing pipeline to prevent blocking the development server and created a suite of NPM scripts for running, reviewing, and approving visual changes.
+
+**Key Deliverables:**
+
+- **Testing Infrastructure**:
+  - Configured `playwright.config.ts` for visual testing with mobile viewports.
+  - Set `reporter: [['html', { open: 'never' }]]` to prevent blocking.
+- **Test Suite**:
+  - `e2e/visual.spec.ts`: Visual tests for Home, Library, Game (Level 1), and Builder interfaces.
+- **Workflow Scripts**:
+  - `test:visual`: Run tests (non-blocking).
+  - `test:visual:review`: Open HTML report.
+  - `test:visual:approve`: Update snapshots.
+- **Documentation**:
+  - Documented the "Design Review" workflow in `walkthrough.md`.
+

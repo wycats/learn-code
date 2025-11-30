@@ -23,6 +23,11 @@
 
 - [ ] **Publishing**: A way to share levels (maybe a simple file-based repo or lightweight backend).
 - [ ] **Feedback Button**: A way for players to send feedback to level creators (e.g., "Too hard", "Fun!", "Broken"). (Partially addressed in Phase 16 via mailto)
+- [ ] **P2P Sharing**: A "serverless" way for Architects to share levels with Explorers directly.
+  - **Magic QR Codes**: Encode small levels (compressed JSON) directly into a QR code. The Explorer scans it, and the level loads instantly. No internet required (if the app is cached).
+  - **WebRTC Link**: For larger packs, use a simple signaling handshake (via a tiny public server or manual code entry) to establish a direct P2P data channel between devices.
+  - **Local Network**: If on the same Wi-Fi, perhaps a direct IP connection (harder with HTTPS requirements).
+
 
 ## Mechanics & Blocks
 

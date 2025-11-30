@@ -7,7 +7,7 @@
 
 	// Ensure SW manager is initialized
 	$effect(() => {
-		// Accessing the property to ensure it's not tree-shaken, 
+		// Accessing the property to ensure it's not tree-shaken,
 		// though the import side-effect might be enough.
 		// The singleton pattern in the file handles init.
 		console.log('SW Manager active');

@@ -1,30 +1,48 @@
-# Phase Walkthrough
+# Phase 18: Visual Regression Testing - Walkthrough
 
 ## Overview
+This phase focuses on adding a safety net for UI changes by implementing automated visual regression tests. We are treating this as a "Design Review" tool, allowing us to catch unintended changes and explicitly approve intended ones.
 
-This phase focuses on preparing the application for deployment and distribution. We transitioned from a development-focused setup to a production-ready configuration using static hosting.
+## Workflow: Design Review
 
-## Key Changes
+We have established a workflow for reviewing visual changes:
 
-### 1. Build Optimization
-- **Baseline Analysis**: Ran `pnpm build` to establish a baseline.
-- **Code Cleanup**: Addressed linting warnings found during the build process:
-  - Removed unused CSS in `BuilderStoryBar.svelte`.
-  - Removed unused imports in `Tray.svelte`.
-- **Verification**: Confirmed that the build succeeds with no critical warnings.
+1.  **Run Tests**: `pnpm test:visual`
+    - This runs the visual regression tests.
+    - If there are no changes, it passes.
+    - If there are changes (regressions or intended updates), it fails.
+    - It does **not** automatically open the report (preventing the "stuck server" issue).
 
-### 2. Hosting Configuration
-- **Adapter Switch**: Switched to `@sveltejs/adapter-auto` to leverage Vercel's zero-config deployment.
-- **SPA Mode**: Retained SPA configuration (`ssr = false`) in `src/routes/+layout.ts` to ensure consistent client-side behavior.
-- **Cleanup**: Removed `adapter-static` configuration, `base` path logic, and the GitHub Actions workflow (`deploy.yml`) as Vercel handles build and deployment automatically.
+2.  **Review Changes**: `pnpm test:visual:review`
+    - This opens the Playwright HTML report.
+    - You can inspect the diffs, seeing "Actual", "Expected", and "Diff" views.
+    - Use this to verify if the changes are bugs (fix the code) or intended design updates (approve them).
 
-### 3. PWA Foundation
-- **Manifest**: Created `static/manifest.json` with basic PWA metadata.
-- **Icons**: Reused `favicon.svg` as the primary PWA icon.
-- **Integration**: Linked the manifest in `src/app.html` and added the viewport meta tag.
+3.  **Approve Changes**: `pnpm test:visual:approve`
+    - If the changes are intended, run this command.
+    - It re-runs the tests with `--update-snapshots`, updating the baseline images.
 
-## Next Steps
-- Verify the deployment on GitHub Pages.
-- Consider adding a Service Worker for offline support (deferred for now).
-- Set up analytics.
+## Progress Log
 
+### Initial Setup
+- Created implementation plan and task list.
+- Configured Playwright in `playwright.config.ts`.
+    - Set `reporter: [['html', { open: 'never' }]]` to prevent blocking.
+    - Added mobile viewports.
+- Added NPM scripts for the workflow:
+    - `test:visual`
+    - `test:visual:review`
+    - `test:visual:approve`
+
+### Test Implementation
+- Created `e2e/visual.spec.ts`.
+- Scoped tests for:
+    - Home Screen
+    - Library Screen
+    - Game Interface (Level 1)
+    - Builder Interface
+- Fixed issues with selectors and URLs (e.g., using `/play/basics/level-1` instead of `campaign-1`).
+
+### Next Steps
+- Run the approval command to generate the initial baselines.
+- Verify the baselines look correct.

@@ -329,3 +329,14 @@
 
 - Reused the `editingContext` logic from the GameModel.
 - The Builder Tray switches tabs/context when editing a function, just like the Game Tray.
+
+## Phase 18: Visual Regression Testing
+
+### 39. Design Review Workflow
+
+**Decision:** Treat visual regression testing as a "Design Review" tool, not just a bug catcher.
+**Context:** In a visual-heavy application, "changes" are often intentional design iterations. A binary "pass/fail" CI check is insufficient. We need a workflow to *see* the changes and approve them.
+**Consequence:**
+- We configured Playwright to **not** block the CI/local run on failure (generating a report instead).
+- We created specific scripts (`test:visual:review`, `test:visual:approve`) to facilitate this human-in-the-loop workflow.
+- We accept that "failed tests" in this context often mean "pending design review".

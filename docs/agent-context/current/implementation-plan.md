@@ -1,26 +1,35 @@
-# Implementation Plan - Phase 17: Deployment & Distribution
+# Phase 18: Visual Regression Testing - Implementation Plan
 
 ## Goal
-Prepare the application for public release by optimizing the build, configuring PWA capabilities, and setting up a deployment pipeline.
+Ensure the visual integrity of the application across updates by implementing automated visual regression testing using Playwright.
 
-## Proposed Changes
+## Strategy
+We will leverage Playwright's built-in visual comparison capabilities (`expect(page).toHaveScreenshot()`) to catch unintended visual changes. We will focus on high-value, stable UI states to minimize flakiness.
 
-### 1. Build Optimization
-- [ ] Analyze bundle size.
-- [ ] Optimize asset loading (images, sounds).
+## Scope
+1.  **Home Screen**: Verify the main menu layout, including the new "Create" entry point.
+2.  **Game Interface**: Capture the standard gameplay view (Level 1), ensuring the code tray, grid, and instruction bar are rendered correctly.
+3.  **Builder Interface**: Capture the initial state of the Builder, verifying the palette and grid tools.
+4.  **Library/Campaigns**: Verify the display of level packs and the campaign overview.
 
-### 2. PWA Configuration
-- [ ] Create `manifest.json`.
-- [ ] Configure service workers for offline support (using Vite PWA plugin or SvelteKit service worker).
-- [ ] Add icons and splash screens.
+## Technical Approach
 
-### 3. Hosting Setup
-- [ ] Configure `adapter-static` or `adapter-vercel` (depending on target).
-- [ ] Set up GitHub Actions for CI/CD.
+### 1. Playwright Configuration
+- Update `playwright.config.ts` to define consistent viewports for visual tests.
+- Set reasonable thresholds for pixel comparison to avoid false positives from minor rendering differences.
 
-### 4. Analytics (Optional)
-- [ ] Evaluate privacy-first analytics options (e.g., Plausible, Fathom) or simple custom logging.
+### 2. Test Suite Structure
+- Create `e2e/visual.spec.ts`.
+- Use a `beforeEach` hook to ensure a clean state (clear localStorage if needed).
+- Define tests for each scoped area.
 
-## Verification Plan
-- [ ] Lighthouse audit (Performance, PWA, Accessibility).
-- [ ] Build verification (`pnpm build && pnpm preview`).
+### 3. Handling Dynamic Content
+- **Animations**: Disable CSS animations or wait for them to finish before taking screenshots.
+- **Dynamic Data**: Mock or seed data where necessary to ensure consistent screenshots (e.g., for the Library screen).
+
+## Execution Steps
+1.  **Setup**: Configure Playwright for visual testing.
+2.  **Author Tests**: Write `e2e/visual.spec.ts`.
+3.  **Baseline**: Run tests with `--update-snapshots` to generate initial baselines.
+4.  **Verify**: Run tests again to ensure they pass against the new baselines.
+5.  **CI**: Confirm CI pipeline includes these tests.

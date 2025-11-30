@@ -151,25 +151,42 @@
 - [x] **Content Audit**: Playtest and polish Levels 1-9, ensuring hint coverage and metadata quality.
 - [x] **Feedback Mechanism**: Add a simple `mailto` feedback link.
 
-## Phase 17: Deployment & Distribution
+## Phase 17: Deployment & Distribution (Completed)
 
 **Goal:** Prepare the application for public release.
 
-- [ ] **Build Optimization**: Minimize bundle size and asset loading.
-- [ ] **PWA Configuration**: Ensure the app is installable and works offline.
-- [ ] **Hosting Setup**: Configure deployment pipeline (e.g., Vercel, Netlify, or GitHub Pages).
-- [ ] **Analytics (Privacy-First)**: Implement basic, privacy-respecting usage tracking (optional).
+- [x] **Build Optimization**: Minimize bundle size and asset loading.
+- [x] **PWA Configuration**: Ensure the app is installable and works offline.
+- [x] **Hosting Setup**: Configure deployment pipeline (e.g., Vercel, Netlify, or GitHub Pages).
+- [x] **Analytics (Privacy-First)**: Implement basic, privacy-respecting usage tracking (optional).
 
-## Phase 18: Visual Regression Testing
+## Phase 18: Visual Regression Testing (Completed)
 
 **Goal:** Ensure the visual integrity of the application across updates by implementing automated visual regression testing.
 
-- [ ] **Playwright Setup**: Configure Playwright for visual comparison tests.
-- [ ] **Baseline Creation**: Establish baseline screenshots for key UI states (Game, Builder, Home).
-- [ ] **CI Integration**: Integrate visual tests into the CI pipeline to catch regressions on PRs.
-- [ ] **Flakiness Management**: Implement strategies to handle dynamic content and animations in screenshots.
+- [x] **Playwright Setup**: Configure Playwright for visual comparison tests.
+- [x] **Baseline Creation**: Establish baseline screenshots for key UI states (Game, Builder, Home).
+- [x] **CI Integration**: Integrate visual tests into the CI pipeline to catch regressions on PRs.
+- [x] **Flakiness Management**: Implement strategies to handle dynamic content and animations in screenshots.
 
-## Phase 19: Curriculum Expansion (Post-Launch)
+## Phase 19: P2P Sharing
+
+**Goal:** Enable Architects to share their creations directly with Explorers without a centralized server.
+
+- [ ] **Magic QR Codes**: Implement compressed JSON-to-QR encoding for single-level sharing.
+- [ ] **WebRTC Handshake**: Implement a simple signaling mechanism for direct device-to-device transfer of larger packs.
+- [ ] **Offline Support**: Ensure sharing works gracefully with cached app assets.
+
+## Phase 20: Feedback System
+
+**Goal:** Create a robust feedback loop that empowers users to report issues with full context.
+
+- [ ] **Screenshot Capture**: Ability to attach a screenshot of the current state.
+- [ ] **State Dump**: Automatically attach the current level JSON and interpreter state.
+- [ ] **Offline Queue**: Ensure feedback is queued and sent when online (already partially implemented).
+- [ ] **Admin Dashboard**: Simple view to triage feedback (optional/later).
+
+## Phase 21: Curriculum Expansion (Post-Launch)
 
 **Goal:** Introduce advanced programming concepts like Variables and Scoping.
 
