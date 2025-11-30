@@ -859,6 +859,13 @@
 		position: relative; /* Context for floating toolbar */
 	}
 
+	@media (max-width: 768px) {
+		.tray {
+			grid-template-rows: 1fr;
+			grid-template-columns: 140px 1fr; /* Palette | Program */
+		}
+	}
+
 	.floating-toolbar {
 		position: absolute;
 		top: 50%;
@@ -1079,6 +1086,12 @@
 		background-color: var(--surface-1);
 		border-radius: var(--radius-2);
 		align-items: start; /* Prevent stretching */
+	}
+
+	@media (max-width: 768px) {
+		.block-list {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.block-list.disabled {

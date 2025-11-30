@@ -353,6 +353,13 @@
 		overflow: hidden;
 	}
 
+	@media (max-width: 768px) {
+		.workspace {
+			grid-template-columns: 1fr;
+			grid-template-rows: 1fr 1fr;
+		}
+	}
+
 	.stage-area {
 		display: flex;
 		flex-direction: column;

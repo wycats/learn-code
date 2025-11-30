@@ -1,10 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Code, ArrowRight } from 'lucide-svelte';
+	import { Code, ArrowRight, Hammer } from 'lucide-svelte';
 
 	function handleStart() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto('/library');
+	}
+
+	function handleCreate() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		goto('/builder/campaigns');
 	}
 </script>
 
@@ -16,10 +21,17 @@
 		<h1>Code Climber</h1>
 		<p class="tagline">Master the logic of code, one block at a time.</p>
 
-		<button class="cta-button" onclick={handleStart}>
-			<span>Start Coding</span>
-			<ArrowRight size={20} />
-		</button>
+		<div class="actions">
+			<button class="cta-button primary" onclick={handleStart}>
+				<span>Start Coding</span>
+				<ArrowRight size={20} />
+			</button>
+
+			<button class="cta-button secondary" onclick={handleCreate}>
+				<span>Builder Mode</span>
+				<Hammer size={20} />
+			</button>
+		</div>
 	</div>
 </div>
 
@@ -39,6 +51,8 @@
 		gap: var(--size-6);
 		text-align: center;
 		padding: var(--size-6);
+		width: 100%;
+		max-width: 400px;
 	}
 
 	.logo-icon {
@@ -62,13 +76,18 @@
 		font-size: var(--font-size-4);
 		color: var(--text-2);
 		margin: 0;
-		max-width: 20ch;
+		max-width: 25ch;
+	}
+
+	.actions {
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-3);
+		width: 100%;
+		margin-top: var(--size-4);
 	}
 
 	.cta-button {
-		margin-top: var(--size-4);
-		background-color: var(--brand);
-		color: white;
 		border: none;
 		padding: var(--size-3) var(--size-6);
 		border-radius: var(--radius-pill);
@@ -77,20 +96,39 @@
 		cursor: pointer;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: var(--size-2);
 		transition:
 			transform 0.2s var(--ease-3),
 			box-shadow 0.2s var(--ease-3);
 		box-shadow: var(--shadow-3);
+		width: 100%;
 	}
 
 	.cta-button:hover {
 		transform: translateY(-2px);
 		box-shadow: var(--shadow-4);
-		background-color: var(--brand-light);
 	}
 
 	.cta-button:active {
 		transform: translateY(0);
+	}
+
+	.cta-button.primary {
+		background-color: var(--brand);
+		color: white;
+	}
+
+	.cta-button.primary:hover {
+		background-color: var(--brand-light);
+	}
+
+	.cta-button.secondary {
+		background-color: var(--surface-3);
+		color: var(--text-1);
+	}
+
+	.cta-button.secondary:hover {
+		background-color: var(--surface-4);
 	}
 </style>

@@ -1,40 +1,42 @@
-# Implementation Plan - Phase 13: Design & Reflection
+# Implementation Plan - Phase 14: Navigation & Layout Polish
 
-**Goal:** Deepen our understanding of the users (Personas) and the system's core laws (Axioms) to ensure the product remains coherent as it grows. This is a "soft" phase focused on documentation, analysis, and design philosophy rather than writing code.
+**Goal:** Address high-priority friction points identified in Phase 13, focusing on navigation structure and mobile responsiveness.
 
-## 1. Persona Enrichment
+## 1. Home Screen Redesign
 
-**Objective:** Update our user personas to reflect the reality of the "Builder" features. We now have two distinct modes of engagement: "Player" (Zoey) and "Architect" (Jonas/Zoey).
+**Objective:** Make the "Architect" mode (Campaign Builder) more accessible to users like Jonas.
 
-- [x] **Review `docs/design/personas.md`**:
-  - Update "Zoey" to reflect her experience with the new "Guide" and "Hint" systems.
-  - Update "Jonas" (or create a new persona) to specifically address the "Architect" role (using the Level Builder and Campaign Builder).
-  - Define the "Teacher/Parent" role more clearly if necessary, specifically regarding the "Librarian" features.
+- [ ] **Add "Create" Entry Point**: Add a prominent "Create" or "Build" button to the main Home Screen (`src/routes/+page.svelte`) that links directly to the Architect's Library (`/builder/campaigns`).
+- [ ] **Visual Consistency**: Ensure the new button matches the "Modern Matte" aesthetic of the existing "Play" button (large touch target, consistent typography).
 
-## 2. The Constitution (Axioms)
+## 2. Responsive Layout
 
-**Objective:** Codify the implicit design rules we've been following into explicit "Axioms". This will serve as our "Constitution" for future decision making.
+**Objective:** Ensure the application is usable on smaller screens (phones/small tablets) by implementing a vertical stack layout.
 
-- [x] **Draft `docs/design/axioms.md`**:
-  - **Pedagogy**: Define the "Stop & Go" philosophy, the role of failure, and the "Low Floor, High Ceiling" principle.
-  - **Interaction**: Codify "Touch First", "Direct Manipulation", and "No Hidden State".
-  - **Visuals**: Define the "Modern Matte" aesthetic, the use of motion, and the "Diegetic UI" preference.
-  - **Technical**: Document our stance on "Zero Backend", "Local First", and "Web Standards".
+- [ ] **Refactor `GameLayout`**: Update the main game layout to switch from a horizontal split (Stage | Tray) to a vertical stack (Stage / Tray) on narrow viewports (e.g., `< 768px`).
+- [ ] **Refactor `BuilderLayout`**: Apply similar responsive logic to the Builder interface.
+- [ ] **Tray Responsiveness**: Ensure the Tray component handles reduced width gracefully (e.g., wrapping blocks or scrolling).
+- [ ] **Instruction Bar**: Verify that the `InstructionBar` and `StatusPanel` adapt correctly to the vertical layout.
 
-## 3. Fresh Eyes Review
+## 3. Builder UI Cleanup
 
-**Objective:** Conduct a comprehensive design review of the current application state through the lens of our updated personas.
+**Objective:** Organize the crowded Builder palette to improve usability and reduce visual clutter.
 
-- [x] **Conduct Review**:
-  - Walk through the entire "Player" flow (Campaign -> Level -> Win) as Zoey.
-  - Walk through the entire "Architect" flow (Create Pack -> Build Level -> Test) as Jonas.
-  - Document friction points, inconsistencies, and opportunities in `docs/design/friction-log.md`.
-- [x] **Synthesize Findings**:
-  - Create a prioritized list of design debt and polish tasks for future phases.
+- [ ] **Categorize Tools**: Group Builder tools into logical categories (e.g., "Terrain", "Actors", "Logic", "Story").
+- [ ] **Implement Tabs/Accordion**: Use a tabbed interface or accordion within the `BuilderTray` to show only one category at a time.
+- [ ] **Mobile Optimization**: Ensure the categorized palette works well on touch devices and doesn't require excessive scrolling.
 
-## 4. Documentation Cleanup
+## 4. Navigation Consistency
 
-**Objective:** Ensure all design documentation is up-to-date and organized.
+**Objective:** Standardize the "Back" button behavior across the application to prevent user confusion.
 
-- [x] **Update `docs/design/index.md`**: Ensure all new documents are linked and categorized.
-- [x] **Archive Obsolete Docs**: Move any outdated design docs to `docs/design/archive/`.
+- [ ] **Audit Back Buttons**: Review all "Back" or "Exit" buttons in the app (Game, Builder, Library).
+- [ ] **Standardize Behavior**: Ensure all back buttons navigate to the expected parent context (e.g., Level -> Pack -> Library).
+- [ ] **Visual Consistency**: Use a consistent icon and placement for the back button (top-left).
+
+## 5. Bug Fix: Story Mode Highlight
+
+**Objective:** Fix the interaction bug where selecting a highlight target in Story Mode is difficult or impossible.
+
+- [ ] **Fix Target Selection**: Ensure that clicking the "Target" button in the Story Editor correctly enters a "selection mode" where the next click on the grid/tray sets the target.
+- [ ] **Add Visual Feedback**: Add a visual indicator (e.g., cursor change, highlight effect) when in "target selection mode".

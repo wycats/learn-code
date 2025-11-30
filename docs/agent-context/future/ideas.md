@@ -32,12 +32,6 @@
 - [ ] **Lives System**: A mechanic where the player has a limited number of lives. Walking into a hazard loses a life. This adds a "survival" challenge to levels.
 - [ ] **Pack-wide tiles**: Allow defining custom tiles (like water, spikes) that can be used across multiple levels in a pack.
 
-## Bugs
-
-- [ ] **Story Mode**:
-  - [ ] Bug: there is no way to select the starting or ending point for the highlight target. Normally clicking on one of those lets you move it, but if you've clicked the highlight button, clicking should set the target.
-  - [ ] Clicking on the highlight target button doesn't have any feedback (it should highlight the bullseye to indicate "target selection mode")
-
 ## Storage & Persistence
 
 - [ ] **OPFS for Level Storage**: Use the Origin Private File System (OPFS) to store user-created levels locally in the browser. This provides a more robust and performant storage solution than localStorage, especially for larger levels or assets.

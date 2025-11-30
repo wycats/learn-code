@@ -1,43 +1,46 @@
-# Phase 13 Walkthrough: Design & Reflection
+# Walkthrough - Phase 14: Navigation & Layout Polish
 
 ## Overview
 
-Phase 13 was a "soft" phase focused on solidifying the project's design foundation. We stepped back from feature development to document our personas, codify our design axioms, and conduct a "Fresh Eyes" review of the application. This work ensures that future development remains aligned with our core values and user needs.
+This phase focused on improving the navigation structure and layout responsiveness of the application, addressing key friction points identified in the previous phase. We also reorganized the Builder UI to be less cluttered and fixed a bug in Story Mode target selection.
 
-## Key Achievements
+## Changes
 
-### 1. Persona Enrichment
-We updated `docs/design/personas.md` to reflect the evolved roles of our users:
-- **Zoey (The Player)**: Now includes her interaction with the Guide and Hint systems.
-- **Jonas (The Architect)**: Explicitly defined as the primary user of the Builder tools.
-- **The Guide (The Librarian)**: Added a role for the Guide as the curator of content.
+### 1. Home Screen Redesign
 
-### 2. The Constitution (Axioms)
-We created `docs/design/axioms.md`, which serves as the "Constitution" for the project. It defines 9 core principles across four categories:
-- **Pedagogy**: "Stop & Go", "Failure is Data", "Low Floor, High Ceiling".
-- **Interaction**: "Touch First", "Direct Manipulation", "No Hidden State".
-- **Visuals**: "Modern Matte", "Motion is Meaning", "Diegetic UI".
-- **Technical**: "Zero Backend", "Local First", "Web Standards".
+- Added a "Builder Mode" button to the main landing page (`src/routes/+page.svelte`).
+- This provides a direct entry point for "Architect" users, making the creative tools more accessible.
 
-### 3. Fresh Eyes Review
-We conducted a comprehensive review of the application and documented findings in `docs/design/friction-log.md`. Key insights include:
-- **Navigation**: The "Back" button behavior is inconsistent.
-- **Builder**: The UI is cluttered and lacks clear hierarchy.
-- **Library**: The "Pack" concept is confusing to new users.
-- **Gameplay**: The "Run" button needs better feedback.
+### 2. Responsive Layouts
 
-### 4. Code Quality & Linting
-While not originally part of the plan, we addressed a significant amount of technical debt by fixing over 30 linting errors and warnings across the codebase. This included:
-- Removing unused imports and variables.
-- Fixing floating promises in `goto` calls.
-- Adding missing keys to `each` blocks.
-- Cleaning up unused CSS selectors.
+- Implemented CSS media queries (`@media (max-width: 768px)`) in `Game.svelte` and `BuilderLayout`.
+- The layout now switches from a horizontal split (Stage | Tray) to a vertical stack (Stage / Tray) on smaller screens.
+- This ensures the game and builder are usable on mobile devices and tablets.
 
-## Decisions & Trade-offs
+### 3. Builder UI Cleanup
 
-- **Explicit Axioms**: We chose to make our design rules explicit to prevent "drift" as the project grows. This may seem like overhead, but it saves time in decision-making later.
-- **Linting Enforcement**: We decided to enforce strict linting rules (including `void` for floating promises) to maintain high code quality, even though it required a significant cleanup effort.
+- Refactored `BuilderTray.svelte` to use a tabbed interface.
+- Categories:
+  - **Terrain**: Standard terrain tools (Wall, Water, etc.) and custom tiles.
+  - **Actors**: Start and Goal position tools.
+  - **Logic**: Coding blocks (Move, Turn, Loop).
+  - **Story**: Story editor (when in Story Mode).
+- Added the "Grid" tool to the Terrain list for easier access.
+- This organization reduces visual clutter and makes it easier to find specific tools.
 
-## Next Steps
+### 4. Navigation Consistency
 
-With the design foundation solid and the codebase clean, we are ready to move into **Phase 14**, where we will begin addressing the issues identified in the Friction Log, starting with the **Navigation & Layout Polish**.
+- Verified that "Back" buttons in the Game and Builder interfaces use consistent iconography (`ArrowLeft`) and behavior (navigating up the hierarchy).
+
+### 5. Story Mode Highlight Fix
+
+- Fixed an issue where selecting a tool in the Builder Tray as a highlight target for a story segment didn't work.
+- Updated `selectTool` in `BuilderTray` to respect `targetSelectionMode`.
+- Added visual feedback (pulsing highlight) to tools and blocks in the tray when they are the target of a story segment.
+
+## Verification
+
+- **Home Screen**: "Builder Mode" button appears and works.
+- **Mobile Layout**: Resizing the window to <768px stacks the interface vertically.
+- **Builder Tray**: Tabs work, tools are categorized, and the Grid tool is available.
+- **Story Mode**: Clicking "Target" in the story editor and then clicking a tool (e.g., "Wall") correctly sets the highlight, and the tool pulses when the segment is active.

@@ -179,3 +179,18 @@ Conducted a "soft" phase focused on solidifying the project's design foundation.
 - **Fresh Eyes Review**: Documented friction points in `docs/design/friction-log.md`.
 - **Code Quality**: Fixed linting errors (unused imports, floating promises, missing keys) across the codebase.
 - **Documentation Cleanup**: Reorganized `docs/design/index.md` and archived obsolete docs.
+
+## Phase 14: Navigation & Layout Polish (Completed)
+
+**Date:** November 29, 2025
+
+**Summary:**
+Addressed high-priority friction points identified in the "Fresh Eyes" review, focusing on navigation structure and mobile responsiveness. Reorganized the Builder UI into a cleaner, tabbed interface and implemented a responsive vertical stack layout for smaller screens. Fixed a critical usability bug in Story Mode target selection.
+
+**Key Deliverables:**
+
+- **Home Screen Redesign**: Added a prominent "Builder Mode" entry point.
+- **Responsive Layouts**: Implemented vertical stack layout for Game and Builder interfaces on mobile (<768px).
+- **Builder UI Cleanup**: Refactored `BuilderTray` into a tabbed interface (Terrain, Actors, Logic, Story) and added the "Grid" tool.
+- **Navigation Consistency**: Standardized "Back" button behavior and iconography.
+- **Story Mode Fix**: Fixed target selection interaction and added visual feedback for highlighting tools.

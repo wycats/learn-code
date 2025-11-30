@@ -117,6 +117,18 @@
 		overflow: hidden;
 	}
 
+	@media (max-width: 768px) {
+		.workspace {
+			grid-template-columns: 1fr;
+			grid-template-rows: 1fr 1fr;
+		}
+
+		.tray-area {
+			border-left: none;
+			border-top: 1px solid var(--surface-3);
+		}
+	}
+
 	.stage-area {
 		display: grid;
 		grid-template-rows: auto 1fr;

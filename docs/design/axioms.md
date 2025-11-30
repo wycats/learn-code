@@ -61,6 +61,7 @@ The finger is the primary input device.
   - Minimum touch target size: 44px.
   - No hover-dependent interactions (hover is a bonus, not a requirement).
   - Drag-and-drop must handle "fat fingers" and occlusion.
+  - **Equivalence**: A mouse or keyboard should not change the interaction model. Hover effects are strictly additive (delight), never functional requirements.
 - **Anti-Pattern**: Tooltips that contain critical information.
 
 ## 8. Modern Matte & Diegetic UI

@@ -117,9 +117,52 @@
 - [x] **Fresh Eyes Review**: Conduct a comprehensive design review of the current app through the lens of each persona.
 - [x] **The Constitution**: Flesh out `axioms.md` to define the immutable laws of the system.
 
-## Phase 14: Advanced Builder Features
+## Phase 14: Navigation & Layout Polish (Completed)
 
-**Goal:** Bring advanced game mechanics into the Builder to support complex level design.
+**Goal:** Address high-priority friction points identified in Phase 13, focusing on navigation structure and mobile responsiveness.
+
+- [x] **Home Screen Redesign**: Add a top-level "Create" entry point to make the Architect mode more accessible.
+- [x] **Responsive Layout**: Implement a vertical stack layout for the Game and Builder interfaces on smaller screens.
+- [x] **Builder UI Cleanup**: Organize the crowded Builder palette into logical groups or tabs.
+- [x] **Navigation Consistency**: Standardize the "Back" button behavior across the app.
+- [x] **Bug Fix**: Fix the "Story Mode" highlight target selection interaction.
+
+## Phase 15: Advanced Builder Features
+
+**Goal:** Bring advanced game mechanics into the Builder to support complex level design and empower "The Architect".
 
 - [ ] **Functions in Builder**: UI for defining and editing "Magic Blocks" (Functions) within the Builder.
 - [ ] **Advanced Logic**: Support for conditional blocks or more complex triggers if needed.
+- [ ] **Jonas's Wishlist**:
+  - [ ] **Difficulty Indicators**: Show difficulty on level cards.
+  - [ ] **Selectable Icons**: Allow choosing icons for levels/packs.
+  - [ ] **Speaker Avatars**: Show avatars in the dialogue system.
+- [ ] **New Mechanics**:
+  - [ ] **Hazards**: Spikes/Fire blocks (survival mechanic).
+  - [ ] **Pack-wide Tiles**: Define custom tiles (e.g., Lava) reusable across a pack.
+- [ ] **Local File System Access**: Implement `window.showDirectoryPicker` (Project Fugu) to allow Architects to save/load packs directly to their real file system.
+
+## Phase 16: Content Audit & Polish
+
+**Goal:** Review and refine the built-in levels to ensure they align with the new design axioms and utilize the latest engine features.
+
+- [ ] **Level Review**: Playtest all built-in levels (1-9) and verify they meet the "Low Floor, High Ceiling" axiom.
+- [ ] **Hint Coverage**: Ensure all levels have appropriate hints and guide interactions.
+- [ ] **Visual Polish**: Update level thumbnails and descriptions.
+- [ ] **Feedback Mechanism**: Add a simple way for users to send feedback (e.g., mailto link).
+
+## Phase 17: Deployment & Distribution
+
+**Goal:** Prepare the application for public release.
+
+- [ ] **Build Optimization**: Minimize bundle size and asset loading.
+- [ ] **PWA Configuration**: Ensure the app is installable and works offline.
+- [ ] **Hosting Setup**: Configure deployment pipeline (e.g., Vercel, Netlify, or GitHub Pages).
+- [ ] **Analytics (Privacy-First)**: Implement basic, privacy-respecting usage tracking (optional).
+
+## Phase 18: Curriculum Expansion (Post-Launch)
+
+**Goal:** Introduce advanced programming concepts like Variables and Scoping.
+
+- [ ] **The Box Metaphor**: Design and implement variables using a physical "box" metaphor for scoping.
+- [ ] **Curriculum Update**: Create new levels to teach these concepts.
