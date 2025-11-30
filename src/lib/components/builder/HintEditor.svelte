@@ -279,15 +279,19 @@
 									{:else}
 										<button
 											class="icon-btn toggle-select"
-											class:active={builder.targetSelectionMode}
+											class:active={builder.targetSelectionMode &&
+												builder.targetSelectionContext === `hint-${hint.id}`}
 											onclick={() => {
-												if (builder.targetSelectionMode) {
+												if (
+													builder.targetSelectionMode &&
+													builder.targetSelectionContext === `hint-${hint.id}`
+												) {
 													builder.cancelTargetSelection();
 												} else {
 													builder.startTargetSelection((target) => {
 														hint.highlight = target;
 														builder.game.triggerPreviewHighlight(target);
-													});
+													}, `hint-${hint.id}`);
 												}
 											}}
 											title="Select Target Element"
@@ -583,6 +587,7 @@
 		flex-direction: column;
 		gap: 2px;
 		min-width: 160px;
+		z-index: 1000;
 
 		/* Fallback: center if anchor not supported */
 		position: fixed;

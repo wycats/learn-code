@@ -335,14 +335,14 @@
 					{:else}
 						<button
 							class="action-btn"
-							class:active={builder.targetSelectionMode}
+							class:active={builder.targetSelectionMode && builder.targetSelectionContext === 'story'}
 							onclick={() => {
-								if (builder.targetSelectionMode) {
+								if (builder.targetSelectionMode && builder.targetSelectionContext === 'story') {
 									builder.cancelTargetSelection();
 								} else {
 									builder.startTargetSelection((target) => {
 										builder.setStoryHighlight(target);
-									});
+									}, 'story');
 								}
 							}}
 							title="Select Highlight Target (Click on Grid)"

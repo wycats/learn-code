@@ -42,6 +42,7 @@ export class BuilderModel {
 	activeSegmentId = $state<string | null>(null);
 	selectedActor = $state<'start' | 'goal' | null>(null);
 	onTargetSelect = $state<((target: string) => void) | null>(null);
+	targetSelectionContext = $state<string | null>(null);
 	hoveredGridPosition = $state<GridPosition | null>(null);
 	selectedGridPosition = $state<GridPosition | null>(null);
 
@@ -49,12 +50,14 @@ export class BuilderModel {
 		return this.onTargetSelect !== null;
 	}
 
-	startTargetSelection(callback: (target: string) => void) {
+	startTargetSelection(callback: (target: string) => void, context?: string) {
 		this.onTargetSelect = callback;
+		this.targetSelectionContext = context || null;
 	}
 
 	cancelTargetSelection() {
 		this.onTargetSelect = null;
+		this.targetSelectionContext = null;
 	}
 
 	// The GameModel instance used for rendering (and testing)
