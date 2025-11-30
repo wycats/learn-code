@@ -68,7 +68,8 @@
 				id: tile.id,
 				value: tile.id,
 				label: tile.name,
-				color: tile.visuals.color,
+				// Don't use tile color for UI selection state - keep it standard blue
+				// color: tile.visuals.color,
 				isCustom: true,
 				tileDef: tile,
 				scope: 'pack'
@@ -80,7 +81,8 @@
 				id: tile.id,
 				value: tile.id,
 				label: tile.name,
-				color: tile.visuals.color,
+				// Don't use tile color for UI selection state - keep it standard blue
+				// color: tile.visuals.color,
 				isCustom: true,
 				tileDef: tile,
 				scope: 'level'
