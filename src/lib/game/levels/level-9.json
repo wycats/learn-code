@@ -79,5 +79,43 @@
 		"7,7": "goal"
 	},
 	"availableBlocks": ["move-forward", "turn-left", "turn-right", "loop"],
-	"solutionPar": 12
+	"solutionPar": 12,
+	"story": {
+		"intro": [
+			{
+				"id": "intro-1",
+				"text": "Jonas: 'Welcome to The Gauntlet! I combined Ice AND Lava. Good luck!'",
+				"speaker": "Jonas"
+			},
+			{
+				"id": "intro-2",
+				"text": "Zoey: 'Ice makes me slide, and Lava makes me... restart. Got it.'",
+				"speaker": "Zoey"
+			}
+		],
+		"outro": [
+			{
+				"id": "outro-1",
+				"text": "Zoey: 'That was close! But I made it.'",
+				"speaker": "Zoey"
+			},
+			{
+				"id": "outro-2",
+				"text": "Jonas: 'Not bad. But can you handle... MOMENTUM?'",
+				"speaker": "Jonas"
+			}
+		]
+	},
+	"hints": [
+		{
+			"id": "l9-hint-idle",
+			"text": "Watch out for the ice! You'll slide until you hit a wall or floor.",
+			"trigger": { "type": "idle", "value": 20 }
+		},
+		{
+			"id": "l9-hint-hazard",
+			"text": "Oops! Lava is hot. Stay on the ice or floor.",
+			"trigger": { "type": "attempts", "value": 3 }
+		}
+	]
 }

@@ -142,14 +142,14 @@
   - [x] **Pack-wide Tiles**: Define custom tiles (e.g., Lava) reusable across a pack.
 - [x] **Local File System Access**: Implement `window.showDirectoryPicker` (Project Fugu) to allow Architects to save/load packs directly to their real file system.
 
-## Phase 16: Content Expansion & Narrative Polish
+## Phase 16: Content Expansion & Narrative Polish (Completed)
 
 **Goal:** Expand the "endgame" content with a challenging "Gauntlet" pack and deepen the narrative experience by framing it as a playful dialogue between the Architect (Jonas) and the Explorer (Zoey).
 
-- [ ] **Narrative Deepening**: Rewrite level intros/outros to reflect the "Jonas vs. Zoey" dynamic.
-- [ ] **Gauntlet Expansion**: Create Levels 10 ("Slippery Slopes") and 11 ("The Floor is Lava") to complete the challenge pack.
-- [ ] **Content Audit**: Playtest and polish Levels 1-9, ensuring hint coverage and metadata quality.
-- [ ] **Feedback Mechanism**: Add a simple `mailto` feedback link.
+- [x] **Narrative Deepening**: Rewrite level intros/outros to reflect the "Jonas vs. Zoey" dynamic.
+- [x] **Gauntlet Expansion**: Create Levels 10 ("Slippery Slopes") and 11 ("The Floor is Lava") to complete the challenge pack.
+- [x] **Content Audit**: Playtest and polish Levels 1-9, ensuring hint coverage and metadata quality.
+- [x] **Feedback Mechanism**: Add a simple `mailto` feedback link.
 
 ## Phase 17: Deployment & Distribution
 
