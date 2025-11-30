@@ -18,7 +18,8 @@
 		Mountain,
 		Sun,
 		Leaf,
-		ArrowLeft
+		ArrowLeft,
+		Grid3x3
 	} from 'lucide-svelte';
 	import PackManagerModal from './PackManagerModal.svelte';
 
@@ -79,7 +80,10 @@
 		icon: any;
 		label: string;
 		color?: string;
-	}[] = [{ id: 'erase', tool: { type: 'erase' }, icon: Eraser, label: 'Erase' }];
+	}[] = [
+		{ id: 'grid', tool: { type: 'grid' }, icon: Grid3x3, label: 'Grid' },
+		{ id: 'erase', tool: { type: 'erase' }, icon: Eraser, label: 'Erase' }
+	];
 
 	// Determine which terrain tool is "active" in the picker (last selected or default)
 	let activeTerrainTool = $state(standardTerrainTools[0]);
@@ -101,7 +105,7 @@
 		if (builder.activeTool.type === 'terrain' && tool.type === 'terrain') {
 			return builder.activeTool.value === tool.value;
 		}
-		return false;
+		return true;
 	}
 
 	function selectTool(tool: BuilderTool) {

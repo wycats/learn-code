@@ -1,51 +1,64 @@
-# Walkthrough: Phase 11 - The Campaign Builder
+# Phase 11 Walkthrough: The Campaign Builder
 
 ## Overview
-In this phase, we empowered the Architect (user) to create, organize, and manage their own Level Packs (Campaigns). This transforms the tool from a level editor into a full campaign authoring suite.
+In this phase, we implemented the "Campaign Builder," a feature that empowers users (Architects) to create, organize, and manage their own Level Packs. This moves the application from a static set of levels to a dynamic platform where users can curate their own content.
 
 ## Key Features
+1.  **Architect's Library**: A new dashboard (`/builder/campaigns`) where users can view their custom packs and clone built-in templates.
+2.  **Campaign Persistence**: We introduced a robust persistence layer using the Origin Private File System (OPFS) to store user campaigns locally.
+3.  **Pack Editor**: A dedicated interface (`/builder/campaigns/[packId]`) for editing pack metadata (title, description, difficulty) and managing the list of levels.
+4.  **Level Management**: Users can add new levels, reorder them, and delete them from their packs.
+5.  **Cloning**: Users can clone existing "Standard Packs" (like "The Basics") to use as a starting point for their own creations.
 
-### 1. Campaign Service & Data Layer
-We implemented a robust `CampaignService` backed by the Origin Private File System (OPFS) via `persistence.ts`.
-- **User Packs**: Custom packs are stored locally and persist across sessions.
-- **Cloning**: Users can clone built-in campaigns (like "Basics" or "The Gauntlet") to use as a starting point.
-- **CRUD Operations**: Full support for Creating, Reading, Updating, and Deleting campaigns.
+## Technical Implementation
+-   **`CampaignService`**: A static service class that handles all CRUD operations for campaigns, interfacing with the persistence layer.
+-   **`persistence.ts`**: Updated to support `UserPack` storage using `navigator.storage.getDirectory()`.
+-   **Svelte 5 Runes**: Utilized `$state` and `$derived` for reactive UI updates in the builder components.
+-   **Nested Routing**: Established a clear route structure for the builder context (`/builder/campaigns/...`).
 
-### 2. Architect's Library
-We created a dedicated "Architect's Library" (`/builder/campaigns`) where users can manage their creations.
-- **My Campaigns**: A shelf displaying all user-created packs.
-- **Templates**: A section allowing users to clone built-in packs.
-- **Entry Point**: Accessible via a new "Campaign Builder" button in the main Library.
+## How to Try It Out
 
-### 3. Campaign Editor
-We built a comprehensive editor for managing a campaign (`/builder/campaigns/[packId]`).
-- **Metadata Editor**: Users can edit the Title, Description, Cover Icon, and Difficulty.
-- **Level Organizer**: A list view to manage levels within the pack. Users can:
-    - Add new levels.
-    - Reorder levels (Up/Down).
-    - Delete levels.
-    - Edit specific levels (deep linking to Level Builder).
-    - Playtest specific levels.
+You can verify the new functionality by following these steps in the browser:
 
-### 4. Integrated Level Builder
-We integrated the existing Level Builder into the campaign workflow.
-- **Contextual Editing**: The Level Builder now supports editing a specific level within a specific pack (`/builder/campaigns/[packId]/[levelId]`).
-- **Seamless Navigation**: Users can easily switch between the Campaign Editor and the Level Builder.
-- **Test Mode**: Users can playtest their levels directly from the editor and return to editing.
+1.  **Access the Architect's Library**
+    *   Navigate to `/builder/campaigns`.
+    *   **Verify**: You should see the "Architect's Library" header.
+    *   **Verify**: You see two sections: "Your Packs" (initially empty or with local data) and "Standard Packs" (containing the built-in "The Basics" pack).
 
-## Technical Decisions
+2.  **Create a New Pack**
+    *   Click the **"Create New Pack"** button.
+    *   **Verify**: A new card appears in "My Packs" with a default name (e.g., "Untitled Pack").
+    *   **Verify**: You are automatically redirected to the Pack Editor for this new pack.
 
-### Async Persistence
-We moved to a fully async persistence model using OPFS. This ensures that large campaigns (with many levels) don't block the main thread and allows for future expansion (e.g., exporting/importing large files).
+3.  **Edit Pack Metadata**
+    *   In the Pack Editor, change the **Title** (e.g., "My First Campaign").
+    *   Change the **Description**.
+    *   Select a different **Difficulty** from the dropdown.
+    *   **Verify**: The changes are reflected immediately in the UI.
+    *   *Refresh the page*: **Verify** that your changes persist (thanks to the OPFS persistence layer).
 
-### Deep Linking
-We used a nested route structure (`/builder/campaigns/[packId]/[levelId]`) to ensure that the URL always reflects the current editing context. This allows for bookmarking and better browser history management.
+4.  **Manage Levels**
+    *   Click **"Add Level"** multiple times to create a few levels.
+    *   **Verify**: New levels appear in the list.
+    *   **Reorder**: Drag and drop a level to a new position. **Verify** the order updates.
+    *   **Delete**: Click the trash icon on a level. **Verify** it is removed from the list.
 
-### Reusable Components
-We reused existing components like `PackCard` and `Grid` to maintain visual consistency and reduce code duplication. We also created new reusable components like `PackMetadataEditor` and `LevelOrganizer`.
+5.  **Clone a Standard Pack**
+    *   Navigate back to `/builder/campaigns`.
+    *   Find "The Basics" in the "Standard Packs" section.
+    *   Click the **"Clone"** button.
+    *   **Verify**: A new pack appears in "Your Packs" named "Copy of The Basics".
+    *   **Verify**: It contains all the levels from the original pack.
 
-## Future Improvements
-- **Drag-and-Drop Reordering**: Currently, we use Up/Down buttons for level reordering. Implementing drag-and-drop would improve the UX for large packs.
-- **Export/Import**: While we have the underlying logic, we haven't exposed a UI for exporting/importing entire campaigns as files yet.
-- **Custom Cover Art**: Currently limited to a set of icons. Allowing custom image uploads would be a nice touch.
+6.  **Enter Level Builder**
+    *   From the Pack Editor, click the **Edit (Pencil)** icon on any level.
+    *   **Verify**: You are taken to the Level Builder (`/builder/campaigns/[packId]/[levelId]`).
+    *   **Verify**: The "Back to Pack" link is present in the header (if we added it to the layout, otherwise use browser back).
 
+7.  **Grid Editing (New)**
+    *   In the Level Builder, select the **Grid Tool** (Grid icon) from the toolbar.
+    *   **Verify**: The grid enters "Structure Mode".
+    *   **Mouse**: Hover over any cell. **Verify** that the corresponding row and column are highlighted, and "Trash" buttons appear at the Top (for columns) and Left (for rows).
+    *   **Touch**: Tap any cell. **Verify** that the row/column is selected and "Trash" buttons appear.
+    *   **Add**: Click the `+` buttons on the sides of the grid. **Verify** a new row/column is added.
+    *   **Remove**: Click a "Trash" button. **Verify** the row/column is removed.

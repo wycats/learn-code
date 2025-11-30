@@ -423,7 +423,7 @@
 		<div class="timeline-column">
 			<h3>Intro</h3>
 			<div class="timeline-list">
-				{#each builder.level.intro || [] as segment, i (segment.id)}
+				{#each builder.level.intro || [] as segment, i (segment.id || `intro-${i}`)}
 					<button
 						class="timeline-item"
 						class:active={builder.activeSegmentId === segment.id}
@@ -448,7 +448,7 @@
 		<div class="timeline-column">
 			<h3>Outro</h3>
 			<div class="timeline-list">
-				{#each builder.level.outro || [] as segment, i (segment.id)}
+				{#each builder.level.outro || [] as segment, i (segment.id || `outro-${i}`)}
 					<button
 						class="timeline-item"
 						class:active={builder.activeSegmentId === segment.id}

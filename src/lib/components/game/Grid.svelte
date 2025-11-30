@@ -11,6 +11,7 @@
 		isBuilder?: boolean;
 		selectedActor?: 'start' | 'goal' | null;
 		onCellClick?: (pos: GridPosition) => void;
+		onCellHover?: (pos: GridPosition) => void;
 		onActorSelect?: (actor: 'start' | 'goal') => void;
 		onActorDrop?: () => void;
 		onRotateStart?: () => void;
@@ -21,6 +22,7 @@
 		isBuilder = false,
 		selectedActor = null,
 		onCellClick,
+		onCellHover,
 		onActorSelect,
 		onActorDrop,
 		onRotateStart
@@ -52,7 +54,9 @@
 	}
 
 	function handleMouseEnter(x: number, y: number) {
-		if (!isBuilder || !isDragging) return;
+		if (!isBuilder) return;
+		onCellHover?.({ x, y });
+		if (!isDragging) return;
 		onCellClick?.({ x, y });
 	}
 

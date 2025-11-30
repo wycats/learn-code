@@ -85,16 +85,31 @@
 - [x] **Metadata & Ratings**: Difficulty, tags, and descriptions for levels.
 - [x] **Persistence Upgrade**: Robust local storage for user progress and content.
 
-## Phase 11: The Campaign Builder (Current)
+## Phase 11: The Campaign Builder (Completed)
 
 **Goal:** Empower the Architect to create, edit, and organize Level Packs using a diagetic interface.
 
-- [ ] **Pack Editor**: UI to create/edit packs (Title, Description, Cover).
-- [ ] **Level Organizer**: Drag-and-drop interface to manage levels within a pack.
-- [ ] **Architect's Library**: A management screen for user-created campaigns.
-- [ ] **Diagetic Integration**: Seamless transition between playing and building.
+- [x] **Pack Editor**: UI to create/edit packs (Title, Description, Cover).
+- [x] **Level Organizer**: Drag-and-drop interface to manage levels within a pack.
+- [x] **Architect's Library**: A management screen for user-created campaigns.
+- [x] **Diagetic Integration**: Seamless transition between playing and building.
 
-## Phase 12: Advanced Builder Features
+## Phase 12: Quality Assurance & Polish
+
+**Goal:** Establish a robust testing culture and apply final polish to the Builder experience.
+
+- [ ] **Level Settings Polish**:
+  - [ ] **Diegetic Constraints**: Replace "Par/Limit" inputs with inline editing matching the Game Mode UI.
+  - [ ] **Visual Grid Resizer**: Add/remove rows and columns by clicking handles near the grid.
+  - [ ] **Biome Picker**: Replace dropdown with an icon-based popover (similar to character editor).
+  - [ ] **Clarify "Snapshot"**: Rename/redesign "Snapshot Tray" to clearly indicate "Set Starting Code".
+- [ ] **Level Organizer Polish**: Investigate and smooth out interactions in the drag-and-drop target UI.
+- [ ] **Unit Testing**: Expand coverage for core logic (Builder Model, Interpreter).
+- [ ] **Integration Testing**: Test critical flows (Level Loading, Pack Management).
+- [ ] **E2E Testing**: Playwright tests for the Builder and Game Loop.
+- [ ] **CI/CD**: Automated testing pipeline.
+
+## Phase 13: Advanced Builder Features
 
 **Goal:** Bring advanced game mechanics into the Builder to support complex level design.
 

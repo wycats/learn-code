@@ -9,6 +9,7 @@ This directory contains design documents, philosophy, and analysis for the proje
 - [Core Mechanics](mechanics.md): The game rules, interaction modes, and MVP scope.
 - [Interaction Model](interaction-model.md): Detailed philosophy on touch interactions, insertion modes, and power tools.
 - [Visual Style](visual-style.md): The "Modern Matte" design language and principles.
+- [Terminology](terminology.md): Standardized naming conventions (e.g., "Pack" vs. "Campaign").
 
 ## Research & Analysis
 

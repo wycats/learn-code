@@ -1,7 +1,18 @@
 <script lang="ts">
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
-	import { Star, Play, Camera } from 'lucide-svelte';
+	import {
+		Star,
+		Play,
+		Camera,
+		Flower,
+		Sun,
+		Snowflake,
+		TreePine,
+		Mountain,
+		ChevronDown
+	} from 'lucide-svelte';
 	import { Stack } from '$lib';
+	import { fade, slide } from 'svelte/transition';
 
 	interface Props {
 		builder: BuilderModel;
@@ -9,6 +20,25 @@
 	}
 
 	let { builder, onClose }: Props = $props();
+	let showBiomePicker = $state(false);
+
+	const BIOME_OPTIONS = [
+		{ value: 'grass', icon: Flower, color: 'var(--green-5)', label: 'Grass' },
+		{ value: 'sand', icon: Sun, color: 'var(--yellow-5)', label: 'Sand' },
+		{ value: 'snow', icon: Snowflake, color: 'var(--blue-3)', label: 'Snow' },
+		{ value: 'forest', icon: TreePine, color: 'var(--green-8)', label: 'Forest' },
+		{ value: 'dirt', icon: Mountain, color: 'var(--stone-6)', label: 'Dirt' }
+	];
+
+	const currentBiome = $derived(
+		BIOME_OPTIONS.find((b) => b.value === builder.level.defaultTerrain) || BIOME_OPTIONS[0]
+	);
+
+	function selectBiome(value: string) {
+		builder.level.defaultTerrain = value;
+		builder.syncGame();
+		showBiomePicker = false;
+	}
 </script>
 
 <div class="overlay goal">
@@ -30,73 +60,71 @@
 					placeholder="Enter a short description or instruction for the level..."
 					rows="2"
 				></textarea>
-				<div class="hint-row">
-					<span>Par:</span>
-					<input
-						type="number"
-						class="par-input"
-						bind:value={builder.level.solutionPar}
-						min="1"
-						max="99"
-						title="Target number of blocks for 3 stars"
-					/>
-					<span>blocks</span>
 
-					<span class="separator">•</span>
+				<div class="settings-grid">
+					<div class="setting-item">
+						<span class="label">Par:</span>
+						<div class="inline-edit">
+							<input
+								type="number"
+								bind:value={builder.level.solutionPar}
+								min="1"
+								max="99"
+								title="Target number of blocks for 3 stars"
+							/>
+							<span class="unit">blocks</span>
+						</div>
+					</div>
 
-					<span>Limit:</span>
-					<input
-						type="number"
-						class="par-input"
-						bind:value={builder.level.maxBlocks}
-						min="1"
-						max="50"
-						title="Maximum blocks allowed in the workspace"
-					/>
-					<span>blocks</span>
-				</div>
+					<div class="setting-item">
+						<span class="label">Limit:</span>
+						<div class="inline-edit">
+							<input
+								type="number"
+								bind:value={builder.level.maxBlocks}
+								min="1"
+								max="50"
+								title="Maximum blocks allowed in the workspace"
+							/>
+							<span class="unit">blocks</span>
+						</div>
+					</div>
 
-				<div class="hint-row">
-					<span>Grid:</span>
-					<input
-						type="number"
-						class="par-input"
-						bind:value={builder.level.gridSize.width}
-						min="3"
-						max="10"
-						onchange={() => builder.syncGame()}
-						title="Grid Width"
-					/>
-					<span>x</span>
-					<input
-						type="number"
-						class="par-input"
-						bind:value={builder.level.gridSize.height}
-						min="3"
-						max="10"
-						onchange={() => builder.syncGame()}
-						title="Grid Height"
-					/>
-				</div>
+					<div class="setting-item">
+						<span class="label">Biome:</span>
+						<div class="biome-picker-wrapper">
+							<button
+								class="biome-trigger"
+								onclick={() => (showBiomePicker = !showBiomePicker)}
+								style:--biome-color={currentBiome.color}
+							>
+								<currentBiome.icon size={16} />
+								<span>{currentBiome.label}</span>
+								<ChevronDown size={14} class="chevron" />
+							</button>
 
-				<div class="hint-row">
-					<span>Biome:</span>
-					<select
-						class="biome-select"
-						bind:value={builder.level.defaultTerrain}
-						onchange={() => builder.syncGame()}
-					>
-						<option value="grass">Grass</option>
-						<option value="sand">Sand</option>
-						<option value="snow">Snow</option>
-						<option value="forest">Forest</option>
-						<option value="dirt">Dirt</option>
-					</select>
+							{#if showBiomePicker}
+								<div class="biome-popover" transition:slide={{ duration: 200 }}>
+									{#each BIOME_OPTIONS as option}
+										<button
+											class="biome-option"
+											class:selected={option.value === builder.level.defaultTerrain}
+											onclick={() => selectBiome(option.value)}
+											style:--option-color={option.color}
+										>
+											<option.icon size={16} />
+											<span>{option.label}</span>
+										</button>
+									{/each}
+								</div>
+							{/if}
+						</div>
+					</div>
 				</div>
 
 				<div class="hint-row">
 					<button class="btn-secondary" onclick={() => builder.snapshotTray()}>
-						<Camera size={16} /> Snapshot Tray
+						<Camera size={16} /> Set Starting Code
 					</button>
 				</div>
 			</div>
@@ -145,7 +173,7 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--size-2);
+		gap: var(--size-4);
 		width: 100%;
 	}
 
@@ -186,6 +214,142 @@
 		background-color: var(--surface-2);
 	}
 
+	.settings-grid {
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-2);
+		align-items: center;
+	}
+
+	.setting-item {
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		font-size: var(--font-size-1);
+		color: var(--text-2);
+	}
+
+	.label {
+		color: var(--text-3);
+		width: 50px;
+		text-align: right;
+	}
+
+	.inline-edit {
+		display: flex;
+		align-items: center;
+		gap: var(--size-1);
+		background-color: var(--surface-2);
+		padding: 2px var(--size-2);
+		border-radius: var(--radius-1);
+		border: 1px solid transparent;
+		transition: all 0.2s;
+	}
+
+	.inline-edit:focus-within {
+		background-color: var(--surface-1);
+		border-color: var(--brand);
+		box-shadow: 0 0 0 2px var(--brand-dim);
+	}
+
+	.inline-edit input {
+		width: 2em;
+		text-align: center;
+		font-weight: bold;
+		border: none;
+		background: transparent;
+		color: var(--text-1);
+		padding: 0;
+		font-size: var(--font-size-1);
+	}
+
+	.inline-edit input:focus {
+		outline: none;
+	}
+
+	.unit {
+		color: var(--text-3);
+		font-size: var(--font-size-0);
+	}
+
+	/* Biome Picker */
+	.biome-picker-wrapper {
+		position: relative;
+	}
+
+	.biome-trigger {
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		background-color: var(--surface-2);
+		border: 1px solid var(--surface-3);
+		padding: var(--size-1) var(--size-2);
+		border-radius: var(--radius-2);
+		cursor: pointer;
+		color: var(--text-1);
+		font-size: var(--font-size-1);
+		transition: all 0.2s;
+		min-width: 120px;
+	}
+
+	.biome-trigger:hover {
+		background-color: var(--surface-3);
+	}
+
+	.biome-trigger :global(svg) {
+		color: var(--biome-color);
+	}
+
+	.chevron {
+		margin-left: auto;
+		color: var(--text-3);
+	}
+
+	.biome-popover {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
+		background-color: var(--surface-1);
+		border: 1px solid var(--surface-3);
+		border-radius: var(--radius-2);
+		box-shadow: var(--shadow-3);
+		margin-top: var(--size-1);
+		z-index: 10;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.biome-option {
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		padding: var(--size-2);
+		border: none;
+		background: none;
+		cursor: pointer;
+		color: var(--text-2);
+		font-size: var(--font-size-1);
+		text-align: left;
+		transition: background 0.1s;
+	}
+
+	.biome-option:hover {
+		background-color: var(--surface-2);
+		color: var(--text-1);
+	}
+
+	.biome-option.selected {
+		background-color: var(--brand-dim);
+		color: var(--brand);
+		font-weight: 600;
+	}
+
+	.biome-option :global(svg) {
+		color: var(--option-color);
+	}
+
 	.hint-row {
 		display: flex;
 		align-items: center;
@@ -194,30 +358,6 @@
 		font-size: var(--font-size-1);
 		color: var(--text-3);
 		margin-top: var(--size-2);
-	}
-
-	.separator {
-		color: var(--text-3);
-		font-weight: bold;
-	}
-
-	.par-input {
-		width: 3em;
-		text-align: center;
-		font-weight: bold;
-		border: 1px solid var(--surface-3);
-		border-radius: var(--radius-1);
-		padding: var(--size-1);
-		background-color: var(--surface-1);
-	}
-
-	.biome-select {
-		background-color: var(--surface-1);
-		border: 1px solid var(--surface-3);
-		color: var(--text-1);
-		padding: var(--size-1) var(--size-2);
-		border-radius: var(--radius-1);
-		font-size: var(--font-size-1);
 	}
 
 	.btn-primary {

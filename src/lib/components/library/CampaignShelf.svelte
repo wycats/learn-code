@@ -14,7 +14,7 @@
 
 <div class="campaign-shelf">
 	<div class="shelf-header">
-		<h2>Campaigns</h2>
+		<h2>Packs</h2>
 		<p>Master the basics and take on new challenges.</p>
 	</div>
 

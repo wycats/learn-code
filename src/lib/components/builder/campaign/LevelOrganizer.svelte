@@ -1,6 +1,17 @@
 <script lang="ts">
 	import type { LevelDefinition } from '$lib/game/schema';
-	import { Plus, Trash2, ArrowUp, ArrowDown, Edit, Play } from 'lucide-svelte';
+	import { Plus, Trash2, Play, Edit } from 'lucide-svelte';
+	import ConfirmModal from '$lib/components/common/ConfirmModal.svelte';
+	import {
+		draggable,
+		dropTargetForElements
+	} from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+	import {
+		attachClosestEdge,
+		extractClosestEdge,
+		type Edge
+	} from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		levels: LevelDefinition[];
@@ -11,25 +22,29 @@
 
 	let { levels, onUpdate, onEditLevel, onPlayLevel }: Props = $props();
 
-	function moveLevel(index: number, direction: -1 | 1) {
-		if (index + direction < 0 || index + direction >= levels.length) return;
-		
-		const newLevels = [...levels];
-		const temp = newLevels[index];
-		newLevels[index] = newLevels[index + direction];
-		newLevels[index + direction] = temp;
-		
-		onUpdate(newLevels);
+	let showDeleteConfirm = $state(false);
+	let levelToDeleteIndex = $state<number | null>(null);
+
+	// DnD State
+	let draggingIndex = $state<number | null>(null);
+	let dropTargetIndex = $state<number | null>(null);
+	let closestEdge = $state<Edge | null>(null);
+
+	function requestDeleteLevel(index: number, e: Event) {
+		e.stopPropagation();
+		levelToDeleteIndex = index;
+		showDeleteConfirm = true;
 	}
 
-	function deleteLevel(index: number) {
-		if (!confirm('Are you sure you want to delete this level?')) return;
-		const newLevels = levels.filter((_, i) => i !== index);
+	function confirmDeleteLevel() {
+		if (levelToDeleteIndex === null) return;
+		const newLevels = levels.filter((_, i) => i !== levelToDeleteIndex);
 		onUpdate(newLevels);
+		showDeleteConfirm = false;
+		levelToDeleteIndex = null;
 	}
 
 	function addLevel() {
-		// Create a basic new level
 		const newLevel: LevelDefinition = {
 			id: crypto.randomUUID(),
 			name: `Level ${levels.length + 1}`,
@@ -46,80 +61,146 @@
 			intro: [],
 			outro: []
 		};
-		
+
 		onUpdate([...levels, newLevel]);
 	}
+
+	function draggableItem(node: HTMLElement, index: number) {
+		return draggable({
+			element: node,
+			getInitialData: () => ({ type: 'level', index }),
+			onDragStart: () => {
+				draggingIndex = index;
+				node.classList.add('dragging');
+			},
+			onDrop: () => {
+				draggingIndex = null;
+				node.classList.remove('dragging');
+			}
+		});
+	}
+
+	function dropTargetItem(node: HTMLElement, index: number) {
+		return dropTargetForElements({
+			element: node,
+			getData: ({ input, element }) => {
+				return attachClosestEdge(
+					{ type: 'level', index },
+					{ input, element, allowedEdges: ['left', 'right'] }
+				);
+			},
+			onDragEnter: ({ self }) => {
+				dropTargetIndex = index;
+				closestEdge = extractClosestEdge(self.data);
+			},
+			onDrag: ({ self }) => {
+				closestEdge = extractClosestEdge(self.data);
+			},
+			onDragLeave: () => {
+				dropTargetIndex = null;
+				closestEdge = null;
+			},
+			onDrop: ({ source, self }) => {
+				dropTargetIndex = null;
+				closestEdge = null;
+
+				if (source.data.type !== 'level') return;
+
+				const sourceIndex = source.data.index as number;
+				const targetIndex = index;
+				const edge = extractClosestEdge(self.data);
+
+				if (sourceIndex === targetIndex) return;
+
+				const newLevels = [...levels];
+				const [movedLevel] = newLevels.splice(sourceIndex, 1);
+
+				// Calculate insertion index
+				let insertIndex = targetIndex;
+				if (sourceIndex < targetIndex && edge === 'left') {
+					insertIndex -= 1;
+				} else if (sourceIndex > targetIndex && edge === 'right') {
+					insertIndex += 1;
+				}
+
+				// Adjust for removal
+				if (sourceIndex < targetIndex) {
+					// If moving forward, the target index shifted down by 1, but we want to be relative to the *original* target position
+					// Actually, splice removed it, so indices > sourceIndex shifted down.
+					// It's easier to think about "insert before" or "insert after"
+				}
+
+				// Simplified logic:
+				// If dropping on left of target, insert at target index.
+				// If dropping on right of target, insert at target index + 1.
+				// But we removed the item first, so we need to account for the shift if source < target.
+
+				let finalIndex = targetIndex;
+				if (edge === 'right') finalIndex++;
+
+				if (sourceIndex < finalIndex) {
+					finalIndex--;
+				}
+
+				newLevels.splice(finalIndex, 0, movedLevel);
+				onUpdate(newLevels);
+			}
+		});
+	}
 </script>
+
+{#if showDeleteConfirm}
+	<ConfirmModal
+		title="Delete Level"
+		message="Are you sure you want to delete this level? This cannot be undone."
+		confirmText="Delete"
+		onConfirm={confirmDeleteLevel}
+		onCancel={() => (showDeleteConfirm = false)}
+	/>
+{/if}
 
 <div class="level-organizer">
 	<div class="header">
 		<h3>Levels ({levels.length})</h3>
-		<button class="add-btn" onclick={addLevel}>
-			<Plus size={16} /> Add Level
-		</button>
 	</div>
 
-	<div class="level-list">
-		{#each levels as level, i}
-			<div class="level-item">
-				<div class="level-info">
-					<span class="level-number">{i + 1}</span>
-					<span class="level-name">{level.name}</span>
-				</div>
-
-				<div class="actions">
-					<button 
-						class="icon-btn" 
-						onclick={() => onPlayLevel(level.id)}
-						title="Play Level"
-					>
-						<Play size={16} />
-					</button>
-					<button 
-						class="icon-btn" 
+	<div class="level-grid">
+		{#each levels as level, i (level.id)}
+			<div class="level-wrapper" class:dragging={draggingIndex === i}>
+				<div class="drop-zone" use:dropTargetItem={i}>
+					<button
+						class="level-node"
 						onclick={() => onEditLevel(level.id)}
 						title="Edit Level"
+						use:draggableItem={i}
 					>
-						<Edit size={16} />
+						<div class="node-content">
+							<span class="level-number">{i + 1}</span>
+						</div>
+						<span class="level-name">{level.name}</span>
 					</button>
-					
-					<div class="divider"></div>
 
-					<button 
-						class="icon-btn" 
-						disabled={i === 0}
-						onclick={() => moveLevel(i, -1)}
-						title="Move Up"
-					>
-						<ArrowUp size={16} />
-					</button>
-					<button 
-						class="icon-btn" 
-						disabled={i === levels.length - 1}
-						onclick={() => moveLevel(i, 1)}
-						title="Move Down"
-					>
-						<ArrowDown size={16} />
-					</button>
-					
-					<div class="divider"></div>
-
-					<button 
-						class="icon-btn danger" 
-						onclick={() => deleteLevel(i)}
+					<button
+						class="delete-badge"
+						onclick={(e) => requestDeleteLevel(i, e)}
 						title="Delete Level"
 					>
-						<Trash2 size={16} />
+						<Trash2 size={14} />
 					</button>
+
+					{#if dropTargetIndex === i && closestEdge}
+						<div class="drop-indicator {closestEdge}"></div>
+					{/if}
 				</div>
 			</div>
 		{/each}
 
-		{#if levels.length === 0}
-			<div class="empty-state">
-				<p>No levels yet. Add one to get started!</p>
+		<button class="add-node" onclick={addLevel} title="Add New Level">
+			<div class="node-content">
+				<Plus size={24} />
 			</div>
-		{/if}
+			<span class="level-name">Add Level</span>
+		</button>
 	</div>
 </div>
 
@@ -129,122 +210,150 @@
 		flex-direction: column;
 		gap: var(--size-4);
 		background-color: var(--surface-1);
-		padding: var(--size-4);
+		padding: var(--size-6);
 		border-radius: var(--radius-3);
 		border: 1px solid var(--surface-3);
+		min-height: 300px;
 	}
 
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	h3 {
+	.header h3 {
 		font-size: var(--font-size-2);
 		font-weight: 700;
 		margin: 0;
-		color: var(--text-1);
+		color: var(--text-2);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
 
-	.add-btn {
-		background-color: var(--brand);
-		color: white;
-		border: none;
-		padding: var(--size-1) var(--size-3);
-		border-radius: var(--radius-2);
-		font-weight: 600;
-		font-size: var(--font-size-1);
-		cursor: pointer;
+	.level-grid {
 		display: flex;
-		align-items: center;
-		gap: var(--size-2);
+		flex-wrap: wrap;
+		gap: var(--size-6);
+		padding: var(--size-2);
 	}
 
-	.level-list {
+	.level-wrapper {
+		position: relative;
+	}
+
+	.level-wrapper.dragging {
+		opacity: 0.4;
+	}
+
+	.drop-zone {
+		position: relative;
+	}
+
+	.level-node,
+	.add-node {
 		display: flex;
 		flex-direction: column;
+		align-items: center;
 		gap: var(--size-2);
+		background: none;
+		border: none;
+		cursor: pointer;
+		transition: transform 0.2s var(--ease-3);
+		padding: 0;
+		position: relative;
 	}
 
-	.level-item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: var(--size-3);
-		background-color: var(--surface-2);
-		border-radius: var(--radius-2);
-		border: 1px solid var(--surface-3);
+	.level-node:hover,
+	.add-node:hover {
+		transform: translateY(-4px);
 	}
 
-	.level-info {
-		display: flex;
-		align-items: center;
-		gap: var(--size-3);
-	}
-
-	.level-number {
-		background-color: var(--surface-3);
-		color: var(--text-2);
-		font-weight: 700;
-		width: 24px;
-		height: 24px;
+	.node-content {
+		width: 64px;
+		height: 64px;
+		border-radius: 50%;
+		background-color: var(--surface-1);
+		border: 2px solid var(--surface-3);
 		display: grid;
 		place-items: center;
-		border-radius: var(--radius-round);
-		font-size: var(--font-size-0);
+		font-size: var(--font-size-4);
+		font-weight: 800;
+		color: var(--text-2);
+		transition: all 0.2s;
+		box-shadow: var(--shadow-1);
+	}
+
+	.level-node:hover .node-content {
+		border-color: var(--brand);
+		color: var(--brand);
+		box-shadow: var(--shadow-3);
+	}
+
+	.add-node .node-content {
+		border-style: dashed;
+		color: var(--text-3);
+	}
+
+	.add-node:hover .node-content {
+		border-color: var(--brand);
+		color: var(--brand);
+		background-color: var(--surface-2);
 	}
 
 	.level-name {
+		font-size: var(--font-size-1);
 		font-weight: 600;
-		color: var(--text-1);
-	}
-
-	.actions {
-		display: flex;
-		align-items: center;
-		gap: var(--size-1);
-	}
-
-	.icon-btn {
-		background: none;
-		border: none;
 		color: var(--text-2);
-		padding: var(--size-2);
-		border-radius: var(--radius-2);
-		cursor: pointer;
+		max-width: 100px;
+		text-align: center;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.delete-badge {
+		position: absolute;
+		top: -4px;
+		right: -4px;
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		background-color: var(--surface-1);
+		border: 1px solid var(--surface-3);
+		color: var(--text-3);
 		display: grid;
 		place-items: center;
+		cursor: pointer;
+		opacity: 0;
+		transition: all 0.2s;
+		z-index: 10;
+		padding: 0;
 	}
 
-	.icon-btn:hover:not(:disabled) {
-		background-color: var(--surface-3);
-		color: var(--text-1);
+	.level-node:hover ~ .delete-badge,
+	.delete-badge:hover {
+		opacity: 1;
 	}
 
-	.icon-btn:disabled {
-		opacity: 0.3;
-		cursor: not-allowed;
-	}
-
-	.icon-btn.danger:hover {
+	.delete-badge:hover {
 		background-color: var(--red-1);
 		color: var(--red-7);
+		border-color: var(--red-3);
+		transform: scale(1.1);
 	}
 
-	.divider {
-		width: 1px;
-		height: 20px;
-		background-color: var(--surface-3);
-		margin: 0 var(--size-1);
+	/* Drop Indicator */
+	.drop-indicator {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 4px;
+		background-color: var(--brand);
+		border-radius: var(--radius-pill);
+		pointer-events: none;
+		z-index: 20;
 	}
 
-	.empty-state {
-		text-align: center;
-		padding: var(--size-6);
-		color: var(--text-2);
-		font-style: italic;
+	.drop-indicator.left {
+		left: -12px;
+	}
+
+	.drop-indicator.right {
+		right: -12px;
 	}
 </style>

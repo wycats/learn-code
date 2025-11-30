@@ -40,12 +40,14 @@
 
 		<p class="description">{pack.description}</p>
 
-		<div class="progress-section">
-			<div class="progress-bar">
-				<div class="fill" style:width="{percent}%"></div>
+		{#if progress}
+			<div class="progress-section">
+				<div class="progress-bar">
+					<div class="fill" style:width="{percent}%"></div>
+				</div>
+				<span class="percent">{percent}% Complete</span>
 			</div>
-			<span class="percent">{percent}% Complete</span>
-		</div>
+		{/if}
 	</div>
 </button>
 

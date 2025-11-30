@@ -2,7 +2,10 @@ import { GameModel } from './model.svelte';
 import type { LevelDefinition, CellType, GridPosition, LevelPack } from './types';
 import { createDefaultPack, savePack, loadPack, listPacks } from './persistence';
 
-export type BuilderTool = { type: 'terrain'; value: CellType } | { type: 'erase' };
+export type BuilderTool =
+	| { type: 'terrain'; value: CellType }
+	| { type: 'erase' }
+	| { type: 'grid' };
 
 export class BuilderModel {
 	// The pack we are currently editing
@@ -39,6 +42,8 @@ export class BuilderModel {
 	activeSegmentId = $state<string | null>(null);
 	selectedActor = $state<'start' | 'goal' | null>(null);
 	onTargetSelect = $state<((target: string) => void) | null>(null);
+	hoveredGridPosition = $state<GridPosition | null>(null);
+	selectedGridPosition = $state<GridPosition | null>(null);
 
 	get targetSelectionMode() {
 		return this.onTargetSelect !== null;
@@ -163,6 +168,16 @@ export class BuilderModel {
 	async load(packId: string) {
 		const loaded = await loadPack(packId);
 		if (loaded) {
+			// Ensure all segments have IDs (migration/fix)
+			loaded.levels.forEach((level) => {
+				level.intro?.forEach((s) => {
+					if (!s.id) s.id = crypto.randomUUID();
+				});
+				level.outro?.forEach((s) => {
+					if (!s.id) s.id = crypto.randomUUID();
+				});
+			});
+
 			this.pack = loaded;
 			if (this.pack.levels.length === 0) {
 				// Create a default level if pack is empty
@@ -303,6 +318,112 @@ export class BuilderModel {
 		}
 	}
 
+	resizeGrid(dWidth: number, dHeight: number) {
+		const newWidth = Math.max(3, Math.min(10, this.level.gridSize.width + dWidth));
+		const newHeight = Math.max(3, Math.min(10, this.level.gridSize.height + dHeight));
+
+		if (newWidth !== this.level.gridSize.width || newHeight !== this.level.gridSize.height) {
+			this.level.gridSize = { width: newWidth, height: newHeight };
+			this.syncGame();
+		}
+	}
+
+	addColumn(side: 'left' | 'right') {
+		if (this.level.gridSize.width >= 10) return;
+
+		this.level.gridSize.width++;
+
+		if (side === 'left') {
+			// Shift everything right by 1
+			const newLayout: Record<string, CellType> = {};
+			for (const [key, type] of Object.entries(this.level.layout)) {
+				const [x, y] = key.split(',').map(Number);
+				newLayout[`${x + 1},${y}`] = type;
+			}
+			this.level.layout = newLayout;
+
+			// Shift actors
+			this.level.start.x++;
+			this.level.goal.x++;
+		}
+		this.syncGame();
+	}
+
+	addRow(side: 'top' | 'bottom') {
+		if (this.level.gridSize.height >= 10) return;
+
+		this.level.gridSize.height++;
+
+		if (side === 'top') {
+			// Shift everything down by 1
+			const newLayout: Record<string, CellType> = {};
+			for (const [key, type] of Object.entries(this.level.layout)) {
+				const [x, y] = key.split(',').map(Number);
+				newLayout[`${x},${y + 1}`] = type;
+			}
+			this.level.layout = newLayout;
+
+			// Shift actors
+			this.level.start.y++;
+			this.level.goal.y++;
+		}
+		this.syncGame();
+	}
+
+	removeColumn(index: number) {
+		if (this.level.gridSize.width <= 3) return;
+
+		// Remove cells in this column
+		const newLayout: Record<string, CellType> = {};
+		for (const [key, type] of Object.entries(this.level.layout)) {
+			const [x, y] = key.split(',').map(Number);
+			if (x === index) continue; // Delete
+			if (x > index) {
+				newLayout[`${x - 1},${y}`] = type; // Shift left
+			} else {
+				newLayout[key] = type; // Keep
+			}
+		}
+		this.level.layout = newLayout;
+
+		// Adjust actors
+		if (this.level.start.x === index) this.level.start.x = Math.max(0, index - 1);
+		else if (this.level.start.x > index) this.level.start.x--;
+
+		if (this.level.goal.x === index) this.level.goal.x = Math.max(0, index - 1);
+		else if (this.level.goal.x > index) this.level.goal.x--;
+
+		this.level.gridSize.width--;
+		this.syncGame();
+	}
+
+	removeRow(index: number) {
+		if (this.level.gridSize.height <= 3) return;
+
+		// Remove cells in this row
+		const newLayout: Record<string, CellType> = {};
+		for (const [key, type] of Object.entries(this.level.layout)) {
+			const [x, y] = key.split(',').map(Number);
+			if (y === index) continue; // Delete
+			if (y > index) {
+				newLayout[`${x},${y - 1}`] = type; // Shift up
+			} else {
+				newLayout[key] = type; // Keep
+			}
+		}
+		this.level.layout = newLayout;
+
+		// Adjust actors
+		if (this.level.start.y === index) this.level.start.y = Math.max(0, index - 1);
+		else if (this.level.start.y > index) this.level.start.y--;
+
+		if (this.level.goal.y === index) this.level.goal.y = Math.max(0, index - 1);
+		else if (this.level.goal.y > index) this.level.goal.y--;
+
+		this.level.gridSize.height--;
+		this.syncGame();
+	}
+
 	handleCellClick(pos: GridPosition) {
 		if (this.mode !== 'edit' && this.mode !== 'story') return;
 
@@ -335,6 +456,20 @@ export class BuilderModel {
 		}
 
 		const key = `${pos.x},${pos.y}`;
+
+		if (this.activeTool.type === 'grid') {
+			// Toggle selection
+			if (
+				this.selectedGridPosition &&
+				this.selectedGridPosition.x === pos.x &&
+				this.selectedGridPosition.y === pos.y
+			) {
+				this.selectedGridPosition = null;
+			} else {
+				this.selectedGridPosition = pos;
+			}
+			return;
+		}
 
 		if (this.activeTool.type === 'terrain') {
 			const defaultTerrain = this.level.defaultTerrain || 'grass';

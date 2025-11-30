@@ -9,7 +9,7 @@
 	.builder-layout {
 		height: 100vh;
 		width: 100vw;
-		overflow: hidden;
+		overflow-y: auto;
 		background-color: var(--surface-1);
 		color: var(--text-1);
 	}

@@ -25,7 +25,7 @@
 		</div>
 		<div class="actions">
 			<button class="builder-btn" onclick={() => goto('/builder/campaigns')}>
-				<Hammer size={20} /> Campaign Builder
+				<Hammer size={20} /> Pack Builder
 			</button>
 		</div>
 	</header>

@@ -8,7 +8,7 @@
 
 	let myCampaigns = $state<LevelPack[]>([]);
 	let loading = $state(true);
-	
+
 	onMount(async () => {
 		myCampaigns = await CampaignService.loadAll();
 		loading = false;
@@ -17,7 +17,7 @@
 	async function handleCreate() {
 		const newPack = await CampaignService.create({
 			name: 'New Adventure',
-			description: 'A brand new campaign.'
+			description: 'A brand new level pack.'
 		});
 		goto(`/builder/campaigns/${newPack.id}`);
 	}
@@ -40,43 +40,35 @@
 		<div class="header-content">
 			<h1>Architect's Library</h1>
 			<button class="create-btn" onclick={handleCreate}>
-				<span class="icon">+</span> Create New Campaign
+				<span class="icon">+</span> Create New Pack
 			</button>
 		</div>
 	</header>
 
 	<main class="builder-content">
 		<section class="campaign-section">
-			<h2>My Campaigns</h2>
+			<h2>My Packs</h2>
 			{#if myCampaigns.length === 0}
 				<div class="empty-state">
-					<p>You haven't created any campaigns yet.</p>
+					<p>You haven't created any packs yet.</p>
 					<button class="secondary-btn" onclick={handleCreate}>Start Fresh</button>
 				</div>
 			{:else}
 				<div class="pack-grid">
 					{#each myCampaigns as pack}
-						<PackCard 
-							{pack} 
-							progress={undefined} 
-							onClick={() => handleEdit(pack.id)} 
-						/>
+						<PackCard {pack} progress={undefined} onClick={() => handleEdit(pack.id)} />
 					{/each}
 				</div>
 			{/if}
 		</section>
 
 		<section class="campaign-section">
-			<h2>Templates</h2>
-			<p>Clone a built-in campaign to start with a solid foundation.</p>
+			<h2>Built-in Packs</h2>
+			<p>Clone a built-in pack to start with a solid foundation.</p>
 			<div class="pack-grid">
 				{#each PACKS as pack}
 					<div class="template-card">
-						<PackCard 
-							{pack} 
-							progress={undefined} 
-							onClick={() => handleClone(pack.id)} 
-						/>
+						<PackCard {pack} progress={undefined} onClick={() => handleClone(pack.id)} />
 						<div class="clone-overlay">
 							<button class="clone-btn" onclick={() => handleClone(pack.id)}>Clone</button>
 						</div>
@@ -113,9 +105,7 @@
 		font-size: var(--font-size-4);
 		font-weight: 900;
 		margin: 0;
-		background: linear-gradient(to right, var(--brand), var(--brand-light));
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
+		color: var(--text-1);
 	}
 
 	.builder-content {
@@ -202,7 +192,7 @@
 		border-radius: var(--radius-3);
 		pointer-events: none;
 	}
-	
+
 	.template-card:hover .clone-overlay {
 		opacity: 1;
 		pointer-events: auto;

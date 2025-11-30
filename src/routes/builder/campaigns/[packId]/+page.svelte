@@ -6,11 +6,14 @@
 	import LevelOrganizer from '$lib/components/builder/campaign/LevelOrganizer.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { ArrowLeft } from 'lucide-svelte';
+	import { ArrowLeft, Trash2, Undo } from 'lucide-svelte';
+	import ConfirmModal from '$lib/components/common/ConfirmModal.svelte';
 
 	let pack = $state<LevelPack | null>(null);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
+	let showDeleteConfirm = $state(false);
+	let history = $state<LevelPack[]>([]);
 
 	const packId = $derived($page.params.packId ?? '');
 
@@ -18,29 +21,63 @@
 		await loadPack();
 	});
 
+	function handleKeydown(e: KeyboardEvent) {
+		if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+			e.preventDefault();
+			handleUndo();
+		}
+	}
+
 	async function loadPack() {
 		loading = true;
 		error = null;
 		try {
 			pack = await CampaignService.get(packId);
 			if (!pack) {
-				error = 'Campaign not found';
+				error = 'Pack not found';
 			}
 		} catch (e) {
 			console.error(e);
-			error = 'Failed to load campaign';
+			error = 'Failed to load pack';
 		} finally {
 			loading = false;
 		}
 	}
 
+	function saveToHistory() {
+		if (!pack) return;
+		// Keep last 20 states
+		// Use $state.snapshot to unwrap the proxy before cloning
+		const snapshot = $state.snapshot(pack);
+		if (history.length >= 20) {
+			history = [...history.slice(1), structuredClone(snapshot)];
+		} else {
+			history = [...history, structuredClone(snapshot)];
+		}
+	}
+
+	async function handleUndo() {
+		if (history.length === 0) return;
+
+		const previous = history[history.length - 1];
+		// Remove from history
+		history = history.slice(0, -1);
+
+		// Restore
+		if (previous) {
+			pack = await CampaignService.update(previous.id, previous);
+		}
+	}
+
 	async function handleMetadataChange(data: Partial<LevelPack>) {
 		if (!pack) return;
+		saveToHistory();
 		pack = await CampaignService.update(pack.id, data);
 	}
 
 	async function handleLevelsUpdate(levels: LevelDefinition[]) {
 		if (!pack) return;
+		saveToHistory();
 		pack = await CampaignService.update(pack.id, { levels });
 	}
 
@@ -51,15 +88,47 @@
 	function handlePlayLevel(levelId: string) {
 		goto(`/builder/campaigns/${packId}/${levelId}?mode=test`);
 	}
+
+	async function handleDelete() {
+		await CampaignService.delete(pack!.id);
+		goto('/builder/campaigns');
+	}
 </script>
+
+{#if showDeleteConfirm}
+	<ConfirmModal
+		title="Delete Pack"
+		message="Are you sure you want to delete this pack? This cannot be undone."
+		confirmText="Delete"
+		onConfirm={handleDelete}
+		onCancel={() => (showDeleteConfirm = false)}
+	/>
+{/if}
+
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="editor-container">
 	<header class="editor-header">
 		<div class="header-content">
-			<button class="back-btn" onclick={() => goto('/builder/campaigns')}>
-				<ArrowLeft size={20} /> Back to Library
+			<div class="header-left">
+				<button class="back-btn" onclick={() => goto('/builder/campaigns')}>
+					<ArrowLeft size={20} /> Back to Library
+				</button>
+				<div class="divider-vertical"></div>
+				<h1>Pack Editor</h1>
+				<div class="divider-vertical"></div>
+				<button
+					class="action-btn"
+					onclick={handleUndo}
+					disabled={history.length === 0}
+					title="Undo (Ctrl+Z)"
+				>
+					<Undo size={20} />
+				</button>
+			</div>
+			<button class="delete-btn" onclick={() => (showDeleteConfirm = true)} title="Delete Pack">
+				<Trash2 size={20} />
 			</button>
-			<h1>Campaign Editor</h1>
 		</div>
 	</header>
 
@@ -74,8 +143,8 @@
 					<PackMetadataEditor {pack} onChange={handleMetadataChange} />
 				</div>
 				<div class="right-col">
-					<LevelOrganizer 
-						levels={pack.levels} 
+					<LevelOrganizer
+						levels={pack.levels}
 						onUpdate={handleLevelsUpdate}
 						onEditLevel={handleEditLevel}
 						onPlayLevel={handlePlayLevel}
@@ -103,6 +172,12 @@
 	.header-content {
 		max-width: 1200px;
 		margin: 0 auto;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.header-left {
 		display: flex;
 		align-items: center;
 		gap: var(--size-4);
@@ -133,6 +208,50 @@
 		color: var(--text-1);
 	}
 
+	.action-btn {
+		background: none;
+		border: none;
+		color: var(--text-2);
+		cursor: pointer;
+		padding: var(--size-2);
+		border-radius: var(--radius-2);
+		transition: all 0.2s;
+		display: grid;
+		place-items: center;
+	}
+
+	.action-btn:hover:not(:disabled) {
+		background-color: var(--surface-2);
+		color: var(--text-1);
+	}
+
+	.action-btn:disabled {
+		opacity: 0.3;
+		cursor: not-allowed;
+	}
+
+	.divider-vertical {
+		width: 1px;
+		height: 24px;
+		background-color: var(--surface-3);
+		margin: 0 var(--size-2);
+	}
+
+	.delete-btn {
+		background: none;
+		border: none;
+		color: var(--text-3);
+		cursor: pointer;
+		padding: var(--size-2);
+		border-radius: var(--radius-2);
+		transition: all 0.2s;
+	}
+
+	.delete-btn:hover {
+		background-color: var(--red-1);
+		color: var(--red-7);
+	}
+
 	.editor-content {
 		flex: 1;
 		padding: var(--size-6);
@@ -154,7 +273,8 @@
 		}
 	}
 
-	.loading, .error {
+	.loading,
+	.error {
 		text-align: center;
 		padding: var(--size-8);
 		color: var(--text-2);

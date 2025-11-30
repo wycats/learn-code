@@ -9,6 +9,7 @@
 	import BuilderStoryTrigger from '$lib/components/builder/BuilderStoryTrigger.svelte';
 	import BuilderGoalModal from '$lib/components/builder/BuilderGoalModal.svelte';
 	import BuilderToolbar from '$lib/components/builder/BuilderToolbar.svelte';
+	import BuilderGrid from '$lib/components/builder/BuilderGrid.svelte';
 	import Game from '$lib/components/game/Game.svelte';
 	import { goto } from '$app/navigation';
 
@@ -29,23 +30,23 @@
 				builder.activeLevelId = levelId;
 				builder.syncGame();
 				builder.restoreActiveSegment();
-				
+
 				if (mode === 'test') {
 					builder.setMode('test');
 				}
 			} else {
-				error = 'Campaign not found';
+				error = 'Pack not found';
 			}
 		} catch (e) {
 			console.error(e);
-			error = 'Failed to load campaign';
+			error = 'Failed to load pack';
 		} finally {
 			loading = false;
 		}
 	});
 
 	let game = $derived(builder.game);
-	
+
 	function handleExit() {
 		if (builder.mode === 'test' && mode === 'test') {
 			// If we started in test mode (Play Level), go back to editor
@@ -63,53 +64,43 @@
 	<div class="loading">Loading...</div>
 {:else if error}
 	<div class="error">{error}</div>
+{:else if builder.mode === 'test'}
+	<Game game={builder.game} architectMode={true} onExit={handleExit} />
 {:else}
-	{#if builder.mode === 'test'}
-		<Game game={builder.game} architectMode={true} onExit={handleExit} />
-	{:else}
-		<div class="builder-interface">
-			<BuilderToolbar
-				{builder}
-				{showSettings}
-				onToggleSettings={() => (showSettings = !showSettings)}
-				onExit={handleExit} 
-			/>
+	<div class="builder-interface">
+		<BuilderToolbar
+			{builder}
+			{showSettings}
+			onToggleSettings={() => (showSettings = !showSettings)}
+			onExit={handleExit}
+		/>
 
-			<div class="workspace">
-				<div class="stage-area">
-					<div class="dashboard-area">
-						{#if builder.mode === 'story'}
-							<BuilderStoryBar {builder} />
-						{:else if builder.mode === 'edit'}
-							<BuilderStoryTrigger {builder} />
-						{/if}
-					</div>
-
-					<div class="grid-container">
-						<Grid
-							{game}
-							isBuilder={true}
-							selectedActor={builder.selectedActor}
-							onCellClick={(pos) => builder.handleCellClick(pos)}
-							onRotateStart={() => builder.rotateStartActor()}
-							onActorDrop={() => builder.selectActor(null)}
-							onActorSelect={(actor) => builder.selectActor(actor)}
-						/>
-					</div>
-
-					{#if showSettings}
-						<div class="settings-overlay">
-							<BuilderGoalModal {builder} onClose={() => (showSettings = false)} />
-						</div>
+		<div class="workspace">
+			<div class="stage-area">
+				<div class="dashboard-area">
+					{#if builder.mode === 'story'}
+						<BuilderStoryBar {builder} />
+					{:else if builder.mode === 'edit'}
+						<BuilderStoryTrigger {builder} />
 					{/if}
 				</div>
 
-				<div class="tray-area">
-					<BuilderTray {builder} />
+				<div class="grid-container">
+					<BuilderGrid {builder} />
 				</div>
+
+				{#if showSettings}
+					<div class="settings-overlay">
+						<BuilderGoalModal {builder} onClose={() => (showSettings = false)} />
+					</div>
+				{/if}
+			</div>
+
+			<div class="tray-area">
+				<BuilderTray {builder} />
 			</div>
 		</div>
-	{/if}
+	</div>
 {/if}
 
 <style>
@@ -170,8 +161,9 @@
 		height: 100%;
 		overflow: hidden;
 	}
-	
-	.loading, .error {
+
+	.loading,
+	.error {
 		display: grid;
 		place-items: center;
 		height: 100vh;
