@@ -23,8 +23,6 @@
 		Snowflake,
 		Mountain,
 		Eraser,
-		User,
-		Flag,
 		Grid3x3,
 		FunctionSquare,
 		Triangle
@@ -37,7 +35,7 @@
 
 	let { builder }: Props = $props();
 
-	let activeTab = $state<'terrain' | 'actors' | 'logic' | 'story' | 'functions'>('terrain');
+	let activeTab = $state<'terrain' | 'logic' | 'story' | 'functions'>('terrain');
 	let editingLimitFor = $state<BlockType | null>(null);
 	// Store previous limits to restore them when re-enabling
 	let previousLimits = $state<Record<string, number | 'unlimited'>>({});
@@ -235,13 +233,6 @@
 		</button>
 		<button
 			class="tab-btn"
-			class:active={activeTab === 'actors'}
-			onclick={() => (activeTab = 'actors')}
-		>
-			<User size={16} /> Actors
-		</button>
-		<button
-			class="tab-btn"
 			class:active={activeTab === 'logic'}
 			onclick={() => (activeTab = 'logic')}
 		>
@@ -297,30 +288,6 @@
 				<button class="new-tile-btn" onclick={openNewTile}>
 					<Plus size={20} />
 					<span>Create New Tile</span>
-				</button>
-			</div>
-		{:else if activeTab === 'actors'}
-			<div class="actors-section" transition:fade={{ duration: 200 }}>
-				<button
-					class="actor-btn"
-					class:active={builder.selectedActor === 'start'}
-					onclick={() => builder.selectActor('start')}
-				>
-					<div class="actor-preview start">
-						<User size={24} />
-					</div>
-					<span>Start Position</span>
-				</button>
-
-				<button
-					class="actor-btn"
-					class:active={builder.selectedActor === 'goal'}
-					onclick={() => builder.selectActor('goal')}
-				>
-					<div class="actor-preview goal">
-						<Flag size={24} />
-					</div>
-					<span>Goal Position</span>
 				</button>
 			</div>
 		{:else if activeTab === 'logic'}
@@ -486,7 +453,6 @@
 	.hints-section,
 	.backpack-section,
 	.terrain-section,
-	.actors-section,
 	.functions-section {
 		grid-area: content;
 		width: 100%;
@@ -595,48 +561,6 @@
 	.action-btn.delete:hover {
 		background-color: var(--red-2);
 		color: var(--red-7);
-	}
-
-	/* Actors */
-	.actor-btn {
-		display: flex;
-		align-items: center;
-		gap: var(--size-3);
-		padding: var(--size-3);
-		background-color: var(--surface-1);
-		border: 2px solid transparent;
-		border-radius: var(--radius-2);
-		cursor: pointer;
-		text-align: left;
-		transition: all 0.2s;
-	}
-
-	.actor-btn:hover {
-		background-color: var(--surface-2);
-		transform: translateX(4px);
-	}
-
-	.actor-btn.active {
-		border-color: var(--brand);
-		background-color: var(--blue-1);
-	}
-
-	.actor-preview {
-		width: 48px;
-		height: 48px;
-		border-radius: var(--radius-2);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background-color: var(--surface-2);
-	}
-
-	.actor-preview.start {
-		color: var(--brand);
-	}
-
-	.actor-preview.goal {
-		color: var(--yellow-6);
 	}
 
 	/* Existing Styles */
