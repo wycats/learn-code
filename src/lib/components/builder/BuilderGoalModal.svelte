@@ -152,10 +152,16 @@
 				</div>
 
 				<div class="hint-row">
-					<button class="btn-secondary" onclick={handleSnapshot}>
-						<Camera size={16} />
-						{snapshotStatus === 'saved' ? 'Saved!' : 'Set Starting Code'}
-					</button>
+					<div class="starting-code-section">
+						<p class="help-text">
+							The blocks currently in your workspace ({builder.game.program.length}) will be saved as
+							the starting code for the player.
+						</p>
+						<button class="btn-secondary" onclick={handleSnapshot}>
+							<Camera size={16} />
+							{snapshotStatus === 'saved' ? 'Saved!' : 'Use Current Workspace as Starting Code'}
+						</button>
+					</div>
 				</div>
 			</div>
 			<button class="btn-primary" onclick={onClose}>
@@ -433,6 +439,25 @@
 		font-size: var(--font-size-1);
 		color: var(--text-3);
 		margin-top: var(--size-2);
+		width: 100%;
+	}
+
+	.starting-code-section {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--size-2);
+		background-color: var(--surface-2);
+		padding: var(--size-3);
+		border-radius: var(--radius-2);
+		width: 100%;
+	}
+
+	.help-text {
+		font-size: var(--font-size-0);
+		color: var(--text-2);
+		margin: 0;
+		max-width: 300px;
 	}
 
 	.btn-primary {

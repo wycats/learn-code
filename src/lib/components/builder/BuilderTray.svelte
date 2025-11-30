@@ -229,28 +229,28 @@
 			class:active={activeTab === 'terrain'}
 			onclick={() => (activeTab = 'terrain')}
 		>
-			<Paintbrush size={16} /> Terrain
+			<Paintbrush size={20} /> Terrain
 		</button>
 		<button
 			class="tab-btn"
 			class:active={activeTab === 'logic'}
 			onclick={() => (activeTab = 'logic')}
 		>
-			<Backpack size={16} /> Logic
+			<Backpack size={20} /> Logic
 		</button>
 		<button
 			class="tab-btn"
 			class:active={activeTab === 'functions'}
 			onclick={() => (activeTab = 'functions')}
 		>
-			<FunctionSquare size={16} /> Functions
+			<FunctionSquare size={20} /> Functions
 		</button>
 		<button
 			class="tab-btn"
 			class:active={activeTab === 'story'}
 			onclick={() => (activeTab = 'story')}
 		>
-			<Lightbulb size={16} /> Story
+			<Lightbulb size={20} /> Story
 		</button>
 	</div>
 
