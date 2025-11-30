@@ -53,7 +53,11 @@
 							<span>Delete "{name}"?</span>
 						</div>
 						<div class="actions">
-							<button class="action-btn confirm-delete" onclick={confirmDelete} title="Confirm Delete">
+							<button
+								class="action-btn confirm-delete"
+								onclick={confirmDelete}
+								title="Confirm Delete"
+							>
 								<Check size={16} />
 							</button>
 							<button class="action-btn cancel" onclick={cancelDelete} title="Cancel">

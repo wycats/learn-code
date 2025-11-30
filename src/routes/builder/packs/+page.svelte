@@ -35,15 +35,18 @@
 			void goto(`${base}/builder/packs/${cloned.id}`);
 		}
 	}
+
+	function handleBack() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		void goto(`${base}/`);
+	}
 </script>
 
 <div class="builder-container">
 	<header class="builder-header">
 		<div class="header-content">
 			<div class="header-left">
-				<button class="back-btn" onclick={() => goto(`${base}/`)} aria-label="Back to Main Menu">
-					←
-				</button>
+				<button class="back-btn" onclick={handleBack} aria-label="Back to Main Menu"> ← </button>
 				<h1>Architect's Library</h1>
 			</div>
 			<button class="create-btn" onclick={handleCreate}>
