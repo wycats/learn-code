@@ -34,20 +34,31 @@
 		const themes: Record<string, { bg: string; color: string }> = {
 			blue: { bg: 'var(--blue-2), var(--blue-1)', color: 'var(--blue-7)' },
 			red: { bg: 'var(--red-2), var(--red-1)', color: 'var(--red-7)' },
-			orange: { bg: 'var(--orange-2), var(--orange-1)', color: 'var(--orange-7)' },
+			orange: { bg: 'var(--orange-2), var(--red-1)', color: 'var(--red-7)' }, // Flame style
+			yellow: { bg: 'var(--yellow-2), var(--orange-1)', color: 'var(--yellow-7)' }, // Star style
 			green: { bg: 'var(--green-2), var(--green-1)', color: 'var(--green-7)' },
+			teal: { bg: 'var(--teal-2), var(--green-1)', color: 'var(--teal-7)' }, // Trophy style
 			purple: { bg: 'var(--purple-2), var(--purple-1)', color: 'var(--purple-7)' },
-			pink: { bg: 'var(--pink-2), var(--pink-1)', color: 'var(--pink-7)' },
+			violet: { bg: 'var(--violet-2), var(--indigo-1)', color: 'var(--violet-7)' }, // Zap style
+			pink: { bg: 'var(--pink-2), var(--red-1)', color: 'var(--pink-7)' }, // Heart style
 			cyan: { bg: 'var(--cyan-2), var(--cyan-1)', color: 'var(--cyan-7)' },
-			yellow: { bg: 'var(--yellow-2), var(--yellow-1)', color: 'var(--yellow-7)' },
 			gray: { bg: 'var(--gray-2), var(--gray-1)', color: 'var(--gray-7)' }
 		};
 
 		const mappings: Record<string, string> = {
+			// Specific Editor Matches
+			book: 'blue',
+			flame: 'orange',
+			star: 'yellow',
+			zap: 'violet',
+			heart: 'pink',
+			trophy: 'teal',
+
+			// Smart Fallbacks
 			// Red/Orange
-			flame: 'red', heart: 'red', target: 'red', gift: 'red', apple: 'red', cherry: 'red',
+			target: 'red', gift: 'red', apple: 'red', cherry: 'red',
 			truck: 'red', car: 'red', bus: 'red',
-			sun: 'orange', pizza: 'orange', coffee: 'orange', cake: 'orange', trophy: 'orange',
+			sun: 'orange', pizza: 'orange', coffee: 'orange', cake: 'orange', trophy_alt: 'orange',
 			medal: 'orange', crown: 'orange', fire: 'orange',
 
 			// Green
@@ -61,12 +72,12 @@
 			// Cyan/Blue
 			bot: 'cyan', cpu: 'cyan', rocket: 'cyan', plane: 'cyan', bike: 'cyan',
 			camera: 'cyan', video: 'cyan', mic: 'cyan', headphones: 'cyan',
-			book: 'blue', pencil: 'blue', map: 'blue', compass: 'blue', ship: 'blue',
+			pencil: 'blue', map: 'blue', compass: 'blue', ship: 'blue',
 			anchor: 'blue', bird: 'blue', cloud: 'blue', droplets: 'blue', snowflake: 'blue',
 			glasses: 'blue', watch: 'blue', shirt: 'blue', fish: 'blue',
 
 			// Yellow
-			zap: 'yellow', star: 'yellow', lightbulb: 'yellow', coins: 'yellow'
+			lightbulb: 'yellow', coins: 'yellow'
 		};
 
 		const themeName = mappings[icon] || 'blue';
