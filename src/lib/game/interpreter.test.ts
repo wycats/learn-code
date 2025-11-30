@@ -213,4 +213,66 @@ describe('StackInterpreter', () => {
 		interpreter.step();
 		expect(game.activeBlockId).toBe('child_inf');
 	});
+
+	it('should clear function state on re-entry (double call)', () => {
+		// Define function 'jump'
+		game.functions['jump'] = [{ id: 'f1', type: 'move-forward' }];
+
+		// Main program: Call 'jump' twice
+		game.addBlock({ id: 'call1', type: 'call', functionName: 'jump' });
+		game.addBlock({ id: 'call2', type: 'call', functionName: 'jump' });
+
+		interpreter.start();
+
+		// --- First Call ---
+		interpreter.step(); // Highlight call1
+		interpreter.step(); // Highlight f1 (Context: jump)
+		expect(game.executionState.get('f1')).toBe('running');
+
+		interpreter.step(); // Execute f1
+		expect(game.executionState.get('f1')).toBe('success');
+
+		// --- Second Call ---
+		interpreter.step(); // Highlight call2 (Context: null)
+		// At this point, we are back in main, f1 state is still 'success' from previous run
+		// But we are about to enter call2.
+
+		interpreter.step(); // Highlight f1 (Context: jump) - Re-entry!
+		// HERE is the fix: f1 should be reset to 'running' (or cleared then set to running by step)
+		// The step() method sets it to 'running' immediately after pushing stack.
+		// But crucially, it should NOT be 'success'.
+		expect(game.executionState.get('f1')).toBe('running');
+
+		// Let's verify stepping back restores the state
+		interpreter.stepBack(); // Back to Highlight call2
+		// In this state, f1 was 'success' from the first call?
+		// Actually, when we are at 'call2', we are in Main context.
+		// The 'f1' block is not visible/active, but its state in the map persists until cleared.
+		expect(game.executionState.get('f1')).toBe('success');
+
+		interpreter.step(); // Execute call2 (clears f1, pushes stack)
+		expect(game.executionState.get('f1')).toBeUndefined();
+
+		interpreter.step(); // Highlight f1 (sets f1 to running)
+		expect(game.executionState.get('f1')).toBe('running');
+	});
+
+	it('should mark call block as success after entering function', () => {
+		game.functions['f'] = [{ id: 'f1', type: 'move-forward' }];
+		game.addBlock({ id: 'call1', type: 'call', functionName: 'f' });
+
+		interpreter.start();
+		interpreter.step(); // Highlight call1
+		// It might be 'running' or 'success' depending on when we check.
+		// In 'before' phase, we set it to 'running'.
+		// But wait, step() returns true immediately after setting 'success' if it's a call block?
+		// No, step() sets 'running' at the start of 'before' phase.
+		// Then if it's a call block, it sets 'success' and returns true.
+		// So after the first step(), it should ALREADY be 'success' because step() finished the 'before' phase logic for call block.
+		expect(game.executionState.get('call1')).toBe('success');
+
+		interpreter.step(); // Enter function
+		// The call block should still be marked as success
+		expect(game.executionState.get('call1')).toBe('success');
+	});
 });

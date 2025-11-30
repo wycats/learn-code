@@ -6,6 +6,7 @@
 	import type { LevelPack } from '$lib/game/types';
 	import CampaignShelf from '$lib/components/library/CampaignShelf.svelte';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { Hammer, FolderOpen } from 'lucide-svelte';
 	import { toast } from '$lib/stores/toast.svelte';
@@ -15,12 +16,12 @@
 
 	function handlePackSelect(packId: string) {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		goto(`/library/${packId}`);
+		goto(`${base}/library/${packId}`);
 	}
 
 	function handleBuilder() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		goto('/builder/campaigns');
+		goto(`${base}/builder/campaigns`);
 	}
 
 	async function handleOpenLocalFolder() {

@@ -5,12 +5,12 @@
 	import { CampaignService } from '$lib/game/campaigns';
 	import BuilderTray from '$lib/components/builder/BuilderTray.svelte';
 	import BuilderStoryBar from '$lib/components/builder/BuilderStoryBar.svelte';
-	import BuilderStoryTrigger from '$lib/components/builder/BuilderStoryTrigger.svelte';
 	import BuilderGoalModal from '$lib/components/builder/BuilderGoalModal.svelte';
 	import BuilderToolbar from '$lib/components/builder/BuilderToolbar.svelte';
 	import BuilderGrid from '$lib/components/builder/BuilderGrid.svelte';
 	import Game from '$lib/components/game/Game.svelte';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 
 	let builder = $state(new BuilderModel());
 	let showSettings = $state(false);
@@ -25,7 +25,7 @@
 		try {
 			const pack = await CampaignService.get(packId);
 			if (pack) {
-				builder.pack = pack;
+				builder.setPack(pack);
 				builder.activeLevelId = levelId;
 				builder.syncGame();
 				builder.restoreActiveSegment();
@@ -48,13 +48,13 @@
 		if (builder.mode === 'test' && mode === 'test') {
 			// If we started in test mode (Play Level), go back to editor
 			// eslint-disable-next-line svelte/no-navigation-without-resolve
-			await goto(`/builder/campaigns/${packId}`);
+			await goto(`${base}/builder/campaigns/${packId}`);
 		} else if (builder.mode === 'test') {
 			builder.setMode('edit');
 		} else {
 			// Exit builder
 			// eslint-disable-next-line svelte/no-navigation-without-resolve
-			await goto(`/builder/campaigns/${packId}`);
+			await goto(`${base}/builder/campaigns/${packId}`);
 		}
 	}
 </script>
@@ -77,11 +77,7 @@
 		<div class="workspace">
 			<div class="stage-area">
 				<div class="dashboard-area">
-					{#if builder.mode === 'story'}
-						<BuilderStoryBar {builder} />
-					{:else if builder.mode === 'edit'}
-						<BuilderStoryTrigger {builder} />
-					{/if}
+					<BuilderStoryBar {builder} />
 				</div>
 
 				<div class="grid-container">

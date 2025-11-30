@@ -4,7 +4,6 @@
 	import Grid from '$lib/components/game/Grid.svelte';
 	import BuilderTray from '$lib/components/builder/BuilderTray.svelte';
 	import BuilderStoryBar from '$lib/components/builder/BuilderStoryBar.svelte';
-	import BuilderStoryTrigger from '$lib/components/builder/BuilderStoryTrigger.svelte';
 	import BuilderGoalModal from '$lib/components/builder/BuilderGoalModal.svelte';
 	import BuilderToolbar from '$lib/components/builder/BuilderToolbar.svelte';
 	import Game from '$lib/components/game/Game.svelte';
@@ -35,11 +34,7 @@
 		<div class="workspace">
 			<div class="stage-area">
 				<div class="dashboard-area">
-					{#if builder.mode === 'story'}
-						<BuilderStoryBar {builder} />
-					{:else if builder.mode === 'edit'}
-						<BuilderStoryTrigger {builder} />
-					{/if}
+					<BuilderStoryBar {builder} />
 				</div>
 
 				<div class="grid-container">

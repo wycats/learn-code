@@ -165,8 +165,7 @@
 
 	function selectSegment(id: string) {
 		builder.activeSegmentId = id;
-		// Optional: Close expanded view on select?
-		// isExpanded = false;
+		isExpanded = false;
 	}
 
 	function getCharacter(name: string) {
@@ -377,22 +376,10 @@
 	{:else}
 		<div class="instruction-bar-editor empty-state" transition:fly={{ y: -20, duration: 300 }}>
 			<div class="empty-content">
-				{#if (builder.level.intro?.length || 0) + (builder.level.outro?.length || 0) === 0}
-					<p class="text-2">Start your story by adding an intro segment.</p>
-					<button class="btn-primary" onclick={() => addSegment('intro')}>
-						<Plus size={16} /> Create Intro
-					</button>
-				{:else}
-					<p class="text-2">Select a segment to edit or add a new one.</p>
-					<div class="actions">
-						<button class="btn-secondary" onclick={() => (isExpanded = true)}>
-							<List size={16} /> View Timeline
-						</button>
-						<button class="btn-primary" onclick={() => addSegment('intro')}>
-							<Plus size={16} /> Add Intro
-						</button>
-					</div>
-				{/if}
+				<p class="text-2">Start your story by adding an intro segment.</p>
+				<button class="btn-primary" onclick={() => addSegment('intro')}>
+					<Plus size={16} /> Create Intro
+				</button>
 			</div>
 
 			<div class="editor-controls right">
@@ -998,11 +985,6 @@
 		margin: 0 auto;
 	}
 
-	.empty-content .actions {
-		display: flex;
-		gap: var(--size-2);
-	}
-
 	.btn-primary {
 		background-color: var(--brand);
 		color: white;
@@ -1010,18 +992,6 @@
 		border-radius: var(--radius-round);
 		font-weight: bold;
 		border: none;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		gap: var(--size-2);
-	}
-
-	.btn-secondary {
-		background-color: var(--surface-2);
-		color: var(--text-1);
-		padding: var(--size-2) var(--size-4);
-		border-radius: var(--radius-round);
-		border: 1px solid var(--surface-3);
 		cursor: pointer;
 		display: flex;
 		align-items: center;

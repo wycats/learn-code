@@ -6,6 +6,7 @@
 	import PackMetadataEditor from '$lib/components/builder/campaign/PackMetadataEditor.svelte';
 	import LevelOrganizer from '$lib/components/builder/campaign/LevelOrganizer.svelte';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { ArrowLeft, Trash2, Undo, Redo, Save, Link } from 'lucide-svelte';
 	import ConfirmModal from '$lib/components/common/ConfirmModal.svelte';
@@ -222,18 +223,18 @@
 
 	function handleEditLevel(levelId: string) {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		void goto(`/builder/campaigns/${packId}/${levelId}`);
+		void goto(`${base}/builder/campaigns/${packId}/${levelId}`);
 	}
 
 	async function handleDelete() {
 		await CampaignService.delete(pack!.id);
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		void goto('/builder/campaigns');
+		void goto(`${base}/builder/campaigns`);
 	}
 
 	function handleBack() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		void goto('/builder/campaigns');
+		void goto(`${base}/builder/campaigns`);
 	}
 </script>
 

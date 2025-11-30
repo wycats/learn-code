@@ -5,6 +5,7 @@
 	import { GameModel } from '$lib/game/model.svelte';
 	import Game from '$lib/components/game/Game.svelte';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { ArrowLeft } from 'lucide-svelte';
 
 	const packId = $derived($page.params.packId ?? '');
@@ -29,7 +30,7 @@
 				if (!isUnlocked) {
 					// Redirect to pack view if locked
 					// eslint-disable-next-line svelte/no-navigation-without-resolve
-					goto(`/library/${packId}`);
+					goto(`${base}/library/${packId}`);
 					return;
 				}
 
@@ -64,17 +65,17 @@
 	function handleNextLevel() {
 		if (nextLevelId) {
 			// eslint-disable-next-line svelte/no-navigation-without-resolve
-			goto(`/play/${packId}/${nextLevelId}`);
+			goto(`${base}/play/${packId}/${nextLevelId}`);
 		} else {
 			// Pack completed!
 			// eslint-disable-next-line svelte/no-navigation-without-resolve
-			goto(`/library/${packId}`);
+			goto(`${base}/library/${packId}`);
 		}
 	}
 
 	function handleExit() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		goto(`/library/${packId}`);
+		goto(`${base}/library/${packId}`);
 	}
 </script>
 

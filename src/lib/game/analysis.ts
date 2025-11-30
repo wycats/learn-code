@@ -49,7 +49,10 @@ export function hasSequence(program: Block[], sequence: BlockType[]): boolean {
 /**
  * Detects common anti-patterns or inefficiencies in the code.
  */
-export function detectAntiPatterns(program: Block[]): string[] {
+export function detectAntiPatterns(
+	program: Block[],
+	functions?: Record<string, Block[]>
+): string[] {
 	const issues: string[] = [];
 
 	// Redundant turns: Left -> Right or Right -> Left
@@ -84,7 +87,29 @@ export function detectAntiPatterns(program: Block[]): string[] {
 		}
 	}
 
+	// Missing function calls
+	if (functions) {
+		for (const [name, body] of Object.entries(functions)) {
+			// If function has body but is not called in the main program
+			if (body.length > 0 && !hasFunctionCall(program, name)) {
+				issues.push(`missing-call:${name}`);
+			}
+		}
+	}
+
 	return issues;
+}
+
+function hasFunctionCall(program: Block[], functionName: string): boolean {
+	for (const block of program) {
+		if (block.type === 'call' && block.functionName === functionName) {
+			return true;
+		}
+		if (block.children && hasFunctionCall(block.children, functionName)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 function hasEmptyLoop(program: Block[]): boolean {

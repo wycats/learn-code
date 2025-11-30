@@ -244,13 +244,30 @@
 
 	function showGhosts(targetBlock: Block, source: Block | BlockType) {
 		const sourceType = typeof source === 'string' ? source : source.type;
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { id, ...sourceProps } = typeof source === 'string' ? { id: '' } : source;
 
 		ghostTargetId = targetBlock.id;
 		ghostSourceType = sourceType;
 
-		const ghostBefore: Block = { id: crypto.randomUUID(), type: sourceType, isGhost: true };
-		const ghostAfter: Block = { id: crypto.randomUUID(), type: sourceType, isGhost: true };
-		const ghostInside: Block = { id: crypto.randomUUID(), type: sourceType, isGhost: true };
+		const ghostBefore: Block = {
+			id: crypto.randomUUID(),
+			type: sourceType,
+			isGhost: true,
+			...sourceProps
+		};
+		const ghostAfter: Block = {
+			id: crypto.randomUUID(),
+			type: sourceType,
+			isGhost: true,
+			...sourceProps
+		};
+		const ghostInside: Block = {
+			id: crypto.randomUUID(),
+			type: sourceType,
+			isGhost: true,
+			...sourceProps
+		};
 
 		function insertGhostsRecursive(blocks: Block[]): boolean {
 			const index = blocks.findIndex((b) => b.id === targetBlock.id);
@@ -376,7 +393,8 @@
 		}
 	}
 
-	function handlePaletteClick(type: BlockType) {
+	function handlePaletteClick(sourceBlock: Block) {
+		const type = sourceBlock.type;
 		if (isTypeFull(type)) return;
 		soundManager.play('click');
 
@@ -394,25 +412,28 @@
 			clearGhosts();
 			const target = findBlock(game.activeProgram, selectedBlockId);
 			if (target) {
-				showGhosts(target, type);
+				showGhosts(target, sourceBlock);
 				return;
 			}
 		}
 
 		clearGhosts();
 
+		// Create new block with properties
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { id, ...rest } = sourceBlock;
+		const newBlock: Block = { id: crypto.randomUUID(), ...rest };
+
 		// Check if the last block is a container (Loop)
 		const lastBlock =
 			game.activeProgram.length > 0 ? game.activeProgram[game.activeProgram.length - 1] : null;
 		if (lastBlock && lastBlock.type === 'loop') {
-			const newBlock: Block = { id: crypto.randomUUID(), type };
 			game.insertBlockIntoContainer(lastBlock.id, newBlock);
 			// Select the container so we can edit its properties (and subsequent clicks use ghosts)
 			selectedBlockIds.clear();
 			selectedBlockIds.add(lastBlock.id);
 		} else {
 			// Otherwise, append to end of main program
-			const newBlock: Block = { id: crypto.randomUUID(), type };
 			game.addBlock(newBlock);
 			// Do NOT select the new block, so we can keep appending
 			// selectedBlockIds = new Set([newBlock.id]);
@@ -619,7 +640,10 @@
 				if (targetData.type === 'drop-target') {
 					let newBlock: Block;
 					if (isPaletteItem) {
-						newBlock = { id: crypto.randomUUID(), type: sourceBlock.type };
+						// Copy all properties from source block (except id) to preserve data like functionName
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						const { id, ...rest } = sourceBlock;
+						newBlock = { id: crypto.randomUUID(), ...rest };
 					} else {
 						newBlock = sourceBlock;
 						// Remove from old position first
@@ -658,11 +682,7 @@
 					use:draggableBlock={{ block: item, isPaletteItem: true, disabled: typeFull }}
 					style:position="relative"
 				>
-					<BlockComponent
-						block={item}
-						isPalette={true}
-						onSelect={() => handlePaletteClick(item.type)}
-					/>
+					<BlockComponent block={item} isPalette={true} onSelect={() => handlePaletteClick(item)} />
 					{#if limit !== 'unlimited'}
 						<div class="limit-badge" class:full={typeFull}>
 							{limit - used}
@@ -1158,15 +1178,15 @@
 	.program-container {
 		position: relative;
 		flex: 1;
-		display: flex;
-		flex-direction: row;
-		gap: var(--size-2);
+		display: grid;
+		grid-template-columns: 100%;
+		grid-template-rows: 100%;
 		overflow: hidden;
 		min-height: 0; /* Crucial for flex child scrolling */
 	}
 
 	.program-list {
-		flex: 1;
+		grid-area: 1 / 1;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		align-content: start;

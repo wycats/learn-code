@@ -160,7 +160,16 @@
 - [ ] **Hosting Setup**: Configure deployment pipeline (e.g., Vercel, Netlify, or GitHub Pages).
 - [ ] **Analytics (Privacy-First)**: Implement basic, privacy-respecting usage tracking (optional).
 
-## Phase 18: Curriculum Expansion (Post-Launch)
+## Phase 18: Visual Regression Testing
+
+**Goal:** Ensure the visual integrity of the application across updates by implementing automated visual regression testing.
+
+- [ ] **Playwright Setup**: Configure Playwright for visual comparison tests.
+- [ ] **Baseline Creation**: Establish baseline screenshots for key UI states (Game, Builder, Home).
+- [ ] **CI Integration**: Integrate visual tests into the CI pipeline to catch regressions on PRs.
+- [ ] **Flakiness Management**: Implement strategies to handle dynamic content and animations in screenshots.
+
+## Phase 19: Curriculum Expansion (Post-Launch)
 
 **Goal:** Introduce advanced programming concepts like Variables and Scoping.
 

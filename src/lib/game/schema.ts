@@ -125,7 +125,7 @@ export const HintTriggerSchema = z.discriminatedUnion('type', [
 	z.object({ type: z.literal('story-step'), segmentId: z.string() }),
 	z.object({
 		type: z.literal('analysis'),
-		pattern: z.enum(['redundant-turn', '360-turn', 'empty-loop', 'missed-loop'])
+		pattern: z.string()
 	})
 ]);
 export type HintTrigger = z.infer<typeof HintTriggerSchema>;

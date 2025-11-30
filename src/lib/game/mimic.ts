@@ -235,12 +235,25 @@ export class StackInterpreter {
 				// Use game.functions (current state) instead of game.level.functions (initial state)
 				if (funcName && this.game.functions && this.game.functions[funcName]) {
 					const funcBlocks = this.game.functions[funcName];
+
+					// Reset execution state for function blocks so they run "fresh"
+					const resetState = (blocks: Block[]) => {
+						for (const b of blocks) {
+							this.game.executionState.delete(b.id);
+							if (b.children) resetState(b.children);
+						}
+					};
+					resetState(funcBlocks);
+
 					this.stack.push({
 						blocks: funcBlocks,
 						index: 0,
 						context: funcName
 					});
 				}
+
+				// Mark the call block as success since we have successfully initiated the call
+				this.game.executionState.set(block.id, 'success');
 
 				// Advance past the call block in the parent frame
 				frame.index++;

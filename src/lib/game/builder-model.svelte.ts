@@ -125,6 +125,27 @@ export class BuilderModel {
 				localStorage.setItem(`lastActiveSegment:${this.activeLevelId}`, this.activeSegmentId);
 			}
 		});
+
+		// Enforce valid active segment
+		$effect(() => {
+			const intro = this.level.intro || [];
+			const outro = this.level.outro || [];
+			const allSegments = [...intro, ...outro];
+
+			// If we have an active segment, check if it still exists
+			if (this.activeSegmentId) {
+				const exists = allSegments.some((s) => s.id === this.activeSegmentId);
+				if (!exists) {
+					// Invalid: erase and continue (to the next check)
+					this.activeSegmentId = null;
+				}
+			}
+
+			// If no active segment (or just invalidated), and we have segments, pick the first one
+			if (!this.activeSegmentId && allSegments.length > 0) {
+				this.activeSegmentId = allSegments[0].id!;
+			}
+		});
 	}
 
 	private saveTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -220,49 +241,53 @@ export class BuilderModel {
 		}
 
 		if (loaded) {
-			// Ensure all segments have IDs (migration/fix)
-			loaded.levels.forEach((level) => {
-				level.intro?.forEach((s) => {
-					if (!s.id) s.id = crypto.randomUUID();
-				});
-				level.outro?.forEach((s) => {
-					if (!s.id) s.id = crypto.randomUUID();
-				});
-			});
-
-			this.pack = loaded;
-			if (this.pack.levels.length === 0) {
-				// Create a default level if pack is empty
-				const defaultLevel: LevelDefinition = {
-					id: crypto.randomUUID(),
-					name: 'New Level',
-					gridSize: { width: 5, height: 5 },
-					start: { x: 0, y: 0 },
-					startOrientation: 'E',
-					goal: { x: 4, y: 4 },
-					layout: {},
-					customTiles: {},
-					availableBlocks: {
-						'move-forward': 'unlimited',
-						'turn-left': 'unlimited',
-						'turn-right': 'unlimited',
-						loop: 'unlimited'
-					},
-					maxBlocks: 10
-				};
-				this.pack.levels.push(defaultLevel);
-			}
-			this.activeLevelId = this.pack.levels[0].id;
-			this.currentProgram = this.level.initialProgram
-				? $state.snapshot(this.level.initialProgram)
-				: [];
-			this.syncGame();
-			this.restoreActiveSegment();
+			this.setPack(loaded);
 
 			if (typeof localStorage !== 'undefined') {
 				localStorage.setItem('lastActivePackId', loaded.id);
 			}
 		}
+	}
+
+	setPack(pack: LevelPack) {
+		// Ensure all segments have IDs (migration/fix)
+		pack.levels.forEach((level) => {
+			level.intro?.forEach((s) => {
+				if (!s.id) s.id = crypto.randomUUID();
+			});
+			level.outro?.forEach((s) => {
+				if (!s.id) s.id = crypto.randomUUID();
+			});
+		});
+
+		this.pack = pack;
+		if (this.pack.levels.length === 0) {
+			// Create a default level if pack is empty
+			const defaultLevel: LevelDefinition = {
+				id: crypto.randomUUID(),
+				name: 'New Level',
+				gridSize: { width: 5, height: 5 },
+				start: { x: 0, y: 0 },
+				startOrientation: 'E',
+				goal: { x: 4, y: 4 },
+				layout: {},
+				customTiles: {},
+				availableBlocks: {
+					'move-forward': 'unlimited',
+					'turn-left': 'unlimited',
+					'turn-right': 'unlimited',
+					loop: 'unlimited'
+				},
+				maxBlocks: 10
+			};
+			this.pack.levels.push(defaultLevel);
+		}
+		this.activeLevelId = this.pack.levels[0].id;
+		this.currentProgram = this.level.initialProgram
+			? $state.snapshot(this.level.initialProgram)
+			: [];
+		this.syncGame();
+		this.restoreActiveSegment();
 	}
 
 	async reconnectDisk() {
@@ -531,7 +556,7 @@ export class BuilderModel {
 	}
 
 	handleCellClick(pos: GridPosition) {
-		if (this.mode !== 'edit' && this.mode !== 'story') return;
+		if (this.mode !== 'edit') return;
 
 		if (this.onTargetSelect) {
 			const target = `cell:${pos.x},${pos.y}`;

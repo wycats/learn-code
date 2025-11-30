@@ -52,7 +52,7 @@
 		{
 			"id": "l7-hint-call",
 			"text": "You defined the function, but you need to use the 'Call Jump' block in your Main program!",
-			"trigger": { "type": "attempts", "value": 2 },
+			"trigger": { "type": "analysis", "pattern": "missing-call:Jump" },
 			"highlight": "block:call"
 		}
 	]

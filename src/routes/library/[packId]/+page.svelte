@@ -5,6 +5,7 @@
 	import { ProgressService } from '$lib/game/progress';
 	import LevelMap from '$lib/components/library/LevelMap.svelte';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { ArrowLeft } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
@@ -14,12 +15,12 @@
 
 	function handleLevelSelect(levelId: string) {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		goto(`/play/${packId}/${levelId}`);
+		goto(`${base}/play/${packId}/${levelId}`);
 	}
 
 	function handleBack() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		goto('/library');
+		goto(`${base}/library`);
 	}
 
 	onMount(() => {

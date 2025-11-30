@@ -87,5 +87,32 @@ describe('Program Analysis', () => {
 			];
 			expect(detectAntiPatterns(program)).toContain('missed-loop');
 		});
+
+		it('detects missing function calls', () => {
+			const program = [b('move-forward')];
+			const functions = {
+				Jump: [b('move-forward'), b('move-forward')]
+			};
+			expect(detectAntiPatterns(program, functions)).toContain('missing-call:Jump');
+		});
+
+		it('does not report missing call if function is called', () => {
+			const program = [
+				b('move-forward'),
+				{ id: '1', type: 'call', functionName: 'Jump' } as Block
+			];
+			const functions = {
+				Jump: [b('move-forward'), b('move-forward')]
+			};
+			expect(detectAntiPatterns(program, functions)).not.toContain('missing-call:Jump');
+		});
+
+		it('does not report missing call if function is empty', () => {
+			const program = [b('move-forward')];
+			const functions = {
+				Jump: []
+			};
+			expect(detectAntiPatterns(program, functions)).not.toContain('missing-call:Jump');
+		});
 	});
 });

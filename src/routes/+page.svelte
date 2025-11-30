@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { Code, ArrowRight, Hammer } from 'lucide-svelte';
 
 	function handleStart() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		goto('/library');
+		goto(`${base}/library`);
 	}
 
 	function handleCreate() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		goto('/builder/campaigns');
+		goto(`${base}/builder/campaigns`);
 	}
 </script>
 

@@ -243,3 +243,26 @@ Expanded the "endgame" content with a challenging "Gauntlet" pack and deepened t
 - **Feedback Mechanism**:
   - Added a `mailto` link to the Home Screen for user feedback.
 
+## Phase 16 Polish: Bug Fixes & UI Unification (Completed)
+
+**Date:** November 30, 2025
+
+**Summary:**
+Addressed critical bugs and unified the Builder UI to align with the "Diagetic Axiom". Merged the Story Editor directly into the main layout, removing the need for a separate mode trigger. Fixed several high-priority bugs in Level 7 ("Functions") and the Builder.
+
+**Key Deliverables:**
+
+- **UI Unification**:
+  - Removed `BuilderStoryTrigger` and embedded `BuilderStoryBar` in the main layout.
+  - Simplified `BuilderModel` by removing the explicit `story` mode.
+- **Bug Fixes**:
+  - Fixed "Select a segment" empty state in Story Editor.
+  - Fixed missing IDs in legacy levels causing UI issues.
+  - Fixed Level 5 ("Stairway to the Stars") impossible geometry.
+  - **Level 7 Fixes**:
+    - Fixed "Call ???" data loss bug.
+    - Fixed UI flickering between Main/Function tabs.
+    - Fixed incorrect hint logic.
+    - Fixed execution visualization persistence (green checks).
+    - Improved "Call" block feedback (immediate success mark).
+

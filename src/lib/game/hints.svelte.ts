@@ -18,7 +18,7 @@ export class HintManager {
 		const idle = (now - this.game.lastInteractionTime) / 1000;
 
 		// Run analysis once
-		const antiPatterns = detectAntiPatterns(this.game.program);
+		const antiPatterns = detectAntiPatterns(this.game.program, this.game.functions);
 
 		for (const hint of this.game.level.hints) {
 			if (this.shownHints.has(hint.id)) continue;

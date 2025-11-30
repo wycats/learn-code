@@ -4,6 +4,7 @@
 	import type { LevelPack } from '$lib/game/schema';
 	import PackCard from '$lib/components/library/PackCard.svelte';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 
 	let myCampaigns = $state<LevelPack[]>([]);
@@ -18,12 +19,12 @@
 			description: 'A brand new level pack.'
 		});
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		void goto(`/builder/campaigns/${newPack.id}`);
+		void goto(`${base}/builder/campaigns/${newPack.id}`);
 	}
 
 	function handleEdit(packId: string) {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		void goto(`/builder/campaigns/${packId}`);
+		void goto(`${base}/builder/campaigns/${packId}`);
 	}
 
 	async function handleClone(packId: string) {
@@ -31,7 +32,7 @@
 		if (cloned) {
 			myCampaigns = await CampaignService.loadAll(); // Refresh
 			// eslint-disable-next-line svelte/no-navigation-without-resolve
-			void goto(`/builder/campaigns/${cloned.id}`);
+			void goto(`${base}/builder/campaigns/${cloned.id}`);
 		}
 	}
 </script>
