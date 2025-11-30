@@ -1,61 +1,53 @@
-# Phase 15 Implementation Plan: Advanced Builder Features
+# Phase 16: Content Expansion & Narrative Polish - Implementation Plan
 
-## Goal
+## Goals
+We are expanding the scope of this phase to not just polish the existing content, but to deepen the narrative experience and flesh out the "endgame" content. We will lean into the "Jonas vs. Zoey" dynamic (Architect vs. Explorer) and expand "The Gauntlet" into a proper challenge pack.
 
-Empower "The Architect" with advanced tools to create complex, rich, and shareable learning experiences. This phase focuses on introducing Functions (Magic Blocks) into the Builder, adding new gameplay mechanics (Hazards), polishing the UI with "Jonas's Wishlist", and enabling local file system access for easier sharing.
+## Scope
 
-## 1. Functions in Builder (Magic Blocks)
+### 1. Narrative Deepening ("Jonas & Zoey")
+- **Concept**: Frame the experience as a playful dialogue between the **Architect** (Jonas, who builds the levels) and the **Explorer** (Zoey, who plays them). The **Guide** (Robot) acts as the mediator.
+- **Implementation**:
+  - **Guide Persona**: Update the Guide's hints and dialogue to reference "The Architect" (e.g., "The Architect put a lot of lava here!").
+  - **Level Intros/Outros**: Rewrite select level descriptions to reflect this dynamic (e.g., "Jonas says this one is impossible. Prove him wrong!").
+  - **"Banter" Hints**: Add specific hints that add flavor/humor to the "Gauntlet" levels.
 
-**Objective**: Allow level designers to create and edit custom functions (Magic Blocks) that players can use or that serve as pre-defined subroutines.
+### 2. "The Gauntlet" Expansion
+- **Goal**: Turn "The Gauntlet" from a single level into a 3-level "Challenge Pack".
+- **Content**:
+  - **Level 9 (Existing)**: "The Gauntlet" (Ice + Lava). Refine if necessary.
+  - **Level 10 (New)**: "Slippery Slopes" (Focus on Ice momentum mechanics).
+  - **Level 11 (New)**: "The Floor is Lava" (Tight maneuvering around hazards).
+- **Pack Config**: Ensure the `GAUNTLET_PACK` includes these new levels.
 
-- [ ] **Data Model Update**:
-  - Update `LevelSchema` to support a `functions` registry.
-  - Each function needs: `id`, `name`, `icon`, `program` (list of blocks).
-- [ ] **Builder UI**:
-  - Add a "Functions" manager in the Builder interface (likely in the Palette or a new "Logic" tab).
-  - **Create/Edit Function**: A modal or secondary workspace to compose the function's code.
-  - **Usage**: Once defined, the function appears as a usable block in the "Available Blocks" palette.
+### 3. Content Audit & Polish (Levels 1-8)
+- **Audit**: Playtest Levels 1-8 to ensure the difficulty curve is smooth before hitting The Gauntlet.
+- **Hint Coverage**:
+  - Ensure **every** level has at least one "Idle" hint.
+  - Add "Anti-Pattern" hints for common mistakes in early levels.
+- **Metadata**:
+  - Update Level Titles and Descriptions to match the new narrative tone.
+  - Assign distinct **Icons** and **Difficulty** indicators.
 
-## 2. New Mechanics: Hazards
+### 4. Feedback Mechanism
+- **Implementation**:
+  - Add a subtle "Feedback" button to the Home Screen / Settings.
+  - Action: `mailto:feedback@wonderblocks.app` (or similar placeholder) with a pre-filled subject line.
 
-**Objective**: Introduce "Spikes" (or generic hazards) to add a survival element to puzzles.
+## Proposed Workflow
+1.  **Gauntlet Expansion**: Create Levels 10 and 11 using the **Builder**.
+2.  **Narrative Pass**:
+    - Update `messages/en.json` (or level JSONs directly) with new descriptions and dialogue.
+    - Add "Banter" hints to the new levels via the **Builder**.
+3.  **Audit & Polish**: Run through Levels 1-11. Fix hints and metadata.
+4.  **Feedback**: Implement the mailto link.
+5.  **Final Review**: "Fresh Eyes" check on the full campaign.
 
-- [ ] **Tile System**:
-  - Add `Hazard` to `CellType` or a new `Overlay` layer?
-  - Let's stick to `CellType` for now: `Spikes` (toggleable?).
-- [ ] **Interpreter**:
-  - Update `move` logic to check for hazards.
-  - If robot enters a hazard tile -> `FAIL` state with specific animation/message.
-- [ ] **Builder Support**:
-  - Add Hazard tiles to the Terrain painter.
+## Questions for User
+- Does this "Jonas vs. Zoey" framing align with your vision?
+- Are there specific mechanics you want to highlight in the new Gauntlet levels (e.g., more Functions, or just pure navigation challenges)?
 
-## 3. Jonas's Wishlist (Polish)
+## Final Plan Status
+- **Approved by User**: Yes
+- **Ready for Implementation**: Yes
 
-**Objective**: Add high-value visual polish and metadata features requested by the primary stakeholder.
-
-- [ ] **Difficulty Indicators**:
-  - Add `difficulty` field (1-5) to `LevelSchema` and `PackSchema`.
-  - Display as stars/icons on `LevelCard` and `PackCard`.
-- [ ] **Selectable Icons**:
-  - Create an `IconPicker` component.
-  - Use it in Level Settings and Pack Settings to customize the thumbnail/icon.
-- [ ] **Speaker Avatars**:
-  - Update `DialogueStep` schema to include `avatar` (string/enum).
-  - Update `InstructionBar` to display the avatar alongside the text.
-
-## 4. Local File System Access (Project Fugu)
-
-**Objective**: Allow Architects to own their data by saving/loading packs directly to their local file system.
-
-- [ ] **File System API**:
-  - Implement `savePackToDisk(pack)` using `showSaveFilePicker`.
-  - Implement `loadPackFromDisk()` using `showOpenFilePicker`.
-- [ ] **UI Integration**:
-  - Add "Import" and "Export" buttons to the Architect's Library.
-
-## Execution Order
-
-1.  **Functions**: This is the most complex technical task and affects the data model significantly.
-2.  **Hazards**: A fun mechanic that expands the puzzle space.
-3.  **Wishlist**: Visual polish that makes the builder feel more "pro".
-4.  **File System**: A standalone feature for power users.

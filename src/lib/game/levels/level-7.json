@@ -1,6 +1,7 @@
 {
 	"id": "level-7",
 	"name": "The Magic Spell",
+	"description": "Jonas found a magic spell. It's called a Function!",
 	"gridSize": { "width": 8, "height": 8 },
 	"start": { "x": 1, "y": 1 },
 	"startOrientation": "E",
@@ -32,13 +33,27 @@
 		},
 		{
 			"speaker": "Jonas",
-			"text": "That's a Function! It lets you give a name to a group of blocks.",
+			"text": "I wrote that! It's a Function. It lets you name a group of blocks.",
 			"emotion": "happy"
 		},
 		{
 			"speaker": "System",
 			"text": "Define the 'Jump' function to move 2 steps, then call it to cross the gaps.",
 			"highlight": { "target": "ui:function-tab", "type": "pulse" }
+		}
+	],
+	"hints": [
+		{
+			"id": "l7-hint-idle",
+			"text": "Click the 'Jump' tab in the tray to define what 'Jump' does.",
+			"trigger": { "type": "idle", "value": 20 },
+			"highlight": "ui:function-tab"
+		},
+		{
+			"id": "l7-hint-call",
+			"text": "You defined the function, but you need to use the 'Call Jump' block in your Main program!",
+			"trigger": { "type": "attempts", "value": 2 },
+			"highlight": "block:call"
 		}
 	]
 }

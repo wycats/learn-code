@@ -1,6 +1,7 @@
 {
 	"id": "level-8",
 	"name": "Pattern Recognition",
+	"description": "A giant staircase. Jonas says you can solve it with one spell.",
 	"gridSize": { "width": 10, "height": 10 },
 	"start": { "x": 1, "y": 8 },
 	"startOrientation": "N",
@@ -31,7 +32,7 @@
 	"intro": [
 		{
 			"speaker": "Jonas",
-			"text": "This path looks like a giant staircase.",
+			"text": "I built this giant staircase. Can you climb it?",
 			"emotion": "neutral"
 		},
 		{
@@ -40,9 +41,27 @@
 			"emotion": "concerned"
 		},
 		{
+			"speaker": "Jonas",
+			"text": "Exactly! Use a Function to capture the pattern.",
+			"emotion": "happy"
+		},
+		{
 			"speaker": "System",
 			"text": "Create a 'Stairs' function for the pattern, then call it multiple times.",
 			"highlight": { "target": "ui:function-tab", "type": "pulse" }
+		}
+	],
+	"hints": [
+		{
+			"id": "l8-hint-idle",
+			"text": "Define the 'Stairs' function to go Up 2, Turn Right, Move 2, Turn Left.",
+			"trigger": { "type": "idle", "value": 25 },
+			"highlight": "ui:function-tab"
+		},
+		{
+			"id": "l8-hint-call",
+			"text": "Now call 'Stairs' multiple times in your Main program to climb to the top.",
+			"trigger": { "type": "attempts", "value": 2 }
 		}
 	]
 }

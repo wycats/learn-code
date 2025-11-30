@@ -1,6 +1,7 @@
 {
 	"id": "level-4",
 	"name": "The Bug",
+	"description": "Jonas left some broken code. Can you fix it?",
 	"gridSize": { "width": 5, "height": 5 },
 	"start": { "x": 0, "y": 4 },
 	"startOrientation": "E",
@@ -39,16 +40,16 @@
 	"intro": [
 		{
 			"speaker": "Zoey",
-			"text": "I tried to write the code to get to the star, but I keep hitting a wall!",
+			"text": "Jonas, your code is broken! I keep hitting a wall.",
 			"emotion": "concerned"
 		},
 		{
 			"speaker": "Jonas",
-			"text": "That's called a 'bug'. Let's read the code step-by-step and find the mistake.",
+			"text": "It's not broken, it's... a test! That's a 'bug'. Can you fix it?",
 			"emotion": "neutral"
 		},
 		{
-			"speaker": "System",
+			"speaker": "Guide",
 			"text": "Find the wrong block and fix it!",
 			"emotion": "neutral"
 		}

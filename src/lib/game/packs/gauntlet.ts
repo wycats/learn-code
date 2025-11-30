@@ -1,5 +1,5 @@
 import { LevelPackSchema } from '../schema';
-import { LEVEL_9 } from '../levels';
+import { LEVEL_9, LEVEL_10, LEVEL_11 } from '../levels';
 
 export const GAUNTLET_PACK = LevelPackSchema.parse({
 	id: 'gauntlet',
@@ -8,5 +8,5 @@ export const GAUNTLET_PACK = LevelPackSchema.parse({
 	coverImage: 'flame',
 	difficulty: 'intermediate',
 	tags: ['hazards', 'ice', 'challenge'],
-	levels: [LEVEL_9]
+	levels: [LEVEL_9, LEVEL_10, LEVEL_11]
 });

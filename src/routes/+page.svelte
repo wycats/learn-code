@@ -32,6 +32,10 @@
 				<Hammer size={20} />
 			</button>
 		</div>
+
+		<a href="mailto:feedback@wonderblocks.app?subject=Code Climber Feedback" class="feedback-link">
+			Send Feedback
+		</a>
 	</div>
 </div>
 
@@ -130,5 +134,18 @@
 
 	.cta-button.secondary:hover {
 		background-color: var(--surface-4);
+	}
+
+	.feedback-link {
+		color: var(--text-3);
+		font-size: var(--font-size-1);
+		text-decoration: none;
+		opacity: 0.7;
+		transition: opacity 0.2s;
+	}
+
+	.feedback-link:hover {
+		opacity: 1;
+		text-decoration: underline;
 	}
 </style>

@@ -1,6 +1,7 @@
 {
 	"id": "level-6",
 	"name": "The Big Zig Zag",
+	"description": "Bigger steps, same pattern. Jonas is testing your memory.",
 	"gridSize": { "width": 5, "height": 5 },
 	"start": { "x": 0, "y": 4 },
 	"startOrientation": "E",
@@ -34,8 +35,20 @@
 		},
 		{
 			"speaker": "Jonas",
-			"text": "Move twice, turn... Move twice, turn... I think we can loop this too!",
+			"text": "I made the steps bigger. Can you adapt your code?",
 			"emotion": "excited"
+		}
+	],
+	"hints": [
+		{
+			"id": "l6-hint-idle",
+			"text": "It's like the stairs, but you need to move TWICE before turning.",
+			"trigger": { "type": "idle", "value": 20 }
+		},
+		{
+			"id": "l6-hint-loop",
+			"text": "Use a Loop to repeat the big step pattern.",
+			"trigger": { "type": "attempts", "value": 2 }
 		}
 	]
 }

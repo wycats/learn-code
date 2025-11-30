@@ -21,11 +21,8 @@
 
 ## Jonas's Wishlist (Nov 2025)
 
-- [ ] **Difficulty Indicators**: Show difficulty level on the level overlay/card.
-- [ ] **Selectable Icons**: Allow choosing an icon for the level.
-- [ ] **Speaker Avatars**: Show avatars for speakers in the story/dialogue system.
 - [ ] **Publishing**: A way to share levels (maybe a simple file-based repo or lightweight backend).
-- [ ] **Feedback Button**: A way for players to send feedback to level creators (e.g., "Too hard", "Fun!", "Broken").
+- [ ] **Feedback Button**: A way for players to send feedback to level creators (e.g., "Too hard", "Fun!", "Broken"). (Partially addressed in Phase 16 via mailto)
 
 ## Mechanics & Blocks
 

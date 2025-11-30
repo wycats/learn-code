@@ -1,30 +1,21 @@
-# Phase 15 Task List
+# Phase 16 Task List
 
-## 1. Functions in Builder
+## 1. Gauntlet Expansion
+- [ ] **Create Level 10 ("Slippery Slopes")**: Design a level focused on ice momentum mechanics.
+- [ ] **Create Level 11 ("The Floor is Lava")**: Design a level with tight maneuvering around lava hazards.
+- [ ] **Update Pack Config**: Ensure `GAUNTLET_PACK` includes the new levels.
 
-- [x] **Schema**: Update `LevelSchema` (and Zod validators) to include `functions`.
-- [x] **State**: Update `BuilderModel` to manage the list of defined functions.
-- [x] **UI - Manager**: Create a `FunctionManager` component in the Builder sidebar.
-- [x] **UI - Editor**: Create a `FunctionEditor` modal/view to compose the function's body.
-- [x] **Integration**: Ensure defined functions appear in the "Available Blocks" list for the level.
+## 2. Narrative & Metadata Polish
+- [ ] **Update Level Metadata**: Rewrite titles and descriptions for Levels 1-9 to reflect the "Jonas vs. Zoey" narrative.
+- [ ] **Assign Icons**: Use the Builder to assign distinct icons to all levels.
+- [ ] **Add Banter Hints**: Add specific hints to the Gauntlet levels that feature Jonas/Zoey dialogue.
 
-## 2. Hazards
+## 3. Hint System Audit
+- [ ] **Audit Levels 1-8**: Playtest and verify hint coverage.
+- [ ] **Add Missing Hints**: Ensure every level has at least one "Idle" hint and relevant "Anti-Pattern" hints.
 
-- [x] **Schema**: Add `SPIKES` to `CellType` enum.
-- [x] **Rendering**: Add a visual representation for Spikes in `GridCell.svelte`.
-- [x] **Logic**: Update `Interpreter` to handle death-by-hazard.
-- [x] **Builder**: Add Spikes to the Terrain palette.
+## 4. Feedback Mechanism
+- [ ] **Implement Feedback Button**: Add a `mailto` link to the Home Screen.
 
-## 3. Jonas's Wishlist
-
-- [x] **Difficulty**: Add `difficulty` to schemas and display it on cards.
-- [x] **Icons**: Build `IconPicker` and integrate into Level/Pack settings.
-- [x] **Avatars**: Update `Dialogue` schema and `InstructionBar` to support avatars.
-
-## 4. Local File System
-
-- [x] **Service**: Create `FileSystemService` to wrap the File System Access API.
-- [x] **UI**: Add Import/Export buttons to `Library` page.
-- [x] **Builder**: Add "Save to Disk" button to Builder.
-- [x] **Link to Disk**: Implement persistent linking between Builder and local folder.
-- [x] **UI Polish**: Refine Goal Modal with constraints toggles and difficulty badge.
+## 5. Final Polish
+- [ ] **Fresh Eyes Review**: Conduct a final playthrough of the entire campaign.

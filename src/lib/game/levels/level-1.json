@@ -1,6 +1,7 @@
 {
 	"id": "level-1",
 	"name": "Cross the River",
+	"description": "Jonas built a bridge. Can you cross it?",
 	"gridSize": { "width": 5, "height": 5 },
 	"start": { "x": 0, "y": 2 },
 	"startOrientation": "E",
@@ -22,19 +23,25 @@
 		{
 			"id": "intro-1",
 			"speaker": "Zoey",
-			"text": "Hi! I'm Zoey. I need to get to the other side of the river.",
+			"text": "Hi! I'm Zoey. I need to get to the other side.",
 			"emotion": "happy"
 		},
 		{
 			"id": "intro-2",
 			"speaker": "Guide",
-			"text": "Greetings. I am the Guide. I will assist you in constructing a program.",
+			"text": "Greetings. I am the Guide. The Architect, Jonas, has constructed this path.",
 			"emotion": "neutral"
 		},
 		{
 			"id": "intro-3",
+			"speaker": "Zoey",
+			"text": "Nice bridge, Jonas! Let's go.",
+			"emotion": "happy"
+		},
+		{
+			"id": "intro-4",
 			"speaker": "Guide",
-			"text": "Use the 'Move Forward' block to help Zoey cross the bridge.",
+			"text": "Use the 'Move Forward' block to help Zoey cross.",
 			"emotion": "thinking",
 			"highlight": { "target": "block:move-forward", "type": "pulse" }
 		}
