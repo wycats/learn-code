@@ -26,7 +26,8 @@
 		User,
 		Flag,
 		Grid3x3,
-		FunctionSquare
+		FunctionSquare,
+		Triangle
 	} from 'lucide-svelte';
 	import { fade, scale } from 'svelte/transition';
 
@@ -66,6 +67,7 @@
 		{ id: 'sand', value: 'sand', icon: Sun, label: 'Sand' },
 		{ id: 'snow', value: 'snow', icon: Snowflake, label: 'Snow' },
 		{ id: 'dirt', value: 'dirt', icon: Mountain, label: 'Dirt' },
+		{ id: 'spikes', value: 'spikes', icon: Triangle, label: 'Spikes', color: 'var(--red-7)' },
 		{ id: 'erase', value: 'erase', icon: Eraser, label: 'Erase', type: 'erase' },
 		{ id: 'grid', value: 'grid', icon: Grid3x3, label: 'Grid', type: 'grid' }
 	];

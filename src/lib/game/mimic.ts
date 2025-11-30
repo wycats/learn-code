@@ -308,7 +308,7 @@ export class StackInterpreter {
 					// Check for Hazard or Ice
 					const tileType = getTileType(this.game, nextPos.x, nextPos.y);
 
-					if (tileType === 'hazard') {
+					if (tileType === 'hazard' || tileType === 'spikes') {
 						this.game.characterPosition = nextPos;
 						soundManager.play('fail');
 						this.game.lastEvent = { type: 'fail', timestamp: Date.now() };
@@ -326,7 +326,7 @@ export class StackInterpreter {
 								currentSlidePos = slideNext;
 								// Check if we slid into a hazard
 								const slideType = getTileType(this.game, currentSlidePos.x, currentSlidePos.y);
-								if (slideType === 'hazard') {
+								if (slideType === 'hazard' || slideType === 'spikes') {
 									this.game.characterPosition = currentSlidePos;
 									soundManager.play('fail');
 									this.game.lastEvent = { type: 'fail', timestamp: Date.now() };

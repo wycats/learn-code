@@ -19,7 +19,8 @@
 		Sun,
 		Leaf,
 		ArrowLeft,
-		Grid3x3
+		Grid3x3,
+		Triangle
 	} from 'lucide-svelte';
 	import PackManagerModal from './PackManagerModal.svelte';
 
@@ -50,7 +51,8 @@
 		{ id: 'forest', tool: { type: 'terrain', value: 'forest' }, icon: Trees, label: 'Forest' },
 		{ id: 'sand', tool: { type: 'terrain', value: 'sand' }, icon: Sun, label: 'Sand' },
 		{ id: 'snow', tool: { type: 'terrain', value: 'snow' }, icon: Snowflake, label: 'Snow' },
-		{ id: 'dirt', tool: { type: 'terrain', value: 'dirt' }, icon: Mountain, label: 'Dirt' }
+		{ id: 'dirt', tool: { type: 'terrain', value: 'dirt' }, icon: Mountain, label: 'Dirt' },
+		{ id: 'spikes', tool: { type: 'terrain', value: 'spikes' }, icon: Triangle, label: 'Spikes', color: 'var(--red-7)' }
 	];
 
 	let terrainTools = $derived.by(() => {

@@ -8,10 +8,10 @@
 - [x] **Integration**: Ensure defined functions appear in the "Available Blocks" list for the level.
 
 ## 2. Hazards
-- [ ] **Schema**: Add `SPIKES` to `CellType` enum.
-- [ ] **Rendering**: Add a visual representation for Spikes in `GridCell.svelte`.
-- [ ] **Logic**: Update `Interpreter` to handle death-by-hazard.
-- [ ] **Builder**: Add Spikes to the Terrain palette.
+- [x] **Schema**: Add `SPIKES` to `CellType` enum.
+- [x] **Rendering**: Add a visual representation for Spikes in `GridCell.svelte`.
+- [x] **Logic**: Update `Interpreter` to handle death-by-hazard.
+- [x] **Builder**: Add Spikes to the Terrain palette.
 
 ## 3. Jonas's Wishlist
 - [ ] **Difficulty**: Add `difficulty` to schemas and display it on cards.

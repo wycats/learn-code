@@ -2,7 +2,7 @@
 	import type { CellType } from '$lib/game/types';
 	import type { TileDefinition } from '$lib/game/schema';
 	import { AVATAR_ICONS } from '$lib/game/icons';
-	import { Star, BrickWall, Trees, Waves, Snowflake, Mountain, Leaf, Sun } from 'lucide-svelte';
+	import { Star, BrickWall, Trees, Waves, Snowflake, Mountain, Leaf, Sun, Triangle } from 'lucide-svelte';
 
 	interface Props {
 		type: CellType;
@@ -69,6 +69,10 @@
 		<div class="marker">
 			<Leaf size={20} color="var(--green-4)" style="opacity: 0.5" />
 		</div>
+	{:else if type === 'spikes'}
+		<div class="marker">
+			<Triangle size={24} color="var(--red-7)" fill="var(--red-7)" />
+		</div>
 	{/if}
 </div>
 
@@ -106,6 +110,10 @@
 
 	.cell[data-type='water'] {
 		background-color: var(--blue-3);
+	}
+
+	.cell[data-type='spikes'] {
+		background-color: var(--red-2);
 	}
 
 	.cell[data-type='wall'] {

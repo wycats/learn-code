@@ -30,3 +30,22 @@ We implemented the ability for Architects to define custom functions (Magic Bloc
 6.  Switch back to "Main" context.
 7.  Enable the "Call" block in the "Logic" tab.
 8.  The "Jump" block now appears in the palette (if "Call" is enabled).
+
+## 2. Hazards (Spikes)
+
+We introduced a new gameplay mechanic: Spikes.
+
+### Key Changes
+
+-   **Schema**: Added `spikes` to the `BuiltInCellTypeSchema`.
+-   **Rendering**: Updated `Cell.svelte` to render a red triangle for spike tiles.
+-   **Logic**: Updated `StackInterpreter` (`mimic.ts`) to treat `spikes` as a hazard (similar to `hazard` custom tiles), causing the robot to fail if it steps on them.
+-   **Builder**: Added "Spikes" to the Terrain palette in both `BuilderTray` and `BuilderToolbar`.
+
+### User Experience
+
+1.  In the Builder, select the "Spikes" tool (Red Triangle).
+2.  Paint spikes on the grid.
+3.  Test the level.
+4.  If the robot steps on a spike, it fails immediately.
+

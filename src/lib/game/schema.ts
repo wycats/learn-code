@@ -59,7 +59,8 @@ export const BuiltInCellTypeSchema = z.enum([
 	'sand',
 	'snow',
 	'forest',
-	'dirt'
+	'dirt',
+	'spikes'
 ]);
 export const CellTypeSchema = z.string();
 export type CellType = z.infer<typeof CellTypeSchema>;
