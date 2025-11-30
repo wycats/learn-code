@@ -72,4 +72,3 @@ The visual language aims to feel like a high-end, digital educational tool. It a
   - **Borders**: Thin, subtle borders (`var(--surface-3)`).
   - **Shadows**: Deep, soft shadows (`var(--shadow-4)` or `var(--shadow-6)`) to clearly separate them from the layer below.
   - **Backdrop**: For modals, a dark, blurred backdrop (`backdrop-filter: blur(8px)`) focuses attention on the task.
-

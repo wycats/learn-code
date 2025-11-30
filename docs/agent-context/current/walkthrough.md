@@ -1,64 +1,52 @@
-# Phase 11 Walkthrough: The Campaign Builder
+# Phase 12 Walkthrough: Polish & Refinement
 
 ## Overview
-In this phase, we implemented the "Campaign Builder," a feature that empowers users (Architects) to create, organize, and manage their own Level Packs. This moves the application from a static set of levels to a dynamic platform where users can curate their own content.
+
+In this phase, we focused on polishing the user experience for the Campaign Builder and Level Editor. We addressed "form slop" by tightening up UI interactions, adding standard editor features like Undo/Redo, and implementing a "tactile" grid editing experience that feels more diegetic and intuitive.
 
 ## Key Features
-1.  **Architect's Library**: A new dashboard (`/builder/campaigns`) where users can view their custom packs and clone built-in templates.
-2.  **Campaign Persistence**: We introduced a robust persistence layer using the Origin Private File System (OPFS) to store user campaigns locally.
-3.  **Pack Editor**: A dedicated interface (`/builder/campaigns/[packId]`) for editing pack metadata (title, description, difficulty) and managing the list of levels.
-4.  **Level Management**: Users can add new levels, reorder them, and delete them from their packs.
-5.  **Cloning**: Users can clone existing "Standard Packs" (like "The Basics") to use as a starting point for their own creations.
+
+1.  **Tactile Grid Tool**:
+    - Replaced the abstract "Grid Size" inputs with a direct manipulation tool.
+    - **Hover Interactions**: Hovering over the grid now highlights the corresponding row and column.
+    - **Smart Controls**: "Add" buttons appear on all 4 sides. "Trash" buttons appear dynamically over the row/column headers when interacting.
+    - **Grid Mode**: A dedicated mode for structural changes that locks other interactions to prevent accidental edits.
+
+2.  **Pack Editor Enhancements**:
+    - **Undo/Redo System**: Implemented a robust history stack for the Pack Editor. Users can now undo/redo changes to pack metadata and level organization.
+    - **Keyboard Shortcuts**: Added support for `Ctrl+Z` (Undo) and `Ctrl+Y` / `Ctrl+Shift+Z` (Redo).
+    - **Visual Polish**: Improved the "Level Organizer" with better text wrapping for long names and cleaner drag-and-drop visuals.
+
+3.  **UI/UX Refinements**:
+    - **Anchor Positioning**: Utilized CSS Anchor Positioning (with fallbacks) to ensure popovers (like the Icon Picker) stay visually attached to their triggers.
+    - **Text Handling**: Added CSS `line-clamp` to handle long level names gracefully without breaking the layout.
+    - **Toolbar Highlighting**: Fixed issues where the active tool wasn't properly highlighted in the toolbar.
 
 ## Technical Implementation
--   **`CampaignService`**: A static service class that handles all CRUD operations for campaigns, interfacing with the persistence layer.
--   **`persistence.ts`**: Updated to support `UserPack` storage using `navigator.storage.getDirectory()`.
--   **Svelte 5 Runes**: Utilized `$state` and `$derived` for reactive UI updates in the builder components.
--   **Nested Routing**: Established a clear route structure for the builder context (`/builder/campaigns/...`).
+
+- **History Management**: Implemented a `history` and `future` stack pattern using Svelte 5's `$state.snapshot` and `structuredClone` to manage state changes without mutation issues.
+- **CSS Anchor Positioning**: Used `position-anchor` and `anchor()` to modernize popover placement.
+- **Svelte Actions**: Refined `draggable` and `dropTargetForElements` actions to be more type-safe and robust.
 
 ## How to Try It Out
 
-You can verify the new functionality by following these steps in the browser:
+1.  **Test the Grid Tool**
+    - Open a level in the builder.
+    - Select the **Grid Tool** (Grid icon).
+    - **Hover**: Move your mouse over the grid. Notice the row/column highlighting.
+    - **Add**: Click the `+` buttons on any side to expand the grid.
+    - **Remove**: Hover over a row/column header (the numbers) and click the red Trash icon that appears.
 
-1.  **Access the Architect's Library**
-    *   Navigate to `/builder/campaigns`.
-    *   **Verify**: You should see the "Architect's Library" header.
-    *   **Verify**: You see two sections: "Your Packs" (initially empty or with local data) and "Standard Packs" (containing the built-in "The Basics" pack).
+2.  **Test Undo/Redo**
+    - Go to the **Pack Editor** (`/builder/campaigns/[packId]`).
+    - Change the pack name or reorder some levels.
+    - Press `Ctrl+Z` or click the **Undo** button in the toolbar.
+    - **Verify**: The changes are reverted.
+    - Press `Ctrl+Y` or click the **Redo** button.
+    - **Verify**: The changes are reapplied.
 
-2.  **Create a New Pack**
-    *   Click the **"Create New Pack"** button.
-    *   **Verify**: A new card appears in "My Packs" with a default name (e.g., "Untitled Pack").
-    *   **Verify**: You are automatically redirected to the Pack Editor for this new pack.
-
-3.  **Edit Pack Metadata**
-    *   In the Pack Editor, change the **Title** (e.g., "My First Campaign").
-    *   Change the **Description**.
-    *   Select a different **Difficulty** from the dropdown.
-    *   **Verify**: The changes are reflected immediately in the UI.
-    *   *Refresh the page*: **Verify** that your changes persist (thanks to the OPFS persistence layer).
-
-4.  **Manage Levels**
-    *   Click **"Add Level"** multiple times to create a few levels.
-    *   **Verify**: New levels appear in the list.
-    *   **Reorder**: Drag and drop a level to a new position. **Verify** the order updates.
-    *   **Delete**: Click the trash icon on a level. **Verify** it is removed from the list.
-
-5.  **Clone a Standard Pack**
-    *   Navigate back to `/builder/campaigns`.
-    *   Find "The Basics" in the "Standard Packs" section.
-    *   Click the **"Clone"** button.
-    *   **Verify**: A new pack appears in "Your Packs" named "Copy of The Basics".
-    *   **Verify**: It contains all the levels from the original pack.
-
-6.  **Enter Level Builder**
-    *   From the Pack Editor, click the **Edit (Pencil)** icon on any level.
-    *   **Verify**: You are taken to the Level Builder (`/builder/campaigns/[packId]/[levelId]`).
-    *   **Verify**: The "Back to Pack" link is present in the header (if we added it to the layout, otherwise use browser back).
-
-7.  **Grid Editing (New)**
-    *   In the Level Builder, select the **Grid Tool** (Grid icon) from the toolbar.
-    *   **Verify**: The grid enters "Structure Mode".
-    *   **Mouse**: Hover over any cell. **Verify** that the corresponding row and column are highlighted, and "Trash" buttons appear at the Top (for columns) and Left (for rows).
-    *   **Touch**: Tap any cell. **Verify** that the row/column is selected and "Trash" buttons appear.
-    *   **Add**: Click the `+` buttons on the sides of the grid. **Verify** a new row/column is added.
-    *   **Remove**: Click a "Trash" button. **Verify** the row/column is removed.
+3.  **Check Visuals**
+    - Create a level with a very long name.
+    - **Verify**: The name wraps to two lines in the Level Organizer and then truncates, keeping the grid layout stable.
+    - Open the **Icon Picker** in the Pack Editor.
+    - **Verify**: The popover appears right next to the button, anchored correctly.

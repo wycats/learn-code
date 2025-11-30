@@ -118,4 +118,3 @@ _Best for: Complex editing tasks, secondary configuration, "Inspector" views._
   - **Native APIs**: We use the standard HTML `<dialog>` and `popover` APIs. This ensures accessible focus management, "light dismiss" (click-outside to close), and correct z-indexing without custom JavaScript state.
   - **Satellite Triggers**: For small, contextual tweaks (like changing a color or icon), use small "satellite" buttons attached to the main element that trigger a popover menu.
   - **Accordion Lists**: For managing lists of complex objects (like Hints), use a collapsed summary view by default. Expanding an item reveals the full editor inline or in a popover, preventing the "wall of inputs" effect.
-

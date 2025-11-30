@@ -6,7 +6,7 @@
 	import LevelOrganizer from '$lib/components/builder/campaign/LevelOrganizer.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { ArrowLeft, Trash2, Undo } from 'lucide-svelte';
+	import { ArrowLeft, Trash2, Undo, Redo } from 'lucide-svelte';
 	import ConfirmModal from '$lib/components/common/ConfirmModal.svelte';
 
 	let pack = $state<LevelPack | null>(null);
@@ -14,6 +14,7 @@
 	let error = $state<string | null>(null);
 	let showDeleteConfirm = $state(false);
 	let history = $state<LevelPack[]>([]);
+	let future = $state<LevelPack[]>([]);
 
 	const packId = $derived($page.params.packId ?? '');
 
@@ -22,9 +23,18 @@
 	});
 
 	function handleKeydown(e: KeyboardEvent) {
-		if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-			e.preventDefault();
-			handleUndo();
+		if (e.ctrlKey || e.metaKey) {
+			if (e.key === 'z') {
+				e.preventDefault();
+				if (e.shiftKey) {
+					handleRedo();
+				} else {
+					handleUndo();
+				}
+			} else if (e.key === 'y') {
+				e.preventDefault();
+				handleRedo();
+			}
 		}
 	}
 
@@ -46,6 +56,9 @@
 
 	function saveToHistory() {
 		if (!pack) return;
+		// Clear future on new change
+		future = [];
+
 		// Keep last 20 states
 		// Use $state.snapshot to unwrap the proxy before cloning
 		const snapshot = $state.snapshot(pack);
@@ -57,7 +70,11 @@
 	}
 
 	async function handleUndo() {
-		if (history.length === 0) return;
+		if (history.length === 0 || !pack) return;
+
+		// Save current state to future
+		const currentSnapshot = $state.snapshot(pack);
+		future = [structuredClone(currentSnapshot), ...future];
 
 		const previous = history[history.length - 1];
 		// Remove from history
@@ -66,6 +83,23 @@
 		// Restore
 		if (previous) {
 			pack = await CampaignService.update(previous.id, previous);
+		}
+	}
+
+	async function handleRedo() {
+		if (future.length === 0 || !pack) return;
+
+		// Save current state to history
+		const currentSnapshot = $state.snapshot(pack);
+		history = [...history, structuredClone(currentSnapshot)];
+
+		const next = future[0];
+		// Remove from future
+		future = future.slice(1);
+
+		// Restore
+		if (next) {
+			pack = await CampaignService.update(next.id, next);
 		}
 	}
 
@@ -82,16 +116,12 @@
 	}
 
 	function handleEditLevel(levelId: string) {
-		goto(`/builder/campaigns/${packId}/${levelId}`);
-	}
-
-	function handlePlayLevel(levelId: string) {
-		goto(`/builder/campaigns/${packId}/${levelId}?mode=test`);
+		void goto(`/builder/campaigns/${packId}/${levelId}`);
 	}
 
 	async function handleDelete() {
 		await CampaignService.delete(pack!.id);
-		goto('/builder/campaigns');
+		void goto('/builder/campaigns');
 	}
 </script>
 
@@ -111,7 +141,7 @@
 	<header class="editor-header">
 		<div class="header-content">
 			<div class="header-left">
-				<button class="back-btn" onclick={() => goto('/builder/campaigns')}>
+				<button class="back-btn" onclick={() => void goto('/builder/campaigns')}>
 					<ArrowLeft size={20} /> Back to Library
 				</button>
 				<div class="divider-vertical"></div>
@@ -124,6 +154,14 @@
 					title="Undo (Ctrl+Z)"
 				>
 					<Undo size={20} />
+				</button>
+				<button
+					class="action-btn"
+					onclick={handleRedo}
+					disabled={future.length === 0}
+					title="Redo (Ctrl+Y)"
+				>
+					<Redo size={20} />
 				</button>
 			</div>
 			<button class="delete-btn" onclick={() => (showDeleteConfirm = true)} title="Delete Pack">
@@ -147,7 +185,6 @@
 						levels={pack.levels}
 						onUpdate={handleLevelsUpdate}
 						onEditLevel={handleEditLevel}
-						onPlayLevel={handlePlayLevel}
 					/>
 				</div>
 			</div>

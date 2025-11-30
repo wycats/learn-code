@@ -7,11 +7,9 @@
 	import { onMount } from 'svelte';
 
 	let myCampaigns = $state<LevelPack[]>([]);
-	let loading = $state(true);
 
 	onMount(async () => {
 		myCampaigns = await CampaignService.loadAll();
-		loading = false;
 	});
 
 	async function handleCreate() {
@@ -19,18 +17,18 @@
 			name: 'New Adventure',
 			description: 'A brand new level pack.'
 		});
-		goto(`/builder/campaigns/${newPack.id}`);
+		void goto(`/builder/campaigns/${newPack.id}`);
 	}
 
 	function handleEdit(packId: string) {
-		goto(`/builder/campaigns/${packId}`);
+		void goto(`/builder/campaigns/${packId}`);
 	}
 
 	async function handleClone(packId: string) {
 		const cloned = await CampaignService.clone(packId);
 		if (cloned) {
 			myCampaigns = await CampaignService.loadAll(); // Refresh
-			goto(`/builder/campaigns/${cloned.id}`);
+			void goto(`/builder/campaigns/${cloned.id}`);
 		}
 	}
 </script>
@@ -55,7 +53,7 @@
 				</div>
 			{:else}
 				<div class="pack-grid">
-					{#each myCampaigns as pack}
+					{#each myCampaigns as pack (pack.id)}
 						<PackCard {pack} progress={undefined} onClick={() => handleEdit(pack.id)} />
 					{/each}
 				</div>
@@ -66,7 +64,7 @@
 			<h2>Built-in Packs</h2>
 			<p>Clone a built-in pack to start with a solid foundation.</p>
 			<div class="pack-grid">
-				{#each PACKS as pack}
+				{#each PACKS as pack (pack.id)}
 					<div class="template-card">
 						<PackCard {pack} progress={undefined} onClick={() => handleClone(pack.id)} />
 						<div class="clone-overlay">

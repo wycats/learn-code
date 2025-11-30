@@ -34,10 +34,18 @@ export async function loadPack(id: string): Promise<LevelPack | null> {
 	}
 }
 
-export async function listPacks(): Promise<{ id: string; name: string; description?: string; coverImage?: string; difficulty?: string }[]> {
+export async function listPacks(): Promise<
+	{ id: string; name: string; description?: string; coverImage?: string; difficulty?: string }[]
+> {
 	try {
 		const root = await getRoot();
-		const packs: { id: string; name: string; description?: string; coverImage?: string; difficulty?: string }[] = [];
+		const packs: {
+			id: string;
+			name: string;
+			description?: string;
+			coverImage?: string;
+			difficulty?: string;
+		}[] = [];
 
 		// @ts-expect-error - FileSystemDirectoryHandle is async iterable in modern browsers
 		for await (const [name, handle] of root.entries()) {

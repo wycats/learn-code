@@ -19,7 +19,7 @@ export class CampaignService {
 
 	static async create(data: Partial<LevelPack>): Promise<LevelPack> {
 		const defaultPack = createDefaultPack();
-		
+
 		const newPack: LevelPack = {
 			...defaultPack,
 			...data,
@@ -32,7 +32,7 @@ export class CampaignService {
 
 		// Validate
 		const validated = LevelPackSchema.parse(newPack);
-		
+
 		await savePack(validated);
 		return validated;
 	}
@@ -49,7 +49,7 @@ export class CampaignService {
 
 		// Validate
 		const validated = LevelPackSchema.parse(updatedPack);
-		
+
 		await savePack(validated);
 		return validated;
 	}

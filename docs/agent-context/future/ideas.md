@@ -30,6 +30,7 @@
 
 - [ ] **Hazard Block**: A block that kills the player on contact (like a spike or fire).
 - [ ] **Lives System**: A mechanic where the player has a limited number of lives. Walking into a hazard loses a life. This adds a "survival" challenge to levels.
+- [ ] **Pack-wide tiles**: Allow defining custom tiles (like water, spikes) that can be used across multiple levels in a pack.
 
 ## Storage & Persistence
 

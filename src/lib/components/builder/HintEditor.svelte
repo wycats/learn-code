@@ -158,7 +158,7 @@
 										class:active={hint.trigger.type === type}
 										onclick={(e) => {
 											updateTriggerType(hint, type);
-											e.currentTarget.closest('[popover]')?.hidePopover();
+											(e.currentTarget.closest('[popover]') as HTMLElement)?.hidePopover();
 										}}
 									>
 										<Icon size={18} />

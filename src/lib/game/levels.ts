@@ -19,4 +19,14 @@ export const LEVEL_7 = LevelDefinitionSchema.parse(level7Data);
 export const LEVEL_8 = LevelDefinitionSchema.parse(level8Data);
 export const LEVEL_9 = LevelDefinitionSchema.parse(level9Data);
 
-export const LEVELS = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8, LEVEL_9];
+export const LEVELS = [
+	LEVEL_1,
+	LEVEL_2,
+	LEVEL_3,
+	LEVEL_4,
+	LEVEL_5,
+	LEVEL_6,
+	LEVEL_7,
+	LEVEL_8,
+	LEVEL_9
+];

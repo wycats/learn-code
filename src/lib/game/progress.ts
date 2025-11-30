@@ -25,7 +25,7 @@ const STORAGE_KEY = 'wonderblocks_progress';
 export class ProgressService {
 	static load(): UserProgress {
 		if (typeof localStorage === 'undefined') return { packs: {} };
-		
+
 		const stored = localStorage.getItem(STORAGE_KEY);
 		if (!stored) return { packs: {} };
 
@@ -44,13 +44,13 @@ export class ProgressService {
 
 	static completeLevel(packId: string, levelId: string, stars: number, blockCount?: number) {
 		const progress = this.load();
-		
+
 		if (!progress.packs[packId]) {
 			progress.packs[packId] = { levels: {}, unlocked: true };
 		}
 
 		const existing = progress.packs[packId].levels[levelId];
-		
+
 		const result: LevelResult = {
 			completed: true,
 			stars,
@@ -62,7 +62,10 @@ export class ProgressService {
 		if (existing && existing.completed) {
 			if (stars > existing.stars) {
 				progress.packs[packId].levels[levelId] = result;
-			} else if (stars === existing.stars && (blockCount || 0) < (existing.blockCount || Infinity)) {
+			} else if (
+				stars === existing.stars &&
+				(blockCount || 0) < (existing.blockCount || Infinity)
+			) {
 				progress.packs[packId].levels[levelId] = result;
 			}
 		} else {
@@ -74,7 +77,7 @@ export class ProgressService {
 
 	static isLevelUnlocked(progress: UserProgress, packId: string, levelIndex: number): boolean {
 		if (levelIndex === 0) return true;
-		
+
 		const pack = getPack(packId);
 		if (!pack) return false;
 
@@ -85,4 +88,3 @@ export class ProgressService {
 		return !!prevResult?.completed;
 	}
 }
-

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { LevelDefinition } from '$lib/game/schema';
-	import { Plus, Trash2, Play, Edit } from 'lucide-svelte';
+	import { Plus, Trash2 } from 'lucide-svelte';
 	import ConfirmModal from '$lib/components/common/ConfirmModal.svelte';
 	import {
 		draggable,
@@ -11,16 +11,14 @@
 		extractClosestEdge,
 		type Edge
 	} from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
-	import { onMount } from 'svelte';
 
 	interface Props {
 		levels: LevelDefinition[];
 		onUpdate: (levels: LevelDefinition[]) => void;
 		onEditLevel: (levelId: string) => void;
-		onPlayLevel: (levelId: string) => void;
 	}
 
-	let { levels, onUpdate, onEditLevel, onPlayLevel }: Props = $props();
+	let { levels, onUpdate, onEditLevel }: Props = $props();
 
 	let showDeleteConfirm = $state(false);
 	let levelToDeleteIndex = $state<number | null>(null);
@@ -66,7 +64,7 @@
 	}
 
 	function draggableItem(node: HTMLElement, index: number) {
-		return draggable({
+		const cleanup = draggable({
 			element: node,
 			getInitialData: () => ({ type: 'level', index }),
 			onDragStart: () => {
@@ -78,10 +76,12 @@
 				node.classList.remove('dragging');
 			}
 		});
+
+		return { destroy: cleanup };
 	}
 
 	function dropTargetItem(node: HTMLElement, index: number) {
-		return dropTargetForElements({
+		const cleanup = dropTargetForElements({
 			element: node,
 			getData: ({ input, element }) => {
 				return attachClosestEdge(
@@ -116,12 +116,12 @@
 				const [movedLevel] = newLevels.splice(sourceIndex, 1);
 
 				// Calculate insertion index
-				let insertIndex = targetIndex;
-				if (sourceIndex < targetIndex && edge === 'left') {
-					insertIndex -= 1;
-				} else if (sourceIndex > targetIndex && edge === 'right') {
-					insertIndex += 1;
-				}
+				// let insertIndex = targetIndex;
+				// if (sourceIndex < targetIndex && edge === 'left') {
+				// 	insertIndex -= 1;
+				// } else if (sourceIndex > targetIndex && edge === 'right') {
+				// 	insertIndex += 1;
+				// }
 
 				// Adjust for removal
 				if (sourceIndex < targetIndex) {
@@ -146,6 +146,8 @@
 				onUpdate(newLevels);
 			}
 		});
+
+		return { destroy: cleanup };
 	}
 </script>
 
@@ -301,9 +303,12 @@
 		color: var(--text-2);
 		max-width: 100px;
 		text-align: center;
-		white-space: nowrap;
+		/* Allow wrapping */
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
 		overflow: hidden;
-		text-overflow: ellipsis;
+		line-height: 1.2;
 	}
 
 	.delete-badge {

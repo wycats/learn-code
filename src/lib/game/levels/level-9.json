@@ -53,29 +53,29 @@
 		"5,0": "lava",
 		"6,0": "lava",
 		"7,0": "lava",
-		
+
 		"3,1": "ice",
 		"3,2": "ice",
 		"3,3": "floor",
-		
+
 		"2,1": "lava",
 		"2,2": "lava",
 		"2,3": "lava",
-		
+
 		"4,3": "floor",
 		"5,3": "ice",
 		"6,3": "ice",
 		"7,3": "stone",
-		
+
 		"6,4": "floor",
 		"6,5": "ice",
 		"6,6": "ice",
 		"6,7": "floor",
-		
+
 		"5,4": "lava",
 		"5,5": "lava",
 		"5,6": "lava",
-		
+
 		"7,7": "goal"
 	},
 	"availableBlocks": ["move-forward", "turn-left", "turn-right", "loop"],

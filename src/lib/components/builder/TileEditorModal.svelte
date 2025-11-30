@@ -48,7 +48,13 @@
 		{ label: 'Pink', value: 'var(--pink-3)' }
 	];
 
-	const TYPES: { value: TileType; label: string; icon: any; description: string }[] = [
+	const TYPES: {
+		value: TileType;
+		label: string;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		icon: any;
+		description: string;
+	}[] = [
 		{ value: 'floor', label: 'Floor', icon: Footprints, description: 'Safe to walk on' },
 		{ value: 'wall', label: 'Wall', icon: BrickWall, description: 'Blocks movement' },
 		{ value: 'hazard', label: 'Hazard', icon: Skull, description: 'Fatal to touch' },
@@ -79,8 +85,6 @@
 	}
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <dialog bind:this={dialog} class="modal" onclose={onClose} onclick={handleBackdropClick}>
 	<div class="modal-header">
 		<h2>{tile ? 'Edit Tile' : 'New Tile'}</h2>
@@ -122,7 +126,7 @@
 								class:active={decal === ''}
 								onclick={(e) => {
 									decal = '';
-									e.currentTarget.closest('[popover]')?.hidePopover();
+									(e.currentTarget.closest('[popover]') as HTMLElement)?.hidePopover();
 								}}
 								title="No Decal"
 							>
@@ -135,7 +139,7 @@
 									class:active={decal === d}
 									onclick={(e) => {
 										decal = d;
-										e.currentTarget.closest('[popover]')?.hidePopover();
+										(e.currentTarget.closest('[popover]') as HTMLElement)?.hidePopover();
 									}}
 									title={d}
 								>
@@ -164,7 +168,7 @@
 									style:background-color={c.value}
 									onclick={(e) => {
 										color = c.value;
-										e.currentTarget.closest('[popover]')?.hidePopover();
+										(e.currentTarget.closest('[popover]') as HTMLElement)?.hidePopover();
 									}}
 									title={c.label}
 								>

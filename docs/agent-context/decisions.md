@@ -211,6 +211,7 @@
 **Decision:** Create a dedicated `BuilderModel` class separate from `GameModel`.
 **Context:** The Builder has unique state (selected tool, palette, history) that doesn't belong in the gameplay model. Overloading `GameModel` would make it brittle.
 **Consequence:**
+
 - `BuilderModel` wraps a `GameModel` instance for the preview but manages its own editing state.
 - Clear separation of concerns between "Playing" and "Authoring".
 
@@ -219,6 +220,7 @@
 **Decision:** Implement a "Drag-to-Paint" interaction model for the Grid Editor.
 **Context:** Clicking individual cells to place terrain is tedious. Users expect to "draw" walls or water.
 **Consequence:**
+
 - Implemented `pointerdown`, `pointerenter`, and `pointerup` handlers on the Grid to support continuous painting.
 - Added visual feedback (hover states) for the active tool.
 
@@ -227,6 +229,7 @@
 **Decision:** Use standard JSON for level export/import.
 **Context:** We need a portable format for sharing levels. TypeScript files are great for built-in levels but can't be easily shared or loaded dynamically by users.
 **Consequence:**
+
 - Created `serializeLevel` and `deserializeLevel` utilities.
 - Levels can be saved to disk or shared via clipboard.
 
@@ -272,6 +275,6 @@
 **Decision:** Store `initialProgram` as part of the Level definition.
 **Context:** We want to create "Fix the Bug" levels where the user starts with broken code.
 **Consequence:**
+
 - Added `initialProgram` to `LevelSchema`.
 - Added a "Snapshot" tool in the Builder to capture the current tray state.
-

@@ -92,7 +92,7 @@
 
 		<div id="icon-picker" popover="auto" class="icon-popover">
 			<div class="icon-grid">
-				{#each ICONS as { id, icon: Icon, label, color, bg }}
+				{#each ICONS as { id, icon: Icon, label, color, bg } (id)}
 					<button
 						class="icon-option"
 						class:selected={coverImage === id}
@@ -101,7 +101,7 @@
 						onclick={(e) => {
 							coverImage = id;
 							update();
-							e.currentTarget.closest('[popover]')?.hidePopover();
+							(e.currentTarget.closest('[popover]') as HTMLElement)?.hidePopover();
 						}}
 						title={label}
 					>
@@ -170,6 +170,7 @@
 		padding: var(--size-4);
 		border-radius: var(--radius-round);
 		transition: transform 0.2s;
+		anchor-name: --icon-trigger;
 	}
 
 	.icon-trigger:hover {
@@ -277,6 +278,11 @@
 		margin: 0;
 		inset: auto;
 		position: fixed;
+		position-anchor: --icon-trigger;
+		top: anchor(bottom);
+		left: anchor(center);
+		translate: -50% var(--size-2);
+
 		padding: var(--size-3);
 		background: var(--surface-1);
 		border: 1px solid var(--surface-3);
@@ -287,9 +293,6 @@
 
 	.icon-popover:popover-open {
 		display: block;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
 	}
 
 	.icon-grid {
