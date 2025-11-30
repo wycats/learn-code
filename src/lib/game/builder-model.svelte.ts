@@ -1,5 +1,5 @@
 import { GameModel } from './model.svelte';
-import type { LevelDefinition, CellType, GridPosition, LevelPack } from './types';
+import type { LevelDefinition, CellType, GridPosition, LevelPack, Block } from './types';
 import { createDefaultPack, savePack, loadPack, listPacks } from './persistence';
 
 export type BuilderTool =
@@ -45,6 +45,9 @@ export class BuilderModel {
 	targetSelectionContext = $state<string | null>(null);
 	hoveredGridPosition = $state<GridPosition | null>(null);
 	selectedGridPosition = $state<GridPosition | null>(null);
+
+	// The working program (persisted across mode switches)
+	currentProgram = $state<Block[]>([]);
 
 	get targetSelectionMode() {
 		return this.onTargetSelect !== null;
@@ -100,6 +103,7 @@ export class BuilderModel {
 		}
 
 		this.activeLevelId = this.pack.levels[0].id;
+		this.currentProgram = this.level.initialProgram ? $state.snapshot(this.level.initialProgram) : [];
 		this.syncGame();
 		this.restoreActiveSegment();
 
@@ -204,6 +208,7 @@ export class BuilderModel {
 				this.pack.levels.push(defaultLevel);
 			}
 			this.activeLevelId = this.pack.levels[0].id;
+			this.currentProgram = this.level.initialProgram ? $state.snapshot(this.level.initialProgram) : [];
 			this.syncGame();
 			this.restoreActiveSegment();
 
@@ -234,6 +239,7 @@ export class BuilderModel {
 
 		this.pack.levels.push(newLevel);
 		this.activeLevelId = newLevel.id;
+		this.currentProgram = [];
 		this.syncGame();
 		this.restoreActiveSegment();
 	}
@@ -242,12 +248,17 @@ export class BuilderModel {
 		const nextLevel = this.pack.levels.find((l) => l.id === levelId);
 		if (nextLevel) {
 			this.activeLevelId = nextLevel.id;
+			this.currentProgram = this.level.initialProgram ? $state.snapshot(this.level.initialProgram) : [];
 			this.syncGame();
 			this.restoreActiveSegment();
 		}
 	}
 
 	setMode(mode: 'edit' | 'test' | 'story') {
+		if (this.mode === 'test') {
+			// Capture program from test session
+			this.currentProgram = $state.snapshot(this.game.program);
+		}
 		this.mode = mode;
 		this.syncGame();
 	}
@@ -255,6 +266,8 @@ export class BuilderModel {
 	syncGame() {
 		// Create a new GameModel with the current level definition
 		this.game = new GameModel($state.snapshot(this.level));
+		// Restore the working program
+		this.game.program = $state.snapshot(this.currentProgram);
 	}
 
 	selectActor(actor: 'start' | 'goal' | null) {
@@ -299,6 +312,7 @@ export class BuilderModel {
 
 	snapshotTray() {
 		// Save the current program from the game model to the level definition
+		// Since game.program is synced with currentProgram in Edit mode, this works.
 		this.level.initialProgram = $state.snapshot(this.game.program);
 		// Also save functions if we want to support pre-filled functions
 		this.level.functions = $state.snapshot(this.game.functions);

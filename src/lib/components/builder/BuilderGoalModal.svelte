@@ -23,6 +23,39 @@
 	let showBiomePicker = $state(false);
 	let snapshotStatus = $state<'idle' | 'saved'>('idle');
 
+	// Local state for constraints toggles
+	let parEnabled = $state(!!builder.level.solutionPar);
+	let maxBlocksEnabled = $state(!!builder.level.maxBlocks);
+
+	// Sync local state to model
+	$effect(() => {
+		if (!parEnabled) {
+			builder.level.solutionPar = undefined;
+		} else if (!builder.level.solutionPar) {
+			builder.level.solutionPar = 10; // Default
+		}
+
+		if (!maxBlocksEnabled) {
+			builder.level.maxBlocks = undefined;
+		} else if (!builder.level.maxBlocks) {
+			builder.level.maxBlocks = 20; // Default
+		}
+	});
+
+	// Validation: Ensure maxBlocks >= solutionPar if both are enabled
+	$effect(() => {
+		if (
+			parEnabled &&
+			maxBlocksEnabled &&
+			builder.level.solutionPar &&
+			builder.level.maxBlocks &&
+			builder.level.maxBlocks < builder.level.solutionPar
+		) {
+			// Auto-adjust maxBlocks to be at least solutionPar
+			builder.level.maxBlocks = builder.level.solutionPar;
+		}
+	});
+
 	const BIOME_OPTIONS = [
 		{ value: 'grass', icon: Flower, color: 'var(--green-5)', label: 'Grass' },
 		{ value: 'sand', icon: Sun, color: 'var(--yellow-5)', label: 'Sand' },
@@ -78,7 +111,6 @@
 
 				<div class="settings-grid">
 					<div class="setting-item">
-						<span class="label">Difficulty:</span>
 						<div class="select-wrapper">
 							<select bind:value={builder.level.difficulty}>
 								<option value="beginner">Beginner</option>
@@ -90,7 +122,6 @@
 					</div>
 
 					<div class="setting-item">
-						<span class="label">Biome:</span>
 						<div class="biome-picker-wrapper">
 							<button
 								class="biome-trigger"
@@ -122,43 +153,47 @@
 
 					<div class="constraints">
 						<div class="constraint-line">
-							Try to solve it in
-							<div class="inline-edit">
-								<input
-									type="number"
-									bind:value={builder.level.solutionPar}
-									min="1"
-									max="99"
-									title="Target number of blocks for 3 stars"
-								/>
-							</div>
-							<strong>blocks</strong>.
+							<input type="checkbox" bind:checked={parEnabled} id="par-toggle" />
+							<label for="par-toggle" class:disabled={!parEnabled}>
+								Solve in
+								<div class="inline-edit" class:disabled={!parEnabled}>
+									<input
+										type="number"
+										bind:value={builder.level.solutionPar}
+										min="1"
+										max="99"
+										disabled={!parEnabled}
+										title="Target number of blocks for 3 stars"
+									/>
+								</div>
+								blocks
+							</label>
 						</div>
 
 						<div class="constraint-line">
-							Maximum
-							<div class="inline-edit">
-								<input
-									type="number"
-									bind:value={builder.level.maxBlocks}
-									min="1"
-									max="50"
-									title="Maximum blocks allowed in the workspace"
-								/>
-							</div>
-							<strong>blocks</strong> allowed.
+							<input type="checkbox" bind:checked={maxBlocksEnabled} id="max-toggle" />
+							<label for="max-toggle" class:disabled={!maxBlocksEnabled}>
+								Max
+								<div class="inline-edit" class:disabled={!maxBlocksEnabled}>
+									<input
+										type="number"
+										bind:value={builder.level.maxBlocks}
+										min={parEnabled ? builder.level.solutionPar : 1}
+										max="50"
+										disabled={!maxBlocksEnabled}
+										title="Maximum blocks allowed in the workspace"
+									/>
+								</div>
+								blocks allowed
+							</label>
 						</div>
 					</div>
 				</div>
 
 				<div class="hint-row">
 					<div class="starting-code-section">
-						<p class="help-text">
-							The blocks currently in your workspace ({builder.game.program.length}) will be saved as
-							the starting code for the player.
-						</p>
 						<button class="btn-secondary" onclick={handleSnapshot}>
-							<Camera size={16} />
+							<Camera size={20} />
 							{snapshotStatus === 'saved' ? 'Saved!' : 'Use Current Workspace as Starting Code'}
 						</button>
 					</div>
@@ -310,10 +345,16 @@
 		font-size: var(--font-size-1);
 	}
 
-	.label {
+	.constraint-line label {
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		cursor: pointer;
+	}
+
+	.constraint-line label.disabled {
 		color: var(--text-3);
-		width: 50px;
-		text-align: right;
+		cursor: default;
 	}
 
 	.inline-edit {
@@ -325,6 +366,12 @@
 		border-radius: var(--radius-1);
 		border: 1px solid transparent;
 		transition: all 0.2s;
+	}
+
+	.inline-edit.disabled {
+		background-color: transparent;
+		border-color: var(--surface-2);
+		opacity: 0.5;
 	}
 
 	.inline-edit:focus-within {
