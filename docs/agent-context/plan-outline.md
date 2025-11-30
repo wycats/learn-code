@@ -127,20 +127,20 @@
 - [x] **Navigation Consistency**: Standardize the "Back" button behavior across the app.
 - [x] **Bug Fix**: Fix the "Story Mode" highlight target selection interaction.
 
-## Phase 15: Advanced Builder Features
+## Phase 15: Advanced Builder Features (Completed)
 
 **Goal:** Bring advanced game mechanics into the Builder to support complex level design and empower "The Architect".
 
-- [ ] **Functions in Builder**: UI for defining and editing "Magic Blocks" (Functions) within the Builder.
-- [ ] **Advanced Logic**: Support for conditional blocks or more complex triggers if needed.
-- [ ] **Jonas's Wishlist**:
-  - [ ] **Difficulty Indicators**: Show difficulty on level cards.
-  - [ ] **Selectable Icons**: Allow choosing icons for levels/packs.
-  - [ ] **Speaker Avatars**: Show avatars in the dialogue system.
-- [ ] **New Mechanics**:
-  - [ ] **Hazards**: Spikes/Fire blocks (survival mechanic).
-  - [ ] **Pack-wide Tiles**: Define custom tiles (e.g., Lava) reusable across a pack.
-- [ ] **Local File System Access**: Implement `window.showDirectoryPicker` (Project Fugu) to allow Architects to save/load packs directly to their real file system.
+- [x] **Functions in Builder**: UI for defining and editing "Magic Blocks" (Functions) within the Builder.
+- [x] **Advanced Logic**: Support for conditional blocks or more complex triggers if needed.
+- [x] **Jonas's Wishlist**:
+  - [x] **Difficulty Indicators**: Show difficulty on level cards.
+  - [x] **Selectable Icons**: Allow choosing icons for levels/packs.
+  - [x] **Speaker Avatars**: Show avatars in the dialogue system.
+- [x] **New Mechanics**:
+  - [x] **Hazards**: Spikes/Fire blocks (survival mechanic).
+  - [x] **Pack-wide Tiles**: Define custom tiles (e.g., Lava) reusable across a pack.
+- [x] **Local File System Access**: Implement `window.showDirectoryPicker` (Project Fugu) to allow Architects to save/load packs directly to their real file system.
 
 ## Phase 16: Content Audit & Polish
 

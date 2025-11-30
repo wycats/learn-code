@@ -2,7 +2,17 @@
 	import type { CellType } from '$lib/game/types';
 	import type { TileDefinition } from '$lib/game/schema';
 	import { AVATAR_ICONS } from '$lib/game/icons';
-	import { Star, BrickWall, Trees, Waves, Snowflake, Mountain, Leaf, Sun, Triangle } from 'lucide-svelte';
+	import {
+		Star,
+		BrickWall,
+		Trees,
+		Waves,
+		Snowflake,
+		Mountain,
+		Leaf,
+		Sun,
+		Triangle
+	} from 'lucide-svelte';
 
 	interface Props {
 		type: CellType;

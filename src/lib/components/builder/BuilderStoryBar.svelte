@@ -335,7 +335,8 @@
 					{:else}
 						<button
 							class="action-btn"
-							class:active={builder.targetSelectionMode && builder.targetSelectionContext === 'story'}
+							class:active={builder.targetSelectionMode &&
+								builder.targetSelectionContext === 'story'}
 							onclick={() => {
 								if (builder.targetSelectionMode && builder.targetSelectionContext === 'story') {
 									builder.cancelTargetSelection();

@@ -7,6 +7,8 @@
 		createDefaultPack,
 		savePack
 	} from '$lib/game/persistence';
+	import { fileSystem } from '$lib/services/file-system';
+	import { localPacksStore } from '$lib/game/local-packs.svelte';
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
 	import { X, Trash2, FolderOpen, Plus, Pencil, Check } from 'lucide-svelte';
 
@@ -22,6 +24,7 @@
 	let deletingPackId = $state<string | null>(null);
 	let editName = $state('');
 	let editDesc = $state('');
+	let isFileSystemSupported = fileSystem.isSupported;
 
 	onMount(async () => {
 		packs = await listPacks();
@@ -121,6 +124,30 @@
 
 		onClose();
 	}
+
+	async function handleOpenLocalFolder() {
+		try {
+			const root = await fileSystem.openDirectory();
+			if (root) {
+				const packEntries = await fileSystem.listPacksInDirectory(root);
+				const loadedPacks = await Promise.all(
+					packEntries.map((entry) => fileSystem.loadPackFromDisk(entry.handle))
+				);
+
+				// Update store
+				localPacksStore.clear();
+				loadedPacks.forEach((p) => localPacksStore.addPack(p));
+
+				// If we found packs, maybe load the first one?
+				// Or just show them in the list?
+				// The current modal only shows IndexedDB packs.
+				// We should probably add a "Local Packs" section to this modal too.
+			}
+		} catch (err) {
+			console.error('Failed to open local folder:', err);
+			alert('Could not open local folder.');
+		}
+	}
 </script>
 
 <dialog
@@ -137,6 +164,26 @@
 	</div>
 
 	<div class="pack-list">
+		{#if localPacksStore.packs.length > 0}
+			<div class="section-header">Local Packs</div>
+			{#each localPacksStore.packs as pack (pack.id)}
+				<div class="pack-item" class:active={builder.pack.id === pack.id}>
+					<div class="pack-info">
+						<h3>{pack.name}</h3>
+						{#if pack.description}<p>{pack.description}</p>{/if}
+					</div>
+					<div class="pack-actions">
+						{#if builder.pack.id !== pack.id}
+							<button class="btn-icon" onclick={() => load(pack.id)} title="Load Pack">
+								<FolderOpen size={20} />
+							</button>
+						{/if}
+					</div>
+				</div>
+			{/each}
+			<div class="section-header">Saved Packs</div>
+		{/if}
+
 		{#each packs as pack (pack.id)}
 			<div class="pack-item" class:active={builder.pack.id === pack.id}>
 				{#if editingPackId === pack.id}
@@ -209,6 +256,11 @@
 	</div>
 
 	<div class="modal-footer">
+		{#if isFileSystemSupported}
+			<button class="btn-secondary" onclick={handleOpenLocalFolder}>
+				<FolderOpen size={18} /> Open Local Folder
+			</button>
+		{/if}
 		<button class="btn-primary" onclick={createNew}>
 			<Plus size={18} /> New Pack
 		</button>
@@ -261,6 +313,16 @@
 		gap: var(--size-3);
 		max-height: 60vh;
 		overflow-y: auto;
+	}
+
+	.section-header {
+		font-size: var(--font-size-1);
+		font-weight: bold;
+		color: var(--text-3);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: var(--size-2);
+		margin-top: var(--size-2);
 	}
 
 	.pack-item {
@@ -331,7 +393,8 @@
 		padding: var(--size-3) var(--size-4);
 		border-top: 1px solid var(--surface-3);
 		display: flex;
-		justify-content: flex-end;
+		justify-content: space-between;
+		align-items: center;
 	}
 
 	.btn-primary {
@@ -345,6 +408,28 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
+	}
+
+	.btn-primary:hover {
+		background-color: var(--brand-dark);
+	}
+
+	.btn-secondary {
+		background-color: var(--surface-2);
+		color: var(--text-1);
+		border: 1px solid var(--surface-3);
+		padding: var(--size-2) var(--size-4);
+		border-radius: var(--radius-2);
+		font-weight: bold;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+	}
+
+	.btn-secondary:hover {
+		background-color: var(--surface-3);
+		border-color: var(--text-2);
 	}
 
 	.empty-state {

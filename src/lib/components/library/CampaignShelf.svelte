@@ -7,9 +7,10 @@
 		packs: LevelPack[];
 		progress: UserProgress;
 		onPackSelect: (packId: string) => void;
+		onSavePack?: (pack: LevelPack) => void;
 	}
 
-	let { packs, progress, onPackSelect }: Props = $props();
+	let { packs, progress, onPackSelect, onSavePack }: Props = $props();
 </script>
 
 <div class="campaign-shelf">
@@ -20,7 +21,12 @@
 
 	<div class="pack-grid">
 		{#each packs as pack (pack.id)}
-			<PackCard {pack} progress={progress.packs[pack.id]} onClick={() => onPackSelect(pack.id)} />
+			<PackCard
+				{pack}
+				progress={progress.packs[pack.id]}
+				onClick={() => onPackSelect(pack.id)}
+				onSave={onSavePack ? () => onSavePack(pack) : undefined}
+			/>
 		{/each}
 	</div>
 </div>

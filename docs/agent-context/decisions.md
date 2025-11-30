@@ -299,3 +299,33 @@
 - We spent significant time cleaning up the codebase.
 - The CI pipeline is now stricter, preventing future regressions.
 - We use `void goto(...)` to explicitly acknowledge that we are not awaiting navigation in certain fire-and-forget contexts.
+
+## Phase 15: Advanced Builder Features
+
+### 36. File System Access API (Project Fugu)
+
+**Decision:** Use the File System Access API (`showDirectoryPicker`) for local file integration instead of the legacy `<input type="file">`.
+**Context:** We want to allow users to "Link" a pack to a folder on their disk, enabling a true "IDE-like" experience where changes sync automatically. The legacy API only allows one-time imports.
+**Consequence:**
+
+- We can persist file handles in IndexedDB.
+- We need to handle permission prompts gracefully (browser security model).
+- This feature is only available in secure contexts (HTTPS/localhost) and modern browsers.
+
+### 37. Inline Status Feedback
+
+**Decision:** Replace global toasts and blocking alerts with inline, contextual status messages (e.g., "Saved!" next to the button).
+**Context:** During the "Link to Disk" implementation, we found that frequent toasts for auto-sync events were distracting, and alerts were intrusive.
+**Consequence:**
+
+- Created a lightweight, local state pattern for status messages in `BuilderToolbar` and `PackEditor`.
+- Improved immersion by keeping feedback localized to the user's locus of attention.
+
+### 38. Function Definition in Builder
+
+**Decision:** Treat Functions as a separate "Editing Context" within the Builder, similar to how they work in the Game.
+**Context:** We needed a way to define the *body* of a function. Opening a modal would disconnect the user from the tray.
+**Consequence:**
+
+- Reused the `editingContext` logic from the GameModel.
+- The Builder Tray switches tabs/context when editing a function, just like the Game Tray.

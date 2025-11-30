@@ -20,9 +20,11 @@
 		Leaf,
 		ArrowLeft,
 		Grid3x3,
-		Triangle
+		Triangle,
+		Link
 	} from 'lucide-svelte';
 	import PackManagerModal from './PackManagerModal.svelte';
+	import { fade } from 'svelte/transition';
 
 	interface Props {
 		builder: BuilderModel;
@@ -33,8 +35,18 @@
 
 	let { builder, showSettings, onToggleSettings, onExit }: Props = $props();
 
-	let pickerPopover = $state<HTMLElement>();
 	let showPackManager = $state(false);
+	let showTerrainPicker = $state(false);
+	let statusMessage = $state<string | null>(null);
+	let statusType = $state<'success' | 'error'>('success');
+
+	function showStatus(msg: string, type: 'success' | 'error' = 'success') {
+		statusMessage = msg;
+		statusType = type;
+		setTimeout(() => {
+			statusMessage = null;
+		}, 3000);
+	}
 
 	// Terrain tools (grouped)
 	const standardTerrainTools: {
@@ -52,7 +64,13 @@
 		{ id: 'sand', tool: { type: 'terrain', value: 'sand' }, icon: Sun, label: 'Sand' },
 		{ id: 'snow', tool: { type: 'terrain', value: 'snow' }, icon: Snowflake, label: 'Snow' },
 		{ id: 'dirt', tool: { type: 'terrain', value: 'dirt' }, icon: Mountain, label: 'Dirt' },
-		{ id: 'spikes', tool: { type: 'terrain', value: 'spikes' }, icon: Triangle, label: 'Spikes', color: 'var(--red-7)' }
+		{
+			id: 'spikes',
+			tool: { type: 'terrain', value: 'spikes' },
+			icon: Triangle,
+			label: 'Spikes',
+			color: 'var(--red-7)'
+		}
 	];
 
 	let terrainTools = $derived.by(() => {
@@ -113,12 +131,12 @@
 	function selectTool(tool: BuilderTool) {
 		builder.activeTool = tool;
 		builder.selectedActor = null;
-		pickerPopover?.hidePopover();
+		showTerrainPicker = false;
 	}
 
 	function handleMainPickerClick() {
 		if (isToolActive(activeTerrainTool.tool)) {
-			pickerPopover?.togglePopover();
+			showTerrainPicker = !showTerrainPicker;
 		} else {
 			selectTool(activeTerrainTool.tool);
 		}
@@ -147,9 +165,27 @@
 	async function savePack() {
 		try {
 			await builder.save();
-			// Optional: toast notification
+			showStatus('Saved!');
 		} catch {
-			alert('Failed to save pack');
+			showStatus('Failed to save', 'error');
+		}
+	}
+
+	async function handleLink() {
+		try {
+			await builder.linkToDisk();
+			showStatus('Linked!');
+		} catch {
+			showStatus('Failed to link', 'error');
+		}
+	}
+
+	async function handleReconnect() {
+		try {
+			await builder.reconnectDisk();
+			showStatus('Reconnected!');
+		} catch {
+			showStatus('Failed to reconnect', 'error');
 		}
 	}
 </script>
@@ -173,6 +209,36 @@
 			<button class="action-btn" onclick={savePack} title="Save Pack">
 				<Save size={20} />
 			</button>
+
+			{#if builder.isLinked}
+				{#if builder.needsPermission}
+					<button
+						class="action-btn warning"
+						onclick={handleReconnect}
+						title="Permission Needed - Click to Reconnect"
+					>
+						<Link size={20} />
+					</button>
+				{:else}
+					<button
+						class="action-btn success"
+						onclick={handleLink}
+						title="Linked to Disk (Click to Change)"
+					>
+						<Link size={20} />
+					</button>
+				{/if}
+			{:else}
+				<button class="action-btn" onclick={handleLink} title="Link to Disk">
+					<Link size={20} />
+				</button>
+			{/if}
+
+			{#if statusMessage}
+				<span class="status-msg {statusType}" transition:fade={{ duration: 200 }}>
+					{statusMessage}
+				</span>
+			{/if}
 
 			<div class="separator"></div>
 
@@ -207,11 +273,7 @@
 			<div class="separator"></div>
 			<div class="tools-group">
 				<!-- Terrain Picker -->
-				<div
-					class="tool-picker-container"
-					class:active={isToolActive(activeTerrainTool.tool)}
-					style:anchor-name="--terrain-trigger"
-				>
+				<div class="tool-picker-container" class:active={isToolActive(activeTerrainTool.tool)}>
 					<button
 						class="tool-btn picker-btn"
 						onclick={handleMainPickerClick}
@@ -220,28 +282,25 @@
 						<ActiveIcon size={20} />
 						<span class="tool-label">{activeTerrainTool.label}</span>
 					</button>
-					<button class="picker-trigger" popovertarget="terrain-picker-popover">
+					<button class="picker-trigger" onclick={() => (showTerrainPicker = !showTerrainPicker)}>
 						<ChevronDown size={14} />
 					</button>
 
-					<div
-						id="terrain-picker-popover"
-						bind:this={pickerPopover}
-						popover="auto"
-						class="tool-popover"
-					>
-						{#each terrainTools as { id, tool, icon: Icon, label, color } (id)}
-							<button
-								class="tool-option"
-								class:active={isToolActive(tool)}
-								onclick={() => selectTool(tool)}
-								style:--tool-color={color}
-							>
-								<Icon size={20} />
-								<span>{label}</span>
-							</button>
-						{/each}
-					</div>
+					{#if showTerrainPicker}
+						<div class="tool-popover">
+							{#each terrainTools as { id, tool, icon: Icon, label, color } (id)}
+								<button
+									class="tool-option"
+									class:active={isToolActive(tool)}
+									onclick={() => selectTool(tool)}
+									style:--tool-color={color}
+								>
+									<Icon size={20} />
+									<span>{label}</span>
+								</button>
+							{/each}
+						</div>
+					{/if}
 				</div>
 
 				<!-- Special Tools -->
@@ -331,6 +390,14 @@
 	.action-btn.active {
 		background-color: var(--surface-3);
 		color: var(--brand);
+	}
+
+	.action-btn.warning {
+		color: var(--orange-5);
+	}
+
+	.action-btn.success {
+		color: var(--green-5);
 	}
 
 	.separator {
@@ -448,10 +515,10 @@
 		margin: 0;
 		inset: auto;
 
-		position: fixed;
-		position-anchor: --terrain-trigger;
-		top: anchor(bottom);
-		left: anchor(left);
+		/* Absolute positioning relative to container */
+		position: absolute;
+		top: 100%;
+		left: 0;
 		margin-top: var(--size-2);
 
 		background-color: var(--surface-1);
@@ -459,10 +526,11 @@
 		border-radius: var(--radius-2);
 		box-shadow: var(--shadow-3);
 		padding: var(--size-1);
-		display: none;
+		display: flex;
 		flex-direction: column;
 		gap: var(--size-1);
 		min-width: 150px;
+		z-index: 1000;
 	}
 
 	.tool-popover:popover-open {
@@ -531,5 +599,31 @@
 		border-radius: var(--radius-2);
 		font-size: var(--font-size-1);
 		max-width: 150px;
+	}
+
+	.status-msg {
+		font-size: var(--font-size-1);
+		font-weight: 600;
+		margin-left: var(--size-2);
+		animation: fadeIn 0.2s ease-out;
+	}
+
+	.status-msg.success {
+		color: var(--green-6);
+	}
+
+	.status-msg.error {
+		color: var(--red-6);
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(2px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 </style>

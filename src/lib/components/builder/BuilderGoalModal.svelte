@@ -143,7 +143,9 @@
 							>
 								<currentBiome.icon size={16} />
 								<span>{currentBiome.label}</span>
-								<ChevronDown size={14} class="chevron" />
+								<span class="chevron">
+									<ChevronDown size={14} />
+								</span>
 							</button>
 
 							{#if showBiomePicker}
@@ -259,28 +261,6 @@
 		flex-direction: column;
 		gap: var(--size-4);
 		width: 100%;
-	}
-
-	.select-wrapper {
-		position: relative;
-		display: flex;
-		align-items: center;
-	}
-
-	.select-wrapper select {
-		appearance: none;
-		background-color: var(--surface-2);
-		border: 1px solid var(--surface-3);
-		padding: var(--size-1) var(--size-4) var(--size-1) var(--size-2);
-		border-radius: var(--radius-2);
-		color: var(--text-1);
-		font-size: var(--font-size-1);
-		cursor: pointer;
-		min-width: 120px;
-	}
-
-	.select-wrapper select:hover {
-		background-color: var(--surface-3);
 	}
 
 	/* Difficulty Badge Style */
@@ -424,11 +404,6 @@
 		outline: none;
 	}
 
-	.unit {
-		color: var(--text-3);
-		font-size: var(--font-size-0);
-	}
-
 	/* Pickers */
 	.picker-wrapper {
 		position: relative;
@@ -460,6 +435,7 @@
 	.chevron {
 		margin-left: auto;
 		color: var(--text-3);
+		display: flex;
 	}
 
 	.popover {
@@ -547,7 +523,7 @@
 	}
 
 	.btn-primary:hover {
-		background-color: var(--indigo-6);
+		background-color: var(--brand-dark);
 	}
 
 	.btn-primary:active {

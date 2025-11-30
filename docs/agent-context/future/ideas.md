@@ -12,6 +12,7 @@
   - **Safe Cloning**: A utility to safely `structuredClone` Svelte 5 state proxies (using `$state.snapshot`).
   - **Debug Logging**: A consistent way to log state changes and errors, possibly with a visual overlay for the "Architect" mode.
   - **Error Boundaries**: Better handling of runtime errors in user-generated content (e.g., malformed levels).
+  - **Shared Component Logic**: Unify logic that has many implementations into shared components (perhaps with parameters) to reduce duplication and improve maintainability.
 
 ## Improvements Suggested by the Kids
 

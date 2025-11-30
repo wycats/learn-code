@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { CampaignService } from '$lib/game/campaigns';
+	import { fileSystem } from '$lib/services/file-system';
 	import type { LevelPack, LevelDefinition } from '$lib/game/schema';
 	import PackMetadataEditor from '$lib/components/builder/campaign/PackMetadataEditor.svelte';
 	import LevelOrganizer from '$lib/components/builder/campaign/LevelOrganizer.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { ArrowLeft, Trash2, Undo, Redo } from 'lucide-svelte';
+	import { ArrowLeft, Trash2, Undo, Redo, Save, Link } from 'lucide-svelte';
 	import ConfirmModal from '$lib/components/common/ConfirmModal.svelte';
+	import { fade } from 'svelte/transition';
 
 	let pack = $state<LevelPack | null>(null);
 	let loading = $state(true);
@@ -15,12 +17,25 @@
 	let showDeleteConfirm = $state(false);
 	let history = $state<LevelPack[]>([]);
 	let future = $state<LevelPack[]>([]);
+	let isFileSystemSupported = fileSystem.isSupported;
+	let isLinked = $state(false);
+	let needsPermission = $state(false);
+	let statusMessage = $state<string | null>(null);
+	let statusType = $state<'success' | 'error'>('success');
 
 	const packId = $derived($page.params.packId ?? '');
 
 	onMount(async () => {
 		await loadPack();
 	});
+
+	function showStatus(msg: string, type: 'success' | 'error' = 'success') {
+		statusMessage = msg;
+		statusType = type;
+		setTimeout(() => {
+			statusMessage = null;
+		}, 3000);
+	}
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.ctrlKey || e.metaKey) {
@@ -34,6 +49,9 @@
 			} else if (e.key === 'y') {
 				e.preventDefault();
 				handleRedo();
+			} else if (e.key === 's') {
+				e.preventDefault();
+				handleSaveToDisk();
 			}
 		}
 	}
@@ -45,12 +63,79 @@
 			pack = await CampaignService.get(packId);
 			if (!pack) {
 				error = 'Pack not found';
+			} else {
+				// Check if linked
+				isLinked = await fileSystem.isPackLinked(pack.id);
+				if (isLinked) {
+					// Try to load from disk to verify permission/sync
+					try {
+						const diskPack = await fileSystem.loadLinkedPack(pack.id);
+						if (diskPack) {
+							// Optional: Ask user if they want to use the disk version if it differs?
+							// For now, we assume the local DB is the source of truth unless explicitly loaded from disk.
+							// But we might want to sync TO disk to ensure consistency.
+						}
+					} catch (err) {
+						console.warn('Linked pack needs permission:', err);
+						needsPermission = true;
+					}
+				}
 			}
 		} catch (e) {
 			console.error(e);
 			error = 'Failed to load pack';
 		} finally {
 			loading = false;
+		}
+	}
+
+	async function handleLinkToDisk() {
+		if (!pack) return;
+		try {
+			await fileSystem.linkPackToDisk(pack.id);
+			isLinked = true;
+			needsPermission = false;
+			// Sync immediately
+			await fileSystem.syncPackToDisk(pack.id, $state.snapshot(pack));
+			showStatus('Linked!');
+		} catch (err) {
+			console.error('Failed to link pack:', err);
+			showStatus('Failed to link', 'error');
+		}
+	}
+
+	async function handleReconnectDisk() {
+		if (!pack || !isLinked) return;
+		try {
+			await fileSystem.loadLinkedPack(pack.id);
+			needsPermission = false;
+			showStatus('Reconnected!');
+		} catch {
+			showStatus('Failed to reconnect', 'error');
+		}
+	}
+
+	async function handleSaveToDisk() {
+		if (!pack) return;
+		try {
+			// If linked, sync to the linked folder
+			if (isLinked) {
+				try {
+					await fileSystem.syncPackToDisk(pack.id, $state.snapshot(pack));
+					showStatus('Synced!');
+				} catch (err) {
+					console.warn('Failed to sync to disk:', err);
+					needsPermission = true;
+					showStatus('Sync failed', 'error');
+				}
+			} else {
+				// Otherwise, just save as a file download (or new handle)
+				await fileSystem.savePackToDisk($state.snapshot(pack));
+				showStatus('Saved!');
+			}
+		} catch (err) {
+			console.error(err);
+			showStatus('Save failed', 'error');
 		}
 	}
 
@@ -83,6 +168,11 @@
 		// Restore
 		if (previous) {
 			pack = await CampaignService.update(previous.id, previous);
+			if (isLinked && !needsPermission && pack) {
+				fileSystem
+					.syncPackToDisk(pack.id, $state.snapshot(pack))
+					.catch(() => (needsPermission = true));
+			}
 		}
 	}
 
@@ -100,6 +190,11 @@
 		// Restore
 		if (next) {
 			pack = await CampaignService.update(next.id, next);
+			if (isLinked && !needsPermission && pack) {
+				fileSystem
+					.syncPackToDisk(pack.id, $state.snapshot(pack))
+					.catch(() => (needsPermission = true));
+			}
 		}
 	}
 
@@ -107,12 +202,22 @@
 		if (!pack) return;
 		saveToHistory();
 		pack = await CampaignService.update(pack.id, data);
+		if (isLinked && !needsPermission && pack) {
+			fileSystem
+				.syncPackToDisk(pack.id, $state.snapshot(pack))
+				.catch(() => (needsPermission = true));
+		}
 	}
 
 	async function handleLevelsUpdate(levels: LevelDefinition[]) {
 		if (!pack) return;
 		saveToHistory();
 		pack = await CampaignService.update(pack.id, { levels });
+		if (isLinked && !needsPermission && pack) {
+			fileSystem
+				.syncPackToDisk(pack.id, $state.snapshot(pack))
+				.catch(() => (needsPermission = true));
+		}
 	}
 
 	function handleEditLevel(levelId: string) {
@@ -170,6 +275,40 @@
 				>
 					<Redo size={20} />
 				</button>
+				{#if isFileSystemSupported}
+					<div class="divider-vertical"></div>
+					{#if isLinked}
+						{#if needsPermission}
+							<button
+								class="action-btn warning"
+								onclick={handleReconnectDisk}
+								title="Permission Needed - Click to Reconnect"
+							>
+								<Link size={20} />
+							</button>
+						{:else}
+							<button
+								class="action-btn success"
+								onclick={handleLinkToDisk}
+								title="Linked to Disk (Click to Change)"
+							>
+								<Link size={20} />
+							</button>
+						{/if}
+					{:else}
+						<button class="action-btn" onclick={handleLinkToDisk} title="Link to Disk">
+							<Link size={20} />
+						</button>
+					{/if}
+					<button class="action-btn" onclick={handleSaveToDisk} title="Save to Disk (Ctrl+S)">
+						<Save size={20} />
+					</button>
+					{#if statusMessage}
+						<span class="status-msg {statusType}" transition:fade={{ duration: 200 }}>
+							{statusMessage}
+						</span>
+					{/if}
+				{/if}
 			</div>
 			<button class="delete-btn" onclick={() => (showDeleteConfirm = true)} title="Delete Pack">
 				<Trash2 size={20} />
@@ -269,6 +408,19 @@
 		color: var(--text-1);
 	}
 
+	.action-btn.active {
+		background-color: var(--surface-3);
+		color: var(--brand);
+	}
+
+	.action-btn.warning {
+		color: var(--orange-5);
+	}
+
+	.action-btn.success {
+		color: var(--green-5);
+	}
+
 	.action-btn:disabled {
 		opacity: 0.3;
 		cursor: not-allowed;
@@ -327,5 +479,31 @@
 
 	.error {
 		color: var(--red-7);
+	}
+
+	.status-msg {
+		font-size: var(--font-size-1);
+		font-weight: 600;
+		margin-left: var(--size-2);
+		animation: fadeIn 0.2s ease-out;
+	}
+
+	.status-msg.success {
+		color: var(--green-6);
+	}
+
+	.status-msg.error {
+		color: var(--red-6);
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(2px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 </style>

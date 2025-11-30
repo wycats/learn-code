@@ -194,3 +194,30 @@ Addressed high-priority friction points identified in the "Fresh Eyes" review, f
 - **Builder UI Cleanup**: Refactored `BuilderTray` into a tabbed interface (Terrain, Actors, Logic, Story) and added the "Grid" tool.
 - **Navigation Consistency**: Standardized "Back" button behavior and iconography.
 - **Story Mode Fix**: Fixed target selection interaction and added visual feedback for highlighting tools.
+
+## Phase 15: Advanced Builder Features (Completed)
+
+**Date:** November 29, 2025
+
+**Summary:**
+Empowered "The Architect" with advanced tools to create complex, rich, and shareable learning experiences. Introduced "Functions" (Magic Blocks) into the Builder, added a new "Spikes" hazard mechanic, and polished the UI with difficulty indicators, selectable icons, and speaker avatars. Crucially, enabled local file system access via the File System Access API, allowing users to "Link" packs to their local disk for seamless syncing and backup.
+
+**Key Deliverables:**
+
+- **Functions in Builder**:
+  - `FunctionManager` and `FunctionEditor` UI components.
+  - Updated `BuilderModel` to manage function definitions.
+  - Integration with `StackInterpreter` for executing user-defined functions.
+- **Hazards (Spikes)**:
+  - Added `spikes` cell type and rendering.
+  - Updated interpreter logic to handle hazard collisions (death state).
+  - Added Spikes tool to the Builder palette.
+- **Local File System Integration**:
+  - `FileSystemService` wrapping the File System Access API.
+  - "Link to Disk" feature for persistent syncing of packs.
+  - "Open Local Folder" in Library for loading external packs.
+  - Inline status feedback (replacing alerts/toasts) for file operations.
+- **UI Polish (Jonas's Wishlist)**:
+  - Difficulty indicators (Green/Yellow/Red dots) on Level Map.
+  - `IconPicker` for custom level/pack icons.
+  - Avatar selection support in Story Editor.

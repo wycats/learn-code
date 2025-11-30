@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { getPack } from '$lib/game/packs';
+	import { localPacksStore } from '$lib/game/local-packs.svelte';
 	import { ProgressService } from '$lib/game/progress';
 	import LevelMap from '$lib/components/library/LevelMap.svelte';
 	import { goto } from '$app/navigation';
@@ -8,7 +9,7 @@
 	import { onMount } from 'svelte';
 
 	const packId = $derived($page.params.packId ?? '');
-	const pack = $derived(getPack(packId));
+	const pack = $derived(getPack(packId) || localPacksStore.getPack(packId));
 	let progress = $state(ProgressService.load());
 
 	function handleLevelSelect(levelId: string) {

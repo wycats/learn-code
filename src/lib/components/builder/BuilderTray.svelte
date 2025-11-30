@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { BuilderModel, BuilderTool } from '$lib/game/builder-model.svelte';
-	import type { BlockType } from '$lib/game/types';
+	import type { BlockType, CellType } from '$lib/game/types';
 	import type { TileDefinition } from '$lib/game/schema';
 	import BlockComponent from '$lib/components/game/Block.svelte';
+	import Cell from '$lib/components/game/Cell.svelte';
 	import HintEditor from './HintEditor.svelte';
 	import TileEditorModal from './TileEditorModal.svelte';
 	import FunctionManager from './FunctionManager.svelte';
-	import { AVATAR_ICONS } from '$lib/game/icons';
 
 	import {
 		Infinity as InfinityIcon,
@@ -16,16 +16,7 @@
 		Plus,
 		Pencil,
 		Trash2,
-		Box,
-		Leaf,
-		Trees,
-		Sun,
-		Snowflake,
-		Mountain,
-		Eraser,
-		Grid3x3,
-		FunctionSquare,
-		Triangle
+		FunctionSquare
 	} from 'lucide-svelte';
 	import { fade, scale } from 'svelte/transition';
 
@@ -49,7 +40,7 @@
 		id: string;
 		value: string;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		icon: any;
+		icon?: any;
 		label: string;
 		type?: string;
 		color?: string;
@@ -58,30 +49,22 @@
 	};
 
 	const standardTerrainTools: TerrainTool[] = [
-		{ id: 'wall', value: 'wall', icon: Box, label: 'Wall' },
-		{ id: 'water', value: 'water', icon: Box, label: 'Water' },
-		{ id: 'grass', value: 'grass', icon: Leaf, label: 'Grass' },
-		{ id: 'forest', value: 'forest', icon: Trees, label: 'Forest' },
-		{ id: 'sand', value: 'sand', icon: Sun, label: 'Sand' },
-		{ id: 'snow', value: 'snow', icon: Snowflake, label: 'Snow' },
-		{ id: 'dirt', value: 'dirt', icon: Mountain, label: 'Dirt' },
-		{ id: 'spikes', value: 'spikes', icon: Triangle, label: 'Spikes', color: 'var(--red-7)' },
-		{ id: 'erase', value: 'erase', icon: Eraser, label: 'Erase', type: 'erase' },
-		{ id: 'grid', value: 'grid', icon: Grid3x3, label: 'Grid', type: 'grid' }
+		{ id: 'wall', value: 'wall', label: 'Wall' },
+		{ id: 'water', value: 'water', label: 'Water' },
+		{ id: 'grass', value: 'grass', label: 'Grass' },
+		{ id: 'forest', value: 'forest', label: 'Forest' },
+		{ id: 'sand', value: 'sand', label: 'Sand' },
+		{ id: 'snow', value: 'snow', label: 'Snow' },
+		{ id: 'dirt', value: 'dirt', label: 'Dirt' },
+		{ id: 'spikes', value: 'spikes', label: 'Spikes', color: 'var(--red-7)' }
 	];
 
 	let terrainTools = $derived.by(() => {
 		const customTools: TerrainTool[] = Object.values(builder.level.customTiles || {}).map(
 			(tile) => {
-				const Icon =
-					tile.visuals.decal && tile.visuals.decal in AVATAR_ICONS
-						? AVATAR_ICONS[tile.visuals.decal as keyof typeof AVATAR_ICONS]
-						: Box;
-
 				return {
 					id: tile.id,
 					value: tile.id,
-					icon: Icon,
 					label: tile.name,
 					color: tile.visuals.color,
 					isCustom: true,
@@ -259,7 +242,6 @@
 			<div class="terrain-section" transition:fade={{ duration: 200 }}>
 				<div class="tools-grid">
 					{#each terrainTools as tool (tool.id)}
-						{@const Icon = tool.icon}
 						<div class="tool-wrapper">
 							<button
 								class="tool-btn"
@@ -269,7 +251,9 @@
 									selectTool({ type: tool.type || 'terrain', value: tool.value } as BuilderTool)}
 								style:--tool-color={tool.color}
 							>
-								<Icon size={24} />
+								<div class="cell-preview">
+									<Cell type={tool.value as CellType} customTile={tool.tileDef} />
+								</div>
 								<span class="tool-label">{tool.label}</span>
 							</button>
 							{#if tool.isCustom}
@@ -488,6 +472,15 @@
 		cursor: pointer;
 		color: var(--tool-color, var(--text-2));
 		transition: all 0.2s;
+		padding: var(--size-2);
+	}
+
+	.cell-preview {
+		width: 48px;
+		height: 48px;
+		border-radius: var(--radius-2);
+		overflow: hidden;
+		box-shadow: var(--shadow-1);
 	}
 
 	.tool-btn:hover {

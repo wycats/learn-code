@@ -1,6 +1,7 @@
 import { GameModel } from './model.svelte';
 import type { LevelDefinition, CellType, GridPosition, LevelPack, Block } from './types';
 import { createDefaultPack, savePack, loadPack, listPacks } from './persistence';
+import { fileSystem } from '$lib/services/file-system';
 
 export type BuilderTool =
 	| { type: 'terrain'; value: CellType }
@@ -38,6 +39,8 @@ export class BuilderModel {
 
 	// Editor State
 	mode = $state<'edit' | 'test' | 'story'>('edit');
+	isLinked = $state(false);
+	needsPermission = $state(false);
 	activeTool = $state<BuilderTool>({ type: 'terrain', value: 'wall' });
 	activeSegmentId = $state<string | null>(null);
 	selectedActor = $state<'start' | 'goal' | null>(null);
@@ -103,7 +106,9 @@ export class BuilderModel {
 		}
 
 		this.activeLevelId = this.pack.levels[0].id;
-		this.currentProgram = this.level.initialProgram ? $state.snapshot(this.level.initialProgram) : [];
+		this.currentProgram = this.level.initialProgram
+			? $state.snapshot(this.level.initialProgram)
+			: [];
 		this.syncGame();
 		this.restoreActiveSegment();
 
@@ -130,16 +135,9 @@ export class BuilderModel {
 		// Try to load last active pack
 		const lastId = localStorage.getItem('lastActivePackId');
 		if (lastId) {
-			const pack = await loadPack(lastId);
-			if (pack) {
-				this.pack = pack;
-				if (this.pack.levels.length > 0) {
-					this.activeLevelId = this.pack.levels[0].id;
-				}
-				this.syncGame();
-				this.restoreActiveSegment();
-				return;
-			}
+			// We use this.load() which handles linked packs
+			await this.load(lastId);
+			if (this.pack.id === lastId) return; // Success
 		}
 
 		// Fallback: Load the first available pack
@@ -150,13 +148,32 @@ export class BuilderModel {
 		// Else keep the default new pack created in constructor
 	}
 
+	async linkToDisk() {
+		try {
+			await fileSystem.linkPackToDisk(this.pack.id);
+			this.isLinked = true;
+			this.needsPermission = false;
+			// After linking, we should probably save the current state to disk immediately
+			await fileSystem.syncPackToDisk(this.pack.id, $state.snapshot(this.pack));
+		} catch (err) {
+			console.error('Failed to link pack:', err);
+			throw err;
+		}
+	}
+
 	debouncedSave(packData: LevelPack) {
 		if (this.saveTimeout) clearTimeout(this.saveTimeout);
 		this.saveTimeout = setTimeout(() => {
 			savePack(packData)
-				.then(() => {
+				.then(async () => {
 					if (typeof localStorage !== 'undefined') {
 						localStorage.setItem('lastActivePackId', packData.id);
+					}
+					// Sync to disk
+					try {
+						await fileSystem.syncPackToDisk(packData.id, packData);
+					} catch (err) {
+						console.warn('Failed to sync to disk:', err);
 					}
 				})
 				.catch((err) => console.error('Autosave failed', err));
@@ -166,14 +183,42 @@ export class BuilderModel {
 	async save() {
 		// Manual save (immediate)
 		if (this.saveTimeout) clearTimeout(this.saveTimeout);
-		await savePack($state.snapshot(this.pack));
+		const packData = $state.snapshot(this.pack);
+		await savePack(packData);
+
+		// Try to sync to disk if linked
+		try {
+			await fileSystem.syncPackToDisk(packData.id, packData);
+		} catch (err) {
+			console.warn('Failed to sync to disk:', err);
+			throw err;
+		}
+
 		if (typeof localStorage !== 'undefined') {
 			localStorage.setItem('lastActivePackId', this.pack.id);
 		}
 	}
 
 	async load(packId: string) {
-		const loaded = await loadPack(packId);
+		// Check if linked
+		this.isLinked = await fileSystem.isPackLinked(packId);
+		this.needsPermission = false;
+
+		// Try to load from disk first if linked
+		let loaded: LevelPack | null = null;
+		if (this.isLinked) {
+			try {
+				loaded = await fileSystem.loadLinkedPack(packId);
+			} catch (err) {
+				console.warn('Failed to load linked pack from disk (likely permission):', err);
+				this.needsPermission = true;
+			}
+		}
+
+		if (!loaded) {
+			loaded = await loadPack(packId);
+		}
+
 		if (loaded) {
 			// Ensure all segments have IDs (migration/fix)
 			loaded.levels.forEach((level) => {
@@ -208,13 +253,26 @@ export class BuilderModel {
 				this.pack.levels.push(defaultLevel);
 			}
 			this.activeLevelId = this.pack.levels[0].id;
-			this.currentProgram = this.level.initialProgram ? $state.snapshot(this.level.initialProgram) : [];
+			this.currentProgram = this.level.initialProgram
+				? $state.snapshot(this.level.initialProgram)
+				: [];
 			this.syncGame();
 			this.restoreActiveSegment();
 
 			if (typeof localStorage !== 'undefined') {
 				localStorage.setItem('lastActivePackId', loaded.id);
 			}
+		}
+	}
+
+	async reconnectDisk() {
+		if (!this.isLinked) return;
+		// This will trigger permission prompt (must be called from user gesture)
+		const loaded = await fileSystem.loadLinkedPack(this.pack.id);
+		if (loaded) {
+			this.pack = loaded;
+			this.needsPermission = false;
+			this.syncGame();
 		}
 	}
 
@@ -248,7 +306,9 @@ export class BuilderModel {
 		const nextLevel = this.pack.levels.find((l) => l.id === levelId);
 		if (nextLevel) {
 			this.activeLevelId = nextLevel.id;
-			this.currentProgram = this.level.initialProgram ? $state.snapshot(this.level.initialProgram) : [];
+			this.currentProgram = this.level.initialProgram
+				? $state.snapshot(this.level.initialProgram)
+				: [];
 			this.syncGame();
 			this.restoreActiveSegment();
 		}

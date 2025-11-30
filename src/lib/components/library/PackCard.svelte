@@ -1,15 +1,17 @@
 <script lang="ts">
 	import type { LevelPack } from '$lib/game/schema';
 	import type { PackProgress } from '$lib/game/progress';
-	import { Book, Flame } from 'lucide-svelte';
+	import { Book, Flame, Save } from 'lucide-svelte';
+	import { fileSystem } from '$lib/services/file-system';
 
 	interface Props {
 		pack: LevelPack;
 		progress?: PackProgress;
 		onClick: () => void;
+		onSave?: () => void;
 	}
 
-	let { pack, progress, onClick }: Props = $props();
+	let { pack, progress, onClick, onSave }: Props = $props();
 
 	const completedCount = $derived(
 		progress ? Object.values(progress.levels).filter((l) => l.completed).length : 0
@@ -18,9 +20,17 @@
 	const percent = $derived(Math.round((completedCount / totalLevels) * 100));
 
 	const Icon = $derived(pack.coverImage === 'flame' ? Flame : Book);
+	const isFileSystemSupported = fileSystem.isSupported;
+
+	function handleSave(e: MouseEvent) {
+		e.stopPropagation();
+		onSave?.();
+	}
 </script>
 
-<button class="pack-card" onclick={onClick}>
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div class="pack-card" onclick={onClick}>
 	<div class="cover" data-cover={pack.coverImage || 'book'}>
 		<div class="icon-wrapper">
 			<Icon size={48} strokeWidth={1.5} />
@@ -28,6 +38,11 @@
 		<div class="difficulty-badge" data-difficulty={pack.difficulty}>
 			{pack.difficulty}
 		</div>
+		{#if isFileSystemSupported && onSave}
+			<button class="save-btn" onclick={handleSave} title="Save to Disk">
+				<Save size={16} />
+			</button>
+		{/if}
 	</div>
 
 	<div class="content">
@@ -49,7 +64,7 @@
 			</div>
 		{/if}
 	</div>
-</button>
+</div>
 
 <style>
 	.pack-card {
@@ -104,6 +119,29 @@
 		background-color: rgba(255, 255, 255, 0.9);
 		color: var(--text-1);
 		box-shadow: var(--shadow-1);
+	}
+
+	.save-btn {
+		position: absolute;
+		top: var(--size-2);
+		left: var(--size-2);
+		background-color: rgba(255, 255, 255, 0.9);
+		color: var(--text-2);
+		border: none;
+		border-radius: 50%;
+		width: 28px;
+		height: 28px;
+		display: grid;
+		place-items: center;
+		cursor: pointer;
+		box-shadow: var(--shadow-1);
+		transition: all 0.2s;
+	}
+
+	.save-btn:hover {
+		background-color: white;
+		color: var(--brand);
+		transform: scale(1.1);
 	}
 
 	.content {

@@ -50,9 +50,13 @@
 				{:else}
 					<span class="level-number">{i + 1}</span>
 				{/if}
-				
+
 				{#if unlocked}
-					<div class="difficulty-dot" data-difficulty={level.difficulty || 'beginner'} title={level.difficulty || 'beginner'}></div>
+					<div
+						class="difficulty-dot"
+						data-difficulty={level.difficulty || 'beginner'}
+						title={level.difficulty || 'beginner'}
+					></div>
 				{/if}
 			</div>
 			<div class="level-info">
