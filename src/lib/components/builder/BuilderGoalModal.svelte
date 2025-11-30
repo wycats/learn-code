@@ -21,6 +21,7 @@
 
 	let { builder, onClose }: Props = $props();
 	let showBiomePicker = $state(false);
+	let showDifficultyPicker = $state(false);
 	let snapshotStatus = $state<'idle' | 'saved'>('idle');
 
 	// Local state for constraints toggles
@@ -68,10 +69,21 @@
 		BIOME_OPTIONS.find((b) => b.value === builder.level.defaultTerrain) || BIOME_OPTIONS[0]
 	);
 
+	const DIFFICULTY_OPTIONS = [
+		{ value: 'beginner', label: 'Beginner' },
+		{ value: 'intermediate', label: 'Intermediate' },
+		{ value: 'advanced', label: 'Advanced' }
+	];
+
 	function selectBiome(value: string) {
 		builder.level.defaultTerrain = value;
 		builder.syncGame();
 		showBiomePicker = false;
+	}
+
+	function selectDifficulty(value: 'beginner' | 'intermediate' | 'advanced') {
+		builder.level.difficulty = value;
+		showDifficultyPicker = false;
 	}
 
 	function handleSnapshot() {
@@ -111,18 +123,32 @@
 
 				<div class="settings-grid">
 					<div class="setting-item">
-						<div class="select-wrapper">
-							<select bind:value={builder.level.difficulty}>
-								<option value="beginner">Beginner</option>
-								<option value="intermediate">Intermediate</option>
-								<option value="advanced">Advanced</option>
-							</select>
-							<ChevronDown size={14} class="chevron-overlay" />
+						<div class="picker-wrapper">
+							<button
+								class="difficulty-badge"
+								onclick={() => (showDifficultyPicker = !showDifficultyPicker)}
+							>
+								{builder.level.difficulty || 'beginner'}
+							</button>
+
+							{#if showDifficultyPicker}
+								<div class="popover" transition:slide={{ duration: 200 }}>
+									{#each DIFFICULTY_OPTIONS as option (option.value)}
+										<button
+											class="option"
+											class:selected={option.value === builder.level.difficulty}
+											onclick={() => selectDifficulty(option.value as any)}
+										>
+											<span>{option.label}</span>
+										</button>
+									{/each}
+								</div>
+							{/if}
 						</div>
 					</div>
 
 					<div class="setting-item">
-						<div class="biome-picker-wrapper">
+						<div class="picker-wrapper">
 							<button
 								class="biome-trigger"
 								onclick={() => (showBiomePicker = !showBiomePicker)}
@@ -134,10 +160,10 @@
 							</button>
 
 							{#if showBiomePicker}
-								<div class="biome-popover" transition:slide={{ duration: 200 }}>
+								<div class="popover" transition:slide={{ duration: 200 }}>
 									{#each BIOME_OPTIONS as option (option.value)}
 										<button
-											class="biome-option"
+											class="option"
 											class:selected={option.value === builder.level.defaultTerrain}
 											onclick={() => selectBiome(option.value)}
 											style:--option-color={option.color}
@@ -270,11 +296,27 @@
 		background-color: var(--surface-3);
 	}
 
-	:global(.chevron-overlay) {
-		position: absolute;
-		right: var(--size-2);
-		pointer-events: none;
-		color: var(--text-3);
+	/* Difficulty Badge Style */
+	.difficulty-badge {
+		font-size: var(--font-size-0);
+		font-weight: 700;
+		text-transform: uppercase;
+		padding: 4px 12px;
+		border-radius: var(--radius-pill);
+		background-color: white;
+		color: var(--text-1);
+		box-shadow: var(--shadow-1);
+		border: none;
+		cursor: pointer;
+		transition: transform 0.1s;
+	}
+
+	.difficulty-badge:hover {
+		transform: scale(1.05);
+	}
+
+	.difficulty-badge:active {
+		transform: scale(0.95);
 	}
 
 	.title-input {
@@ -400,8 +442,8 @@
 		font-size: var(--font-size-0);
 	}
 
-	/* Biome Picker */
-	.biome-picker-wrapper {
+	/* Pickers */
+	.picker-wrapper {
 		position: relative;
 	}
 
@@ -433,11 +475,11 @@
 		color: var(--text-3);
 	}
 
-	.biome-popover {
+	.popover {
 		position: absolute;
 		top: 100%;
-		left: 0;
-		right: 0;
+		left: 50%;
+		transform: translateX(-50%);
 		background-color: var(--surface-1);
 		border: 1px solid var(--surface-3);
 		border-radius: var(--radius-2);
@@ -447,9 +489,10 @@
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
+		min-width: 140px;
 	}
 
-	.biome-option {
+	.option {
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
@@ -461,20 +504,21 @@
 		font-size: var(--font-size-1);
 		text-align: left;
 		transition: background 0.1s;
+		white-space: nowrap;
 	}
 
-	.biome-option:hover {
+	.option:hover {
 		background-color: var(--surface-2);
 		color: var(--text-1);
 	}
 
-	.biome-option.selected {
+	.option.selected {
 		background-color: var(--brand-dim);
 		color: var(--brand);
 		font-weight: 600;
 	}
 
-	.biome-option :global(svg) {
+	.option :global(svg) {
 		color: var(--option-color);
 	}
 
@@ -498,13 +542,6 @@
 		padding: var(--size-3);
 		border-radius: var(--radius-2);
 		width: 100%;
-	}
-
-	.help-text {
-		font-size: var(--font-size-0);
-		color: var(--text-2);
-		margin: 0;
-		max-width: 300px;
 	}
 
 	.btn-primary {
