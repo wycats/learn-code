@@ -94,22 +94,30 @@
 - [x] **Architect's Library**: A management screen for user-created campaigns.
 - [x] **Diagetic Integration**: Seamless transition between playing and building.
 
-## Phase 12: Quality Assurance & Polish
+## Phase 12: Quality Assurance & Polish (Completed)
 
 **Goal:** Establish a robust testing culture and apply final polish to the Builder experience.
 
-- [ ] **Level Settings Polish**:
-  - [ ] **Diegetic Constraints**: Replace "Par/Limit" inputs with inline editing matching the Game Mode UI.
-  - [ ] **Visual Grid Resizer**: Add/remove rows and columns by clicking handles near the grid.
-  - [ ] **Biome Picker**: Replace dropdown with an icon-based popover (similar to character editor).
-  - [ ] **Clarify "Snapshot"**: Rename/redesign "Snapshot Tray" to clearly indicate "Set Starting Code".
-- [ ] **Level Organizer Polish**: Investigate and smooth out interactions in the drag-and-drop target UI.
-- [ ] **Unit Testing**: Expand coverage for core logic (Builder Model, Interpreter).
-- [ ] **Integration Testing**: Test critical flows (Level Loading, Pack Management).
-- [ ] **E2E Testing**: Playwright tests for the Builder and Game Loop.
-- [ ] **CI/CD**: Automated testing pipeline.
+- [x] **Level Settings Polish**:
+  - [x] **Diegetic Constraints**: Replace "Par/Limit" inputs with inline editing matching the Game Mode UI.
+  - [x] **Visual Grid Resizer**: Add/remove rows and columns by clicking handles near the grid.
+  - [x] **Biome Picker**: Replace dropdown with an icon-based popover (similar to character editor).
+  - [x] **Clarify "Snapshot"**: Rename/redesign "Snapshot Tray" to clearly indicate "Set Starting Code".
+- [x] **Level Organizer Polish**: Investigate and smooth out interactions in the drag-and-drop target UI.
+- [x] **Unit Testing**: Expand coverage for core logic (Builder Model, Interpreter).
+- [x] **Integration Testing**: Test critical flows (Level Loading, Pack Management).
+- [x] **E2E Testing**: Playwright tests for the Builder and Game Loop.
+- [x] **CI/CD**: Automated testing pipeline.
 
-## Phase 13: Advanced Builder Features
+## Phase 13: Design & Reflection
+
+**Goal:** Deepen our understanding of the users (Personas) and the system's core laws (Axioms) to ensure the product remains coherent as it grows.
+
+- [ ] **Persona Enrichment**: Review and update personas based on the current implementation and "Builder" context.
+- [ ] **Fresh Eyes Review**: Conduct a comprehensive design review of the current app through the lens of each persona.
+- [ ] **The Constitution**: Flesh out `axioms.md` to define the immutable laws of the system.
+
+## Phase 14: Advanced Builder Features
 
 **Goal:** Bring advanced game mechanics into the Builder to support complex level design.
 
