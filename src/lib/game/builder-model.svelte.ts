@@ -268,6 +268,35 @@ export class BuilderModel {
 		this.syncGame();
 	}
 
+	// Function Management
+	createFunction(name: string) {
+		if (!this.level.functions) {
+			this.level.functions = {};
+		}
+		if (this.level.functions[name]) return; // Already exists
+
+		this.level.functions[name] = [];
+		this.syncGame();
+	}
+
+	deleteFunction(name: string) {
+		if (!this.level.functions) return;
+		delete this.level.functions[name];
+		this.syncGame();
+	}
+
+	editFunction(name: string) {
+		this.game.editingContext = name;
+	}
+
+	closeFunctionEditor() {
+		this.game.editingContext = null;
+		// Sync back to level definition
+		if (this.level.functions) {
+			this.level.functions = $state.snapshot(this.game.functions);
+		}
+	}
+
 	snapshotTray() {
 		// Save the current program from the game model to the level definition
 		this.level.initialProgram = $state.snapshot(this.game.program);

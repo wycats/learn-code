@@ -224,6 +224,13 @@ export class StackInterpreter {
 			}
 
 			if (block.type === 'call') {
+				if (this.stack.length >= 50) {
+					console.error('Stack overflow');
+					this.game.lastEvent = { type: 'fail', timestamp: Date.now() };
+					this.game.executionState.set(block.id, 'failure');
+					return false;
+				}
+
 				const funcName = block.functionName;
 				// Use game.functions (current state) instead of game.level.functions (initial state)
 				if (funcName && this.game.functions && this.game.functions[funcName]) {

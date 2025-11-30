@@ -22,11 +22,27 @@
 	let { game }: Props = $props();
 
 	// Palette items (derived from game level)
-	const paletteItems = $derived(
-		Object.keys(game.level.availableBlocks).map(
-			(type) => ({ id: `palette-${type}`, type: type as BlockType }) as Block
-		)
-	);
+	const paletteItems = $derived.by(() => {
+		const items: Block[] = [];
+		const available = game.level.availableBlocks;
+
+		for (const type of Object.keys(available)) {
+			if (type === 'call') {
+				// If call is available, add all defined functions
+				const funcs = Object.keys(game.functions);
+				for (const funcName of funcs) {
+					items.push({
+						id: `palette-func-${funcName}`,
+						type: 'call',
+						functionName: funcName
+					});
+				}
+			} else {
+				items.push({ id: `palette-${type}`, type: type as BlockType });
+			}
+		}
+		return items;
+	});
 
 	// Helper to count blocks by type across the entire solution (program + functions)
 	function countBlocksByType(

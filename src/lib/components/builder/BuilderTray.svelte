@@ -5,6 +5,7 @@
 	import BlockComponent from '$lib/components/game/Block.svelte';
 	import HintEditor from './HintEditor.svelte';
 	import TileEditorModal from './TileEditorModal.svelte';
+	import FunctionManager from './FunctionManager.svelte';
 	import { AVATAR_ICONS } from '$lib/game/icons';
 
 	import {
@@ -24,7 +25,8 @@
 		Eraser,
 		User,
 		Flag,
-		Grid3x3
+		Grid3x3,
+		FunctionSquare
 	} from 'lucide-svelte';
 	import { fade, scale } from 'svelte/transition';
 
@@ -34,7 +36,7 @@
 
 	let { builder }: Props = $props();
 
-	let activeTab = $state<'terrain' | 'actors' | 'logic' | 'story'>('terrain');
+	let activeTab = $state<'terrain' | 'actors' | 'logic' | 'story' | 'functions'>('terrain');
 	let editingLimitFor = $state<BlockType | null>(null);
 	// Store previous limits to restore them when re-enabling
 	let previousLimits = $state<Record<string, number | 'unlimited'>>({});
@@ -137,7 +139,7 @@
 		{ type: 'turn-left', label: 'Left' },
 		{ type: 'turn-right', label: 'Right' },
 		{ type: 'loop', label: 'Loop' },
-		{ type: 'call', label: 'Call', comingSoon: true }
+		{ type: 'call', label: 'Call' }
 	];
 
 	function toggleBlock(type: BlockType, comingSoon?: boolean) {
@@ -242,6 +244,13 @@
 			onclick={() => (activeTab = 'logic')}
 		>
 			<Backpack size={16} /> Logic
+		</button>
+		<button
+			class="tab-btn"
+			class:active={activeTab === 'functions'}
+			onclick={() => (activeTab = 'functions')}
+		>
+			<FunctionSquare size={16} /> Functions
 		</button>
 		<button
 			class="tab-btn"
@@ -402,6 +411,10 @@
 					{/each}
 				</div>
 			</div>
+		{:else if activeTab === 'functions'}
+			<div class="functions-section" transition:fade={{ duration: 200 }}>
+				<FunctionManager {builder} />
+			</div>
 		{:else}
 			<div class="hints-section" transition:fade={{ duration: 200 }}>
 				<HintEditor {builder} />
@@ -471,7 +484,8 @@
 	.hints-section,
 	.backpack-section,
 	.terrain-section,
-	.actors-section {
+	.actors-section,
+	.functions-section {
 		grid-area: content;
 		width: 100%;
 		height: 100%;
