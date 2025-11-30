@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const FeedbackSchema = z.object({
+export const FeedbackSchema = z.object({
 	message: z.string().min(1),
 	email: z.string().email().optional().or(z.literal('')),
 	timestamp: z.number(),
@@ -48,7 +48,7 @@ export class FeedbackService {
 
 		// Queue it
 		this.enqueue(item);
-		
+
 		// Register Background Sync if available
 		if ('serviceWorker' in navigator && 'SyncManager' in window) {
 			const registration = await navigator.serviceWorker.ready;

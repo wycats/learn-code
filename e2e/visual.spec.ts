@@ -18,10 +18,10 @@ test.describe('Visual Regression', () => {
 		// We assume 'basics' and 'level-1' exist as they are standard.
 		// If not, we might need to adjust.
 		await page.goto('/play/basics/level-1');
-		
+
 		// Wait for the game grid to be visible
 		await expect(page.locator('.stage-container')).toBeVisible();
-		
+
 		// Wait for the instruction bar (it's inside dashboard-layer)
 		await expect(page.locator('.dashboard-layer')).toBeVisible();
 
@@ -30,10 +30,10 @@ test.describe('Visual Regression', () => {
 
 	test('Builder Interface', async ({ page }) => {
 		await page.goto('/builder');
-		
+
 		// Wait for the tray area to be visible
 		await expect(page.locator('.tray-area')).toBeVisible();
-		
+
 		// Wait for the grid container
 		await expect(page.locator('.grid-container')).toBeVisible();
 

@@ -97,10 +97,7 @@ describe('Program Analysis', () => {
 		});
 
 		it('does not report missing call if function is called', () => {
-			const program = [
-				b('move-forward'),
-				{ id: '1', type: 'call', functionName: 'Jump' } as Block
-			];
+			const program = [b('move-forward'), { id: '1', type: 'call', functionName: 'Jump' } as Block];
 			const functions = {
 				Jump: [b('move-forward'), b('move-forward')]
 			};

@@ -288,24 +288,22 @@ Prepared the application for public release by implementing a robust Progressive
   - `sw-manager.ts` for client-side Service Worker lifecycle management.
   - `feedback.ts` service with offline queueing support.
 
-## Phase 18: Visual Regression Testing (Completed)
+## Phase 18: Visual Regression Testing & Deployment (Completed)
 
 **Date:** November 30, 2025
 
 **Summary:**
-Established a "Design Review" workflow using automated visual regression testing with Playwright. This system acts as a safety net for UI changes and a tool for reviewing design updates. Configured the testing pipeline to prevent blocking the development server and created a suite of NPM scripts for running, reviewing, and approving visual changes.
+Established a robust "Design Review" workflow using automated visual regression testing with Playwright. This system acts as a safety net for UI changes and a tool for reviewing design updates. Additionally, finalized the deployment pipeline by provisioning a Neon Postgres database via the Vercel Marketplace and successfully deploying the application to production.
 
 **Key Deliverables:**
 
-- **Testing Infrastructure**:
-  - Configured `playwright.config.ts` for visual testing with mobile viewports.
-  - Set `reporter: [['html', { open: 'never' }]]` to prevent blocking.
-- **Test Suite**:
-  - `e2e/visual.spec.ts`: Visual tests for Home, Library, Game (Level 1), and Builder interfaces.
-- **Workflow Scripts**:
-  - `test:visual`: Run tests (non-blocking).
-  - `test:visual:review`: Open HTML report.
-  - `test:visual:approve`: Update snapshots.
-- **Documentation**:
-  - Documented the "Design Review" workflow in `walkthrough.md`.
+- **Visual Regression Testing**:
+  - Configured `playwright.config.ts` for visual comparison tests.
+  - Created `e2e/visual.spec.ts` covering Home, Library, Game, and Builder.
+  - Added NPM scripts (`test:visual`, `test:visual:review`, `test:visual:approve`) for the workflow.
+- **Deployment**:
+  - Provisioned Neon Postgres database on Vercel.
+  - Configured `drizzle.config.ts` and environment variables for production.
+  - Pushed database schema to production.
+  - Verified live deployment at `https://learn-coding-q0z9g8l76-yehuda-katzs-projects.vercel.app`.
 

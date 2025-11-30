@@ -324,7 +324,7 @@
 ### 38. Function Definition in Builder
 
 **Decision:** Treat Functions as a separate "Editing Context" within the Builder, similar to how they work in the Game.
-**Context:** We needed a way to define the *body* of a function. Opening a modal would disconnect the user from the tray.
+**Context:** We needed a way to define the _body_ of a function. Opening a modal would disconnect the user from the tray.
 **Consequence:**
 
 - Reused the `editingContext` logic from the GameModel.
@@ -335,8 +335,30 @@
 ### 39. Design Review Workflow
 
 **Decision:** Treat visual regression testing as a "Design Review" tool, not just a bug catcher.
-**Context:** In a visual-heavy application, "changes" are often intentional design iterations. A binary "pass/fail" CI check is insufficient. We need a workflow to *see* the changes and approve them.
+**Context:** In a visual-heavy application, "changes" are often intentional design iterations. A binary "pass/fail" CI check is insufficient. We need a workflow to _see_ the changes and approve them.
 **Consequence:**
+
 - We configured Playwright to **not** block the CI/local run on failure (generating a report instead).
 - We created specific scripts (`test:visual:review`, `test:visual:approve`) to facilitate this human-in-the-loop workflow.
 - We accept that "failed tests" in this context often mean "pending design review".
+
+## Phase 18: Deployment & Infrastructure
+
+### 40. Neon Postgres via Marketplace
+
+**Decision:** Use the **Neon** integration from the Vercel Marketplace instead of the native "Vercel Postgres" offering.
+**Context:** Vercel is transitioning its native Postgres service to be fully managed by Neon via the Marketplace. Using the Marketplace integration ensures we are on the supported path with feature parity.
+**Consequence:**
+
+- We provisioned the database via the Marketplace flow.
+- We use standard Postgres connection strings (`POSTGRES_URL`) compatible with `@vercel/postgres` and Drizzle.
+
+### 41. Custom Authentication (No Managed Auth)
+
+**Decision:** Explicitly disable Neon's "Auth" feature and rely on our custom implementation.
+**Context:** Our application already has a robust, custom authentication system built with `@oslojs/crypto` and `@node-rs/argon2`. Enabling a managed auth service would introduce unnecessary complexity and redundancy.
+**Consequence:**
+
+- We maintain full control over the `user` and `session` tables in our schema.
+- We avoid vendor lock-in for the authentication layer.
+

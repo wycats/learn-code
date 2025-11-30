@@ -58,10 +58,12 @@ export class ServiceWorkerManager {
 				});
 
 				// Periodic update check (every hour)
-				setInterval(() => {
-					registration.update();
-				}, 60 * 60 * 1000);
-
+				setInterval(
+					() => {
+						registration.update();
+					},
+					60 * 60 * 1000
+				);
 			} catch (error) {
 				console.error('SW registration failed:', error);
 			}

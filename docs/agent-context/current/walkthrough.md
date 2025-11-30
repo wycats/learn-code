@@ -1,48 +1,62 @@
-# Phase 18: Visual Regression Testing - Walkthrough
+# Phase 18: Visual Regression Testing & Deployment
 
-## Overview
-This phase focuses on adding a safety net for UI changes by implementing automated visual regression tests. We are treating this as a "Design Review" tool, allowing us to catch unintended changes and explicitly approve intended ones.
+## Summary
 
-## Workflow: Design Review
+In this phase, we established a robust "Design Review" workflow using automated visual regression testing with Playwright. This system acts as a safety net for UI changes and a tool for reviewing design updates. We also finalized the deployment pipeline, successfully deploying the application to Vercel and connecting it to a production Neon Postgres database.
 
-We have established a workflow for reviewing visual changes:
+## Key Changes
 
-1.  **Run Tests**: `pnpm test:visual`
-    - This runs the visual regression tests.
-    - If there are no changes, it passes.
-    - If there are changes (regressions or intended updates), it fails.
-    - It does **not** automatically open the report (preventing the "stuck server" issue).
+### Visual Regression Testing
+- **Playwright Configuration**: Configured `playwright.config.ts` to support visual comparison tests across desktop and mobile viewports.
+- **Test Suite**: Created `e2e/visual.spec.ts` covering key UI states:
+  - **Home Screen**: Validates the layout of the level selection screen.
+  - **Library**: Checks the campaign and level pack display.
+  - **Game (Level 1)**: Verifies the game interface, including the grid and tray.
+  - **Builder**: Ensures the complex Builder UI (palette, grid, tools) renders correctly.
+- **Workflow Scripts**: Added NPM scripts to streamline the testing process:
+  - `pnpm test:visual`: Runs the visual tests (non-blocking).
+  - `pnpm test:visual:review`: Opens the HTML report to inspect differences.
+  - `pnpm test:visual:approve`: Updates the baseline snapshots.
 
-2.  **Review Changes**: `pnpm test:visual:review`
-    - This opens the Playwright HTML report.
-    - You can inspect the diffs, seeing "Actual", "Expected", and "Diff" views.
-    - Use this to verify if the changes are bugs (fix the code) or intended design updates (approve them).
+### Deployment & Infrastructure
+- **Vercel Deployment**: Configured the project for Vercel hosting using `@sveltejs/adapter-auto`.
+- **Database Setup**:
+  - Provisioned a **Neon Postgres** database via the Vercel Marketplace.
+  - Linked the database to the Vercel project.
+  - Configured `drizzle.config.ts` and `src/lib/server/db/index.ts` to handle Vercel's environment variables (`POSTGRES_URL`).
+  - Pushed the database schema (`user`, `session`, `feedback` tables) to production.
+- **Environment Management**:
+  - Updated `.env.local` with production credentials.
+  - Verified the application handles missing credentials gracefully (or fails fast with a clear error).
 
-3.  **Approve Changes**: `pnpm test:visual:approve`
-    - If the changes are intended, run this command.
-    - It re-runs the tests with `--update-snapshots`, updating the baseline images.
+## Technical Decisions
 
-## Progress Log
+- **Non-Blocking Tests**: We configured the Playwright reporter to `['html', { open: 'never' }]` to prevent the test run from blocking the CI/CD pipeline or local development flow.
+- **Neon over Vercel Postgres**: We chose the Neon integration from the Vercel Marketplace as Vercel is transitioning away from its native Postgres offering. This ensures long-term support and feature parity.
+- **Custom Auth vs. Managed Auth**: We explicitly disabled Neon's "Auth" feature to rely on our existing custom authentication implementation using `@oslojs/crypto` and `@node-rs/argon2`.
 
-### Initial Setup
-- Created implementation plan and task list.
-- Configured Playwright in `playwright.config.ts`.
-    - Set `reporter: [['html', { open: 'never' }]]` to prevent blocking.
-    - Added mobile viewports.
-- Added NPM scripts for the workflow:
-    - `test:visual`
-    - `test:visual:review`
-    - `test:visual:approve`
+## How to Try It Out
 
-### Test Implementation
-- Created `e2e/visual.spec.ts`.
-- Scoped tests for:
-    - Home Screen
-    - Library Screen
-    - Game Interface (Level 1)
-    - Builder Interface
-- Fixed issues with selectors and URLs (e.g., using `/play/basics/level-1` instead of `campaign-1`).
+### 1. Run Visual Tests
+To verify the visual integrity of the application:
 
-### Next Steps
-- Run the approval command to generate the initial baselines.
-- Verify the baselines look correct.
+```bash
+# Run the visual tests
+pnpm test:visual
+
+# If there are failures, review the report
+pnpm test:visual:review
+
+# If the changes are intentional, approve them
+pnpm test:visual:approve
+```
+
+### 2. Verify Deployment
+Visit the production URL to see the live application:
+[https://learn-coding-q0z9g8l76-yehuda-katzs-projects.vercel.app](https://learn-coding-q0z9g8l76-yehuda-katzs-projects.vercel.app)
+
+### 3. Check Database Connection
+To verify the database is connected and working:
+1.  Open the deployed app.
+2.  Navigate to the **Feedback** section (if available) or any feature that requires persistence.
+3.  (Alternatively) Check the Vercel logs for any database connection errors.

@@ -28,7 +28,6 @@
   - **WebRTC Link**: For larger packs, use a simple signaling handshake (via a tiny public server or manual code entry) to establish a direct P2P data channel between devices.
   - **Local Network**: If on the same Wi-Fi, perhaps a direct IP connection (harder with HTTPS requirements).
 
-
 ## Mechanics & Blocks
 
 - [ ] **Hazard Block**: A block that kills the player on contact (like a spike or fire).
