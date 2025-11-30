@@ -95,6 +95,7 @@ export const StorySegmentSchema = z.object({
 	text: z.string(),
 	audioId: z.string().optional(),
 	emotion: z.string().optional(),
+	avatar: z.string().optional(),
 	highlight: z
 		.object({
 			target: z.string(), // e.g., 'block:move-forward', 'cell:2,2', 'ui:play-btn'
@@ -174,6 +175,8 @@ export const LevelDefinitionSchema = z.object({
 	customTiles: z.record(z.string(), TileDefinitionSchema).optional(),
 	functions: z.record(z.string(), z.array(BlockSchema)).optional(),
 	solutionPar: z.number().optional(),
+	difficulty: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+	icon: z.string().optional(),
 	intro: z.array(StorySegmentSchema).optional(),
 	outro: z.array(StorySegmentSchema).optional(),
 	hints: z.array(HintSchema).optional(),

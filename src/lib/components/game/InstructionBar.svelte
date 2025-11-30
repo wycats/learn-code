@@ -35,6 +35,8 @@
 	}
 
 	function getCharacterAvatar(name: string) {
+		if (segment.avatar) return segment.avatar;
+
 		const char = characters.find((c) => c.name === name);
 		if (char) return char.avatar;
 

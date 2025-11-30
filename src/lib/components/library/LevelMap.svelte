@@ -50,6 +50,10 @@
 				{:else}
 					<span class="level-number">{i + 1}</span>
 				{/if}
+				
+				{#if unlocked}
+					<div class="difficulty-dot" data-difficulty={level.difficulty || 'beginner'} title={level.difficulty || 'beginner'}></div>
+				{/if}
 			</div>
 			<div class="level-info">
 				<span class="level-name">{level.name}</span>
@@ -121,11 +125,11 @@
 		color: var(--yellow-5);
 	}
 
-	.star-filled {
+	:global(.star-filled) {
 		color: var(--yellow-5);
 	}
 
-	.star-empty {
+	:global(.star-empty) {
 		color: var(--surface-4);
 	}
 
@@ -142,5 +146,27 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+
+	.difficulty-dot {
+		position: absolute;
+		bottom: -4px;
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		border: 2px solid var(--surface-1);
+		box-shadow: var(--shadow-1);
+	}
+
+	.difficulty-dot[data-difficulty='beginner'] {
+		background-color: var(--green-5);
+	}
+
+	.difficulty-dot[data-difficulty='intermediate'] {
+		background-color: var(--yellow-5);
+	}
+
+	.difficulty-dot[data-difficulty='advanced'] {
+		background-color: var(--red-5);
 	}
 </style>

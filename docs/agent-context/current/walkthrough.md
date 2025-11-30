@@ -49,3 +49,23 @@ We introduced a new gameplay mechanic: Spikes.
 3.  Test the level.
 4.  If the robot steps on a spike, it fails immediately.
 
+## 3. Jonas's Wishlist (Polish)
+
+We implemented several UI/UX improvements requested by the user.
+
+### Key Changes
+
+-   **Difficulty Indicators**:
+    -   Added `difficulty` field to `LevelDefinitionSchema` (beginner, intermediate, advanced).
+    -   Updated `LevelMap.svelte` to display a colored dot (Green/Yellow/Red) on level nodes indicating difficulty.
+    -   Updated `BuilderGoalModal.svelte` to allow Architects to set the difficulty level.
+-   **Selectable Icons**:
+    -   Created `IconPicker.svelte`: A reusable component for selecting icons from the Lucide library.
+    -   Added `icon` field to `LevelDefinitionSchema`.
+    -   Integrated `IconPicker` into `BuilderGoalModal.svelte` to allow setting a custom icon for the level.
+-   **Speaker Avatars**:
+    -   Added `avatar` field to `StorySegmentSchema` to allow overriding the character's default avatar for specific dialogue lines.
+    -   Updated `InstructionBar.svelte` to respect the segment-level avatar if present.
+    -   Verified that `StoryConfigModal.svelte` already supports selecting avatars for characters.
+
+

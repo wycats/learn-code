@@ -14,9 +14,9 @@
 - [x] **Builder**: Add Spikes to the Terrain palette.
 
 ## 3. Jonas's Wishlist
-- [ ] **Difficulty**: Add `difficulty` to schemas and display it on cards.
-- [ ] **Icons**: Build `IconPicker` and integrate into Level/Pack settings.
-- [ ] **Avatars**: Update `Dialogue` schema and `InstructionBar` to support avatars.
+- [x] **Difficulty**: Add `difficulty` to schemas and display it on cards.
+- [x] **Icons**: Build `IconPicker` and integrate into Level/Pack settings.
+- [x] **Avatars**: Update `Dialogue` schema and `InstructionBar` to support avatars.
 
 ## 4. Local File System
 - [ ] **Service**: Create `FileSystemService` to wrap the File System Access API.

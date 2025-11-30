@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
 	import {
-		Star,
 		Play,
 		Camera,
 		Flower,
@@ -13,6 +12,7 @@
 	} from 'lucide-svelte';
 	import { Stack } from '$lib';
 	import { slide } from 'svelte/transition';
+	import IconPicker from './IconPicker.svelte';
 
 	interface Props {
 		builder: BuilderModel;
@@ -54,7 +54,13 @@
 	<div class="modal">
 		<Stack gap="var(--size-4)" align="center">
 			<div class="icon-wrapper">
-				<Star size={48} color="var(--yellow-7)" fill="var(--yellow-4)" />
+				<IconPicker
+					value={builder.level.icon}
+					onChange={(icon) => {
+						builder.level.icon = icon;
+						builder.syncGame();
+					}}
+				/>
 			</div>
 			<div class="content">
 				<input
@@ -71,6 +77,18 @@
 				></textarea>
 
 				<div class="settings-grid">
+					<div class="setting-item">
+						<span class="label">Difficulty:</span>
+						<div class="select-wrapper">
+							<select bind:value={builder.level.difficulty}>
+								<option value="beginner">Beginner</option>
+								<option value="intermediate">Intermediate</option>
+								<option value="advanced">Advanced</option>
+							</select>
+							<ChevronDown size={14} class="chevron-overlay" />
+						</div>
+					</div>
+
 					<div class="setting-item">
 						<span class="label">Biome:</span>
 						<div class="biome-picker-wrapper">
@@ -175,11 +193,11 @@
 	}
 
 	.icon-wrapper {
-		background-color: var(--yellow-1);
-		padding: var(--size-4);
-		border-radius: var(--radius-round);
+		background-color: var(--surface-2);
+		padding: var(--size-2);
+		border-radius: var(--radius-2);
 		display: inline-flex;
-		border: 2px solid var(--yellow-3);
+		border: 1px solid var(--surface-3);
 	}
 
 	.content {
@@ -187,6 +205,35 @@
 		flex-direction: column;
 		gap: var(--size-4);
 		width: 100%;
+	}
+
+	.select-wrapper {
+		position: relative;
+		display: flex;
+		align-items: center;
+	}
+
+	.select-wrapper select {
+		appearance: none;
+		background-color: var(--surface-2);
+		border: 1px solid var(--surface-3);
+		padding: var(--size-1) var(--size-4) var(--size-1) var(--size-2);
+		border-radius: var(--radius-2);
+		color: var(--text-1);
+		font-size: var(--font-size-1);
+		cursor: pointer;
+		min-width: 120px;
+	}
+
+	.select-wrapper select:hover {
+		background-color: var(--surface-3);
+	}
+
+	:global(.chevron-overlay) {
+		position: absolute;
+		right: var(--size-2);
+		pointer-events: none;
+		color: var(--text-3);
 	}
 
 	.title-input {
