@@ -19,12 +19,12 @@
 			description: 'A brand new level pack.'
 		});
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		void goto(`${base}/builder/campaigns/${newPack.id}`);
+		void goto(`${base}/builder/packs/${newPack.id}`);
 	}
 
 	function handleEdit(packId: string) {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		void goto(`${base}/builder/campaigns/${packId}`);
+		void goto(`${base}/builder/packs/${packId}`);
 	}
 
 	async function handleClone(packId: string) {
@@ -32,7 +32,7 @@
 		if (cloned) {
 			myCampaigns = await CampaignService.loadAll(); // Refresh
 			// eslint-disable-next-line svelte/no-navigation-without-resolve
-			void goto(`${base}/builder/campaigns/${cloned.id}`);
+			void goto(`${base}/builder/packs/${cloned.id}`);
 		}
 	}
 </script>
@@ -40,7 +40,12 @@
 <div class="builder-container">
 	<header class="builder-header">
 		<div class="header-content">
-			<h1>Architect's Library</h1>
+			<div class="header-left">
+				<button class="back-btn" onclick={() => goto(`${base}/`)} aria-label="Back to Main Menu">
+					←
+				</button>
+				<h1>Architect's Library</h1>
+			</div>
 			<button class="create-btn" onclick={handleCreate}>
 				<span class="icon">+</span> Create New Pack
 			</button>
@@ -101,6 +106,33 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+	}
+
+	.header-left {
+		display: flex;
+		align-items: center;
+		gap: var(--size-4);
+	}
+
+	.back-btn {
+		background: none;
+		border: none;
+		color: var(--text-2);
+		font-size: var(--font-size-4);
+		cursor: pointer;
+		padding: var(--size-2);
+		border-radius: var(--radius-round);
+		transition:
+			background-color 0.2s,
+			color 0.2s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.back-btn:hover {
+		background-color: var(--surface-2);
+		color: var(--text-1);
 	}
 
 	h1 {

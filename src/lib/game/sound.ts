@@ -82,7 +82,7 @@ export class SoundManager {
 		}
 	}
 
-	play(type: 'step' | 'turn' | 'win' | 'fail' | 'click' | 'delete' | 'pickup' | 'drop') {
+	play(type: 'step' | 'turn' | 'win' | 'fail' | 'click' | 'delete' | 'pickup' | 'drop' | 'sweep') {
 		const ctx = this.getContext();
 		if (!ctx) return;
 
@@ -180,6 +180,19 @@ export class SoundManager {
 				gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
 				osc.start(now);
 				osc.stop(now + 0.15);
+				break;
+
+			case 'sweep':
+				// Whimsical sweep (rising sine wave with some noise/texture if possible, but simple sine for now)
+				// "Whoosh" up
+				osc.type = 'sine';
+				osc.frequency.setValueAtTime(200, now);
+				osc.frequency.exponentialRampToValueAtTime(800, now + 0.2);
+				gain.gain.setValueAtTime(0.05, now);
+				gain.gain.linearRampToValueAtTime(0.1, now + 0.1);
+				gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+				osc.start(now);
+				osc.stop(now + 0.2);
 				break;
 		}
 	}

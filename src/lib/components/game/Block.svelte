@@ -50,13 +50,13 @@
 	const derivedActiveBlockId = $derived(game ? game.activeBlockId : activeBlockId);
 
 	// Highlight logic
-	const highlight = $derived(game?.currentStorySegment?.highlight);
+	const targets = $derived(game?.currentStorySegment?.targets);
 	const isHighlighted = $derived.by(() => {
-		if (!highlight) return false;
+		if (!targets) return false;
 		if (isPalette) {
-			return highlight.target === `block:${block.type}`;
+			return targets.includes(`block:${block.type}`);
 		} else {
-			return highlight.target === `block:${block.id}`;
+			return targets.includes(`block:${block.id}`);
 		}
 	});
 

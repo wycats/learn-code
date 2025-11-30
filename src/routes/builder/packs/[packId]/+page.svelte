@@ -223,18 +223,18 @@
 
 	function handleEditLevel(levelId: string) {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		void goto(`${base}/builder/campaigns/${packId}/${levelId}`);
+		void goto(`${base}/builder/packs/${packId}/${levelId}`);
 	}
 
 	async function handleDelete() {
 		await CampaignService.delete(pack!.id);
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		void goto(`${base}/builder/campaigns`);
+		void goto(`${base}/builder/packs`);
 	}
 
 	function handleBack() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		void goto(`${base}/builder/campaigns`);
+		void goto(`${base}/builder/packs`);
 	}
 </script>
 

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 	import { BuilderModel } from '$lib/game/builder-model.svelte';
 	import Grid from '$lib/components/game/Grid.svelte';
 	import BuilderTray from '$lib/components/builder/BuilderTray.svelte';
@@ -24,7 +25,10 @@
 {#if builder.mode === 'test'}
 	<Game game={builder.game} architectMode={true} onExit={() => builder.setMode('edit')} />
 {:else}
-	<div class="builder-interface">
+	<div class="builder-interface" class:targeting-active={builder.targetingState.isActive}>
+		{#if builder.targetingState.isActive}
+			<div class="focus-overlay" transition:fade={{ duration: 200 }}></div>
+		{/if}
 		<BuilderToolbar
 			{builder}
 			{showSettings}
@@ -120,5 +124,29 @@
 		border-left: 1px solid var(--surface-3);
 		height: 100%;
 		overflow: hidden;
+	}
+
+	.focus-overlay {
+		position: fixed;
+		inset: 0;
+		background-color: rgba(0, 0, 0, 0.6);
+		z-index: 90;
+		pointer-events: auto;
+	}
+
+	/* Elevate interactive elements during targeting */
+	:global(.targeting-active) .dashboard-area {
+		z-index: 110;
+		position: relative;
+	}
+
+	:global(.targeting-active) .grid-container {
+		z-index: 100;
+		position: relative;
+	}
+
+	:global(.targeting-active) .tray-area {
+		z-index: 100;
+		position: relative;
 	}
 </style>

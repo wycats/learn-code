@@ -21,7 +21,7 @@
 
 	function handleBuilder() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		goto(`${base}/builder/campaigns`);
+		goto(`${base}/builder/packs`);
 	}
 
 	async function handleOpenLocalFolder() {

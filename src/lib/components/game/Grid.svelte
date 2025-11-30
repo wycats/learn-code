@@ -35,6 +35,12 @@
 	function handleMouseDown(x: number, y: number) {
 		if (!isBuilder) return;
 
+		// If in targeting mode, ONLY handle selection
+		if (game.previewHighlight?.type === 'selection') {
+			onCellClick?.({ x, y });
+			return;
+		}
+
 		// Check if clicking on goal
 		if (game.level.goal.x === x && game.level.goal.y === y) {
 			onActorSelect?.('goal');
@@ -57,6 +63,8 @@
 		if (!isBuilder) return;
 		onCellHover?.({ x, y });
 		if (!isDragging) return;
+		// Disable drag-paint in targeting mode
+		if (game.previewHighlight?.type === 'selection') return;
 		onCellClick?.({ x, y });
 	}
 
@@ -74,6 +82,9 @@
 	function handleCharacterMouseDown(e: MouseEvent) {
 		if (!isBuilder) return;
 		e.stopPropagation(); // Prevent cell click
+
+		// Disable character interaction in targeting mode
+		if (game.previewHighlight?.type === 'selection') return;
 
 		dragStartPos = { ...game.characterPosition };
 		isDragging = true;
@@ -96,6 +107,7 @@
 				const key = `${x},${y}`;
 				const type = game.level.layout[key] || game.level.defaultTerrain || 'grass';
 				const customTile = game.level.customTiles?.[type];
+				const id = game.level.cellIds?.[key];
 
 				// Check if this is the goal position
 				const isGoal = game.level.goal.x === x && game.level.goal.y === y;
@@ -110,6 +122,7 @@
 				c.push({
 					x,
 					y,
+					id,
 					type: isGoal && !isCharacterHere ? 'goal' : isGoal ? 'grass' : type,
 					customTile
 				});
@@ -118,7 +131,17 @@
 		return c;
 	});
 
-	const highlight = $derived(game.previewHighlight || game.displaySegment?.highlight);
+	const highlight = $derived.by(() => {
+		if (game.previewHighlight) return game.previewHighlight;
+		if (game.displaySegment?.targets) {
+			return {
+				targets: game.displaySegment.targets,
+				type: 'pulse' as const,
+				fading: false
+			};
+		}
+		return undefined;
+	});
 </script>
 
 <div
@@ -136,12 +159,22 @@
 			class="grid-cell-wrapper"
 			class:interactive={isBuilder}
 			class:selected={isBuilder && cell.type === 'goal' && selectedActor === 'goal'}
+			class:targeted={isBuilder &&
+				(highlight?.targets?.includes(cell.id || '') ||
+					highlight?.targets?.includes(`cell:${cell.x},${cell.y}`))}
 			style:grid-column={cell.x + 1}
 			style:grid-row={cell.y + 1}
 			onmousedown={() => handleMouseDown(cell.x, cell.y)}
 			onmouseenter={() => handleMouseEnter(cell.x, cell.y)}
 		>
-			<Cell type={cell.type} customTile={cell.customTile} x={cell.x} y={cell.y} {highlight} />
+			<Cell
+				type={cell.type}
+				customTile={cell.customTile}
+				x={cell.x}
+				y={cell.y}
+				id={cell.id}
+				{highlight}
+			/>
 		</div>
 	{/each}
 
@@ -242,6 +275,14 @@
 		outline-offset: 2px;
 		border-radius: var(--radius-2);
 		z-index: 20;
+	}
+
+	.grid-cell-wrapper.targeted {
+		outline: 3px solid var(--brand);
+		outline-offset: -3px;
+		border-radius: var(--radius-2);
+		z-index: 15;
+		box-shadow: 0 0 10px var(--brand-dim);
 	}
 
 	.rotate-handle {

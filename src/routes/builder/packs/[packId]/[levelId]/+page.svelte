@@ -48,13 +48,13 @@
 		if (builder.mode === 'test' && mode === 'test') {
 			// If we started in test mode (Play Level), go back to editor
 			// eslint-disable-next-line svelte/no-navigation-without-resolve
-			await goto(`${base}/builder/campaigns/${packId}`);
+			await goto(`${base}/builder/packs/${packId}`);
 		} else if (builder.mode === 'test') {
 			builder.setMode('edit');
 		} else {
 			// Exit builder
 			// eslint-disable-next-line svelte/no-navigation-without-resolve
-			await goto(`${base}/builder/campaigns/${packId}`);
+			await goto(`${base}/builder/packs/${packId}`);
 		}
 	}
 </script>

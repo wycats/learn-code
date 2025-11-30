@@ -34,16 +34,17 @@ export class GameModel {
 
 	// Preview State (for Builder)
 	previewHighlight = $state<{
-		target: string;
-		type?: 'pulse' | 'arrow' | 'dim';
+		targets: string[];
+		type?: 'pulse' | 'arrow' | 'dim' | 'selection';
 		fading?: boolean;
 	} | null>(null);
 	#previewTimeout: ReturnType<typeof setTimeout> | null = null;
 
-	triggerPreviewHighlight(target: string) {
+	triggerPreviewHighlight(targets: string | string[]) {
+		const targetList = Array.isArray(targets) ? targets : [targets];
 		if (this.#previewTimeout) clearTimeout(this.#previewTimeout);
 		// Reset to full opacity first
-		this.previewHighlight = { target, type: 'pulse', fading: false };
+		this.previewHighlight = { targets: targetList, type: 'pulse', fading: false };
 
 		this.#previewTimeout = setTimeout(() => {
 			if (this.previewHighlight) {
@@ -54,6 +55,15 @@ export class GameModel {
 				this.#previewTimeout = null;
 			}, 2000); // Match CSS transition duration
 		}, 50);
+	}
+
+	setPersistentHighlight(targets: string[]) {
+		if (this.#previewTimeout) clearTimeout(this.#previewTimeout);
+		this.previewHighlight = { targets, type: 'selection', fading: false };
+	}
+
+	clearPersistentHighlight() {
+		this.previewHighlight = null;
 	}
 
 	constructor(level: LevelDefinition) {
@@ -122,7 +132,7 @@ export class GameModel {
 					speaker: 'Guide',
 					text: hint.text,
 					emotion: 'thinking',
-					highlight: hint.highlight ? { target: hint.highlight, type: 'pulse' } : undefined
+					targets: hint.targets
 				};
 			}
 		}

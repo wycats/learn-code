@@ -103,8 +103,8 @@
 							}
 						}}
 						onmouseenter={() => {
-							if (hint.highlight) {
-								builder.game.triggerPreviewHighlight(hint.highlight);
+							if (hint.targets && hint.targets.length > 0) {
+								builder.game.triggerPreviewHighlight(hint.targets);
 							}
 						}}
 					>
@@ -256,20 +256,20 @@
 
 								<!-- Highlight Control (Compact) -->
 								<div class="highlight-control">
-									{#if hint.highlight}
+									{#if hint.targets && hint.targets.length > 0}
 										<div
 											class="highlight-chip icon-only"
-											title={`Target: ${hint.highlight}`}
+											title={`Target: ${hint.targets[0]}`}
 											role="button"
 											tabindex="0"
-											onmouseenter={() => builder.game.triggerPreviewHighlight(hint.highlight!)}
+											onmouseenter={() => builder.game.triggerPreviewHighlight(hint.targets!)}
 										>
 											<Target size={16} />
 											<button
 												class="chip-remove"
 												onclick={(e) => {
 													e.stopPropagation();
-													hint.highlight = undefined;
+													hint.targets = undefined;
 													builder.game.previewHighlight = null;
 												}}
 											>
@@ -288,10 +288,18 @@
 												) {
 													builder.cancelTargetSelection();
 												} else {
-													builder.startTargetSelection((target) => {
-														hint.highlight = target;
-														builder.game.triggerPreviewHighlight(target);
-													}, `hint-${hint.id}`);
+													builder.startTargetSelection(
+														`hint-${hint.id}`,
+														0,
+														(target) => {
+															hint.targets = [target];
+															builder.game.triggerPreviewHighlight(target);
+														},
+														() => {
+															hint.targets = [];
+														},
+														() => {}
+													);
 												}
 											}}
 											title="Select Target Element"

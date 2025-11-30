@@ -20,6 +20,7 @@
 		/* Brand & Functional Colors */
 		/* Using Open Props values that approximate the "Modern Matte" palette */
 		--brand: light-dark(var(--indigo-6), var(--indigo-4));
+		--brand-light: light-dark(var(--indigo-5), var(--indigo-3));
 		--brand-dark: light-dark(var(--indigo-8), var(--indigo-5));
 		--brand-dim: light-dark(var(--indigo-1), var(--indigo-9));
 		--accent: light-dark(var(--pink-6), var(--pink-4));

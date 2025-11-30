@@ -44,7 +44,24 @@ export class BuilderModel {
 	activeTool = $state<BuilderTool>({ type: 'terrain', value: 'wall' });
 	activeSegmentId = $state<string | null>(null);
 	selectedActor = $state<'start' | 'goal' | null>(null);
-	onTargetSelect = $state<((target: string) => void) | null>(null);
+	
+	// Targeting State
+	targetingState = $state<{
+		isActive: boolean;
+		contextName: string;
+		currentCount: number;
+		onToggle: (target: string) => void;
+		onClear: () => void;
+		onDone: () => void;
+	}>({
+		isActive: false,
+		contextName: '',
+		currentCount: 0,
+		onToggle: () => {},
+		onClear: () => {},
+		onDone: () => {}
+	});
+
 	targetSelectionContext = $state<string | null>(null);
 	hoveredGridPosition = $state<GridPosition | null>(null);
 	selectedGridPosition = $state<GridPosition | null>(null);
@@ -53,17 +70,29 @@ export class BuilderModel {
 	currentProgram = $state<Block[]>([]);
 
 	get targetSelectionMode() {
-		return this.onTargetSelect !== null;
+		return this.targetingState.isActive;
 	}
 
-	startTargetSelection(callback: (target: string) => void, context?: string) {
-		this.onTargetSelect = callback;
-		this.targetSelectionContext = context || null;
+	startTargetSelection(
+		contextName: string,
+		currentCount: number,
+		onToggle: (target: string) => void,
+		onClear: () => void,
+		onDone: () => void
+	) {
+		this.targetingState = {
+			isActive: true,
+			contextName,
+			currentCount,
+			onToggle,
+			onClear,
+			onDone
+		};
 	}
 
 	cancelTargetSelection() {
-		this.onTargetSelect = null;
-		this.targetSelectionContext = null;
+		this.targetingState.isActive = false;
+		this.game.clearPersistentHighlight();
 	}
 
 	// The GameModel instance used for rendering (and testing)
@@ -345,12 +374,45 @@ export class BuilderModel {
 			this.currentProgram = $state.snapshot(this.game.program);
 		}
 		this.mode = mode;
+		
+		// Clear selections when switching modes
+		this.selectedGridPosition = null;
+		this.selectedActor = null;
+		this.cancelTargetSelection();
+		
 		this.syncGame();
 	}
 
+	ensureCellIds() {
+		if (!this.level.cellIds) {
+			this.level.cellIds = {};
+		}
+		const { width, height } = this.level.gridSize;
+		for (let y = 0; y < height; y++) {
+			for (let x = 0; x < width; x++) {
+				const key = `${x},${y}`;
+				if (!this.level.cellIds[key]) {
+					this.level.cellIds[key] = crypto.randomUUID();
+				}
+			}
+		}
+	}
+
 	syncGame() {
+		this.ensureCellIds();
+
+		// Merge pack tiles into level definition for the game model
+		const levelSnapshot = $state.snapshot(this.level);
+		const packTiles = $state.snapshot(this.pack.customTiles || {});
+
+		// Level tiles override pack tiles if IDs collide
+		levelSnapshot.customTiles = {
+			...packTiles,
+			...(levelSnapshot.customTiles || {})
+		};
+
 		// Create a new GameModel with the current level definition
-		this.game = new GameModel($state.snapshot(this.level));
+		this.game = new GameModel(levelSnapshot);
 		// Restore the working program
 		this.game.program = $state.snapshot(this.currentProgram);
 	}
@@ -403,22 +465,35 @@ export class BuilderModel {
 		this.level.functions = $state.snapshot(this.game.functions);
 	}
 
-	setStoryHighlight(target: string) {
+	toggleStoryHighlight(target: string) {
 		if (!this.activeSegmentId) return;
 
-		const findAndSet = (list: import('./types').StorySegment[] | undefined) => {
+		const findAndToggle = (list: import('./types').StorySegment[] | undefined) => {
 			if (!list) return false;
 			const segment = list.find((s) => s.id === this.activeSegmentId);
 			if (segment) {
-				segment.highlight = { target, type: 'pulse' };
-				this.game.triggerPreviewHighlight(target);
+				if (!segment.targets) segment.targets = [];
+
+				const index = segment.targets.indexOf(target);
+				if (index !== -1) {
+					segment.targets.splice(index, 1);
+				} else {
+					segment.targets.push(target);
+				}
+
+				// Trigger preview with ALL targets
+				if (this.targetingState.isActive) {
+					this.game.setPersistentHighlight(segment.targets);
+				} else {
+					this.game.triggerPreviewHighlight(segment.targets);
+				}
 				return true;
 			}
 			return false;
 		};
 
-		if (!findAndSet(this.level.intro)) {
-			findAndSet(this.level.outro);
+		if (!findAndToggle(this.level.intro)) {
+			findAndToggle(this.level.outro);
 		}
 	}
 
@@ -467,11 +542,22 @@ export class BuilderModel {
 		if (side === 'left') {
 			// Shift everything right by 1
 			const newLayout: Record<string, CellType> = {};
+			const newCellIds: Record<string, string> = {};
+
 			for (const [key, type] of Object.entries(this.level.layout)) {
 				const [x, y] = key.split(',').map(Number);
 				newLayout[`${x + 1},${y}`] = type;
 			}
+
+			if (this.level.cellIds) {
+				for (const [key, id] of Object.entries(this.level.cellIds)) {
+					const [x, y] = key.split(',').map(Number);
+					newCellIds[`${x + 1},${y}`] = id;
+				}
+			}
+
 			this.level.layout = newLayout;
+			this.level.cellIds = newCellIds;
 
 			// Shift actors
 			this.level.start.x++;
@@ -488,11 +574,22 @@ export class BuilderModel {
 		if (side === 'top') {
 			// Shift everything down by 1
 			const newLayout: Record<string, CellType> = {};
+			const newCellIds: Record<string, string> = {};
+
 			for (const [key, type] of Object.entries(this.level.layout)) {
 				const [x, y] = key.split(',').map(Number);
 				newLayout[`${x},${y + 1}`] = type;
 			}
+
+			if (this.level.cellIds) {
+				for (const [key, id] of Object.entries(this.level.cellIds)) {
+					const [x, y] = key.split(',').map(Number);
+					newCellIds[`${x},${y + 1}`] = id;
+				}
+			}
+
 			this.level.layout = newLayout;
+			this.level.cellIds = newCellIds;
 
 			// Shift actors
 			this.level.start.y++;
@@ -506,6 +603,8 @@ export class BuilderModel {
 
 		// Remove cells in this column
 		const newLayout: Record<string, CellType> = {};
+		const newCellIds: Record<string, string> = {};
+
 		for (const [key, type] of Object.entries(this.level.layout)) {
 			const [x, y] = key.split(',').map(Number);
 			if (x === index) continue; // Delete
@@ -515,7 +614,21 @@ export class BuilderModel {
 				newLayout[key] = type; // Keep
 			}
 		}
+
+		if (this.level.cellIds) {
+			for (const [key, id] of Object.entries(this.level.cellIds)) {
+				const [x, y] = key.split(',').map(Number);
+				if (x === index) continue; // Delete
+				if (x > index) {
+					newCellIds[`${x - 1},${y}`] = id; // Shift left
+				} else {
+					newCellIds[key] = id; // Keep
+				}
+			}
+		}
+
 		this.level.layout = newLayout;
+		this.level.cellIds = newCellIds;
 
 		// Adjust actors
 		if (this.level.start.x === index) this.level.start.x = Math.max(0, index - 1);
@@ -533,6 +646,8 @@ export class BuilderModel {
 
 		// Remove cells in this row
 		const newLayout: Record<string, CellType> = {};
+		const newCellIds: Record<string, string> = {};
+
 		for (const [key, type] of Object.entries(this.level.layout)) {
 			const [x, y] = key.split(',').map(Number);
 			if (y === index) continue; // Delete
@@ -542,7 +657,21 @@ export class BuilderModel {
 				newLayout[key] = type; // Keep
 			}
 		}
+
+		if (this.level.cellIds) {
+			for (const [key, id] of Object.entries(this.level.cellIds)) {
+				const [x, y] = key.split(',').map(Number);
+				if (y === index) continue; // Delete
+				if (y > index) {
+					newCellIds[`${x},${y - 1}`] = id; // Shift up
+				} else {
+					newCellIds[key] = id; // Keep
+				}
+			}
+		}
+
 		this.level.layout = newLayout;
+		this.level.cellIds = newCellIds;
 
 		// Adjust actors
 		if (this.level.start.y === index) this.level.start.y = Math.max(0, index - 1);
@@ -558,10 +687,11 @@ export class BuilderModel {
 	handleCellClick(pos: GridPosition) {
 		if (this.mode !== 'edit') return;
 
-		if (this.onTargetSelect) {
-			const target = `cell:${pos.x},${pos.y}`;
-			this.onTargetSelect(target);
-			this.onTargetSelect = null;
+		if (this.targetingState.isActive) {
+			const key = `${pos.x},${pos.y}`;
+			const id = this.level.cellIds?.[key];
+			const target = id ? id : `cell:${pos.x},${pos.y}`;
+			this.targetingState.onToggle(target);
 			return;
 		}
 

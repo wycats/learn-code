@@ -10,7 +10,7 @@
 
 	function handleCreate() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		goto(`${base}/builder/campaigns`);
+		goto(`${base}/builder/packs`);
 	}
 </script>
 

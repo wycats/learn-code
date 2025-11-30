@@ -10,7 +10,7 @@
 	import type { Block, BlockType } from '$lib/game/types';
 	import type { GameModel } from '$lib/game/model.svelte';
 	import { setDragContext } from '$lib/game/drag-context.svelte';
-	import { Trash2, Move, ListChecks, Copy, Infinity as InfinityIcon } from 'lucide-svelte';
+	import { Trash2, Move, ListChecks, Copy, Infinity as InfinityIcon, Brush } from 'lucide-svelte';
 	import { soundManager } from '$lib/game/sound';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { fly, fade } from 'svelte/transition';
@@ -83,13 +83,19 @@
 		game.level.maxBlocks !== undefined && game.blockCount >= game.level.maxBlocks
 	);
 
+	const isDisabled = $derived(game.status !== 'planning');
+
 	const hasFunctions = $derived(Object.keys(game.functions).length > 0);
 	const functionNames = $derived(Object.keys(game.functions));
 
-	type Highlight = { target: string; type?: 'pulse' | 'arrow' | 'dim'; fading?: boolean };
-	const highlight = $derived(
-		(game.previewHighlight || game.displaySegment?.highlight) as Highlight | undefined
-	);
+	type Highlight = { targets: string[]; type?: 'pulse' | 'arrow' | 'dim'; fading?: boolean };
+	const highlight = $derived.by(() => {
+		if (game.previewHighlight) return game.previewHighlight;
+		if (game.displaySegment?.targets) {
+			return { targets: game.displaySegment.targets, type: 'pulse' } as Highlight;
+		}
+		return undefined;
+	});
 
 	// Drag State
 	const dragCtx = setDragContext();
@@ -516,6 +522,12 @@
 		// Keep selected so user sees where it went
 	}
 
+	function handleClear() {
+		if (game.activeProgram.length === 0) return;
+		soundManager.play('sweep');
+		game.clearProgram();
+	}
+
 	$effect(() => {
 		if (game.status === 'running') {
 			selectedBlockIds.clear();
@@ -560,6 +572,7 @@
 				}
 			},
 			onDrop: ({ source, location }) => {
+				if (isDisabled) return;
 				dragCtx.isDragging = false;
 				dragCtx.targetId = null;
 				dragCtx.closestEdge = null;
@@ -670,16 +683,29 @@
 <div class="tray">
 	<div class="palette">
 		<h3>Blocks</h3>
-		<div class="block-list" class:disabled={isFull}>
+		<div class="block-list" class:disabled={isDisabled}>
+			{#if isDisabled}
+				<div class="disabled-overlay">
+					{#if game.status === 'story'}
+						<span>Listen to the Guide...</span>
+					{:else if game.status === 'running'}
+						<span>Program Running...</span>
+					{/if}
+				</div>
+			{/if}
 			{#each paletteItems as item (item.id)}
 				{@const limit = getLimit(item.type)}
 				{@const used = usedCounts[item.type] || 0}
 				{@const typeFull = isTypeFull(item.type)}
 				<div
-					class:opacity-50={typeFull}
-					class:highlighted={highlight?.target === `block:${item.type}`}
-					class:fading={highlight?.target === `block:${item.type}` && highlight?.fading}
-					use:draggableBlock={{ block: item, isPaletteItem: true, disabled: typeFull }}
+					class:opacity-50={typeFull || isDisabled}
+					class:highlighted={highlight?.targets?.includes(`block:${item.type}`)}
+					class:fading={highlight?.targets?.includes(`block:${item.type}`) && highlight?.fading}
+					use:draggableBlock={{
+						block: item,
+						isPaletteItem: true,
+						disabled: typeFull || isDisabled
+					}}
 					style:position="relative"
 				>
 					<BlockComponent block={item} isPalette={true} onSelect={() => handlePaletteClick(item)} />
@@ -696,15 +722,25 @@
 	<div class="sequence">
 		<div class="program-header">
 			<h3>Program</h3>
-			{#if game.level.maxBlocks !== undefined}
-				<span class="count" class:full={isFull}>
-					{game.blockCount} / {game.level.maxBlocks}
-				</span>
-			{:else}
-				<span class="count">
-					{game.blockCount}
-				</span>
-			{/if}
+			<div class="header-actions">
+				<button
+					class="clear-btn"
+					onclick={handleClear}
+					disabled={isDisabled || game.activeProgram.length === 0}
+					title="Clear {game.editingContext ? game.editingContext : 'Main'} Program"
+				>
+					<Brush size={18} />
+				</button>
+				{#if game.level.maxBlocks !== undefined}
+					<span class="count" class:full={isFull}>
+						{game.blockCount} / {game.level.maxBlocks}
+					</span>
+				{:else}
+					<span class="count">
+						{game.blockCount}
+					</span>
+				{/if}
+			</div>
 		</div>
 
 		{#if hasFunctions}
@@ -730,6 +766,7 @@
 			{#key game.editingContext}
 				<div
 					class="program-list"
+					class:disabled={isDisabled}
 					in:fly={{ x: 20, duration: 300, delay: 100 }}
 					out:fade={{ duration: 100 }}
 					data-block-id="program-list"
@@ -751,7 +788,7 @@
 							{/if}
 
 							<div
-								use:draggableBlock={{ block: item }}
+								use:draggableBlock={{ block: item, disabled: isDisabled }}
 								use:dropTarget={{
 									blockId: item.id,
 									index: index,
@@ -1100,6 +1137,35 @@
 		margin-bottom: 0;
 	}
 
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+	}
+
+	.clear-btn {
+		background: none;
+		border: none;
+		color: var(--text-3);
+		cursor: pointer;
+		padding: 4px;
+		border-radius: var(--radius-1);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.2s;
+	}
+
+	.clear-btn:hover {
+		background-color: var(--surface-3);
+		color: var(--red-6);
+	}
+
+	.clear-btn:disabled {
+		opacity: 0.3;
+		cursor: not-allowed;
+	}
+
 	.count {
 		font-size: var(--font-size-1);
 		font-weight: bold;
@@ -1122,6 +1188,7 @@
 		background-color: var(--surface-1);
 		border-radius: var(--radius-2);
 		align-items: start; /* Prevent stretching */
+		position: relative; /* For overlay */
 	}
 
 	@media (max-width: 768px) {
@@ -1133,6 +1200,23 @@
 	.block-list.disabled {
 		opacity: 0.7;
 		cursor: not-allowed;
+	}
+
+	.disabled-overlay {
+		position: absolute;
+		inset: 0;
+		background-color: rgba(255, 255, 255, 0.6);
+		backdrop-filter: blur(2px);
+		z-index: 20;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: var(--radius-2);
+		font-weight: bold;
+		color: var(--text-2);
+		font-size: var(--font-size-1);
+		text-align: center;
+		padding: var(--size-2);
 	}
 
 	.opacity-50 {
@@ -1195,6 +1279,11 @@
 		background-color: var(--surface-1);
 		border-radius: var(--radius-2);
 		overflow-y: auto; /* Scroll vertically if needed */
+	}
+
+	.program-list.disabled {
+		opacity: 0.7;
+		pointer-events: none;
 	}
 
 	.program-list :global(.dragging) {

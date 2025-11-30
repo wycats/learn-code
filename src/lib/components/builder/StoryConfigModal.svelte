@@ -32,68 +32,82 @@
 
 	// Ensure lists exist
 	function ensureLists() {
-		if (!builder.level.characters) {
-			if (builder.pack.characters) {
-				builder.level.characters = $state.snapshot(builder.pack.characters);
-			} else {
-				builder.level.characters = [
-					{ id: 'Zoey', name: 'Zoey', color: 'var(--pink-3)', avatar: 'Z' },
-					{ id: 'Jonas', name: 'Jonas', color: 'var(--blue-3)', avatar: 'J' },
-					{ id: 'Guide', name: 'Guide', color: 'var(--teal-3)', avatar: 'Bot' },
-					{ id: 'System', name: 'System', color: 'var(--surface-3)', avatar: 'S' }
-				];
-			}
+		if (!builder.pack.characters) {
+			builder.pack.characters = [
+				{ id: 'Zoey', name: 'Zoey', color: 'var(--pink-3)', avatar: 'Z' },
+				{ id: 'Jonas', name: 'Jonas', color: 'var(--blue-3)', avatar: 'J' },
+				{ id: 'Guide', name: 'Guide', color: 'var(--teal-3)', avatar: 'Bot' },
+				{ id: 'System', name: 'System', color: 'var(--surface-3)', avatar: 'S' }
+			];
 		}
-		if (!builder.level.emotions) {
-			if (builder.pack.emotions) {
-				builder.level.emotions = $state.snapshot(builder.pack.emotions);
-			} else {
-				builder.level.emotions = [
-					{ id: 'neutral', name: 'Neutral', icon: '😐' },
-					{ id: 'happy', name: 'Happy', icon: '😊' },
-					{ id: 'concerned', name: 'Concerned', icon: '😟' },
-					{ id: 'excited', name: 'Excited', icon: '🤩' },
-					{ id: 'thinking', name: 'Thinking', icon: '🤔' },
-					{ id: 'celebrating', name: 'Celebrating', icon: '🥳' }
-				];
-			}
+		if (!builder.pack.emotions) {
+			builder.pack.emotions = [
+				{ id: 'neutral', name: 'Neutral', icon: '😐' },
+				{ id: 'happy', name: 'Happy', icon: '😊' },
+				{ id: 'concerned', name: 'Concerned', icon: '😟' },
+				{ id: 'excited', name: 'Excited', icon: '🤩' },
+				{ id: 'thinking', name: 'Thinking', icon: '🤔' },
+				{ id: 'celebrating', name: 'Celebrating', icon: '🥳' },
+				{ id: 'none', name: 'None', icon: '😶' }
+			];
 		}
+
+		if (!builder.level.characters) builder.level.characters = [];
+		if (!builder.level.emotions) builder.level.emotions = [];
 	}
 
 	$effect(() => {
 		if (isOpen) ensureLists();
 	});
 
-	function addCharacter() {
+	function addCharacter(scope: 'pack' | 'level') {
 		ensureLists();
 		const id = crypto.randomUUID();
-		builder.level.characters = [
-			...(builder.level.characters || []),
-			{ id, name: 'New Character', color: 'var(--surface-3)', avatar: '?' }
-		];
+		const newChar = { id, name: 'New Character', color: 'var(--surface-3)', avatar: '?' };
+		if (scope === 'pack') {
+			builder.pack.characters = [...(builder.pack.characters || []), newChar];
+		} else {
+			builder.level.characters = [...(builder.level.characters || []), newChar];
+		}
 	}
 
-	function removeCharacter(index: number) {
-		if (!builder.level.characters) return;
-		const newChars = [...builder.level.characters];
-		newChars.splice(index, 1);
-		builder.level.characters = newChars;
+	function removeCharacter(scope: 'pack' | 'level', index: number) {
+		if (scope === 'pack') {
+			if (!builder.pack.characters) return;
+			const newChars = [...builder.pack.characters];
+			newChars.splice(index, 1);
+			builder.pack.characters = newChars;
+		} else {
+			if (!builder.level.characters) return;
+			const newChars = [...builder.level.characters];
+			newChars.splice(index, 1);
+			builder.level.characters = newChars;
+		}
 	}
 
-	function addEmotion() {
+	function addEmotion(scope: 'pack' | 'level') {
 		ensureLists();
 		const id = crypto.randomUUID();
-		builder.level.emotions = [
-			...(builder.level.emotions || []),
-			{ id, name: 'New Emotion', icon: '😐' }
-		];
+		const newEmo = { id, name: 'New Emotion', icon: '😐' };
+		if (scope === 'pack') {
+			builder.pack.emotions = [...(builder.pack.emotions || []), newEmo];
+		} else {
+			builder.level.emotions = [...(builder.level.emotions || []), newEmo];
+		}
 	}
 
-	function removeEmotion(index: number) {
-		if (!builder.level.emotions) return;
-		const newEmos = [...builder.level.emotions];
-		newEmos.splice(index, 1);
-		builder.level.emotions = newEmos;
+	function removeEmotion(scope: 'pack' | 'level', index: number) {
+		if (scope === 'pack') {
+			if (!builder.pack.emotions) return;
+			const newEmos = [...builder.pack.emotions];
+			newEmos.splice(index, 1);
+			builder.pack.emotions = newEmos;
+		} else {
+			if (!builder.level.emotions) return;
+			const newEmos = [...builder.level.emotions];
+			newEmos.splice(index, 1);
+			builder.level.emotions = newEmos;
+		}
 	}
 
 	const colors = [
@@ -215,7 +229,8 @@
 	<div class="modal-content">
 		{#if activeTab === 'characters'}
 			<div class="list-container">
-				{#each builder.level.characters || [] as char, i (char.id)}
+				<h3>Pack Defaults</h3>
+				{#each builder.pack.characters || [] as char, i (char.id)}
 					<div class="config-item compact">
 						<div class="avatar-wrapper">
 							<div class="avatar-circle" style:background-color={char.color}>
@@ -235,13 +250,13 @@
 							</div>
 							<button
 								class="icon-trigger"
-								popovertarget="icon-popover-{i}"
+								popovertarget="icon-popover-pack-{i}"
 								aria-label="Choose icon for {char.name}"
 							>
 								<Smile size={10} />
 							</button>
 
-							<div id="icon-popover-{i}" popover="auto" class="icon-popover">
+							<div id="icon-popover-pack-{i}" popover="auto" class="icon-popover">
 								<div class="icon-grid">
 									{#each Object.entries(AVATAR_ICONS) as [name, Icon] (name)}
 										<button
@@ -262,12 +277,12 @@
 
 							<button
 								class="color-trigger"
-								popovertarget="color-popover-{i}"
+								popovertarget="color-popover-pack-{i}"
 								style:background-color={char.color}
 								aria-label="Change color for {char.name}"
 							></button>
 
-							<div id="color-popover-{i}" popover="auto" class="color-popover">
+							<div id="color-popover-pack-{i}" popover="auto" class="color-popover">
 								{#each colors as color (color)}
 									<button
 										class="color-swatch"
@@ -291,18 +306,113 @@
 							aria-label="Character Name"
 						/>
 
-						<button class="delete-btn" onclick={() => removeCharacter(i)} title="Remove Character">
+						<button
+							class="delete-btn"
+							onclick={() => removeCharacter('pack', i)}
+							title="Remove Character"
+						>
 							<Trash2 size={18} />
 						</button>
 					</div>
 				{/each}
-				<button class="add-btn" onclick={addCharacter}>
-					<Plus size={18} /> Add Character
+				<button class="add-btn" onclick={() => addCharacter('pack')}>
+					<Plus size={18} /> Add Pack Character
+				</button>
+
+				<h3 style="margin-top: var(--size-4)">Level Specific</h3>
+				{#each builder.level.characters || [] as char, i (char.id)}
+					<div class="config-item compact">
+						<div class="avatar-wrapper">
+							<div class="avatar-circle" style:background-color={char.color}>
+								{#if isAvatarIcon(char.avatar ?? '')}
+									<div class="bot-icon-preview">
+										<Avatar value={char.avatar ?? '?'} size={20} />
+									</div>
+								{/if}
+								<input
+									class="avatar-input"
+									class:is-icon={isAvatarIcon(char.avatar ?? '')}
+									bind:value={char.avatar}
+									maxlength="15"
+									onclick={(e) => e.currentTarget.select()}
+									aria-label="Avatar text for {char.name}"
+								/>
+							</div>
+							<button
+								class="icon-trigger"
+								popovertarget="icon-popover-level-{i}"
+								aria-label="Choose icon for {char.name}"
+							>
+								<Smile size={10} />
+							</button>
+
+							<div id="icon-popover-level-{i}" popover="auto" class="icon-popover">
+								<div class="icon-grid">
+									{#each Object.entries(AVATAR_ICONS) as [name, Icon] (name)}
+										<button
+											class="icon-option"
+											class:selected={char.avatar === name}
+											onclick={(e) => {
+												char.avatar = name;
+												const popover = e.currentTarget.closest('[popover]') as HTMLElement | null;
+												popover?.hidePopover();
+											}}
+											title={name}
+										>
+											<Icon size={20} />
+										</button>
+									{/each}
+								</div>
+							</div>
+
+							<button
+								class="color-trigger"
+								popovertarget="color-popover-level-{i}"
+								style:background-color={char.color}
+								aria-label="Change color for {char.name}"
+							></button>
+
+							<div id="color-popover-level-{i}" popover="auto" class="color-popover">
+								{#each colors as color (color)}
+									<button
+										class="color-swatch"
+										style:background-color={color}
+										class:selected={char.color === color}
+										onclick={(e) => {
+											char.color = color;
+											const popover = e.currentTarget.closest('[popover]') as HTMLElement | null;
+											popover?.hidePopover();
+										}}
+										aria-label="Select color {color}"
+									></button>
+								{/each}
+							</div>
+						</div>
+
+						<input
+							class="name-input"
+							bind:value={char.name}
+							placeholder="Character Name"
+							aria-label="Character Name"
+						/>
+
+						<button
+							class="delete-btn"
+							onclick={() => removeCharacter('level', i)}
+							title="Remove Character"
+						>
+							<Trash2 size={18} />
+						</button>
+					</div>
+				{/each}
+				<button class="add-btn" onclick={() => addCharacter('level')}>
+					<Plus size={18} /> Add Level Character
 				</button>
 			</div>
 		{:else}
 			<div class="list-container">
-				{#each builder.level.emotions || [] as emo, i (emo.id)}
+				<h3>Pack Defaults</h3>
+				{#each builder.pack.emotions || [] as emo, i (emo.id)}
 					<div class="config-item compact">
 						<div class="emoji-wrapper">
 							<input
@@ -313,13 +423,13 @@
 							/>
 							<button
 								class="icon-trigger"
-								popovertarget="emoji-popover-{i}"
+								popovertarget="emoji-popover-pack-{i}"
 								aria-label="Choose emoji for {emo.name}"
 							>
 								<Smile size={10} />
 							</button>
 
-							<div id="emoji-popover-{i}" popover="auto" class="icon-popover">
+							<div id="emoji-popover-pack-{i}" popover="auto" class="icon-popover">
 								<div class="icon-grid">
 									{#each COMMON_EMOJIS as emoji (emoji)}
 										<button
@@ -348,13 +458,77 @@
 
 						<input class="id-input" bind:value={emo.id} placeholder="ID" aria-label="Emotion ID" />
 
-						<button class="delete-btn" onclick={() => removeEmotion(i)} title="Remove Emotion">
+						<button
+							class="delete-btn"
+							onclick={() => removeEmotion('pack', i)}
+							title="Remove Emotion"
+						>
 							<Trash2 size={18} />
 						</button>
 					</div>
 				{/each}
-				<button class="add-btn" onclick={addEmotion}>
-					<Plus size={18} /> Add Emotion
+				<button class="add-btn" onclick={() => addEmotion('pack')}>
+					<Plus size={18} /> Add Pack Emotion
+				</button>
+
+				<h3 style="margin-top: var(--size-4)">Level Specific</h3>
+				{#each builder.level.emotions || [] as emo, i (emo.id)}
+					<div class="config-item compact">
+						<div class="emoji-wrapper">
+							<input
+								class="emoji-input"
+								bind:value={emo.icon}
+								maxlength="2"
+								aria-label="Emoji for {emo.name}"
+							/>
+							<button
+								class="icon-trigger"
+								popovertarget="emoji-popover-level-{i}"
+								aria-label="Choose emoji for {emo.name}"
+							>
+								<Smile size={10} />
+							</button>
+
+							<div id="emoji-popover-level-{i}" popover="auto" class="icon-popover">
+								<div class="icon-grid">
+									{#each COMMON_EMOJIS as emoji (emoji)}
+										<button
+											class="icon-option emoji-option"
+											class:selected={emo.icon === emoji}
+											onclick={(e) => {
+												emo.icon = emoji;
+												const popover = e.currentTarget.closest('[popover]') as HTMLElement | null;
+												popover?.hidePopover();
+											}}
+											title={emoji}
+										>
+											{emoji}
+										</button>
+									{/each}
+								</div>
+							</div>
+						</div>
+
+						<input
+							class="name-input"
+							bind:value={emo.name}
+							placeholder="Emotion Name"
+							aria-label="Emotion Name"
+						/>
+
+						<input class="id-input" bind:value={emo.id} placeholder="ID" aria-label="Emotion ID" />
+
+						<button
+							class="delete-btn"
+							onclick={() => removeEmotion('level', i)}
+							title="Remove Emotion"
+						>
+							<Trash2 size={18} />
+						</button>
+					</div>
+				{/each}
+				<button class="add-btn" onclick={() => addEmotion('level')}>
+					<Plus size={18} /> Add Level Emotion
 				</button>
 			</div>
 		{/if}

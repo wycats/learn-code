@@ -89,33 +89,44 @@ export const EmotionSchema = z.object({
 });
 export type Emotion = z.infer<typeof EmotionSchema>;
 
-export const StorySegmentSchema = z.object({
-	id: z.string().optional(),
-	speaker: z.string(),
-	text: z.string(),
-	audioId: z.string().optional(),
-	emotion: z.string().optional(),
-	avatar: z.string().optional(),
-	highlight: z
-		.object({
-			target: z.string(), // e.g., 'block:move-forward', 'cell:2,2', 'ui:play-btn'
-			type: z.enum(['pulse', 'arrow', 'dim']).optional()
-		})
-		.optional(),
-	media: z
-		.object({
-			type: z.enum(['image', 'video']),
-			src: z.string(),
-			alt: z.string()
-		})
-		.optional(),
-	advanceCondition: z
-		.object({
-			type: z.enum(['block-placed', 'program-run', 'level-complete']),
-			blockType: BlockTypeSchema.optional()
-		})
-		.optional()
-});
+export const StorySegmentSchema = z.preprocess(
+	(val) => {
+		if (typeof val === 'object' && val !== null) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const v = val as any;
+			if (v.highlight && !v.targets) {
+				if (typeof v.highlight === 'string') {
+					v.targets = [v.highlight];
+				} else if (v.highlight.target) {
+					v.targets = [v.highlight.target];
+				}
+			}
+		}
+		return val;
+	},
+	z.object({
+		id: z.string().optional(),
+		speaker: z.string(),
+		text: z.string(),
+		audioId: z.string().optional(),
+		emotion: z.string().optional(),
+		avatar: z.string().optional(),
+		targets: z.array(z.string()).optional(),
+		media: z
+			.object({
+				type: z.enum(['image', 'video']),
+				src: z.string(),
+				alt: z.string()
+			})
+			.optional(),
+		advanceCondition: z
+			.object({
+				type: z.enum(['block-placed', 'program-run', 'level-complete']),
+				blockType: BlockTypeSchema.optional()
+			})
+			.optional()
+	})
+);
 export type StorySegment = z.infer<typeof StorySegmentSchema>;
 
 export const HintTriggerSchema = z.discriminatedUnion('type', [
@@ -130,13 +141,29 @@ export const HintTriggerSchema = z.discriminatedUnion('type', [
 ]);
 export type HintTrigger = z.infer<typeof HintTriggerSchema>;
 
-export const HintSchema = z.object({
-	id: z.string(),
-	title: z.string().optional(),
-	text: z.string(),
-	trigger: HintTriggerSchema,
-	highlight: z.string().optional()
-});
+export const HintSchema = z.preprocess(
+	(val) => {
+		if (typeof val === 'object' && val !== null) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const v = val as any;
+			if (v.highlight && !v.targets) {
+				if (typeof v.highlight === 'string') {
+					v.targets = [v.highlight];
+				} else if (v.highlight.target) {
+					v.targets = [v.highlight.target];
+				}
+			}
+		}
+		return val;
+	},
+	z.object({
+		id: z.string(),
+		title: z.string().optional(),
+		text: z.string(),
+		trigger: HintTriggerSchema,
+		targets: z.array(z.string()).optional()
+	})
+);
 export type Hint = z.infer<typeof HintSchema>;
 
 export const LevelDefinitionSchema = z.object({
@@ -152,6 +179,7 @@ export const LevelDefinitionSchema = z.object({
 	goal: GridPositionSchema,
 	defaultTerrain: CellTypeSchema.optional(),
 	layout: z.record(z.string(), CellTypeSchema), // Key is "x,y"
+	cellIds: z.record(z.string(), z.string()).optional(), // Key is "x,y", Value is UUID
 	availableBlocks: z
 		.union([
 			z.array(BlockTypeSchema),
@@ -196,6 +224,7 @@ export const LevelPackSchema = z.object({
 	levels: z.array(LevelDefinitionSchema),
 	characters: z.array(CharacterSchema).optional(),
 	emotions: z.array(EmotionSchema).optional(),
+	customTiles: z.record(z.string(), TileDefinitionSchema).optional(),
 	// User-created pack metadata
 	isCustom: z.boolean().optional(),
 	author: z.string().optional(),

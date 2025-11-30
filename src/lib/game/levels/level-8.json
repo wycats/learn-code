@@ -54,7 +54,7 @@
 	"hints": [
 		{
 			"id": "l8-hint-idle",
-			"text": "Define the 'Stairs' function to go Up 2, Turn Right, Move 2, Turn Left.",
+			"text": "Define the 'Stairs' function to go Up 2, Turn Right, Move 2, Turn Left (Wait, you only have Turn Right! Use 3 Turn Rights to turn Left).",
 			"trigger": { "type": "idle", "value": 25 },
 			"highlight": "ui:function-tab"
 		},

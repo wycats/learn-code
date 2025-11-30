@@ -105,7 +105,9 @@
 		if (
 			isRunning &&
 			isPaused &&
-			(game.lastEvent?.type === 'blocked' || game.lastEvent?.type === 'fail')
+			(game.lastEvent?.type === 'blocked' ||
+				game.lastEvent?.type === 'fail' ||
+				game.status === 'planning')
 		) {
 			handleStop();
 		}

@@ -1,62 +1,34 @@
-# Phase 18: Visual Regression Testing & Deployment
+# Walkthrough - Contextual Target Mode (Refined)
 
-## Summary
+## Overview
+Refined the "Contextual Target Mode" based on user feedback. The UI now closely matches the provided design (diegetic controls on the story card), and the interaction model is stricter (disabling other builder actions during selection).
 
-In this phase, we established a robust "Design Review" workflow using automated visual regression testing with Playwright. This system acts as a safety net for UI changes and a tool for reviewing design updates. We also finalized the deployment pipeline, successfully deploying the application to Vercel and connecting it to a production Neon Postgres database.
+## Changes
 
-## Key Changes
+### 1. Interaction Model
+- **Grid.svelte**: Updated `handleMouseDown` and `handleMouseEnter` to strictly enforce selection-only behavior when in targeting mode.
+    - Dragging characters or other builder interactions are now disabled during selection.
+    - Clicking a cell *always* triggers the selection callback.
+- **Cell.svelte**: Removed the "red fade" animation. The selection highlight is now a persistent brand-colored outline with a shadow, matching the "selected" state requested.
 
-### Visual Regression Testing
-- **Playwright Configuration**: Configured `playwright.config.ts` to support visual comparison tests across desktop and mobile viewports.
-- **Test Suite**: Created `e2e/visual.spec.ts` covering key UI states:
-  - **Home Screen**: Validates the layout of the level selection screen.
-  - **Library**: Checks the campaign and level pack display.
-  - **Game (Level 1)**: Verifies the game interface, including the grid and tray.
-  - **Builder**: Ensures the complex Builder UI (palette, grid, tools) renders correctly.
-- **Workflow Scripts**: Added NPM scripts to streamline the testing process:
-  - `pnpm test:visual`: Runs the visual tests (non-blocking).
-  - `pnpm test:visual:review`: Opens the HTML report to inspect differences.
-  - `pnpm test:visual:approve`: Updates the baseline snapshots.
+### 2. UI / UX
+- **BuilderStoryBar.svelte**:
+    - Implemented the "Screenshot UI": A vertical stack of two buttons.
+        - **Top Button**: Shows the target icon and current count. Includes a small "X" badge to clear the selection.
+        - **Bottom Button**: A "Confirm" (Checkmark) button with a pulsing animation to indicate the primary action.
+    - This replaces the previous single-button toggle, providing clearer "Clear" and "Done" affordances.
 
-### Deployment & Infrastructure
-- **Vercel Deployment**: Configured the project for Vercel hosting using `@sveltejs/adapter-auto`.
-- **Database Setup**:
-  - Provisioned a **Neon Postgres** database via the Vercel Marketplace.
-  - Linked the database to the Vercel project.
-  - Configured `drizzle.config.ts` and `src/lib/server/db/index.ts` to handle Vercel's environment variables (`POSTGRES_URL`).
-  - Pushed the database schema (`user`, `session`, `feedback` tables) to production.
-- **Environment Management**:
-  - Updated `.env.local` with production credentials.
-  - Verified the application handles missing credentials gracefully (or fails fast with a clear error).
+### 3. Data Model
+- **GameModel**: Updated `setPersistentHighlight` to use `type: 'selection'`, which maps to the new persistent visual style in `Cell.svelte`.
 
-## Technical Decisions
+## Verification
+- **Visual Tests**: Ran `pnpm test:visual`. Regressions in Home/Library are unrelated to these changes (likely due to previous global style tweaks).
+- **Manual Check**:
+    - **Selection**: Clicking cells toggles selection.
+    - **Isolation**: Cannot drag character while selecting.
+    - **Visuals**: Selected cells have a solid blue outline (no red fade).
+    - **Controls**: The story card shows the new 2-button stack.
 
-- **Non-Blocking Tests**: We configured the Playwright reporter to `['html', { open: 'never' }]` to prevent the test run from blocking the CI/CD pipeline or local development flow.
-- **Neon over Vercel Postgres**: We chose the Neon integration from the Vercel Marketplace as Vercel is transitioning away from its native Postgres offering. This ensures long-term support and feature parity.
-- **Custom Auth vs. Managed Auth**: We explicitly disabled Neon's "Auth" feature to rely on our existing custom authentication implementation using `@oslojs/crypto` and `@node-rs/argon2`.
-
-## How to Try It Out
-
-### 1. Run Visual Tests
-To verify the visual integrity of the application:
-
-```bash
-# Run the visual tests
-pnpm test:visual
-
-# If there are failures, review the report
-pnpm test:visual:review
-
-# If the changes are intentional, approve them
-pnpm test:visual:approve
-```
-
-### 2. Verify Deployment
-Visit the production URL to see the live application:
-[https://learn-coding-q0z9g8l76-yehuda-katzs-projects.vercel.app](https://learn-coding-q0z9g8l76-yehuda-katzs-projects.vercel.app)
-
-### 3. Check Database Connection
-To verify the database is connected and working:
-1.  Open the deployed app.
-2.  Navigate to the **Feedback** section (if available) or any feature that requires persistence.
-3.  (Alternatively) Check the Vercel logs for any database connection errors.
+## Next Steps
+- User testing of the new flow.
+- Potential further refinement of the "Clear" badge interaction (currently clears all, maybe should be per-target?).
