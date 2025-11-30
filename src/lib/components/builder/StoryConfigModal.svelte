@@ -1,8 +1,10 @@
 <script lang="ts">
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
-	import { Plus, Trash2, X, Smile } from 'lucide-svelte';
+	import { Plus, Trash2, X, Smile, Edit2, RotateCcw } from 'lucide-svelte';
 	import Avatar from '$lib/components/game/Avatar.svelte';
 	import { isAvatarIcon, AVATAR_ICONS } from '$lib/game/icons';
+	import { SYSTEM_CHARACTERS, SYSTEM_EMOTIONS } from '$lib/game/constants';
+	import type { Character, Emotion } from '$lib/game/types';
 
 	interface Props {
 		builder: BuilderModel;
@@ -32,26 +34,8 @@
 
 	// Ensure lists exist
 	function ensureLists() {
-		if (!builder.pack.characters) {
-			builder.pack.characters = [
-				{ id: 'Zoey', name: 'Zoey', color: 'var(--pink-3)', avatar: 'Z' },
-				{ id: 'Jonas', name: 'Jonas', color: 'var(--blue-3)', avatar: 'J' },
-				{ id: 'Guide', name: 'Guide', color: 'var(--teal-3)', avatar: 'Bot' },
-				{ id: 'System', name: 'System', color: 'var(--surface-3)', avatar: 'S' }
-			];
-		}
-		if (!builder.pack.emotions) {
-			builder.pack.emotions = [
-				{ id: 'neutral', name: 'Neutral', icon: '😐' },
-				{ id: 'happy', name: 'Happy', icon: '😊' },
-				{ id: 'concerned', name: 'Concerned', icon: '😟' },
-				{ id: 'excited', name: 'Excited', icon: '🤩' },
-				{ id: 'thinking', name: 'Thinking', icon: '🤔' },
-				{ id: 'celebrating', name: 'Celebrating', icon: '🥳' },
-				{ id: 'none', name: 'None', icon: '😶' }
-			];
-		}
-
+		if (!builder.pack.characters) builder.pack.characters = [];
+		if (!builder.pack.emotions) builder.pack.emotions = [];
 		if (!builder.level.characters) builder.level.characters = [];
 		if (!builder.level.emotions) builder.level.emotions = [];
 	}
@@ -59,6 +43,18 @@
 	$effect(() => {
 		if (isOpen) ensureLists();
 	});
+
+	function overrideSystemCharacter(char: Character) {
+		ensureLists();
+		// Clone to pack
+		builder.pack.characters = [...(builder.pack.characters || []), { ...char }];
+	}
+
+	function overrideSystemEmotion(emo: Emotion) {
+		ensureLists();
+		// Clone to pack
+		builder.pack.emotions = [...(builder.pack.emotions || []), { ...emo }];
+	}
 
 	function addCharacter(scope: 'pack' | 'level') {
 		ensureLists();
@@ -229,7 +225,35 @@
 	<div class="modal-content">
 		{#if activeTab === 'characters'}
 			<div class="list-container">
-				<h3>Pack Defaults</h3>
+				<h3>System Defaults</h3>
+				{#each SYSTEM_CHARACTERS.filter((sys) => !builder.pack.characters?.some((p) => p.id === sys.id)) as char (char.id)}
+					<div class="config-item compact readonly">
+						<div class="avatar-wrapper">
+							<div class="avatar-circle" style:background-color={char.color}>
+								{#if isAvatarIcon(char.avatar ?? '')}
+									<div class="bot-icon-preview">
+										<Avatar value={char.avatar ?? '?'} size={20} />
+									</div>
+								{/if}
+								<div class="avatar-text" class:is-icon={isAvatarIcon(char.avatar ?? '')}>
+									{char.avatar}
+								</div>
+							</div>
+						</div>
+						<div class="name-display">{char.name}</div>
+						<button
+							class="icon-btn"
+							onclick={() => overrideSystemCharacter(char)}
+							title="Customize in Pack"
+						>
+							<Edit2 size={16} />
+						</button>
+					</div>
+				{:else}
+					<div class="empty-message">All system characters customized in pack</div>
+				{/each}
+
+				<h3 style="margin-top: var(--size-4)">Pack Specific</h3>
 				{#each builder.pack.characters || [] as char, i (char.id)}
 					<div class="config-item compact">
 						<div class="avatar-wrapper">
@@ -309,9 +333,15 @@
 						<button
 							class="delete-btn"
 							onclick={() => removeCharacter('pack', i)}
-							title="Remove Character"
+							title={SYSTEM_CHARACTERS.some((s) => s.id === char.id)
+								? 'Revert to System Default'
+								: 'Remove Character'}
 						>
-							<Trash2 size={18} />
+							{#if SYSTEM_CHARACTERS.some((s) => s.id === char.id)}
+								<RotateCcw size={18} />
+							{:else}
+								<Trash2 size={18} />
+							{/if}
 						</button>
 					</div>
 				{/each}
@@ -411,7 +441,27 @@
 			</div>
 		{:else}
 			<div class="list-container">
-				<h3>Pack Defaults</h3>
+				<h3>System Defaults</h3>
+				{#each SYSTEM_EMOTIONS.filter((sys) => !builder.pack.emotions?.some((p) => p.id === sys.id)) as emo (emo.id)}
+					<div class="config-item compact readonly">
+						<div class="emoji-wrapper">
+							<div class="emoji-display">{emo.icon}</div>
+						</div>
+						<div class="name-display">{emo.name}</div>
+						<div class="id-display">{emo.id}</div>
+						<button
+							class="icon-btn"
+							onclick={() => overrideSystemEmotion(emo)}
+							title="Customize in Pack"
+						>
+							<Edit2 size={16} />
+						</button>
+					</div>
+				{:else}
+					<div class="empty-message">All system emotions customized in pack</div>
+				{/each}
+
+				<h3 style="margin-top: var(--size-4)">Pack Specific</h3>
 				{#each builder.pack.emotions || [] as emo, i (emo.id)}
 					<div class="config-item compact">
 						<div class="emoji-wrapper">
@@ -461,9 +511,15 @@
 						<button
 							class="delete-btn"
 							onclick={() => removeEmotion('pack', i)}
-							title="Remove Emotion"
+							title={SYSTEM_EMOTIONS.some((s) => s.id === emo.id)
+								? 'Revert to System Default'
+								: 'Remove Emotion'}
 						>
-							<Trash2 size={18} />
+							{#if SYSTEM_EMOTIONS.some((s) => s.id === emo.id)}
+								<RotateCcw size={18} />
+							{:else}
+								<Trash2 size={18} />
+							{/if}
 						</button>
 					</div>
 				{/each}
@@ -552,8 +608,8 @@
 	.config-item.compact {
 		display: flex;
 		align-items: center;
-		gap: var(--size-3);
-		padding: var(--size-2);
+		gap: var(--size-2);
+		padding: var(--size-1) var(--size-2);
 		background-color: var(--surface-2);
 		border-radius: var(--radius-round);
 		border: 1px solid transparent;
@@ -567,8 +623,8 @@
 
 	.avatar-wrapper {
 		position: relative;
-		width: 48px;
-		height: 48px;
+		width: 36px;
+		height: 36px;
 		flex-shrink: 0;
 	}
 
@@ -593,6 +649,22 @@
 		color: var(--text-2);
 	}
 
+	.avatar-text {
+		width: 100%;
+		height: 100%;
+		display: grid;
+		place-items: center;
+		font-weight: bold;
+		color: var(--text-2);
+		font-size: var(--font-size-1);
+		position: relative;
+		z-index: 1;
+	}
+
+	.avatar-text.is-icon {
+		color: transparent;
+	}
+
 	.avatar-input {
 		width: 100%;
 		height: 100%;
@@ -601,7 +673,7 @@
 		text-align: center;
 		font-weight: bold;
 		color: var(--text-2);
-		font-size: var(--font-size-2);
+		font-size: var(--font-size-1);
 		padding: 0;
 		position: relative;
 		z-index: 1;
@@ -619,8 +691,8 @@
 		position: absolute;
 		top: -4px;
 		right: -4px;
-		width: 20px;
-		height: 20px;
+		width: 16px;
+		height: 16px;
 		border-radius: 50%;
 		border: 2px solid white;
 		cursor: pointer;
@@ -643,8 +715,8 @@
 		position: absolute;
 		bottom: -4px;
 		right: -4px;
-		width: 20px;
-		height: 20px;
+		width: 16px;
+		height: 16px;
 		border-radius: 50%;
 		border: 2px solid white;
 		cursor: pointer;
@@ -745,7 +817,7 @@
 		background: transparent;
 		border: 1px solid transparent;
 		padding: var(--size-1) var(--size-2);
-		font-size: var(--font-size-2);
+		font-size: var(--font-size-1);
 		font-weight: 500;
 		border-radius: var(--radius-1);
 		color: var(--text-1);
@@ -759,13 +831,21 @@
 
 	.emoji-wrapper {
 		position: relative;
-		width: 48px;
-		height: 48px;
+		width: 36px;
+		height: 36px;
 		display: grid;
 		place-items: center;
 		background-color: var(--surface-1);
 		border-radius: 50%;
 		border: 1px solid var(--surface-3);
+	}
+
+	.emoji-display {
+		width: 100%;
+		height: 100%;
+		display: grid;
+		place-items: center;
+		font-size: 20px;
 	}
 
 	.emoji-input {
@@ -774,7 +854,7 @@
 		background: transparent;
 		border: none;
 		text-align: center;
-		font-size: 24px;
+		font-size: 20px;
 		padding: 0;
 	}
 
@@ -859,16 +939,17 @@
 	.list-container {
 		display: flex;
 		flex-direction: column;
-		gap: var(--size-3);
+		gap: var(--size-2);
 	}
 
-	.config-item {
-		display: flex;
-		gap: var(--size-3);
-		padding: var(--size-3);
-		background-color: var(--surface-2);
-		border-radius: var(--radius-2);
-		align-items: flex-start;
+	h3 {
+		margin: 0;
+		font-size: var(--font-size-0);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--text-3);
+		font-weight: 700;
+		margin-bottom: var(--size-1);
 	}
 
 	input {
@@ -925,5 +1006,45 @@
 		background-color: var(--surface-2);
 		color: var(--text-1);
 		border-color: var(--text-2);
+	}
+
+	.name-display {
+		flex: 1;
+		padding: var(--size-1) var(--size-2);
+		font-size: var(--font-size-1);
+		font-weight: 500;
+		color: var(--text-2);
+		display: flex;
+		align-items: center;
+	}
+
+	.id-display {
+		width: 80px;
+		font-size: var(--font-size-00);
+		color: var(--text-3);
+		text-align: right;
+		padding: var(--size-1) var(--size-2);
+	}
+
+	.icon-btn {
+		background: none;
+		border: none;
+		color: var(--text-3);
+		cursor: pointer;
+		padding: var(--size-2);
+		border-radius: var(--radius-1);
+	}
+
+	.icon-btn:hover {
+		background-color: var(--surface-3);
+		color: var(--text-1);
+	}
+
+	.empty-message {
+		padding: var(--size-2);
+		color: var(--text-3);
+		font-style: italic;
+		font-size: var(--font-size-1);
+		text-align: center;
 	}
 </style>

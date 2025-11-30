@@ -13,7 +13,9 @@
 		X,
 		ChevronDown,
 		ChevronRight,
-		Lightbulb
+		Lightbulb,
+		Check,
+		Pencil
 	} from 'lucide-svelte';
 
 	interface Props {
@@ -256,51 +258,113 @@
 
 								<!-- Highlight Control (Compact) -->
 								<div class="highlight-control">
-									{#if hint.targets && hint.targets.length > 0}
-										<div
-											class="highlight-chip icon-only"
-											title={`Target: ${hint.targets[0]}`}
-											role="button"
-											tabindex="0"
-											onmouseenter={() => builder.game.triggerPreviewHighlight(hint.targets!)}
-										>
-											<Target size={16} />
+									{#if builder.targetSelectionMode && builder.targetingState.contextName === `hint-${hint.id}`}
+										<div class="targeting-controls">
 											<button
-												class="chip-remove"
+												class="target-status-btn"
+												title="Clear Selection"
+												onclick={() => {
+													hint.targets = [];
+													builder.game.previewHighlight = {
+														targets: [],
+														type: 'selection',
+														fading: false
+													};
+													builder.targetingState.currentCount = 0;
+												}}
+											>
+												<Target size={16} />
+												<span class="count">{builder.targetingState.currentCount}</span>
+												<div class="clear-badge">
+													<X size={10} />
+												</div>
+											</button>
+											<button
+												class="confirm-btn"
+												title="Done Selecting"
+												onclick={() => builder.cancelTargetSelection()}
+											>
+												<Check size={16} />
+											</button>
+										</div>
+									{:else if hint.targets && hint.targets.length > 0}
+										<!-- svelte-ignore a11y_click_events_have_key_events -->
+										<!-- svelte-ignore a11y_no_static_element_interactions -->
+										<div
+											class="highlight-badge"
+											title={`Targets: ${hint.targets.join(', ')}`}
+											onmouseenter={() => builder.game.triggerPreviewHighlight(hint.targets!)}
+											onclick={() => builder.game.triggerPreviewHighlight(hint.targets!)}
+										>
+											<Target size={14} />
+											<span class="count">{hint.targets.length}</span>
+
+											<button
+												class="badge-corner-btn clear"
 												onclick={(e) => {
 													e.stopPropagation();
 													hint.targets = undefined;
 													builder.game.previewHighlight = null;
 												}}
+												title="Clear Targets"
 											>
-												<X size={14} />
+												<X size={10} />
+											</button>
+											<button
+												class="badge-corner-btn edit"
+												onclick={(e) => {
+													e.stopPropagation();
+													if (hint.targets) {
+														builder.game.setPersistentHighlight(hint.targets);
+													}
+													builder.startTargetSelection(
+														`hint-${hint.id}`,
+														hint.targets?.length || 0,
+														(target) => {
+															if (!hint.targets) hint.targets = [];
+															const idx = hint.targets.indexOf(target);
+															if (idx !== -1) hint.targets.splice(idx, 1);
+															else hint.targets.push(target);
+
+															builder.game.setPersistentHighlight(hint.targets);
+															builder.targetingState.currentCount = hint.targets.length;
+														},
+														() => {
+															hint.targets = [];
+															builder.game.previewHighlight = null;
+															builder.targetingState.currentCount = 0;
+														},
+														() => builder.cancelTargetSelection()
+													);
+												}}
+												title="Edit Targets"
+											>
+												<Pencil size={10} />
 											</button>
 										</div>
 									{:else}
 										<button
 											class="icon-btn toggle-select"
-											class:active={builder.targetSelectionMode &&
-												builder.targetSelectionContext === `hint-${hint.id}`}
 											onclick={() => {
-												if (
-													builder.targetSelectionMode &&
-													builder.targetSelectionContext === `hint-${hint.id}`
-												) {
-													builder.cancelTargetSelection();
-												} else {
-													builder.startTargetSelection(
-														`hint-${hint.id}`,
-														0,
-														(target) => {
-															hint.targets = [target];
-															builder.game.triggerPreviewHighlight(target);
-														},
-														() => {
-															hint.targets = [];
-														},
-														() => {}
-													);
-												}
+												builder.startTargetSelection(
+													`hint-${hint.id}`,
+													0,
+													(target) => {
+														if (!hint.targets) hint.targets = [];
+														const idx = hint.targets.indexOf(target);
+														if (idx !== -1) hint.targets.splice(idx, 1);
+														else hint.targets.push(target);
+
+														builder.game.setPersistentHighlight(hint.targets);
+														builder.targetingState.currentCount = hint.targets.length;
+													},
+													() => {
+														hint.targets = [];
+														builder.game.previewHighlight = null;
+														builder.targetingState.currentCount = 0;
+													},
+													() => builder.cancelTargetSelection()
+												);
 											}}
 											title="Select Target Element"
 										>
@@ -544,31 +608,6 @@
 		flex: 1;
 	}
 
-	.highlight-control {
-		display: flex;
-		align-items: center;
-		gap: var(--size-1);
-	}
-
-	.highlight-chip {
-		display: flex;
-		align-items: center;
-		gap: var(--size-1);
-		background-color: var(--brand-light);
-		color: var(--brand);
-		padding: 2px 6px;
-		border-radius: var(--radius-pill);
-		font-size: var(--font-size-0);
-		font-weight: 600;
-		border: 1px solid var(--brand);
-	}
-
-	.highlight-chip.icon-only {
-		padding: 4px;
-		gap: 4px;
-		border-radius: var(--radius-2);
-	}
-
 	.icon-btn.toggle-select {
 		color: var(--text-3);
 	}
@@ -576,11 +615,6 @@
 	.icon-btn.toggle-select:hover {
 		color: var(--brand);
 		background-color: var(--brand-light);
-	}
-
-	.icon-btn.toggle-select.active {
-		color: white;
-		background-color: var(--brand);
 	}
 
 	/* Popover Menu */
@@ -687,32 +721,154 @@
 		gap: var(--size-2);
 	}
 
-	.highlight-chip {
+	.targeting-controls {
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
-		background-color: var(--brand-light);
-		color: var(--brand);
-		padding: 4px 8px;
-		border-radius: var(--radius-pill);
-		font-size: var(--font-size-1);
-		font-weight: 600;
-		border: 1px solid var(--brand);
+		animation: slide-in 0.2s ease-out;
 	}
 
-	.chip-remove {
-		background: none;
-		border: none;
-		padding: 2px;
-		cursor: pointer;
-		color: var(--brand);
+	@keyframes slide-in {
+		from {
+			opacity: 0;
+			transform: translateX(-10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
+
+	.target-status-btn {
 		display: flex;
 		align-items: center;
-		border-radius: 50%;
+		gap: var(--size-2);
+		background-color: var(--brand);
+		color: white;
+		border: none;
+		padding: 4px 8px 4px 10px;
+		border-radius: var(--radius-pill);
+		font-size: var(--font-size-1);
+		font-weight: 700;
+		cursor: pointer;
+		box-shadow: var(--shadow-2);
+		position: relative;
+		overflow: hidden;
 	}
 
-	.chip-remove:hover {
-		background-color: rgba(0, 0, 0, 0.1);
+	.target-status-btn:hover {
+		background-color: var(--brand-dark);
+	}
+
+	.target-status-btn .count {
+		background-color: rgba(255, 255, 255, 0.2);
+		padding: 0 6px;
+		border-radius: var(--radius-pill);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.clear-badge {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 16px;
+		height: 16px;
+		background-color: rgba(0, 0, 0, 0.2);
+		border-radius: 50%;
+		margin-left: 2px;
+		transition: all 0.2s;
+	}
+
+	.target-status-btn:hover .clear-badge {
+		background-color: var(--red-5);
+		color: white;
+	}
+
+	.confirm-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		background-color: var(--green-5);
+		color: white;
+		border: none;
+		cursor: pointer;
+		box-shadow: var(--shadow-2);
+		animation: pulse 2s infinite;
+	}
+
+	.confirm-btn:hover {
+		background-color: var(--green-6);
+		transform: scale(1.1);
+	}
+
+	@keyframes pulse {
+		0% {
+			box-shadow: 0 0 0 0 rgba(var(--green-5-rgb), 0.4);
+		}
+		70% {
+			box-shadow: 0 0 0 6px rgba(var(--green-5-rgb), 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(var(--green-5-rgb), 0);
+		}
+	}
+
+	.highlight-badge {
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		background-color: var(--surface-2);
+		border: 1px solid var(--brand);
+		color: var(--brand);
+		padding: 2px 2px 2px 8px;
+		border-radius: var(--radius-pill);
+		font-size: var(--font-size-0);
+		font-weight: 700;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.highlight-badge:hover {
+		background-color: var(--brand-light);
+	}
+
+	.highlight-badge .count {
+		margin-right: 4px;
+	}
+
+	.badge-corner-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		border: none;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.badge-corner-btn.clear {
+		background-color: transparent;
+		color: var(--text-3);
+	}
+
+	.badge-corner-btn.clear:hover {
+		background-color: var(--red-2);
+		color: var(--red-7);
+	}
+
+	.badge-corner-btn.edit {
+		background-color: var(--surface-3);
+		color: var(--text-2);
+	}
+
+	.badge-corner-btn.edit:hover {
+		background-color: var(--brand);
+		color: white;
 	}
 
 	/* Add Button */

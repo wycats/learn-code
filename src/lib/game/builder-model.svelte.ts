@@ -1,7 +1,16 @@
 import { GameModel } from './model.svelte';
-import type { LevelDefinition, CellType, GridPosition, LevelPack, Block } from './types';
+import type {
+	LevelDefinition,
+	CellType,
+	GridPosition,
+	LevelPack,
+	Block,
+	Character,
+	Emotion
+} from './types';
 import { createDefaultPack, savePack, loadPack, listPacks } from './persistence';
 import { fileSystem } from '$lib/services/file-system';
+import { SYSTEM_CHARACTERS, SYSTEM_EMOTIONS } from './constants';
 
 export type BuilderTool =
 	| { type: 'terrain'; value: CellType }
@@ -44,7 +53,7 @@ export class BuilderModel {
 	activeTool = $state<BuilderTool>({ type: 'terrain', value: 'wall' });
 	activeSegmentId = $state<string | null>(null);
 	selectedActor = $state<'start' | 'goal' | null>(null);
-	
+
 	// Targeting State
 	targetingState = $state<{
 		isActive: boolean;
@@ -374,12 +383,12 @@ export class BuilderModel {
 			this.currentProgram = $state.snapshot(this.game.program);
 		}
 		this.mode = mode;
-		
+
 		// Clear selections when switching modes
 		this.selectedGridPosition = null;
 		this.selectedActor = null;
 		this.cancelTargetSelection();
-		
+
 		this.syncGame();
 	}
 
@@ -410,6 +419,20 @@ export class BuilderModel {
 			...packTiles,
 			...(levelSnapshot.customTiles || {})
 		};
+
+		// Merge pack characters (Level overrides Pack by ID)
+		const charMap: Record<string, Character> = {};
+		SYSTEM_CHARACTERS.forEach((c) => (charMap[c.id] = c));
+		(this.pack.characters || []).forEach((c) => (charMap[c.id] = c));
+		(levelSnapshot.characters || []).forEach((c) => (charMap[c.id] = c));
+		levelSnapshot.characters = Object.values(charMap);
+
+		// Merge pack emotions (Level overrides Pack by ID)
+		const emoMap: Record<string, Emotion> = {};
+		SYSTEM_EMOTIONS.forEach((e) => (emoMap[e.id] = e));
+		(this.pack.emotions || []).forEach((e) => (emoMap[e.id] = e));
+		(levelSnapshot.emotions || []).forEach((e) => (emoMap[e.id] = e));
+		levelSnapshot.emotions = Object.values(emoMap);
 
 		// Create a new GameModel with the current level definition
 		this.game = new GameModel(levelSnapshot);

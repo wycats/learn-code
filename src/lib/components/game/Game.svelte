@@ -180,6 +180,12 @@
 		}, 1000);
 		return () => clearInterval(interval);
 	});
+
+	$effect(() => {
+		if (game.displaySegment?.targets) {
+			game.triggerPreviewHighlight(game.displaySegment.targets);
+		}
+	});
 </script>
 
 <div class="game-layout">

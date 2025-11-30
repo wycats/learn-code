@@ -56,28 +56,70 @@
 
 			// Smart Fallbacks
 			// Red/Orange
-			target: 'red', gift: 'red', apple: 'red', cherry: 'red',
-			truck: 'red', car: 'red', bus: 'red',
-			sun: 'orange', pizza: 'orange', coffee: 'orange', cake: 'orange', trophy_alt: 'orange',
-			medal: 'orange', crown: 'orange', fire: 'orange',
+			target: 'red',
+			gift: 'red',
+			apple: 'red',
+			cherry: 'red',
+			truck: 'red',
+			car: 'red',
+			bus: 'red',
+			sun: 'orange',
+			pizza: 'orange',
+			coffee: 'orange',
+			cake: 'orange',
+			trophy_alt: 'orange',
+			medal: 'orange',
+			crown: 'orange',
+			fire: 'orange',
 
 			// Green
-			tree: 'green', flower: 'green', mountain: 'green', tent: 'green', bug: 'green',
-			
+			tree: 'green',
+			flower: 'green',
+			mountain: 'green',
+			tent: 'green',
+			bug: 'green',
+
 			// Purple/Pink
-			ghost: 'purple', skull: 'purple', moon: 'purple', sparkles: 'purple', gem: 'purple',
-			dice: 'purple', puzzle: 'purple', gamepad: 'purple',
-			smile: 'pink', cat: 'pink', dog: 'pink', rabbit: 'pink',
+			ghost: 'purple',
+			skull: 'purple',
+			moon: 'purple',
+			sparkles: 'purple',
+			gem: 'purple',
+			dice: 'purple',
+			puzzle: 'purple',
+			gamepad: 'purple',
+			smile: 'pink',
+			cat: 'pink',
+			dog: 'pink',
+			rabbit: 'pink',
 
 			// Cyan/Blue
-			bot: 'cyan', cpu: 'cyan', rocket: 'cyan', plane: 'cyan', bike: 'cyan',
-			camera: 'cyan', video: 'cyan', mic: 'cyan', headphones: 'cyan',
-			pencil: 'blue', map: 'blue', compass: 'blue', ship: 'blue',
-			anchor: 'blue', bird: 'blue', cloud: 'blue', droplets: 'blue', snowflake: 'blue',
-			glasses: 'blue', watch: 'blue', shirt: 'blue', fish: 'blue',
+			bot: 'cyan',
+			cpu: 'cyan',
+			rocket: 'cyan',
+			plane: 'cyan',
+			bike: 'cyan',
+			camera: 'cyan',
+			video: 'cyan',
+			mic: 'cyan',
+			headphones: 'cyan',
+			pencil: 'blue',
+			map: 'blue',
+			compass: 'blue',
+			ship: 'blue',
+			anchor: 'blue',
+			bird: 'blue',
+			cloud: 'blue',
+			droplets: 'blue',
+			snowflake: 'blue',
+			glasses: 'blue',
+			watch: 'blue',
+			shirt: 'blue',
+			fish: 'blue',
 
 			// Yellow
-			lightbulb: 'yellow', coins: 'yellow'
+			lightbulb: 'yellow',
+			coins: 'yellow'
 		};
 
 		const themeName = mappings[icon] || 'blue';
@@ -90,8 +132,8 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="pack-card" onclick={onClick}>
-	<div 
-		class="cover" 
+	<div
+		class="cover"
 		style:background="linear-gradient(135deg, {theme.bg})"
 		style:color={theme.color}
 	>

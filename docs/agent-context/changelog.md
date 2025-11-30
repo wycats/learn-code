@@ -318,4 +318,3 @@ Ensured backward compatibility for existing user-created levels following the "T
 
 - **Schema Migration**: Updated `StorySegmentSchema` and `HintSchema` in `src/lib/game/schema.ts` with `z.preprocess` logic to handle legacy data formats transparently.
 - **Verification**: Validated the migration logic against legacy level files (`level-1.json`) to ensure seamless loading.
-
