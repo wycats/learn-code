@@ -15,6 +15,7 @@
 	} from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
 	import StoryConfigModal from './StoryConfigModal.svelte';
+	import { SYSTEM_EMOTIONS, SYSTEM_CHARACTERS } from '$lib/game/constants';
 	import Avatar from '$lib/components/game/Avatar.svelte';
 
 	interface Props {
@@ -29,29 +30,14 @@
 	let charPopover = $state<HTMLElement>();
 	let emotionPopover = $state<HTMLElement>();
 
-	const defaultCharacters = [
-		{ id: 'Zoey', name: 'Zoey', color: 'var(--pink-3)', avatar: 'Z' },
-		{ id: 'Jonas', name: 'Jonas', color: 'var(--blue-3)', avatar: 'J' },
-		{ id: 'Guide', name: 'Guide', color: 'var(--teal-3)', avatar: 'Bot' },
-		{ id: 'System', name: 'System', color: 'var(--surface-3)', avatar: 'S' }
-	];
-
-	const defaultEmotions = [
-		{ id: 'neutral', name: 'Neutral', icon: '😐' },
-		{ id: 'happy', name: 'Happy', icon: '😊' },
-		{ id: 'concerned', name: 'Concerned', icon: '😟' },
-		{ id: 'excited', name: 'Excited', icon: '🤩' },
-		{ id: 'thinking', name: 'Thinking', icon: '🤔' },
-		{ id: 'celebrating', name: 'Celebrating', icon: '🥳' },
-		{ id: 'none', name: 'None', icon: '😶' }
-	];
-
 	let characters = $derived([
-		...(builder.pack.characters || defaultCharacters),
+		...SYSTEM_CHARACTERS.filter((sys) => !builder.pack.characters?.some((p) => p.id === sys.id)),
+		...(builder.pack.characters || []),
 		...(builder.level.characters || [])
 	]);
 	let emotions = $derived([
-		...(builder.pack.emotions || defaultEmotions),
+		...SYSTEM_EMOTIONS.filter((sys) => !builder.pack.emotions?.some((p) => p.id === sys.id)),
+		...(builder.pack.emotions || []),
 		...(builder.level.emotions || [])
 	]);
 
@@ -180,7 +166,7 @@
 	function getCharacter(name: string) {
 		return (
 			characters.find((c) => c.name === name) ||
-			defaultCharacters.find((c) => c.name === name) || {
+			SYSTEM_CHARACTERS.find((c) => c.name === name) || {
 				color: 'var(--surface-3)',
 				avatar: name[0]
 			}
@@ -190,7 +176,7 @@
 	function getEmotion(id: string) {
 		return (
 			emotions.find((e) => e.id === id) ||
-			defaultEmotions.find((e) => e.id === id) || { icon: '😐' }
+			SYSTEM_EMOTIONS.find((e) => e.id === id) || { icon: '😐' }
 		);
 	}
 
