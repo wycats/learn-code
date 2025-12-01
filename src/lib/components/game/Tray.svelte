@@ -1078,6 +1078,8 @@
 		gap: var(--size-1);
 		max-height: 60vh;
 		overflow-y: auto;
+		/* Add padding to accommodate hover/active transforms without triggering scrollbars */
+		padding: var(--size-1);
 	}
 
 	.single-function-display {
