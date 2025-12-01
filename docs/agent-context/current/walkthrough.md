@@ -29,6 +29,15 @@ Refined the "Contextual Target Mode" based on user feedback. The UI now closely 
 
 - **GameModel**: Updated `setPersistentHighlight` to use `type: 'selection'`, which maps to the new persistent visual style in `Cell.svelte`.
 
+### 4. Maintenance & CI
+
+- **Lefthook**: Installed and configured `lefthook` to run `lint`, `format`, `check`, and `test` on pre-commit/pre-push.
+- **CI Fixes**:
+  - Removed invalid `pnpm-workspace.yaml`.
+  - Updated `check` script to run `paraglide:compile` first.
+  - Removed accidentally committed `playwright-report`.
+- **Bug Fix**: Fixed `BuilderTray` custom terrain selection color (was orange, now standard blue).
+
 ## Verification
 
 - **Visual Tests**: Ran `pnpm test:visual`. Regressions in Home/Library are unrelated to these changes (likely due to previous global style tweaks).
