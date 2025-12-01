@@ -85,3 +85,14 @@ The user owns their data.
   - No required login or server round-trips for core gameplay.
   - "Cloud" features are for sharing, not saving.
 - **Anti-Pattern**: "Loading..." spinners for local actions.
+
+## 10. Schema Stability (No Breaking Changes)
+
+We respect the user's creations.
+
+- **Principle**: An update to the app must never break an existing level or pack.
+- **Application**:
+  - **Backward Compatibility**: The schema parser (Zod) must always handle older versions of the data format.
+  - **Migration**: If the internal model changes, we must provide a migration path (e.g., `transformV1toV2`) that runs transparently on load.
+  - **Validation**: We validate inputs, but we are lenient with outputs. If a field is missing, provide a sensible default rather than crashing.
+- **Anti-Pattern**: A "Corrupted Save" error after an app update.
