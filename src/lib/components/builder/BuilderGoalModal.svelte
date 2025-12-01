@@ -209,7 +209,7 @@
 					<div class="starting-code-section">
 						<button class="btn-secondary" onclick={handleSnapshot}>
 							<Camera size={20} />
-							{snapshotStatus === 'saved' ? 'Saved!' : 'Use test level'}
+							{snapshotStatus === 'saved' ? 'Saved!' : 'Set as Start'}
 						</button>
 					</div>
 				</div>

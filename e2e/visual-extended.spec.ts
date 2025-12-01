@@ -4,7 +4,7 @@ import { argosScreenshot } from '@argos-ci/playwright';
 test.describe('Visual Regression - Extended', () => {
 	test('Design System', async ({ page }) => {
 		await page.goto('/design');
-		await expect(page.locator('h1')).toContainText('Design System');
+		await expect(page.getByRole('heading', { name: 'Design System' })).toBeVisible();
 		await argosScreenshot(page, 'design-system');
 	});
 

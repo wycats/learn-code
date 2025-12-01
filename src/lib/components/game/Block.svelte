@@ -117,9 +117,9 @@
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<span
 					class="loop-badge"
-					class:targetable={!!onTarget}
+					class:targetable={!!onTarget && block.count !== undefined}
 					onclick={(e) => {
-						if (onTarget) {
+						if (onTarget && block.count !== undefined) {
 							e.stopPropagation();
 							onTarget(`block:${block.id}:count`);
 						}

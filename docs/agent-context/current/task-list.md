@@ -1,8 +1,16 @@
-# Task List: The Architect's Polish
+# Phase 20: Function UX & Builder Polish
 
-- [x] **Visual**: Update "Clear Blocks" icon to Broom. <!-- id: 2 -->
-- [x] **Builder**: Enable targeting of Repeat Count and Function Name. <!-- id: 5 -->
-- [x] **Builder**: Implement Story Segment reordering. <!-- id: 8 -->
-- [x] **UX**: Improve "Call ???" block empty state. <!-- id: 10 -->
-- [x] **Content**: Polish "Gauntlet" pack levels. <!-- id: 11 -->
-- [x] **Content**: Create "Hard" pack (Purple theme). <!-- id: 12 -->
+**Goal:** Address remaining usability issues in the Builder and improve the Function creation workflow.
+
+## Function UX
+
+- [x] Improve "Call ???" block behavior (empty state/disable).
+
+## Builder Polish
+
+- [x] Glassomorphic UI for player occlusion (Cover block).
+- [ ] Remove tile dropdown in Level Editor.
+- [ ] Custom amount in Repeat blocks.
+- [ ] Fix "Infinity" targeting (hide/disable).
+- [ ] "Use test level" text update.
+- [ ] Undo/Redo in Level Editor.

@@ -1,36 +1,33 @@
-# Implementation Plan: The Architect's Polish (Phase 19)
+# Implementation Plan - Phase 20
 
-## Phase Goal
+## Goal
 
-Refine the Builder and Game experience based on direct feedback from our primary persona, Jonas. This phase focuses on visual polish, builder usability enhancements, and content refinement.
+Address remaining usability issues in the Builder and improve the Function creation workflow.
 
-## 1. Visual Polish
+## Proposed Changes
 
-- [ ] **Player Occlusion**: Implement a "Cover" block style (Glassomorphism) when the player character is behind a block to ensure visibility.
-- [ ] **Icon Updates**: Replace the "Clear Blocks" icon with a "Broom" (add to Lucide if needed or find alternative).
-- [ ] **Builder UI Cleanup**: Remove the redundant tile dropdown in the Level Editor now that we have the dedicated Tile Editor.
+### 1. Function UX: "Call ???" Block
 
-## 2. Builder Enhancements
+**Problem:** The "Call Function" block might be confusing or broken when no function is selected or available.
+**Solution:**
 
-- [ ] **Repeat Block**: Allow users to input a custom repeat count instead of selecting from a preset list.
-- [ ] **Targeting**:
-  - [ ] Enable targeting of the "Repeat Count" specifically in Story Mode.
-  - [ ] Enable targeting of the "Function Name" specifically in Story Mode.
-  - [ ] Disable/Hide targeting for "Infinity" loop count as it's not a visible element in the same way.
-- [ ] **Text Updates**: Change "Use current workspace" to "Use test level" for clarity.
-- [ ] **Story Editor**: Implement reordering for story segments (Drag & Drop or Up/Down buttons).
-- [ ] **Undo/Redo**: Implement Undo/Redo functionality for the Level Editor (placing tiles, actors, etc.).
+- Investigate current behavior of `CallBlock` when `functionName` is empty.
+- Improve the empty state (e.g., disable interaction, show "Select Function" prompt).
+- Ensure it handles cases where functions are deleted.
 
-## 3. Function UX
+### 2. Builder Polish
 
-- [ ] **Empty State**: Improve the "Call ???" block behavior. If no functions are defined, it should be disabled or show a helpful tooltip/state instead of being active but broken.
+- **Glassomorphic UI**: Add a visual effect to the "Cover" block to indicate it's obscuring something but still part of the world (or maybe just style it better).
+- **Remove Tile Dropdown**: The tile selector in the Level Editor might be redundant or clunky.
+- **Custom Repeat Amount**: Allow users to type a number in the Repeat block instead of just using the preset.
+- **Fix "Infinity" Targeting**: The "Infinity" option in Repeat blocks shouldn't be targetable by the Story Mode spotlight if it's not a valid learning target for that level? Or maybe it's just broken.
+- **"Use test level" Text**: Clarify the button text.
+- **Undo/Redo**: Implement undo/redo stack for the Level Editor.
 
-## 4. Content Polish
+## Execution Steps
 
-- [ ] **Gauntlet Pack**: Refine the "Gauntlet" levels to feel more cohesive and designed.
-- [ ] **New Pack**: Create a "Hard" built-in pack with a Purple theme to challenge advanced players.
-
-## 5. Verification
-
-- [ ] **Visual Tests**: Update visual tests to capture the new "Cover" block style and Builder UI changes.
-- [ ] **Playtest**: Verify the new "Hard" pack and Gauntlet improvements.
+1.  **Function UX Investigation & Fix**
+    - Analyze `CallBlock.svelte` and `FunctionDefinition.svelte`.
+    - Implement improvements.
+2.  **Builder Polish Items**
+    - Tackle them one by one.

@@ -14,12 +14,13 @@
 		Grid3x3,
 		Link,
 		Undo,
-		Redo
+		Redo,
+		ChevronDown
 	} from 'lucide-svelte';
 	import PackManagerModal from './PackManagerModal.svelte';
 	import Cell from '$lib/components/game/Cell.svelte';
 	import type { CellType } from '$lib/game/types';
-	import { fade } from 'svelte/transition';
+	import { fade, slide } from 'svelte/transition';
 
 	interface Props {
 		builder: BuilderModel;
@@ -31,6 +32,7 @@
 	let { builder, showSettings, onToggleSettings, onExit }: Props = $props();
 
 	let showPackManager = $state(false);
+	let showLevelList = $state(false);
 	let statusMessage = $state<string | null>(null);
 	let statusType = $state<'success' | 'error'>('success');
 
@@ -122,7 +124,27 @@
 			showStatus('Failed to reconnect', 'error');
 		}
 	}
+
+	function handleKeydown(e: KeyboardEvent) {
+		if (builder.mode !== 'edit' && builder.mode !== 'story') return;
+		// Ignore if typing in an input
+		if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+		if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+			e.preventDefault();
+			if (e.shiftKey) {
+				builder.redo();
+			} else {
+				builder.undo();
+			}
+		} else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+			e.preventDefault();
+			builder.redo();
+		}
+	}
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 {#if showPackManager}
 	<PackManagerModal {builder} onClose={() => (showPackManager = false)} />
@@ -196,15 +218,33 @@
 			<div class="separator"></div>
 
 			<div class="level-controls">
-				<select
-					class="level-select"
-					value={builder.level.id}
-					onchange={({ currentTarget }) => builder.switchLevel(currentTarget.value)}
-				>
-					{#each builder.pack.levels as level (level.id)}
-						<option value={level.id}>{level.name}</option>
-					{/each}
-				</select>
+				<div class="level-select-wrapper">
+					<button
+						class="level-trigger"
+						onclick={() => (showLevelList = !showLevelList)}
+						title="Switch Level"
+					>
+						<span class="level-name">{builder.level.name}</span>
+						<ChevronDown size={14} />
+					</button>
+
+					{#if showLevelList}
+						<div class="level-popover" transition:slide={{ duration: 200 }}>
+							{#each builder.pack.levels as level (level.id)}
+								<button
+									class="level-option"
+									class:active={builder.level.id === level.id}
+									onclick={() => {
+										builder.switchLevel(level.id);
+										showLevelList = false;
+									}}
+								>
+									{level.name}
+								</button>
+							{/each}
+						</div>
+					{/if}
+				</div>
 				<button class="action-btn" onclick={() => builder.createNewLevel()} title="New Level">
 					<Plus size={18} />
 				</button>
@@ -456,14 +496,77 @@
 		gap: var(--size-1);
 	}
 
-	.level-select {
+	.level-select-wrapper {
+		position: relative;
+	}
+
+	.level-trigger {
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
 		background-color: var(--surface-1);
 		border: 1px solid var(--surface-3);
 		color: var(--text-1);
-		padding: var(--size-1) var(--size-2);
+		padding: var(--size-2) var(--size-3);
 		border-radius: var(--radius-2);
 		font-size: var(--font-size-1);
-		max-width: 150px;
+		cursor: pointer;
+		min-width: 150px;
+		justify-content: space-between;
+		transition: all 0.2s;
+	}
+
+	.level-trigger:hover {
+		background-color: var(--surface-3);
+	}
+
+	.level-name {
+		font-weight: 600;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 120px;
+	}
+
+	.level-popover {
+		position: absolute;
+		top: calc(100% + 4px);
+		left: 0;
+		width: 100%;
+		min-width: 180px;
+		background-color: var(--surface-1);
+		border: 1px solid var(--surface-3);
+		border-radius: var(--radius-2);
+		box-shadow: var(--shadow-3);
+		z-index: 20;
+		max-height: 300px;
+		overflow-y: auto;
+		display: flex;
+		flex-direction: column;
+		padding: 4px;
+	}
+
+	.level-option {
+		text-align: left;
+		background: none;
+		border: none;
+		padding: var(--size-2);
+		cursor: pointer;
+		color: var(--text-2);
+		border-radius: var(--radius-1);
+		font-size: var(--font-size-1);
+		transition: all 0.1s;
+	}
+
+	.level-option:hover {
+		background-color: var(--surface-2);
+		color: var(--text-1);
+	}
+
+	.level-option.active {
+		background-color: var(--brand-dim);
+		color: var(--brand);
+		font-weight: bold;
 	}
 
 	.status-msg {

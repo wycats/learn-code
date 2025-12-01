@@ -206,7 +206,7 @@ export const LevelDefinitionSchema = z.object({
 	functions: z.record(z.string(), z.array(BlockSchema)).optional(),
 	solutionPar: z.number().optional(),
 	allowInfiniteLoop: z.boolean().optional(),
-	difficulty: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+	difficulty: z.enum(['beginner', 'intermediate', 'advanced', 'expert']).optional(),
 	icon: z.string().optional(),
 	intro: z.array(StorySegmentSchema).optional(),
 	outro: z.array(StorySegmentSchema).optional(),
@@ -221,7 +221,7 @@ export const LevelPackSchema = z.object({
 	name: z.string(),
 	description: z.string().optional(),
 	coverImage: z.string().optional(), // Icon name or color
-	difficulty: z.enum(['beginner', 'intermediate', 'advanced']).default('beginner'),
+	difficulty: z.enum(['beginner', 'intermediate', 'advanced', 'expert']).default('beginner'),
 	tags: z.array(z.string()).default([]),
 	version: z.string().default('1.0.0'),
 	levels: z.array(LevelDefinitionSchema),

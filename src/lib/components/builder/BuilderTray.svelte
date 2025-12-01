@@ -59,7 +59,8 @@
 		{ id: 'sand', value: 'sand', label: 'Sand' },
 		{ id: 'snow', value: 'snow', label: 'Snow' },
 		{ id: 'dirt', value: 'dirt', label: 'Dirt' },
-		{ id: 'spikes', value: 'spikes', label: 'Spikes', color: 'var(--red-7)' }
+		{ id: 'spikes', value: 'spikes', label: 'Spikes', color: 'var(--red-7)' },
+		{ id: 'cover', value: 'cover', label: 'Cover', color: 'var(--blue-3)' }
 	];
 
 	let terrainTools = $derived.by(() => {
