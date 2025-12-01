@@ -1,33 +1,44 @@
-# Implementation Plan - Phase 20
+# Implementation Plan - Phase 21
 
 ## Goal
 
-Address remaining usability issues in the Builder and improve the Function creation workflow.
+Enable Architects to share their creations directly with Explorers without a centralized server.
 
 ## Proposed Changes
 
-### 1. Function UX: "Call ???" Block
+### 1. Magic QR Codes
 
-**Problem:** The "Call Function" block might be confusing or broken when no function is selected or available.
+**Problem:** Sharing a single level currently requires exporting a file and sending it.
 **Solution:**
 
-- Investigate current behavior of `CallBlock` when `functionName` is empty.
-- Improve the empty state (e.g., disable interaction, show "Select Function" prompt).
-- Ensure it handles cases where functions are deleted.
+- Compress the level JSON (using `lz-string` or similar).
+- Encode it into a QR code.
+- Create a "Scan QR" feature in the app to load the level.
 
-### 2. Builder Polish
+### 2. WebRTC Handshake
 
-- **Glassomorphic UI**: Add a visual effect to the "Cover" block to indicate it's obscuring something but still part of the world (or maybe just style it better).
-- **Remove Tile Dropdown**: The tile selector in the Level Editor might be redundant or clunky.
-- **Custom Repeat Amount**: Allow users to type a number in the Repeat block instead of just using the preset.
-- **Fix "Infinity" Targeting**: The "Infinity" option in Repeat blocks shouldn't be targetable by the Story Mode spotlight if it's not a valid learning target for that level.
-- **"Use test level" Text**: Clarify the button text.
-- **Undo/Redo**: Implement undo/redo stack for the Level Editor.
+**Problem:** Sharing large packs via QR code is impractical due to size limits.
+**Solution:**
+
+- Use a simple signaling server (or manual copy-paste signaling) to establish a WebRTC connection.
+- Transfer the pack data directly between devices.
+
+### 3. Offline Support
+
+**Problem:** Sharing should work even without internet access (if using local network or QR).
+**Solution:**
+
+- Ensure the PWA caches necessary assets.
+- Verify that the sharing flow works offline.
 
 ## Execution Steps
 
-1.  **Function UX Investigation & Fix**
-    - Analyze `CallBlock.svelte` and `FunctionDefinition.svelte`.
-    - Implement improvements.
-2.  **Builder Polish Items**
-    - Tackle them one by one.
+1.  **QR Code Sharing**
+    - Implement compression/decompression logic.
+    - Add "Share Level" button in Builder.
+    - Add "Scan Level" button in Home/Library.
+2.  **WebRTC Implementation**
+    - Research simple signaling options (PeerJS?).
+    - Implement the handshake UI.
+3.  **Offline Verification**
+    - Test with network disabled.

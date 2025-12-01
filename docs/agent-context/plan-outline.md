@@ -196,15 +196,6 @@
   - [x] "Use test level" text update.
   - [x] Undo/Redo in Level Editor.
 
-## Phase 21: Authentication Strategy
-
-**Goal:** Evaluate and implement a robust authentication strategy to support cloud persistence and user accounts.
-
-- [ ] **Evaluate Neon Auth**: Investigate Neon Auth features and suitability for the project.
-- [ ] **Decision Record**: Document the decision between Neon Auth and Custom Auth.
-- [ ] **Implementation**: Implement the chosen authentication strategy.
-- [ ] **Cloud Persistence**: Enable saving user progress and levels to the cloud.
-
 ## Phase 21: P2P Sharing
 
 **Goal:** Enable Architects to share their creations directly with Explorers without a centralized server.
@@ -213,7 +204,16 @@
 - [ ] **WebRTC Handshake**: Implement a simple signaling mechanism for direct device-to-device transfer of larger packs.
 - [ ] **Offline Support**: Ensure sharing works gracefully with cached app assets.
 
-## Phase 22: Feedback System
+## Phase 22: Authentication Strategy
+
+**Goal:** Evaluate and implement a robust authentication strategy to support cloud persistence and user accounts.
+
+- [ ] **Evaluate Neon Auth**: Investigate Neon Auth features and suitability for the project.
+- [ ] **Decision Record**: Document the decision between Neon Auth and Custom Auth.
+- [ ] **Implementation**: Implement the chosen authentication strategy.
+- [ ] **Cloud Persistence**: Enable saving user progress and levels to the cloud.
+
+## Phase 23: Feedback System
 
 **Goal:** Create a robust feedback loop that empowers users to report issues with full context.
 
@@ -222,7 +222,7 @@
 - [ ] **Offline Queue**: Ensure feedback is queued and sent when online (already partially implemented).
 - [ ] **Admin Dashboard**: Simple view to triage feedback (optional/later).
 
-## Phase 23: Curriculum Expansion (Post-Launch)
+## Phase 24: Curriculum Expansion (Post-Launch)
 
 **Goal:** Introduce advanced programming concepts like Variables and Scoping.
 

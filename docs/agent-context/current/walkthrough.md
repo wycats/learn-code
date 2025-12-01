@@ -1,20 +1,16 @@
-# Walkthrough: Function UX & Builder Polish (Phase 20)
+# Walkthrough: P2P Sharing (Phase 21)
 
 ## Overview
 
-This phase focuses on refining the Builder experience and improving the UX for creating and using functions.
+This phase focuses on enabling direct sharing of levels and packs between users without relying on a central server.
 
 ## Progress
 
-- [x] **Function UX**: Improved the "Call" block to clearly show when a function is missing, empty, or valid. Added visual states for these conditions.
-- [x] **Builder Polish**:
-  - **Glassomorphism**: Enhanced the "Cover" tile with a glass-like effect and icon.
-  - **UI Cleanup**: Removed the redundant tile dropdown from the toolbar.
-  - **Loop Config**: Added a custom input field for loop counts and fixed targeting for the Infinity option.
-  - **Text Updates**: Clarified button text ("Play Level").
-  - **Undo/Redo**: Implemented a robust Undo/Redo system for the Level Builder, tracking state changes across terrain editing, actor movement, and configuration changes.
+- [x] **Magic QR Codes**: Implemented `ShareService` using `lz-string` for compression and `qrcode` for generation. Added a "Share" button in the Builder and a "Scan" button on the Home screen using `html5-qrcode`.
+- [ ] **WebRTC Handshake**: Pending.
+- [ ] **Offline Support**: Pending.
 
 ## Key Decisions
 
-- **Undo/Redo Strategy**: Used a snapshot-based approach (`$state.snapshot`) to push the entire level definition onto a history stack. This ensures all state (layout, actors, settings) is captured reliably without complex delta tracking.
-- **Function Block States**: Instead of just disabling the block, we added distinct visual states ("Select...", "Deleted", "No Functions") to guide the user on _why_ the block might not be working.
+- **Compression**: Used `lz-string` (`compressToEncodedURIComponent`) to create URL-safe strings that can be embedded directly in the QR code as a link (`/play?level=...`). This allows scanning with a standard camera app.
+- **Signaling**: TBD.

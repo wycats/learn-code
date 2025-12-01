@@ -15,9 +15,11 @@
 		Link,
 		Undo,
 		Redo,
-		ChevronDown
+		ChevronDown,
+		Share2
 	} from 'lucide-svelte';
 	import PackManagerModal from './PackManagerModal.svelte';
+	import ShareModal from './ShareModal.svelte';
 	import { fade, slide } from 'svelte/transition';
 
 	interface Props {
@@ -30,6 +32,7 @@
 	let { builder, showSettings, onToggleSettings, onExit }: Props = $props();
 
 	let showPackManager = $state(false);
+	let showShareModal = $state(false);
 	let showLevelList = $state(false);
 	let statusMessage = $state<string | null>(null);
 	let statusType = $state<'success' | 'error'>('success');
@@ -140,6 +143,10 @@
 	<PackManagerModal {builder} onClose={() => (showPackManager = false)} />
 {/if}
 
+{#if showShareModal}
+	<ShareModal {builder} onClose={() => (showShareModal = false)} />
+{/if}
+
 <div class="toolbar">
 	<div class="left-group">
 		{#if onExit}
@@ -154,6 +161,9 @@
 			</button>
 			<button class="action-btn" onclick={savePack} title="Save Pack">
 				<Save size={20} />
+			</button>
+			<button class="action-btn" onclick={() => (showShareModal = true)} title="Share Level">
+				<Share2 size={20} />
 			</button>
 
 			<div class="separator"></div>

@@ -1,16 +1,9 @@
-# Phase 20: Function UX & Builder Polish
+# Phase 21: P2P Sharing
 
-**Goal:** Address remaining usability issues in the Builder and improve the Function creation workflow.
+**Goal:** Enable Architects to share their creations directly with Explorers without a centralized server.
 
-## Function UX
+## Tasks
 
-- [x] **Function UX**: Improve "Call ???" block behavior (empty state/disable). <!-- id: 1 -->
-
-## Builder Polish
-
-- [x] **Builder**: Glassomorphic UI for player occlusion (Cover block). <!-- id: 2 -->
-- [x] **Builder**: Remove tile dropdown in Level Editor. <!-- id: 3 -->
-- [x] **Builder**: Implement custom input for Repeat Block count. <!-- id: 4 -->
-- [x] **Builder**: Disable targeting for "Infinity" loop count. <!-- id: 5 -->
-- [x] **Builder**: Update text "Use current workspace" -> "Use test level". <!-- id: 6 -->
-- [x] **Builder**: Implement Undo/Redo for Level Editor. <!-- id: 7 -->
+- [x] **Magic QR Codes**: Implement compressed JSON-to-QR encoding for single-level sharing. <!-- id: 1 -->
+- [ ] **WebRTC Handshake**: Implement a simple signaling mechanism for direct device-to-device transfer of larger packs. <!-- id: 2 -->
+- [ ] **Offline Support**: Ensure sharing works gracefully with cached app assets. <!-- id: 3 -->
