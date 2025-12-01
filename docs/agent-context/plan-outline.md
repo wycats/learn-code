@@ -169,7 +169,34 @@
 - [x] **CI Integration**: Integrate visual tests into the CI pipeline to catch regressions on PRs.
 - [x] **Flakiness Management**: Implement strategies to handle dynamic content and animations in screenshots.
 
-## Phase 19: Authentication Strategy
+## Phase 19: The Architect's Polish (Completed)
+
+**Goal:** Refine the Builder and Game experience based on direct feedback from our primary persona, Jonas.
+
+- [x] **Visual Polish**:
+  - [x] "Clear blocks" icon update (Broom).
+- [x] **Builder Enhancements**:
+  - [x] Target repeat _count_ or function _name_ in Story Mode.
+  - [x] Story segment reordering (Drag & Drop / Click-Click).
+- [x] **Content Polish**:
+  - [x] Finish "Gauntlet" pack (make it feel less random).
+  - [x] Create "Hard" built-in pack (Purple theme).
+
+## Phase 20: Function UX & Builder Polish
+
+**Goal:** Address remaining usability issues in the Builder and improve the Function creation workflow.
+
+- [ ] **Function UX**:
+  - [ ] Improve "Call ???" block behavior (empty state/disable).
+- [ ] **Builder Polish**:
+  - [ ] Glassomorphic UI for player occlusion (Cover block).
+  - [ ] Remove tile dropdown in Level Editor.
+  - [ ] Custom amount in Repeat blocks.
+  - [ ] Fix "Infinity" targeting (hide/disable).
+  - [ ] "Use test level" text update.
+  - [ ] Undo/Redo in Level Editor.
+
+## Phase 21: Authentication Strategy
 
 **Goal:** Evaluate and implement a robust authentication strategy to support cloud persistence and user accounts.
 
@@ -178,7 +205,7 @@
 - [ ] **Implementation**: Implement the chosen authentication strategy.
 - [ ] **Cloud Persistence**: Enable saving user progress and levels to the cloud.
 
-## Phase 20: P2P Sharing
+## Phase 21: P2P Sharing
 
 **Goal:** Enable Architects to share their creations directly with Explorers without a centralized server.
 
@@ -186,7 +213,7 @@
 - [ ] **WebRTC Handshake**: Implement a simple signaling mechanism for direct device-to-device transfer of larger packs.
 - [ ] **Offline Support**: Ensure sharing works gracefully with cached app assets.
 
-## Phase 21: Feedback System
+## Phase 22: Feedback System
 
 **Goal:** Create a robust feedback loop that empowers users to report issues with full context.
 
@@ -195,7 +222,7 @@
 - [ ] **Offline Queue**: Ensure feedback is queued and sent when online (already partially implemented).
 - [ ] **Admin Dashboard**: Simple view to triage feedback (optional/later).
 
-## Phase 22: Curriculum Expansion (Post-Launch)
+## Phase 23: Curriculum Expansion (Post-Launch)
 
 **Goal:** Introduce advanced programming concepts like Variables and Scoping.
 

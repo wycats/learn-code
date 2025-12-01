@@ -60,7 +60,8 @@ export const BuiltInCellTypeSchema = z.enum([
 	'snow',
 	'forest',
 	'dirt',
-	'spikes'
+	'spikes',
+	'cover'
 ]);
 export const CellTypeSchema = z.string();
 export type CellType = z.infer<typeof CellTypeSchema>;
@@ -124,7 +125,8 @@ export const StorySegmentSchema = z.preprocess(
 				type: z.enum(['block-placed', 'program-run', 'level-complete']),
 				blockType: BlockTypeSchema.optional()
 			})
-			.optional()
+			.optional(),
+		isGhost: z.boolean().optional()
 	})
 );
 export type StorySegment = z.infer<typeof StorySegmentSchema>;
@@ -203,6 +205,7 @@ export const LevelDefinitionSchema = z.object({
 	customTiles: z.record(z.string(), TileDefinitionSchema).optional(),
 	functions: z.record(z.string(), z.array(BlockSchema)).optional(),
 	solutionPar: z.number().optional(),
+	allowInfiniteLoop: z.boolean().optional(),
 	difficulty: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
 	icon: z.string().optional(),
 	intro: z.array(StorySegmentSchema).optional(),

@@ -1,53 +1,45 @@
-# Walkthrough - Contextual Target Mode (Refined)
+# Walkthrough: The Architect's Polish (Phase 19)
 
 ## Overview
 
-Refined the "Contextual Target Mode" based on user feedback. The UI now closely matches the provided design (diegetic controls on the story card), and the interaction model is stricter (disabling other builder actions during selection).
+This phase focuses on refining the Builder and Game experience based on feedback from Jonas. We are addressing visual polish, usability issues in the Builder, and expanding the content.
 
-## Changes
+## Progress
 
-### 1. Interaction Model
+- [x] **Visual Polish**
+  - Updated "Clear Blocks" icon to Broom (via `@lucide/lab`).
+  - Improved "Call ???" block empty state with distinct styling.
+- [x] **Builder Enhancements**
+  - Implemented Story Segment reordering using Drag & Drop and "Ghost" move system.
+  - Refined Move mechanics: "Move" button now toggles the timeline view and highlights the active segment.
+  - Enabled targeting of specific block properties (Repeat Count, Function Name) for tutorials.
+  - Polished Builder Toolbar to show active tile preview.
+- [x] **Content Polish**
+  - Polished "Gauntlet" pack levels with improved narrative.
+  - Created "The Void" (Hard) pack with 3 new levels featuring a purple "glitch" theme.
+  - Updated "Architect's Library" back button to use SVG arrow.
 
-- **Grid.svelte**: Updated `handleMouseDown` and `handleMouseEnter` to strictly enforce selection-only behavior when in targeting mode.
-  - Dragging characters or other builder interactions are now disabled during selection.
-  - Clicking a cell _always_ triggers the selection callback.
-- **Cell.svelte**: Removed the "red fade" animation. The selection highlight is now a persistent brand-colored outline with a shadow, matching the "selected" state requested.
+## Key Decisions
 
-### 2. UI / UX
+- **Targeting Granularity**: We decided to allow targeting specific parts of a block (like the loop count badge) by threading an `onTarget` callback down the component tree. This allows the tutorial system to be very specific about what the user should click.
+- **Icon Selection**: We installed `@lucide/lab` to access the `Broom` icon as requested, replacing the temporary `Eraser`.
+- **Story Reordering**: Adopted the "Ghost" move system (click-click) and Drag & Drop for story segments to match the interaction model of the program builder.
 
-- **BuilderStoryBar.svelte**:
-  - Implemented the "Screenshot UI": A vertical stack of two buttons.
-    - **Top Button**: Shows the target icon and current count. Includes a small "X" badge to clear the selection.
-    - **Bottom Button**: A "Confirm" (Checkmark) button with a pulsing animation to indicate the primary action.
-  - This replaces the previous single-button toggle, providing clearer "Clear" and "Done" affordances.
-- **HintEditor.svelte**:
-  - Ported the "Targeting UI" pattern from `BuilderStoryBar` to `HintEditor`.
-  - Added the same "Select / Clear / Done" workflow for Hint targets.
-  - Updated CSS to match the styling of the Story Editor controls.
+## How to Try It Out
 
-### 3. Data Model
+1.  **Story Reordering**:
+    - Go to **Architect's Library** -> **Create New Pack** -> **Edit Level**.
+    - Open the **Story Editor** (Book icon).
+    - Add multiple segments to the Intro or Outro.
+    - Click the **Move** button (crossed arrows) on a segment.
+    - Observe the timeline list opening and the active segment highlighting.
+    - Click another segment to see "Ghost" targets, or drag and drop segments to reorder.
 
-- **GameModel**: Updated `setPersistentHighlight` to use `type: 'selection'`, which maps to the new persistent visual style in `Cell.svelte`.
+2.  **Gauntlet & Hard Packs**:
+    - Go to **Architect's Library**.
+    - Clone "The Gauntlet" or "The Void" pack.
+    - Play through the levels to see the new narrative and "glitch" theme (Level 12-14).
 
-### 4. Maintenance & CI
-
-- **Lefthook**: Installed and configured `lefthook` to run `lint`, `format`, `check`, and `test` on pre-commit/pre-push.
-- **CI Fixes**:
-  - Removed invalid `pnpm-workspace.yaml`.
-  - Updated `check` script to run `paraglide:compile` first.
-  - Removed accidentally committed `playwright-report`.
-- **Bug Fix**: Fixed `BuilderTray` custom terrain selection color (was orange, now standard blue).
-
-## Verification
-
-- **Visual Tests**: Ran `pnpm test:visual`. Regressions in Home/Library are unrelated to these changes (likely due to previous global style tweaks).
-- **Manual Check**:
-  - **Selection**: Clicking cells toggles selection.
-  - **Isolation**: Cannot drag character while selecting.
-  - **Visuals**: Selected cells have a solid blue outline (no red fade).
-  - **Controls**: The story card shows the new 2-button stack.
-
-## Next Steps
-
-- User testing of the new flow.
-- Potential further refinement of the "Clear" badge interaction (currently clears all, maybe should be per-target?).
+3.  **Visual Polish**:
+    - In the Game view, check the "Clear Program" button (Broom icon).
+    - Drag a "Call Function" block without selecting a function to see the improved empty state.

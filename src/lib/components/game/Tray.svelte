@@ -10,16 +10,19 @@
 	import type { Block, BlockType } from '$lib/game/types';
 	import type { GameModel } from '$lib/game/model.svelte';
 	import { setDragContext } from '$lib/game/drag-context.svelte';
-	import { Trash2, Move, ListChecks, Copy, Infinity as InfinityIcon, Brush } from 'lucide-svelte';
+	import { Trash2, Move, ListChecks, Copy, Infinity as InfinityIcon } from 'lucide-svelte';
+	import { Icon } from 'lucide-svelte';
+	import { broom } from '@lucide/lab';
 	import { soundManager } from '$lib/game/sound';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { fly, fade } from 'svelte/transition';
 
 	interface Props {
 		game: GameModel;
+		onTarget?: (target: string) => void;
 	}
 
-	let { game }: Props = $props();
+	let { game, onTarget }: Props = $props();
 
 	// Palette items (derived from game level)
 	const paletteItems = $derived.by(() => {
@@ -708,7 +711,12 @@
 					}}
 					style:position="relative"
 				>
-					<BlockComponent block={item} isPalette={true} onSelect={() => handlePaletteClick(item)} />
+					<BlockComponent
+						block={item}
+						isPalette={true}
+						onSelect={() => handlePaletteClick(item)}
+						{onTarget}
+					/>
 					{#if limit !== 'unlimited'}
 						<div class="limit-badge" class:full={typeFull}>
 							{limit - used}
@@ -729,7 +737,7 @@
 					disabled={isDisabled || game.activeProgram.length === 0}
 					title="Clear {game.editingContext ? game.editingContext : 'Main'} Program"
 				>
-					<Brush size={18} />
+					<Icon iconNode={broom} size={18} />
 				</button>
 				{#if game.level.maxBlocks !== undefined}
 					<span class="count" class:full={isFull}>
@@ -802,6 +810,7 @@
 									{selectedBlockIds}
 									onSelect={handleSelect}
 									onContainerClick={handleContainerClick}
+									{onTarget}
 								/>
 							</div>
 
@@ -831,18 +840,37 @@
 							class="config-btn"
 							class:active={primarySelectedBlock.count === count}
 							onclick={() => updateLoopCount(count)}
+							data-value={count}
 						>
 							{count}x
 						</button>
 					{/each}
-					<button
-						class="config-btn infinity"
-						class:active={primarySelectedBlock.count === undefined}
-						onclick={() => updateLoopCount(undefined)}
-						title="Repeat Forever"
-					>
-						<InfinityIcon size={20} />
-					</button>
+					<div class="custom-input-wrapper">
+						<input
+							type="number"
+							class="config-input"
+							value={primarySelectedBlock.count ?? ''}
+							placeholder="#"
+							min="1"
+							max="99"
+							oninput={(e) => {
+								const val = parseInt(e.currentTarget.value);
+								updateLoopCount(isNaN(val) ? undefined : val);
+							}}
+							onclick={(e) => e.stopPropagation()}
+						/>
+					</div>
+					{#if game.level.allowInfiniteLoop !== false}
+						<button
+							class="config-btn infinity"
+							class:active={primarySelectedBlock.count === undefined}
+							onclick={() => updateLoopCount(undefined)}
+							title="Repeat Forever"
+							data-value="infinity"
+						>
+							<InfinityIcon size={20} />
+						</button>
+					{/if}
 				</div>
 			</div>
 		{/if}
@@ -1034,6 +1062,31 @@
 		border-color: var(--blue-5);
 		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 		transform: translateY(1px);
+	}
+
+	.custom-input-wrapper {
+		grid-column: span 1;
+		display: flex;
+	}
+
+	.config-input {
+		width: 100%;
+		height: 100%;
+		border: 1px solid rgba(0, 0, 0, 0.1);
+		border-radius: var(--radius-2);
+		text-align: center;
+		font-weight: bold;
+		font-size: var(--font-size-1);
+		color: var(--text-1);
+		background-color: rgba(255, 255, 255, 0.5);
+		padding: 0;
+		transition: all 0.2s;
+	}
+
+	.config-input:focus {
+		background-color: white;
+		outline: 2px solid var(--blue-5);
+		border-color: transparent;
 	}
 
 	.toolbar-container {

@@ -59,24 +59,24 @@
 		"intro": [
 			{
 				"id": "intro-1",
-				"text": "Jonas: 'Okay, no more sliding. But one false step and... TOAST!'",
+				"text": "Jonas: 'Okay, no more sliding. But the floor is literally lava. One wrong step and you're toast!'",
 				"speaker": "Jonas"
 			},
 			{
 				"id": "intro-2",
-				"text": "Zoey: 'I just need to stay on the safe path. Looks like a pattern...'",
+				"text": "Zoey: 'A narrow path... I need to be precise. No room for error here.'",
 				"speaker": "Zoey"
 			}
 		],
 		"outro": [
 			{
 				"id": "outro-1",
-				"text": "Zoey: 'Is it getting hot in here, or is it just my coding skills?'",
+				"text": "Zoey: 'Is it getting hot in here, or is it just my coding skills on fire?'",
 				"speaker": "Zoey"
 			},
 			{
 				"id": "outro-2",
-				"text": "Jonas: '...I need to build harder levels.'",
+				"text": "Jonas: 'Unbelievable! You beat the Gauntlet... I need to go back to the drawing board. Maybe something... purple?'",
 				"speaker": "Jonas"
 			}
 		]

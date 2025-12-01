@@ -100,24 +100,24 @@
 		"intro": [
 			{
 				"id": "intro-1",
-				"text": "Jonas: 'I bet you can't handle the speed, Zoey! This ice is frictionless!'",
+				"text": "Jonas: 'I call this one \"Slippery Slopes\". Once you start moving, you won't stop until you hit something!'",
 				"speaker": "Jonas"
 			},
 			{
 				"id": "intro-2",
-				"text": "Zoey: 'Watch me slide! I just need to aim for the walls to stop.'",
+				"text": "Zoey: 'Whoa! It's like a skating rink! I'll have to aim for the walls to stop myself.'",
 				"speaker": "Zoey"
 			}
 		],
 		"outro": [
 			{
 				"id": "outro-1",
-				"text": "Jonas: 'Beginner's luck.'",
+				"text": "Jonas: 'Beginner's luck! You just got lucky with those wall bounces.'",
 				"speaker": "Jonas"
 			},
 			{
 				"id": "outro-2",
-				"text": "Zoey: 'Pure skill! Next challenge, please!'",
+				"text": "Zoey: 'Calculated precision, Jonas! What else have you got?'",
 				"speaker": "Zoey"
 			}
 		]

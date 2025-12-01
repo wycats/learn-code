@@ -322,3 +322,23 @@ Ensured backward compatibility for existing user-created levels following the "T
   - Configured visual regression tests to be non-blocking in CI, allowing the build to pass while visual diffs are reviewed separately.
 - **Visual Testing**: Added `e2e/visual-extended.spec.ts` to cover Design System, Pack Details, and Builder states.
 - **Bug Fixes**: Restored system default emojis and characters in the Builder configuration dropdowns.
+
+## Phase 19: The Architect's Polish (Completed)
+
+**Date:** November 30, 2025
+
+**Summary:**
+Refined the Builder and Game experience based on direct feedback from our primary persona, Jonas. This phase focused on visual polish, builder usability enhancements, and content refinement. Key improvements include a new "Ghost" move system for story segments, granular targeting for tutorials, and a significant expansion of the "endgame" content with the "Gauntlet" and "Hard" packs.
+
+**Key Deliverables:**
+
+- **Builder Enhancements**:
+  - **Story Reordering**: Implemented Drag & Drop and "Ghost" move system for story segments.
+  - **Granular Targeting**: Enabled targeting of specific block properties (Repeat Count, Function Name) for tutorials.
+  - **Visual Polish**: Updated "Clear Blocks" icon to Broom (via `@lucide/lab`) and improved "Call ???" block empty state.
+- **Content Expansion**:
+  - **Gauntlet Pack**: Polished narrative and mechanics for Levels 9-11.
+  - **Hard Pack ("The Void")**: Created a new expert-level pack with a purple "glitch" theme (Levels 12-14).
+- **UX Improvements**:
+  - Updated "Architect's Library" back button to use SVG arrow.
+  - Refined "Move" mechanics in Story Editor to auto-open the timeline.

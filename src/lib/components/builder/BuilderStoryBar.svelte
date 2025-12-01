@@ -11,9 +11,20 @@
 		Settings2,
 		Target,
 		Check,
-		Pencil
+		Pencil,
+		Move
 	} from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
+	import {
+		draggable,
+		dropTargetForElements,
+		monitorForElements
+	} from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+	import {
+		attachClosestEdge,
+		extractClosestEdge,
+		type Edge
+	} from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 	import StoryConfigModal from './StoryConfigModal.svelte';
 	import { SYSTEM_EMOTIONS, SYSTEM_CHARACTERS } from '$lib/game/constants';
 	import Avatar from '$lib/components/game/Avatar.svelte';
@@ -44,6 +55,13 @@
 	$effect(() => {
 		if (isExpanded) {
 			timelinePopover?.showPopover();
+			// Scroll active item into view when opening
+			if (builder.activeSegmentId) {
+				requestAnimationFrame(() => {
+					const activeItem = timelinePopover?.querySelector('.timeline-item.active');
+					activeItem?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+				});
+			}
 		} else {
 			timelinePopover?.hidePopover();
 		}
@@ -186,6 +204,222 @@
 		charPopover?.hidePopover();
 		emotionPopover?.hidePopover();
 	}
+
+	let isMoveMode = $state(false);
+	let dragCtx = $state<{ isDragging: boolean; targetId: string | null; closestEdge: Edge | null }>({
+		isDragging: false,
+		targetId: null,
+		closestEdge: null
+	});
+
+	function toggleMoveMode() {
+		isMoveMode = !isMoveMode;
+		if (isMoveMode) {
+			if (!isExpanded) {
+				isExpanded = true;
+			}
+		} else {
+			clearGhosts();
+		}
+	}
+
+	function clearGhosts() {
+		function removeGhosts(list: StorySegment[] | undefined) {
+			if (!list) return;
+			for (let i = list.length - 1; i >= 0; i--) {
+				if (list[i].isGhost) {
+					list.splice(i, 1);
+				}
+			}
+		}
+		removeGhosts(builder.level.intro);
+		removeGhosts(builder.level.outro);
+		// Trigger reactivity
+		if (builder.level.intro) builder.level.intro = [...builder.level.intro];
+		if (builder.level.outro) builder.level.outro = [...builder.level.outro];
+	}
+
+	function showGhosts(targetSegment: StorySegment, listType: 'intro' | 'outro') {
+		if (!current) return;
+		const sourceSegment = current.segment;
+
+		// Don't show ghosts around self
+		if (targetSegment.id === sourceSegment.id) return;
+
+		const ghostBefore: StorySegment = {
+			...sourceSegment,
+			id: crypto.randomUUID(),
+			isGhost: true
+		};
+		const ghostAfter: StorySegment = {
+			...sourceSegment,
+			id: crypto.randomUUID(),
+			isGhost: true
+		};
+
+		const list = listType === 'intro' ? builder.level.intro : builder.level.outro;
+		if (!list) return;
+
+		const index = list.findIndex((s) => s.id === targetSegment.id);
+		if (index !== -1) {
+			list.splice(index + 1, 0, ghostAfter);
+			list.splice(index, 0, ghostBefore);
+		}
+
+		if (listType === 'intro') builder.level.intro = [...list];
+		else builder.level.outro = [...list];
+	}
+
+	function confirmGhost(ghostSegment: StorySegment, listType: 'intro' | 'outro') {
+		if (!current) return;
+		const sourceId = current.segment.id;
+
+		// Remove source
+		if (current.list === 'intro') {
+			builder.level.intro = builder.level.intro?.filter((s) => s.id !== sourceId);
+		} else {
+			builder.level.outro = builder.level.outro?.filter((s) => s.id !== sourceId);
+		}
+
+		// Finalize ghost
+		const list = listType === 'intro' ? builder.level.intro : builder.level.outro;
+		if (list) {
+			for (let i = list.length - 1; i >= 0; i--) {
+				if (list[i].id === ghostSegment.id) {
+					delete list[i].isGhost;
+					// Restore original ID to preserve references
+					if (sourceId) list[i].id = sourceId;
+				} else if (list[i].isGhost) {
+					list.splice(i, 1);
+				}
+			}
+		}
+
+		if (listType === 'intro') builder.level.intro = [...(builder.level.intro || [])];
+		else builder.level.outro = [...(builder.level.outro || [])];
+
+		isMoveMode = false;
+		builder.activeSegmentId = sourceId!;
+	}
+
+	function handleSegmentClick(segment: StorySegment, listType: 'intro' | 'outro') {
+		if (segment.isGhost) {
+			confirmGhost(segment, listType);
+			return;
+		}
+
+		if (isMoveMode && current && current.segment.id !== segment.id) {
+			clearGhosts();
+			showGhosts(segment, listType);
+			return;
+		}
+
+		clearGhosts();
+		isMoveMode = false;
+		selectSegment(segment.id!);
+	}
+
+	// DND Actions
+	function draggableSegment(
+		node: HTMLElement,
+		{ segment, listType }: { segment: StorySegment; listType: 'intro' | 'outro' }
+	) {
+		const cleanup = draggable({
+			element: node,
+			getInitialData: () => ({ type: 'segment', segment, listType }),
+			onDragStart: () => {
+				dragCtx.isDragging = true;
+				node.classList.add('dragging');
+			},
+			onDrop: () => {
+				dragCtx.isDragging = false;
+				node.classList.remove('dragging');
+			}
+		});
+		return { destroy: cleanup };
+	}
+
+	function dropTargetSegment(
+		node: HTMLElement,
+		{
+			segment,
+			listType,
+			index
+		}: { segment: StorySegment; listType: 'intro' | 'outro'; index: number }
+	) {
+		const cleanup = dropTargetForElements({
+			element: node,
+			getData: ({ input, element }) => {
+				return attachClosestEdge(
+					{ type: 'segment-target', segment, listType, index },
+					{ input, element, allowedEdges: ['top', 'bottom'] }
+				);
+			},
+			onDragEnter: () => node.classList.add('drag-over'),
+			onDragLeave: () => node.classList.remove('drag-over'),
+			onDrop: () => node.classList.remove('drag-over')
+		});
+		return { destroy: cleanup };
+	}
+
+	$effect(() => {
+		return monitorForElements({
+			onDrag: ({ location }) => {
+				const target = location.current.dropTargets[0];
+				if (target) {
+					const data = target.data;
+					dragCtx.targetId = (data.segment as StorySegment).id!;
+					dragCtx.closestEdge = extractClosestEdge(data);
+				} else {
+					dragCtx.targetId = null;
+					dragCtx.closestEdge = null;
+				}
+			},
+			onDrop: ({ source, location }) => {
+				const target = location.current.dropTargets[0];
+				if (!target) return;
+
+				const sourceData = source.data;
+				const targetData = target.data;
+
+				if (sourceData.type !== 'segment' || targetData.type !== 'segment-target') return;
+
+				const sourceSegment = sourceData.segment as StorySegment;
+				const targetSegment = targetData.segment as StorySegment;
+				const sourceListType = sourceData.listType as 'intro' | 'outro';
+				const targetListType = targetData.listType as 'intro' | 'outro';
+				const edge = extractClosestEdge(targetData);
+
+				if (sourceSegment.id === targetSegment.id) return;
+
+				// Remove from source
+				if (sourceListType === 'intro') {
+					builder.level.intro = builder.level.intro?.filter((s) => s.id !== sourceSegment.id);
+				} else {
+					builder.level.outro = builder.level.outro?.filter((s) => s.id !== sourceSegment.id);
+				}
+
+				// Insert into target
+				const list = targetListType === 'intro' ? builder.level.intro : builder.level.outro;
+				if (list) {
+					const index = list.findIndex((s) => s.id === targetSegment.id);
+					if (index !== -1) {
+						const insertIndex = edge === 'bottom' ? index + 1 : index;
+						list.splice(insertIndex, 0, sourceSegment);
+					} else {
+						list.push(sourceSegment);
+					}
+				}
+
+				// Trigger reactivity
+				if (targetListType === 'intro') builder.level.intro = [...(builder.level.intro || [])];
+				else builder.level.outro = [...(builder.level.outro || [])];
+
+				// Re-select moved segment
+				builder.activeSegmentId = sourceSegment.id!;
+			}
+		});
+	});
 </script>
 
 <div class="story-bar-container">
@@ -417,6 +651,14 @@
 						<button class="action-btn add" onclick={addSegmentAfter} title="Add Segment After">
 							<Plus size={16} />
 						</button>
+						<button
+							class="action-btn"
+							class:active={isMoveMode}
+							onclick={toggleMoveMode}
+							title="Move Segment"
+						>
+							<Move size={16} />
+						</button>
 						<button class="action-btn delete" onclick={deleteSegment} title="Delete Segment">
 							<Trash2 size={16} />
 						</button>
@@ -480,8 +722,15 @@
 					<button
 						class="timeline-item"
 						class:active={builder.activeSegmentId === segment.id}
-						onclick={() => selectSegment(segment.id!)}
+						class:ghost={segment.isGhost}
+						use:draggableSegment={{ segment, listType: 'intro' }}
+						use:dropTargetSegment={{ segment, listType: 'intro', index: i }}
+						onclick={() => handleSegmentClick(segment, 'intro')}
 					>
+						{#if dragCtx.targetId === segment.id && dragCtx.closestEdge === 'top'}
+							<div class="drop-indicator top"></div>
+						{/if}
+
 						<span class="index">{i + 1}</span>
 						<div class="mini-avatar" data-character={segment.speaker}>
 							<Avatar value={getCharacter(segment.speaker).avatar || '?'} size={14} />
@@ -490,6 +739,10 @@
 							<span class="speaker">{segment.speaker}</span>
 							<span class="preview">{segment.text || '(Empty)'}</span>
 						</div>
+
+						{#if dragCtx.targetId === segment.id && dragCtx.closestEdge === 'bottom'}
+							<div class="drop-indicator bottom"></div>
+						{/if}
 					</button>
 				{/each}
 				<button class="add-btn" onclick={() => addSegment('intro')}>
@@ -505,8 +758,15 @@
 					<button
 						class="timeline-item"
 						class:active={builder.activeSegmentId === segment.id}
-						onclick={() => selectSegment(segment.id!)}
+						class:ghost={segment.isGhost}
+						use:draggableSegment={{ segment, listType: 'outro' }}
+						use:dropTargetSegment={{ segment, listType: 'outro', index: i }}
+						onclick={() => handleSegmentClick(segment, 'outro')}
 					>
+						{#if dragCtx.targetId === segment.id && dragCtx.closestEdge === 'top'}
+							<div class="drop-indicator top"></div>
+						{/if}
+
 						<span class="index">{i + 1}</span>
 						<div class="mini-avatar" data-character={segment.speaker}>
 							<Avatar value={getCharacter(segment.speaker).avatar || '?'} size={14} />
@@ -515,6 +775,10 @@
 							<span class="speaker">{segment.speaker}</span>
 							<span class="preview">{segment.text || '(Empty)'}</span>
 						</div>
+
+						{#if dragCtx.targetId === segment.id && dragCtx.closestEdge === 'bottom'}
+							<div class="drop-indicator bottom"></div>
+						{/if}
 					</button>
 				{/each}
 				<button class="add-btn" onclick={() => addSegment('outro')}>
@@ -1033,6 +1297,12 @@
 		color: var(--text-1);
 	}
 
+	.action-btn.active {
+		background-color: var(--brand-surface);
+		color: var(--brand);
+		border: 1px solid var(--brand);
+	}
+
 	.action-btn.delete:hover {
 		background-color: var(--red-1);
 		color: var(--red-7);
@@ -1161,5 +1431,44 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
+	}
+
+	.timeline-item.ghost {
+		opacity: 0.6;
+		border: 2px dashed var(--text-2);
+		background-color: var(--surface-2);
+		filter: grayscale(0.5);
+	}
+
+	.timeline-item.ghost:hover {
+		opacity: 0.9;
+		background-color: var(--surface-3);
+		transform: scale(1.02);
+	}
+
+	.drop-indicator {
+		position: absolute;
+		left: 0;
+		right: 0;
+		height: 2px;
+		background-color: var(--brand);
+		z-index: 10;
+		pointer-events: none;
+	}
+
+	.drop-indicator.top {
+		top: -2px;
+	}
+
+	.drop-indicator.bottom {
+		bottom: -2px;
+	}
+
+	:global(.timeline-item.drag-over) {
+		background-color: var(--surface-2);
+	}
+
+	:global(.timeline-item.dragging) {
+		opacity: 0.4;
 	}
 </style>

@@ -19,6 +19,7 @@
 		isBlocked?: boolean;
 		isSuccess?: boolean;
 		loopProgress?: number;
+		onTarget?: (target: string) => void;
 	}
 
 	let {
@@ -31,7 +32,8 @@
 		isPalette = false,
 		isBlocked = false,
 		isSuccess = false,
-		loopProgress = 0
+		loopProgress = 0,
+		onTarget
 	}: Props = $props();
 
 	const dragCtx = getDragContext();
@@ -111,9 +113,33 @@
 				Right
 			{:else if block.type === 'loop'}
 				Repeat
-				<span class="loop-badge">{block.count ? `${block.count}x` : '∞'}</span>
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<span
+					class="loop-badge"
+					class:targetable={!!onTarget}
+					onclick={(e) => {
+						if (onTarget) {
+							e.stopPropagation();
+							onTarget(`block:${block.id}:count`);
+						}
+					}}>{block.count ? `${block.count}x` : '∞'}</span
+				>
 			{:else if block.type === 'call'}
-				Call <span class="function-badge">{block.functionName || '???'}</span>
+				Call
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<span
+					class="function-badge"
+					class:empty={!block.functionName}
+					class:targetable={!!onTarget}
+					onclick={(e) => {
+						if (onTarget) {
+							e.stopPropagation();
+							onTarget(`block:${block.id}:function`);
+						}
+					}}>{block.functionName || 'Select...'}</span
+				>
 			{/if}
 		</span>
 		{#if block.type === 'loop' && derivedLoopProgress !== undefined && game?.status === 'running'}
@@ -379,5 +405,23 @@
 		border-radius: var(--radius-2);
 		font-weight: 800;
 		font-family: var(--font-mono);
+	}
+
+	.function-badge.empty {
+		color: var(--red-7);
+		background-color: var(--red-1);
+		font-style: italic;
+		border: 1px dashed var(--red-3);
+	}
+
+	.loop-badge.targetable,
+	.function-badge.targetable {
+		cursor: crosshair;
+	}
+
+	.loop-badge.targetable:hover,
+	.function-badge.targetable:hover {
+		background: rgba(255, 255, 255, 0.2);
+		outline: 2px solid var(--accent-color);
 	}
 </style>

@@ -114,6 +114,7 @@
 			onRotateStart={() => builder.rotateStartActor()}
 			onActorDrop={() => builder.selectActor(null)}
 			onActorSelect={(actor) => builder.selectActor(actor)}
+			onInteractionEnd={() => builder.endInteraction()}
 		/>
 
 		{#if !isGridMode}

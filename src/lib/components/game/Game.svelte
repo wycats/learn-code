@@ -30,6 +30,7 @@
 		hasNextLevel?: boolean;
 		onExit?: () => void; // For builder to exit test mode
 		headerLeft?: import('svelte').Snippet;
+		onTarget?: (target: string) => void;
 	}
 
 	let {
@@ -38,7 +39,8 @@
 		onNextLevel,
 		hasNextLevel = false,
 		onExit,
-		headerLeft
+		headerLeft,
+		onTarget
 	}: Props = $props();
 
 	let isRunning = $state(false);
@@ -311,7 +313,7 @@
 
 		<div class="tray-area">
 			{#key game.level.id}
-				<Tray {game} />
+				<Tray {game} {onTarget} />
 			{/key}
 		</div>
 	</div>

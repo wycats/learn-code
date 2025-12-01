@@ -88,6 +88,8 @@
 		<div class="marker">
 			<Triangle size={24} color="var(--red-7)" fill="var(--red-7)" />
 		</div>
+	{:else if type === 'cover'}
+		<div class="cover-marker"></div>
 	{/if}
 </div>
 
@@ -129,6 +131,14 @@
 
 	.cell[data-type='spikes'] {
 		background-color: var(--red-2);
+	}
+
+	.cell[data-type='cover'] {
+		background-color: rgba(255, 255, 255, 0.2);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+		border: 1px solid rgba(255, 255, 255, 0.4);
+		box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.2);
 	}
 
 	.cell[data-type='wall'] {
