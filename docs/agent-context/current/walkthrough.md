@@ -32,7 +32,24 @@ Based on user feedback, we polished several interactions:
 
 - **P2P Sharing**: Removed the intermediate "Send/Receive" selection step. The modal now auto-detects the intent based on context (sending vs receiving) and starts the flow immediately.
 - **Function Configuration**: Simplified the "Call Function" block configuration. If only one function exists, it is automatically selected and displayed as a static label, removing the redundant selection list.
-- **Tray UI**: Fixed scrolling issues in the configuration panel by increasing the maximum height.
+- **Tray UI**: Fixed scrolling issues in the configuration panel by increasing the maximum height and adding padding to prevent layout shifts during transforms.
+
+### 5. Mobile Layout Optimization
+
+We refined the Game Mode layout for small screens (phones):
+
+- **Header Controls**: Collapsed text labels for secondary buttons on mobile, using icon-only buttons to save space.
+- **Instruction Bar**: Optimized padding and layout to fit within the mobile dashboard area without cramping content.
+- **Tray Palette**: Reduced the width of the block palette on mobile to maximize space for the program construction area.
+- **Status Panel**: Adjusted padding and icon sizes for a more compact presentation.
+
+### 6. Visual Polish (Fonts)
+
+We upgraded the application typography to use high-quality variable fonts via `fontsource`:
+
+- **Headings**: `Outfit` (Friendly, geometric, modern).
+- **Body**: `Inter` (Clean, highly legible).
+- **Code**: `JetBrains Mono` (Excellent readability for code blocks).
 
 ## Technical Decisions
 
