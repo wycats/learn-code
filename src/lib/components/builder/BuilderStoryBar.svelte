@@ -9,7 +9,9 @@
 		List,
 		X,
 		Settings2,
-		Target
+		Target,
+		Check,
+		Pencil
 	} from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
 	import StoryConfigModal from './StoryConfigModal.svelte';
@@ -40,11 +42,18 @@
 		{ id: 'concerned', name: 'Concerned', icon: '😟' },
 		{ id: 'excited', name: 'Excited', icon: '🤩' },
 		{ id: 'thinking', name: 'Thinking', icon: '🤔' },
-		{ id: 'celebrating', name: 'Celebrating', icon: '🥳' }
+		{ id: 'celebrating', name: 'Celebrating', icon: '🥳' },
+		{ id: 'none', name: 'None', icon: '😶' }
 	];
 
-	let characters = $derived(builder.level.characters || defaultCharacters);
-	let emotions = $derived(builder.level.emotions || defaultEmotions);
+	let characters = $derived([
+		...(builder.pack.characters || defaultCharacters),
+		...(builder.level.characters || [])
+	]);
+	let emotions = $derived([
+		...(builder.pack.emotions || defaultEmotions),
+		...(builder.level.emotions || [])
+	]);
 
 	$effect(() => {
 		if (isExpanded) {
@@ -308,54 +317,124 @@
 				</div>
 
 				<div class="segment-actions">
-					{#if current.segment.highlight}
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<div
-							class="highlight-badge"
-							onmouseenter={() =>
-								builder.game.triggerPreviewHighlight(current!.segment.highlight!.target)}
-							onclick={() =>
-								builder.game.triggerPreviewHighlight(current!.segment.highlight!.target)}
-						>
-							<Target size={14} />
+					{#if builder.targetSelectionMode && builder.targetingState.contextName === 'Story Segment'}
+						<div class="targeting-controls">
 							<button
-								class="clear-highlight-btn"
-								onclick={(e) => {
-									e.stopPropagation();
-									current!.segment.highlight = undefined;
-									builder.game.previewHighlight = null;
+								class="target-status-btn"
+								title="Clear Selection"
+								onclick={() => {
+									current!.segment.targets = [];
+									builder.game.previewHighlight = { targets: [], type: 'selection', fading: false };
+									builder.targetingState.currentCount = 0;
 								}}
-								title="Clear Target"
 							>
-								<X size={12} />
+								<Target size={16} />
+								<span class="count">{builder.targetingState.currentCount}</span>
+								<div class="clear-badge">
+									<X size={10} />
+								</div>
+							</button>
+							<button
+								class="confirm-btn"
+								title="Done Selecting"
+								onclick={() => builder.cancelTargetSelection()}
+							>
+								<Check size={16} />
 							</button>
 						</div>
 					{:else}
-						<button
-							class="action-btn"
-							class:active={builder.targetSelectionMode &&
-								builder.targetSelectionContext === 'story'}
-							onclick={() => {
-								if (builder.targetSelectionMode && builder.targetSelectionContext === 'story') {
-									builder.cancelTargetSelection();
-								} else {
-									builder.startTargetSelection((target) => {
-										builder.setStoryHighlight(target);
-									}, 'story');
-								}
-							}}
-							title="Select Highlight Target (Click on Grid)"
-						>
-							<Target size={16} />
+						{#if current.segment.targets && current.segment.targets.length > 0}
+							<!-- svelte-ignore a11y_click_events_have_key_events -->
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
+							<div
+								class="highlight-badge"
+								onmouseenter={() => builder.game.triggerPreviewHighlight(current!.segment.targets!)}
+								onclick={() => builder.game.triggerPreviewHighlight(current!.segment.targets!)}
+								title={`Targets: ${current.segment.targets.join(', ')}`}
+							>
+								<Target size={14} />
+								{#if current.segment.targets.length > 1}
+									<span class="count">{current.segment.targets.length}</span>
+								{/if}
+								<button
+									class="badge-corner-btn clear"
+									onclick={(e) => {
+										e.stopPropagation();
+										current!.segment.targets = undefined;
+										builder.game.previewHighlight = null;
+									}}
+									title="Clear Targets"
+								>
+									<X size={10} />
+								</button>
+								<button
+									class="badge-corner-btn edit"
+									onclick={(e) => {
+										e.stopPropagation();
+										if (current!.segment.targets) {
+											builder.game.setPersistentHighlight(current!.segment.targets);
+										}
+										builder.startTargetSelection(
+											'Story Segment',
+											current!.segment.targets?.length || 0,
+											(target) => {
+												builder.toggleStoryHighlight(target);
+												builder.targetingState.currentCount = current!.segment.targets?.length || 0;
+											},
+											() => {
+												current!.segment.targets = [];
+												builder.game.previewHighlight = null;
+												builder.targetingState.currentCount = 0;
+											},
+											() => {
+												builder.cancelTargetSelection();
+											}
+										);
+									}}
+									title="Edit Targets"
+								>
+									<Pencil size={10} />
+								</button>
+							</div>
+						{:else}
+							<button
+								class="action-btn"
+								onclick={() => {
+									if (current!.segment.targets) {
+										builder.game.setPersistentHighlight(current!.segment.targets);
+									}
+									builder.startTargetSelection(
+										'Story Segment',
+										current!.segment.targets?.length || 0,
+										(target) => {
+											builder.toggleStoryHighlight(target);
+											// Update count in targeting state
+											builder.targetingState.currentCount = current!.segment.targets?.length || 0;
+										},
+										() => {
+											// Clear
+											current!.segment.targets = [];
+											builder.game.previewHighlight = null;
+											builder.targetingState.currentCount = 0;
+										},
+										() => {
+											// Done
+											builder.cancelTargetSelection();
+										}
+									);
+								}}
+								title="Edit Targets"
+							>
+								<Target size={16} />
+							</button>
+						{/if}
+						<button class="action-btn add" onclick={addSegmentAfter} title="Add Segment After">
+							<Plus size={16} />
+						</button>
+						<button class="action-btn delete" onclick={deleteSegment} title="Delete Segment">
+							<Trash2 size={16} />
 						</button>
 					{/if}
-					<button class="action-btn add" onclick={addSegmentAfter} title="Add Segment After">
-						<Plus size={16} />
-					</button>
-					<button class="action-btn delete" onclick={deleteSegment} title="Delete Segment">
-						<Trash2 size={16} />
-					</button>
 				</div>
 			</div>
 
@@ -870,6 +949,86 @@
 		gap: var(--size-1);
 	}
 
+	.targeting-controls {
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-2);
+	}
+
+	.target-status-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 4px;
+		background-color: white;
+		border: 2px solid var(--brand);
+		border-radius: var(--radius-2);
+		color: var(--brand);
+		width: 36px;
+		height: 36px;
+		position: relative;
+		cursor: pointer;
+		font-weight: bold;
+		font-size: var(--font-size-1);
+	}
+
+	.target-status-btn:hover {
+		background-color: var(--surface-2);
+	}
+
+	.clear-badge {
+		position: absolute;
+		top: -6px;
+		right: -6px;
+		width: 16px;
+		height: 16px;
+		background-color: var(--surface-1);
+		border: 1px solid var(--surface-3);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--text-2);
+		box-shadow: var(--shadow-1);
+	}
+
+	.target-status-btn:hover .clear-badge {
+		background-color: var(--red-1);
+		color: var(--red-6);
+		border-color: var(--red-3);
+	}
+
+	.confirm-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: var(--brand-surface);
+		border: 2px solid var(--brand);
+		border-radius: var(--radius-2);
+		color: var(--brand);
+		width: 36px;
+		height: 36px;
+		cursor: pointer;
+		animation: pulse-confirm 2s infinite;
+	}
+
+	.confirm-btn:hover {
+		background-color: var(--brand-light);
+		color: white;
+	}
+
+	@keyframes pulse-confirm {
+		0% {
+			box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand), transparent 60%);
+		}
+		70% {
+			box-shadow: 0 0 0 6px color-mix(in srgb, var(--brand), transparent 100%);
+		}
+		100% {
+			box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand), transparent 100%);
+		}
+	}
+
 	.action-btn {
 		background: none;
 		border: none;
@@ -914,7 +1073,12 @@
 		background-color: var(--brand-light);
 	}
 
-	.clear-highlight-btn {
+	.count {
+		font-size: 10px;
+		font-weight: bold;
+	}
+
+	.badge-corner-btn {
 		background: none;
 		border: none;
 		padding: 0;
@@ -923,17 +1087,32 @@
 		display: flex;
 		align-items: center;
 		position: absolute;
-		top: -4px;
-		right: -4px;
 		background-color: var(--surface-1);
 		border-radius: 50%;
 		border: 1px solid var(--surface-3);
 		width: 14px;
 		height: 14px;
 		justify-content: center;
+		z-index: 10;
 	}
 
-	.clear-highlight-btn:hover {
+	.badge-corner-btn.clear {
+		top: -4px;
+		right: -4px;
+	}
+
+	.badge-corner-btn.edit {
+		bottom: -4px;
+		right: -4px;
+	}
+
+	.badge-corner-btn:hover {
+		color: var(--text-1);
+		border-color: var(--text-2);
+		transform: scale(1.1);
+	}
+
+	.badge-corner-btn.clear:hover {
 		color: var(--red-6);
 		border-color: var(--red-3);
 	}

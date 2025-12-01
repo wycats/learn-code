@@ -37,3 +37,8 @@
 ## Storage & Persistence
 
 - [ ] **OPFS for Level Storage**: Use the Origin Private File System (OPFS) to store user-created levels locally in the browser. This provides a more robust and performant storage solution than localStorage, especially for larger levels or assets.
+
+- [ ] **Community Contributions**: Allow Architects to submit Pull Requests to the main repository to add their levels to the built-in packs.
+  - **Educational Value**: This provides an entry point for kids to learn about Git, GitHub, and the open-source contribution workflow (PRs, code review).
+  - **Workflow**: Since levels are just JSON files, the barrier to entry is low. We can provide a guide or a simplified UI to help generate the PR.
+  - **Considerations**: Not all parents will want their kids to have GitHub accounts. We should support submitting proposals via other means (e.g., feedback form) but encourage the "real" workflow for those who are ready.

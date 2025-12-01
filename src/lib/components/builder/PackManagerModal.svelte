@@ -24,6 +24,7 @@
 	let deletingPackId = $state<string | null>(null);
 	let editName = $state('');
 	let editDesc = $state('');
+	let errorMessage = $state<string | null>(null);
 	let isFileSystemSupported = fileSystem.isSupported;
 
 	onMount(async () => {
@@ -40,6 +41,7 @@
 		deletingPackId = id;
 		// Cancel any active edit
 		editingPackId = null;
+		errorMessage = null;
 	}
 
 	async function confirmDelete() {
@@ -60,6 +62,7 @@
 		editDesc = pack.description || '';
 		// Cancel any active delete
 		deletingPackId = null;
+		errorMessage = null;
 	}
 
 	async function saveEdit(id: string) {
@@ -126,6 +129,7 @@
 	}
 
 	async function handleOpenLocalFolder() {
+		errorMessage = null;
 		try {
 			const root = await fileSystem.openDirectory();
 			if (root) {
@@ -145,7 +149,7 @@
 			}
 		} catch (err) {
 			console.error('Failed to open local folder:', err);
-			alert('Could not open local folder.');
+			errorMessage = 'Could not open local folder. Please try again.';
 		}
 	}
 </script>
@@ -164,6 +168,11 @@
 	</div>
 
 	<div class="pack-list">
+		{#if errorMessage}
+			<div class="error-message">
+				{errorMessage}
+			</div>
+		{/if}
 		{#if localPacksStore.packs.length > 0}
 			<div class="section-header">Local Packs</div>
 			{#each localPacksStore.packs as pack (pack.id)}
@@ -436,6 +445,15 @@
 		text-align: center;
 		color: var(--text-2);
 		padding: var(--size-4);
+	}
+
+	.error-message {
+		background-color: var(--red-1);
+		color: var(--red-7);
+		padding: var(--size-2);
+		border-radius: var(--radius-2);
+		border: 1px solid var(--red-3);
+		font-size: var(--font-size-1);
 	}
 
 	/* Edit Form Styles */

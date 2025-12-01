@@ -40,5 +40,5 @@ export interface LevelPack {
 ## Routing Strategy
 
 - **Standard Play**: `/library/[packId]` -> `/play/[packId]/[levelId]`
-- **Builder**: `/builder/campaigns/[packId]` -> (Edit Level) -> `/builder?levelId=...&returnTo=/builder/campaigns/[packId]`
+- **Builder**: `/builder/packs/[packId]` -> (Edit Level) -> `/builder/packs/[packId]/[levelId]`
   - We need to ensure the Builder knows where to return to.

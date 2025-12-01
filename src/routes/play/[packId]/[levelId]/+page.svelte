@@ -3,6 +3,7 @@
 	import { getPack } from '$lib/game/packs';
 	import { ProgressService } from '$lib/game/progress';
 	import { GameModel } from '$lib/game/model.svelte';
+	import type { Character, Emotion } from '$lib/game/types';
 	import Game from '$lib/components/game/Game.svelte';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
@@ -21,7 +22,8 @@
 		if (pack && levelId) {
 			const levelIndex = pack.levels.findIndex((l) => l.id === levelId);
 			if (levelIndex !== -1) {
-				const level = pack.levels[levelIndex];
+				// Clone level to avoid mutating the source
+				const level = structuredClone(pack.levels[levelIndex]);
 
 				// Check if unlocked
 				const progress = ProgressService.load();
@@ -33,6 +35,18 @@
 					goto(`${base}/library/${packId}`);
 					return;
 				}
+
+				// Merge pack characters (Level overrides Pack by ID)
+				const charMap: Record<string, Character> = {};
+				(pack.characters || []).forEach((c) => (charMap[c.id] = c));
+				(level.characters || []).forEach((c) => (charMap[c.id] = c));
+				level.characters = Object.values(charMap);
+
+				// Merge pack emotions (Level overrides Pack by ID)
+				const emoMap: Record<string, Emotion> = {};
+				(pack.emotions || []).forEach((e) => (emoMap[e.id] = e));
+				(level.emotions || []).forEach((e) => (emoMap[e.id] = e));
+				level.emotions = Object.values(emoMap);
 
 				game = new GameModel(level);
 

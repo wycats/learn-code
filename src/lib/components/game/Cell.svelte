@@ -19,13 +19,18 @@
 		customTile?: TileDefinition;
 		x?: number;
 		y?: number;
-		highlight?: { target: string; type?: 'pulse' | 'arrow' | 'dim'; fading?: boolean } | undefined;
+		id?: string;
+		highlight?:
+			| { targets: string[]; type?: 'pulse' | 'arrow' | 'dim' | 'selection'; fading?: boolean }
+			| undefined;
 	}
 
-	let { type, customTile, x, y, highlight }: Props = $props();
+	let { type, customTile, x, y, id, highlight }: Props = $props();
 
 	const isHighlighted = $derived(
-		highlight && x !== undefined && y !== undefined && highlight.target === `cell:${x},${y}`
+		highlight &&
+			((id && highlight.targets?.includes(id)) ||
+				(x !== undefined && y !== undefined && highlight.targets?.includes(`cell:${x},${y}`)))
 	);
 	const isFading = $derived(isHighlighted && highlight?.fading);
 </script>
@@ -144,10 +149,9 @@
 	}
 
 	.cell.highlighted {
-		outline: 3px solid var(--pink-5);
-		box-shadow: 0 0 15px var(--pink-5);
+		outline: 3px solid var(--brand);
+		box-shadow: 0 0 10px var(--brand-dim);
 		z-index: 10;
-		animation: pulse-highlight 1.5s infinite;
 	}
 
 	.cell.highlighted.fading {
@@ -157,17 +161,5 @@
 		transition:
 			outline-color 2s ease-out,
 			box-shadow 2s ease-out;
-	}
-
-	@keyframes pulse-highlight {
-		0% {
-			box-shadow: 0 0 0 0 rgba(var(--pink-5-rgb), 0.7);
-		}
-		70% {
-			box-shadow: 0 0 0 10px rgba(var(--pink-5-rgb), 0);
-		}
-		100% {
-			box-shadow: 0 0 0 0 rgba(var(--pink-5-rgb), 0);
-		}
 	}
 </style>

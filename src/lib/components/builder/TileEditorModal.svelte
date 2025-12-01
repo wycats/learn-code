@@ -10,17 +10,20 @@
 		Snowflake,
 		Waves,
 		Ban,
-		Smile
+		Smile,
+		Globe,
+		Map
 	} from 'lucide-svelte';
 	import Cell from '$lib/components/game/Cell.svelte';
 
 	interface Props {
 		tile?: TileDefinition;
-		onSave: (tile: TileDefinition) => void;
+		initialScope?: 'pack' | 'level';
+		onSave: (tile: TileDefinition, scope: 'pack' | 'level') => void;
 		onClose: () => void;
 	}
 
-	let { tile, onSave, onClose }: Props = $props();
+	let { tile, initialScope = 'level', onSave, onClose }: Props = $props();
 
 	let dialog: HTMLDialogElement;
 
@@ -29,6 +32,7 @@
 	let color = $state(tile?.visuals.color || 'var(--surface-2)');
 	let pattern = $state(tile?.visuals.pattern || '');
 	let decal = $state(tile?.visuals.decal || '');
+	let scope = $state<'pack' | 'level'>(initialScope);
 
 	$effect(() => {
 		dialog?.showModal();
@@ -75,7 +79,7 @@
 				decal: decal || undefined
 			}
 		};
-		onSave(newTile);
+		onSave(newTile, scope);
 	}
 
 	function handleBackdropClick(e: MouseEvent) {
@@ -192,8 +196,29 @@
 					autocomplete="off"
 					class="inline-name-input"
 				/>
-				<div class="type-badge">
-					{TYPES.find((t) => t.value === type)?.label}
+				<div class="meta-row">
+					<div class="type-badge">
+						{TYPES.find((t) => t.value === type)?.label}
+					</div>
+
+					<div class="scope-selector">
+						<button
+							class="scope-btn"
+							class:active={scope === 'level'}
+							onclick={() => (scope = 'level')}
+							title="Save to Level (Local)"
+						>
+							<Map size={14} /> Level
+						</button>
+						<button
+							class="scope-btn"
+							class:active={scope === 'pack'}
+							onclick={() => (scope = 'pack')}
+							title="Save to Pack (Shared)"
+						>
+							<Globe size={14} /> Pack
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -394,6 +419,13 @@
 		outline: none;
 	}
 
+	.meta-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--size-2);
+	}
+
 	.type-badge {
 		font-size: var(--font-size-0);
 		color: var(--text-2);
@@ -404,6 +436,40 @@
 		padding: 2px 8px;
 		border-radius: var(--radius-pill);
 		align-self: flex-start;
+	}
+
+	.scope-selector {
+		display: flex;
+		background-color: var(--surface-2);
+		padding: 2px;
+		border-radius: var(--radius-2);
+		gap: 2px;
+	}
+
+	.scope-btn {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		padding: 2px 8px;
+		border: none;
+		background: none;
+		border-radius: var(--radius-1);
+		font-size: var(--font-size-00);
+		font-weight: 600;
+		color: var(--text-2);
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.scope-btn:hover {
+		color: var(--text-1);
+		background-color: var(--surface-3);
+	}
+
+	.scope-btn.active {
+		background-color: var(--surface-1);
+		color: var(--brand);
+		box-shadow: var(--shadow-1);
 	}
 
 	/* Sections */

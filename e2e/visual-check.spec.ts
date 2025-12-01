@@ -38,8 +38,12 @@ test('Visual Verification', async ({ page }) => {
 	await fs.writeFile(path.join(outputDir, 'snapshot.html'), html);
 
 	// 3. Capture Accessibility Tree (for Agent analysis of structure)
-	const snapshot = await page.accessibility.snapshot();
-	await fs.writeFile(path.join(outputDir, 'a11y.json'), JSON.stringify(snapshot, null, 2));
+	if (page.accessibility) {
+		const snapshot = await page.accessibility.snapshot();
+		await fs.writeFile(path.join(outputDir, 'a11y.json'), JSON.stringify(snapshot, null, 2));
+	} else {
+		console.warn('page.accessibility is undefined. Skipping accessibility snapshot.');
+	}
 
 	console.log(`Visual check complete. Artifacts saved to ${outputDir}`);
 });

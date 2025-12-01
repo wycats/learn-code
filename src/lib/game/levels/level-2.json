@@ -46,7 +46,7 @@
 	"hints": [
 		{
 			"id": "l2-hint-idle",
-			"text": "Drag the 'Repeat' block out, then put 'Move Forward' INSIDE it.",
+			"text": "Drag or click the 'Repeat' block, then put 'Step' INSIDE it.",
 			"trigger": { "type": "idle", "value": 20 },
 			"highlight": "block:loop"
 		},

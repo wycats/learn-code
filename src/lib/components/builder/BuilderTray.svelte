@@ -16,7 +16,8 @@
 		Plus,
 		Pencil,
 		Trash2,
-		FunctionSquare
+		FunctionSquare,
+		Globe
 	} from 'lucide-svelte';
 	import { fade, scale } from 'svelte/transition';
 
@@ -34,6 +35,7 @@
 	// Tile Editor State
 	let showTileEditor = $state(false);
 	let editingTile = $state<TileDefinition | undefined>(undefined);
+	let editingScope = $state<'pack' | 'level'>('level');
 
 	// Terrain Tools
 	type TerrainTool = {
@@ -46,6 +48,7 @@
 		color?: string;
 		isCustom?: boolean;
 		tileDef?: TileDefinition;
+		scope?: 'pack' | 'level';
 	};
 
 	const standardTerrainTools: TerrainTool[] = [
@@ -60,30 +63,42 @@
 	];
 
 	let terrainTools = $derived.by(() => {
-		const customTools: TerrainTool[] = Object.values(builder.level.customTiles || {}).map(
-			(tile) => {
-				return {
-					id: tile.id,
-					value: tile.id,
-					label: tile.name,
-					color: tile.visuals.color,
-					isCustom: true,
-					tileDef: tile
-				};
-			}
-		);
+		const packTools: TerrainTool[] = Object.values(builder.pack.customTiles || {}).map((tile) => {
+			return {
+				id: tile.id,
+				value: tile.id,
+				label: tile.name,
+				// Don't use tile color for UI selection state - keep it standard blue
+				// color: tile.visuals.color,
+				isCustom: true,
+				tileDef: tile,
+				scope: 'pack'
+			};
+		});
 
-		return [...standardTerrainTools, ...customTools];
+		const levelTools: TerrainTool[] = Object.values(builder.level.customTiles || {}).map((tile) => {
+			return {
+				id: tile.id,
+				value: tile.id,
+				label: tile.name,
+				// Don't use tile color for UI selection state - keep it standard blue
+				// color: tile.visuals.color,
+				isCustom: true,
+				tileDef: tile,
+				scope: 'level'
+			};
+		});
+
+		return [...standardTerrainTools, ...packTools, ...levelTools];
 	});
 
 	function selectTool(tool: BuilderTool) {
-		if (builder.onTargetSelect) {
+		if (builder.targetingState.isActive) {
 			let target = `tool:${tool.type}`;
 			if ('value' in tool) {
 				target += `:${tool.value}`;
 			}
-			builder.onTargetSelect(target);
-			builder.onTargetSelect = null;
+			builder.targetingState.onToggle(target);
 			return;
 		}
 
@@ -99,14 +114,21 @@
 		if (type === 'terrain') {
 			target += `:${tool.value}`;
 		}
-		return highlight.target === target;
+		return highlight.targets.includes(target);
 	}
 
 	function isBlockHighlighted(type: BlockType) {
 		const highlight = builder.game.previewHighlight;
 		if (!highlight) return false;
 		const target = `block:${type}`;
-		return highlight.target === target;
+		return highlight.targets.includes(target);
+	}
+
+	function isLimitHighlighted(type: BlockType) {
+		const highlight = builder.game.previewHighlight;
+		if (!highlight) return false;
+		const target = `limit:${type}`;
+		return highlight.targets.includes(target);
 	}
 
 	function isToolActive(type: string, value?: string) {
@@ -116,6 +138,8 @@
 		}
 		return true;
 	}
+
+	const isFading = $derived(builder.game.previewHighlight?.fading);
 
 	const blockTypes: { type: BlockType; label: string; comingSoon?: boolean }[] = [
 		{ type: 'move-forward', label: 'Move' },
@@ -128,9 +152,8 @@
 	function toggleBlock(type: BlockType, comingSoon?: boolean) {
 		if (comingSoon) return;
 
-		if (builder.onTargetSelect) {
-			builder.onTargetSelect(`block:${type}`);
-			builder.onTargetSelect = null;
+		if (builder.targetingState.isActive) {
+			builder.targetingState.onToggle(`block:${type}`);
 			return;
 		}
 
@@ -155,6 +178,12 @@
 
 	function toggleEditLimit(type: BlockType, e: MouseEvent) {
 		e.stopPropagation();
+
+		if (builder.targetingState.isActive) {
+			builder.targetingState.onToggle(`limit:${type}`);
+			return;
+		}
+
 		if (editingLimitFor === type) {
 			editingLimitFor = null;
 		} else {
@@ -172,29 +201,55 @@
 	// Tile Functions
 	function openNewTile() {
 		editingTile = undefined;
+		editingScope = 'level';
 		showTileEditor = true;
 	}
 
-	function editTile(tile: TileDefinition, e: MouseEvent) {
+	function editTile(tile: TileDefinition, scope: 'pack' | 'level', e: MouseEvent) {
 		e.stopPropagation();
 		editingTile = tile;
+		editingScope = scope;
 		showTileEditor = true;
 	}
 
-	function saveTile(tile: TileDefinition) {
-		if (!builder.level.customTiles) builder.level.customTiles = {};
-		builder.level.customTiles[tile.id] = tile;
+	function saveTile(tile: TileDefinition, scope: 'pack' | 'level') {
+		// Handle moving between scopes
+		if (editingTile && editingScope !== scope) {
+			if (editingScope === 'pack') {
+				if (builder.pack.customTiles) delete builder.pack.customTiles[tile.id];
+			} else {
+				if (builder.level.customTiles) delete builder.level.customTiles[tile.id];
+			}
+		}
+
+		if (scope === 'pack') {
+			if (!builder.pack.customTiles) builder.pack.customTiles = {};
+			builder.pack.customTiles[tile.id] = tile;
+		} else {
+			if (!builder.level.customTiles) builder.level.customTiles = {};
+			builder.level.customTiles[tile.id] = tile;
+		}
+
 		showTileEditor = false;
 		builder.syncGame();
 	}
 
-	function deleteTile(id: string, e: MouseEvent) {
+	function deleteTile(id: string, scope: 'pack' | 'level', e: MouseEvent) {
 		e.stopPropagation();
-		if (builder.level.customTiles) {
-			const newTiles = { ...builder.level.customTiles };
-			delete newTiles[id];
-			builder.level.customTiles = newTiles;
-			builder.syncGame();
+		if (scope === 'pack') {
+			if (builder.pack.customTiles) {
+				const newTiles = { ...builder.pack.customTiles };
+				delete newTiles[id];
+				builder.pack.customTiles = newTiles;
+				builder.syncGame();
+			}
+		} else {
+			if (builder.level.customTiles) {
+				const newTiles = { ...builder.level.customTiles };
+				delete newTiles[id];
+				builder.level.customTiles = newTiles;
+				builder.syncGame();
+			}
 		}
 	}
 </script>
@@ -247,6 +302,7 @@
 								class="tool-btn"
 								class:active={isToolActive(tool.type || 'terrain', tool.value)}
 								class:highlighted={isToolHighlighted(tool)}
+								class:fading={isFading}
 								onclick={() =>
 									selectTool({ type: tool.type || 'terrain', value: tool.value } as BuilderTool)}
 								style:--tool-color={tool.color}
@@ -257,11 +313,22 @@
 								<span class="tool-label">{tool.label}</span>
 							</button>
 							{#if tool.isCustom}
+								{#if tool.scope === 'pack'}
+									<div class="scope-badge" title="Pack Tile (Shared)">
+										<Globe size={10} />
+									</div>
+								{/if}
 								<div class="custom-actions">
-									<button class="action-btn edit" onclick={(e) => editTile(tool.tileDef!, e)}>
+									<button
+										class="action-btn edit"
+										onclick={(e) => editTile(tool.tileDef!, tool.scope!, e)}
+									>
 										<Pencil size={12} />
 									</button>
-									<button class="action-btn delete" onclick={(e) => deleteTile(tool.id, e)}>
+									<button
+										class="action-btn delete"
+										onclick={(e) => deleteTile(tool.id, tool.scope!, e)}
+									>
 										<Trash2 size={12} />
 									</button>
 								</div>
@@ -286,6 +353,7 @@
 							class:disabled={!isIncluded && !comingSoon}
 							class:coming-soon={comingSoon}
 							class:highlighted={isBlockHighlighted(type)}
+							class:fading={isFading}
 							onclick={() => toggleBlock(type, comingSoon)}
 							role="button"
 							tabindex="0"
@@ -302,7 +370,16 @@
 								<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 								<div
 									class="limit-badge-container"
-									onclick={(e) => e.stopPropagation()}
+									class:highlighted={isLimitHighlighted(type)}
+									class:fading={isFading}
+									onclick={(e) => {
+										if (builder.targetingState.isActive) {
+											e.stopPropagation();
+											builder.targetingState.onToggle(`limit:${type}`);
+										} else {
+											e.stopPropagation();
+										}
+									}}
 									role="group"
 									tabindex="-1"
 									onkeydown={(e) => e.stopPropagation()}
@@ -377,7 +454,12 @@
 </div>
 
 {#if showTileEditor}
-	<TileEditorModal tile={editingTile} onSave={saveTile} onClose={() => (showTileEditor = false)} />
+	<TileEditorModal
+		tile={editingTile}
+		initialScope={editingScope}
+		onSave={saveTile}
+		onClose={() => (showTileEditor = false)}
+	/>
 {/if}
 
 <style>
@@ -495,10 +577,21 @@
 	}
 
 	.tool-btn.highlighted {
-		animation: pulse-highlight 1.5s infinite;
+		outline: 3px solid var(--brand);
+		outline-offset: -3px;
 		border-color: var(--brand);
-		box-shadow: 0 0 0 2px var(--brand-surface);
 		z-index: 10;
+		box-shadow: 0 0 10px var(--brand-dim);
+	}
+
+	.tool-btn.highlighted.fading {
+		outline-color: transparent;
+		box-shadow: none;
+		border-color: transparent;
+		transition:
+			outline-color 2s ease-out,
+			box-shadow 2s ease-out,
+			border-color 2s ease-out;
 	}
 
 	@keyframes pulse-highlight {
@@ -526,6 +619,22 @@
 		gap: 4px;
 		opacity: 0;
 		transition: opacity 0.2s;
+	}
+
+	.scope-badge {
+		position: absolute;
+		top: 4px;
+		left: 4px;
+		background-color: var(--surface-3);
+		color: var(--text-2);
+		border-radius: 50%;
+		width: 16px;
+		height: 16px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		pointer-events: none;
+		box-shadow: var(--shadow-1);
 	}
 
 	.tool-wrapper:hover .custom-actions {
@@ -603,10 +712,19 @@
 	}
 
 	.block-wrapper.highlighted {
-		animation: pulse-highlight 1.5s infinite;
+		outline: 3px solid var(--brand);
+		outline-offset: 2px;
 		border-radius: var(--radius-2);
-		box-shadow: 0 0 0 2px var(--brand-surface);
 		z-index: 10;
+		box-shadow: 0 0 10px var(--brand-dim);
+	}
+
+	.block-wrapper.highlighted.fading {
+		outline-color: transparent;
+		box-shadow: none;
+		transition:
+			outline-color 2s ease-out,
+			box-shadow 2s ease-out;
 	}
 
 	.block-content {
@@ -641,6 +759,22 @@
 		top: -6px;
 		right: -6px;
 		z-index: 5;
+	}
+
+	.limit-badge-container.highlighted {
+		outline: 3px solid var(--brand);
+		outline-offset: 2px;
+		border-radius: var(--radius-round);
+		z-index: 15;
+		box-shadow: 0 0 10px var(--brand-dim);
+	}
+
+	.limit-badge-container.highlighted.fading {
+		outline-color: transparent;
+		box-shadow: none;
+		transition:
+			outline-color 2s ease-out,
+			box-shadow 2s ease-out;
 	}
 
 	.limit-badge {

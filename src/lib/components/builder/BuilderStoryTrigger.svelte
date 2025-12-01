@@ -43,10 +43,14 @@
 			{ id: 'System', name: 'System', color: 'var(--surface-3)', avatar: 'S' }
 		];
 
-		const chars = builder.level.characters || defaultCharacters;
+		const packChars = builder.pack.characters || [];
+		const levelChars = builder.level.characters || [];
+
+		// Search order: Level -> Pack -> Default
+		const allChars = [...levelChars, ...packChars, ...defaultCharacters];
+
 		return (
-			chars.find((c) => c.name === name) ||
-			defaultCharacters.find((c) => c.name === name) || {
+			allChars.find((c) => c.name === name) || {
 				color: 'var(--surface-3)',
 				avatar: name[0]
 			}

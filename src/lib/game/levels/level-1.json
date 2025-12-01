@@ -41,7 +41,7 @@
 		{
 			"id": "intro-4",
 			"speaker": "Guide",
-			"text": "Use the 'Move Forward' block to help Zoey cross.",
+			"text": "Drag or click the 'Step' block to help Zoey cross.",
 			"emotion": "thinking",
 			"highlight": { "target": "block:move-forward", "type": "pulse" }
 		}
@@ -49,7 +49,7 @@
 	"hints": [
 		{
 			"id": "hint-idle-1",
-			"text": "Drag the 'Move Forward' block from the tray to the workspace.",
+			"text": "Drag or click the 'Step' block from the tray to the workspace.",
 			"trigger": { "type": "idle", "value": 15 },
 			"highlight": "ui:tray"
 		},

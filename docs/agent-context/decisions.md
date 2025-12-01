@@ -361,4 +361,3 @@
 
 - We maintain full control over the `user` and `session` tables in our schema.
 - We avoid vendor lock-in for the authentication layer.
-

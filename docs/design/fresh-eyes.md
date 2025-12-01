@@ -21,7 +21,7 @@
     - **Critical**: If the child ignores the text, they might just stare at the screen. The `highlight` in `intro-3` helps, but it only triggers after the text is displayed.
     - **Opportunity**: Voiceover is essential here. Without it, this is a wall of text.
 
-3.  **Builder Library (`/builder/campaigns`)**:
+3.  **Builder Library (`/builder/packs`)**:
     - **Friction**: "Architect's Library", "My Packs", "Built-in Packs" - this is a text-heavy dashboard.
     - **Trap**: The "Clone" overlay requires hovering (`.template-card:hover .clone-overlay`). Touch devices (tablets) don't hover well. A child tapping a card might get confused if nothing happens or if it just highlights.
     - **Good**: The "Create New Pack" button has a `+` icon.

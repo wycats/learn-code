@@ -105,7 +105,9 @@
 		if (
 			isRunning &&
 			isPaused &&
-			(game.lastEvent?.type === 'blocked' || game.lastEvent?.type === 'fail')
+			(game.lastEvent?.type === 'blocked' ||
+				game.lastEvent?.type === 'fail' ||
+				game.status === 'planning')
 		) {
 			handleStop();
 		}
@@ -177,6 +179,12 @@
 			game.checkHints();
 		}, 1000);
 		return () => clearInterval(interval);
+	});
+
+	$effect(() => {
+		if (game.displaySegment?.targets) {
+			game.triggerPreviewHighlight(game.displaySegment.targets);
+		}
 	});
 </script>
 
