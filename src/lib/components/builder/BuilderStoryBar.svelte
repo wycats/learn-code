@@ -897,6 +897,7 @@
 		cursor: pointer;
 		text-align: left;
 		transition: all 0.2s;
+		min-height: var(--touch-target-min);
 	}
 
 	.timeline-item:hover {
@@ -1161,6 +1162,14 @@
 		z-index: 2;
 	}
 
+	.emotion-badge::after {
+		content: '';
+		position: absolute;
+		inset: -10px;
+		cursor: pointer;
+		border-radius: 50%;
+	}
+
 	/* Remove old character specific styles as we use dynamic colors now */
 	/* .character-portrait[data-character='Zoey'] .avatar { ... } */
 
@@ -1351,10 +1360,18 @@
 		background-color: var(--surface-1);
 		border-radius: 50%;
 		border: 1px solid var(--surface-3);
-		width: 20px;
-		height: 20px;
+		width: 24px;
+		height: 24px;
 		justify-content: center;
 		z-index: 10;
+	}
+
+	.badge-corner-btn::after {
+		content: '';
+		position: absolute;
+		inset: -6px;
+		cursor: pointer;
+		border-radius: 50%;
 	}
 
 	.badge-corner-btn.clear {

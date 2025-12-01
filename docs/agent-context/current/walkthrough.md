@@ -1,57 +1,35 @@
-# Phase 22: Mobile & Phone Polish Walkthrough
+# Phase 23: Dark Mode Deep Dive Walkthrough
 
 ## Overview
 
-In this phase, we are optimizing the application for mobile devices, ensuring that touch interactions are comfortable and the layout adapts gracefully to smaller screens. We also refined the P2P sharing experience based on user feedback.
+In this phase, we are focusing on the visual refinement of the application's Dark Mode. We have implemented a robust theme switching mechanism using Svelte 5 Runes and CSS `light-dark()` function, and audited key components to ensure they render correctly in both modes.
 
 ## Key Changes
 
-### 1. Touch Target Audit
+### 1. Infrastructure
 
-We systematically audited the codebase to ensure all interactive elements meet the 44px minimum touch target size recommendation.
+- **Theme Store**: Created `src/lib/stores/theme.svelte.ts` to manage theme state ('light' | 'dark' | 'system') with persistence to `localStorage`.
+- **Theme Toggle**: Created `ThemeToggle.svelte` component for easy switching.
+- **CSS Variables**: Updated `src/app.css` to use `light-dark()` for all semantic tokens, ensuring automatic color switching based on the `color-scheme` property.
 
-- **Builder Mode**: Updated all builder components (`BuilderToolbar`, `BuilderTray`, `BuilderGrid`, etc.) to use larger buttons and hit areas.
-- **Modals**: Increased the size of close buttons, action buttons, and form inputs in all modals (`StoryConfigModal`, `TileEditorModal`, `PackManagerModal`, etc.).
-- **Common Components**: Updated `ConfirmModal` and `ToastContainer` to be touch-friendly.
-- **Library**: Updated `PackCard` action buttons.
+### 2. Component Integration
 
-### 2. CSS Variables
+- **Landing Page**: Added `ThemeToggle` to the top-right corner.
+- **Game Interface**: Added `ThemeToggle` to the header controls.
+- **Builder Interface**: Added `ThemeToggle` to the toolbar.
 
-We introduced `var(--touch-target-min)` (44px) to standardize touch target sizes across the application.
+### 3. Visual Polish
 
-### 3. Local Publishing & Library Integration
-
-We integrated local custom packs into the main Library view.
-
-- **My Projects**: A new section in the Library displays packs stored locally (IndexedDB).
-- **Seamless Play**: Users can play their own creations directly from the Library, just like built-in packs.
-
-### 4. UX Refinements
-
-Based on user feedback, we polished several interactions:
-
-- **P2P Sharing**: Removed the intermediate "Send/Receive" selection step. The modal now auto-detects the intent based on context (sending vs receiving) and starts the flow immediately.
-- **Function Configuration**: Simplified the "Call Function" block configuration. If only one function exists, it is automatically selected and displayed as a static label, removing the redundant selection list.
-- **Tray UI**: Fixed scrolling issues in the configuration panel by increasing the maximum height and adding padding to prevent layout shifts during transforms.
-
-### 5. Mobile Layout Optimization
-
-We refined the Game Mode layout for small screens (phones):
-
-- **Header Controls**: Collapsed text labels for secondary buttons on mobile, using icon-only buttons to save space.
-- **Instruction Bar**: Optimized padding and layout to fit within the mobile dashboard area without cramping content.
-- **Tray Palette**: Reduced the width of the block palette on mobile to maximize space for the program construction area.
-- **Status Panel**: Adjusted padding and icon sizes for a more compact presentation.
-
-### 6. Visual Polish (Fonts)
-
-We upgraded the application typography to use high-quality variable fonts via `fontsource`:
-
-- **Headings**: `Outfit` (Friendly, geometric, modern).
-- **Body**: `Inter` (Clean, highly legible).
-- **Code**: `JetBrains Mono` (Excellent readability for code blocks).
+- **Tray & Palette**: Updated glassmorphism effects and button styles to use `light-dark()` for proper contrast on dark backgrounds.
+- **Instruction Bar**: Fixed hardcoded white backgrounds and borders to adapt to the theme.
+- **Status Panel**: Adjusted status colors (green, yellow, blue) to be less harsh in dark mode using `light-dark()`.
+- **Modals**: Updated `WinModal` and `GoalModal` overlays and content to support dark mode, replacing hardcoded colors with semantic variables.
+- **Library**: Refactored `PackCard` to use `light-dark()` for all 11 color themes, ensuring readability in both modes. Added `ThemeToggle` to the library header.
+- **Builder Components**: Audited and fixed `TileEditorModal`, `HintEditor`, `Block`, and others. Fixed hardcoded colors and invalid RGB variable usage.
+- **Assets**: Updated `Cell` glassmorphism and `Check` icons to be adaptive.
 
 ## Technical Decisions
 
-- **Auto-Start P2P**: We used Svelte's `$effect` to trigger the P2P state machine transition immediately upon mounting if the props indicate a clear intent.
-- **Type Safety**: Resolved type mismatches between `CampaignService` and `getPack` to ensure robust data handling for local packs.
+- **`light-dark()`**: We chose to use the native CSS `light-dark()` function for color definitions. This simplifies the CSS by removing the need for complex `.dark` class selectors for every variable. The theme store simply toggles the `color-scheme` property on the root element.
+- **Smart Toggle Cycle**: Implemented a "Smart Cycle" for the theme toggle (System -> Dark -> Light) to prioritize immediate visual feedback for the user.
+- **Svelte 5 Runes**: Used `$state` and `$effect` in the `ThemeStore` for a modern, reactive state management approach.

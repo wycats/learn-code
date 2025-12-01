@@ -376,3 +376,25 @@ Enabled Architects to share their creations directly with Explorers without a ce
   - `P2PModal`: Step-by-step wizard for the "Sender" and "Receiver" handshake flow.
 - **QR Code Integration**: Dynamic QR code generation for signaling data.
 - **Offline Support**: Verified functionality in offline-first PWA context.
+
+## Phase 22: Mobile & Phone Polish (Completed)
+
+**Date:** December 1, 2025
+
+**Summary:**
+Optimized the application for mobile devices and touch interactions, ensuring a native-like experience on small screens. This phase involved a comprehensive audit of touch targets, implementation of responsive stacked layouts for the Game and Builder, and the conversion of static toolbars into floating bottom sheets. Additionally, native HTML5 Drag and Drop was verified as the baseline for mobile, simplifying the tech stack.
+
+**Key Deliverables:**
+
+- **Touch Target Audit**: Systematically updated all interactive elements to meet the 44px minimum size.
+- **Mobile Layouts**:
+  - Implemented vertical stack layout for Game and Builder modes on mobile.
+  - Converted control bars to floating bottom sheets for better thumb reachability.
+  - Optimized `InstructionBar` and `StatusPanel` for compact screens.
+- **UX Polish**:
+  - Refined P2P sharing flow (auto-detection of intent).
+  - Simplified Function configuration UI.
+  - Fixed scrolling issues in Tray configuration panels.
+- **Visual Polish**:
+  - Upgraded typography to variable fonts (`Outfit`, `Inter`, `JetBrains Mono`).
+  - Refined visual presentation of status indicators.

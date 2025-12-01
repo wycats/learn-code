@@ -811,13 +811,13 @@
 
 	@keyframes pulse {
 		0% {
-			box-shadow: 0 0 0 0 rgba(var(--green-5-rgb), 0.4);
+			box-shadow: 0 0 0 0 color-mix(in srgb, var(--green-5), transparent 60%);
 		}
 		70% {
-			box-shadow: 0 0 0 6px rgba(var(--green-5-rgb), 0);
+			box-shadow: 0 0 0 6px color-mix(in srgb, var(--green-5), transparent 100%);
 		}
 		100% {
-			box-shadow: 0 0 0 0 rgba(var(--green-5-rgb), 0);
+			box-shadow: 0 0 0 0 color-mix(in srgb, var(--green-5), transparent 100%);
 		}
 	}
 
@@ -849,12 +849,20 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 24px;
-		height: 24px;
+		width: 32px;
+		height: 32px;
 		border-radius: 50%;
 		border: none;
 		cursor: pointer;
 		transition: all 0.2s;
+		position: relative;
+	}
+
+	.badge-corner-btn::after {
+		content: '';
+		position: absolute;
+		inset: -6px;
+		cursor: pointer;
 	}
 
 	.badge-corner-btn.clear {

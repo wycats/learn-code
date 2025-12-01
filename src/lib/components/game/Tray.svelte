@@ -1002,7 +1002,35 @@
 	@media (max-width: 768px) {
 		.tray {
 			grid-template-rows: 1fr;
-			grid-template-columns: 140px 1fr; /* Palette | Program */
+			grid-template-columns: 110px 1fr; /* Palette | Program */
+			gap: var(--size-2);
+			padding: var(--size-2);
+		}
+
+		.floating-toolbar {
+			left: 50%;
+			top: var(--size-2);
+			bottom: auto;
+			transform: translateX(-50%) translateY(-20px);
+			flex-direction: row;
+		}
+
+		.floating-toolbar.visible {
+			transform: translateX(-50%) translateY(0);
+		}
+
+		.toolbar-container {
+			flex-direction: row;
+		}
+
+		.config-panel {
+			right: auto;
+			bottom: 100%;
+			top: auto;
+			transform: translateX(-50%);
+			left: 50%;
+			margin-bottom: var(--size-2);
+			margin-right: 0;
 		}
 	}
 
@@ -1038,14 +1066,14 @@
 		margin-right: var(--size-3);
 
 		/* Glassomorphism */
-		background: rgba(255, 255, 255, 0.65);
+		background: light-dark(rgba(255, 255, 255, 0.65), rgba(0, 0, 0, 0.65));
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
-		border: 1px solid rgba(255, 255, 255, 0.5);
+		border: 1px solid light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1));
 		box-shadow:
 			0 10px 25px -5px rgba(0, 0, 0, 0.1),
 			0 8px 10px -6px rgba(0, 0, 0, 0.1),
-			inset 0 0 20px rgba(255, 255, 255, 0.5);
+			inset 0 0 20px light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.05));
 
 		border-radius: var(--radius-3);
 		padding: var(--size-3);
@@ -1115,8 +1143,8 @@
 
 	.config-btn {
 		aspect-ratio: 1;
-		background-color: rgba(255, 255, 255, 0.5);
-		border: 1px solid rgba(0, 0, 0, 0.05);
+		background-color: light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1));
+		border: 1px solid light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.1));
 		border-radius: var(--radius-2);
 		font-size: var(--font-size-1);
 		font-weight: bold;
@@ -1130,7 +1158,7 @@
 	}
 
 	.config-btn:hover {
-		background-color: white;
+		background-color: light-dark(white, var(--surface-3));
 		transform: translateY(-2px);
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 		color: var(--text-1);
@@ -1168,19 +1196,19 @@
 	.config-input {
 		width: 100%;
 		height: 100%;
-		border: 1px solid rgba(0, 0, 0, 0.1);
+		border: 1px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
 		border-radius: var(--radius-2);
 		text-align: center;
 		font-weight: bold;
 		font-size: var(--font-size-1);
 		color: var(--text-1);
-		background-color: rgba(255, 255, 255, 0.5);
+		background-color: light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1));
 		padding: 0;
 		transition: all 0.2s;
 	}
 
 	.config-input:focus {
-		background-color: white;
+		background-color: light-dark(white, var(--surface-3));
 		outline: 2px solid var(--blue-5);
 		border-color: transparent;
 	}
@@ -1356,7 +1384,7 @@
 	.disabled-overlay {
 		position: absolute;
 		inset: 0;
-		background-color: rgba(255, 255, 255, 0.6);
+		background-color: light-dark(rgba(255, 255, 255, 0.6), rgba(0, 0, 0, 0.6));
 		backdrop-filter: blur(2px);
 		z-index: 20;
 		display: flex;

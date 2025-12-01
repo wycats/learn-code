@@ -177,7 +177,7 @@
 									title={c.label}
 								>
 									{#if color === c.value}
-										<Check size={14} color="rgba(0,0,0,0.5)" />
+										<Check size={14} color="light-dark(rgba(0,0,0,0.5), rgba(255,255,255,0.8))" />
 									{/if}
 								</button>
 							{/each}
@@ -375,6 +375,14 @@
 		color: var(--text-2);
 		padding: 0;
 		transition: all 0.2s;
+		position: relative;
+	}
+
+	.satellite-trigger::after {
+		content: '';
+		position: absolute;
+		inset: -10px;
+		cursor: pointer;
 	}
 
 	.satellite-trigger:hover {
@@ -641,7 +649,7 @@
 		width: 44px;
 		height: 44px;
 		border-radius: 50%;
-		border: 2px solid rgba(0, 0, 0, 0.1);
+		border: 2px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.2));
 		cursor: pointer;
 		display: grid;
 		place-items: center;

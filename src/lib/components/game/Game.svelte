@@ -22,6 +22,7 @@
 	} from 'lucide-svelte';
 	import { soundManager } from '$lib/game/sound';
 	import { fade } from 'svelte/transition';
+	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
 
 	interface Props {
 		game: GameModel;
@@ -239,9 +240,9 @@
 					disabled={!isRunning && game.program.length === 0}
 				>
 					{#if isRunning && !isPaused}
-						<Square size={16} fill="currentColor" /> Stop
+						<Square size={16} fill="currentColor" /> <span class="btn-label">Stop</span>
 					{:else}
-						<Play size={16} fill="currentColor" /> Play
+						<Play size={16} fill="currentColor" /> <span class="btn-label">Play</span>
 					{/if}
 				</button>
 				<button
@@ -250,7 +251,7 @@
 					disabled={!isRunning || !interpreter}
 					title="Step Back"
 				>
-					<StepBack size={16} /> Back
+					<StepBack size={16} /> <span class="btn-label">Back</span>
 				</button>
 				<button
 					class="btn-secondary"
@@ -258,19 +259,20 @@
 					disabled={game.program.length === 0 || (isRunning && !isPaused)}
 					title="Step Forward"
 				>
-					<StepForward size={16} /> Step
+					<StepForward size={16} /> <span class="btn-label">Step</span>
 				</button>
 				<button class="btn-secondary" onclick={handleReset} disabled={isRunning && !isPaused}>
-					<RotateCcw size={16} /> Reset
+					<RotateCcw size={16} /> <span class="btn-label">Reset</span>
 				</button>
 			</div>
 
-			{#if onExit}
-				<div class="right-controls">
+			<div class="right-controls">
+				<ThemeToggle />
+				{#if onExit}
 					<div class="separator"></div>
 					<button class="btn-secondary" onclick={onExit}> Exit Test </button>
-				</div>
-			{/if}
+				{/if}
+			</div>
 		</Cluster>
 	</header>
 
@@ -499,5 +501,42 @@
 		height: var(--size-6);
 		background-color: var(--surface-3);
 		margin: 0 var(--size-2);
+	}
+
+	@media (max-width: 600px) {
+		.btn-label {
+			display: none;
+		}
+
+		.btn-primary,
+		.btn-secondary {
+			padding: 0;
+			width: 44px; /* Fixed width for icon-only */
+			height: 44px;
+			justify-content: center;
+		}
+
+		.controls {
+			position: fixed;
+			bottom: var(--size-4);
+			left: 50%;
+			transform: translateX(-50%);
+			background-color: var(--surface-1);
+			padding: var(--size-2) var(--size-3);
+			border-radius: var(--radius-pill);
+			box-shadow: var(--shadow-5);
+			z-index: 100;
+			border: 1px solid var(--surface-3);
+			width: auto;
+			gap: var(--size-3);
+		}
+
+		.separator {
+			display: none; /* Hide separator in floating bar */
+		}
+
+		.dashboard-area {
+			min-height: 90px;
+		}
 	}
 </style>

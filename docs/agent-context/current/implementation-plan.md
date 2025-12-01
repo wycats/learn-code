@@ -1,37 +1,38 @@
-# Phase 22: Mobile & Phone Polish
+# Implementation Plan - Phase 23: Dark Mode Deep Dive
 
-## Goal
+## 1. Color System Audit
 
-Optimize the experience for small screens and touch interactions, ensuring the app feels native on mobile devices. **Priority is on the Game Mode experience**, with Builder Mode improvements as a secondary bonus goal.
-
-## High-Level Outline
-
-### 1. Game Mode Polish (Priority)
-
-- **Objective**: Ensure the core gameplay loop is flawless on mobile.
+- **Objective**: Ensure all semantic tokens have appropriate values for dark mode.
+- **Files**: `src/app.css`
 - **Tasks**:
-  - **Touch Targets**: Audit Game UI (Play/Stop, Speed, Blocks) for 44px minimum.
-  - **Vertical Layout**: Verify the Instruction Bar + Grid + Tray stack fits without scrolling on small devices (e.g., iPhone SE/12).
-  - **Gestures**: Implement swipe navigation for the Level Library.
-  - **Modals**: Ensure Win/Loss and Settings modals are responsive.
+  - Review `--surface-*` and `--text-*` tokens.
+  - Check `--brand-*` colors for vibration/contrast on dark backgrounds.
+  - Verify `--shadow-*` visibility or implement alternative depth cues (borders).
 
-### 2. Builder Mode Polish (Bonus)
+## 2. Component Audit & Polish
 
-- **Objective**: Make the Builder usable on phones for quick edits.
+- **Objective**: Verify every major component looks good in dark mode.
+- **Components**:
+  - **Game**: `Grid.svelte` (cell colors), `Tray.svelte` (palette backgrounds), `InstructionBar.svelte`.
+  - **Builder**: `BuilderToolbar.svelte`, `BuilderTray.svelte`, `TileEditorModal.svelte`.
+  - **Common**: `Modal.svelte`, `Toast.svelte`, `Card.svelte`.
 - **Tasks**:
-  - **Layout**: Optimize the vertical stack. Consider a collapsible Tray or "Drawer" to maximize Grid space.
-  - **Touch Targets**: Audit Toolbar and Tool buttons.
-  - **Gestures**: Pinch-to-zoom for the Grid.
+  - Manually toggle dark mode and inspect each screen.
+  - Fix any hardcoded colors that don't adapt.
+  - Adjust opacity/transparency for glassmorphism effects in dark mode.
 
-### 3. General Mobile UX
+## 3. Theme Toggle Logic
 
-- **Objective**: System-wide mobile improvements.
+- **Objective**: Ensure robust theme switching.
+- **Files**: `src/lib/stores/theme.ts` (or similar), `src/routes/+layout.svelte`.
 - **Tasks**:
-  - **Keyboard Handling**: Ensure inputs (Level Name, Story Editor) scroll into view.
-  - **PWA Manifest**: Verify `display: standalone` and orientation settings.
+  - Verify persistence in `localStorage`.
+  - Ensure no flash of wrong theme (FOUC) on load.
+  - Add a smooth transition effect for the toggle.
 
-## Success Criteria
+## 4. Visual Regression Testing
 
-- **Game Mode**: Fully playable on a mobile device with no layout issues or difficult touch targets.
-- **Builder Mode**: Basic editing is possible on mobile (even if cramped).
-- **Visual Tests**: Mobile viewport snapshots pass.
+- **Objective**: Lock in the dark mode look.
+- **Tasks**:
+  - Add specific dark mode test cases to `e2e/visual.spec.ts`.
+  - Run `test:visual` to generate baselines.

@@ -15,7 +15,7 @@
 	<div class="modal">
 		<Stack gap="var(--size-4)" align="center">
 			<div class="icon-wrapper">
-				<Star size={48} color="var(--yellow-7)" fill="var(--yellow-4)" />
+				<Star size={48} color="var(--star-color)" fill="var(--star-fill)" />
 			</div>
 			<div class="content">
 				<h2>{levelName}</h2>
@@ -35,7 +35,7 @@
 	.overlay {
 		position: absolute;
 		inset: 0;
-		background-color: rgba(255, 255, 255, 0.5);
+		background-color: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5));
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -59,11 +59,13 @@
 	}
 
 	.icon-wrapper {
-		background-color: var(--yellow-1);
+		background-color: light-dark(var(--yellow-1), var(--yellow-9));
 		padding: var(--size-4);
 		border-radius: var(--radius-round);
 		display: inline-flex;
-		border: 2px solid var(--yellow-3);
+		border: 2px solid light-dark(var(--yellow-3), var(--yellow-7));
+		--star-color: light-dark(var(--yellow-7), var(--yellow-3));
+		--star-fill: light-dark(var(--yellow-4), var(--yellow-6));
 	}
 
 	h2 {

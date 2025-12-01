@@ -356,6 +356,7 @@
 		align-items: center;
 		gap: var(--size-2);
 		font-size: var(--font-size-1);
+		min-height: var(--touch-target-min);
 	}
 
 	.constraint-line label {
@@ -363,6 +364,7 @@
 		align-items: center;
 		gap: var(--size-2);
 		cursor: pointer;
+		width: 100%;
 	}
 
 	.constraint-line label.disabled {
@@ -375,10 +377,11 @@
 		align-items: center;
 		gap: var(--size-1);
 		background-color: var(--surface-2);
-		padding: 2px var(--size-2);
+		padding: 0 var(--size-2);
 		border-radius: var(--radius-1);
 		border: 1px solid transparent;
 		transition: all 0.2s;
+		min-height: var(--touch-target-min);
 	}
 
 	.inline-edit.disabled {

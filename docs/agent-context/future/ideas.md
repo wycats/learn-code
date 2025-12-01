@@ -18,6 +18,7 @@
 
 - [ ] **Boat**: A boat that allows the character to cross water tiles. (Suggested by Zoey)
 - [ ] **Custom Core Blocks**: Allow advanced users (like Jonas leveling up) to define their own core blocks. This would be a "ZPD" (Zone of Proximal Development) feature, bridging the gap between using blocks and understanding their implementation.
+- [ ] **Text-to-Speech (TTS)**: Use the Web Speech API to read dialogue and instructions aloud. This supports pre-literate users and adds immersion.
 
 ## Jonas's Wishlist (Nov 2025)
 

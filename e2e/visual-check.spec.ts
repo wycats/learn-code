@@ -14,7 +14,7 @@ import * as path from 'path';
 
 test('Visual Verification', async ({ page }) => {
 	// --- AGENT: CONFIGURE HERE ---
-	const url = '/'; // The URL to visit
+	const url = '/library'; // The URL to visit
 
 	// Optional: Actions to perform before capture
 	// await page.goto(url);

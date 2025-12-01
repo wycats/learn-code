@@ -706,6 +706,13 @@
 		z-index: 2;
 	}
 
+	.icon-trigger::after {
+		content: '';
+		position: absolute;
+		inset: -10px;
+		border-radius: 50%;
+	}
+
 	.icon-trigger:hover {
 		background-color: white;
 		color: var(--brand);
@@ -723,6 +730,13 @@
 		cursor: pointer;
 		padding: 0;
 		box-shadow: var(--shadow-1);
+	}
+
+	.color-trigger::after {
+		content: '';
+		position: absolute;
+		inset: -10px;
+		border-radius: 50%;
 	}
 
 	.color-popover {
@@ -970,8 +984,8 @@
 	}
 
 	.color-swatch {
-		width: 32px;
-		height: 32px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		border-radius: var(--radius-round);
 		border: 2px solid transparent;
 		cursor: pointer;

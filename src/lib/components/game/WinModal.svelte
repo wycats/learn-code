@@ -36,7 +36,7 @@
 	.overlay {
 		position: absolute;
 		inset: 0;
-		background-color: rgba(255, 255, 255, 0.5);
+		background-color: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5));
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -56,6 +56,7 @@
 		box-shadow: var(--shadow-4);
 		text-align: center;
 		min-width: 300px;
+		max-width: 90%;
 		animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
 		animation-delay: 0.1s;
 	}
@@ -65,7 +66,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: var(--size-2);
-		color: var(--green-7);
+		color: light-dark(var(--green-7), var(--green-4));
 		margin: 0;
 	}
 
@@ -78,6 +79,7 @@
 		gap: var(--size-3);
 		justify-content: center;
 		margin-top: var(--size-2);
+		flex-wrap: wrap;
 	}
 
 	.btn-primary {
@@ -111,7 +113,7 @@
 
 	.finished {
 		font-weight: bold;
-		color: var(--indigo-6);
+		color: light-dark(var(--indigo-6), var(--indigo-4));
 	}
 
 	@keyframes fade-in {

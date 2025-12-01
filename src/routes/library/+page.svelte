@@ -12,6 +12,7 @@
 	import { Hammer, FolderOpen, Share2 } from 'lucide-svelte';
 	import { toast } from '$lib/stores/toast.svelte';
 	import P2PModal from '$lib/components/builder/P2PModal.svelte';
+	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
 
 	let progress = $state(ProgressService.load());
 	let isFileSystemSupported = fileSystem.isSupported;
@@ -101,6 +102,7 @@
 			<h1>Code Climber</h1>
 		</div>
 		<div class="actions">
+			<ThemeToggle />
 			{#if isFileSystemSupported}
 				<button class="action-btn" onclick={handleOpenLocalFolder}>
 					<FolderOpen size={20} /> Open Local Folder

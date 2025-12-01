@@ -137,13 +137,16 @@
 	}
 
 	.cell[data-type='cover'] {
-		background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+		background: light-dark(
+			linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%),
+			linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.1) 100%)
+		);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
-		border: 1px solid rgba(255, 255, 255, 0.5);
+		border: 1px solid light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1));
 		box-shadow:
 			0 4px 6px rgba(0, 0, 0, 0.1),
-			inset 0 0 20px rgba(255, 255, 255, 0.3);
+			inset 0 0 20px light-dark(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
 	}
 
 	.cell[data-type='wall'] {

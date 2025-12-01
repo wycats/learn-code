@@ -393,12 +393,11 @@
 
 ## Phase 20: Function UX & Builder Polish
 
-### 45. Snapshot-Based Undo/Redo for Builder
+### 46. Smart Theme Cycle
 
-**Decision:** Implement Undo/Redo in the Level Builder by taking full snapshots of the `LevelDefinition` using `$state.snapshot`.
-**Context:** The Builder state is complex (grid, actors, story, settings). Implementing the Command Pattern for every possible action (paint, move, resize, edit text) would be error-prone and tedious.
+**Decision:** Implement a "Smart Cycle" for the theme toggle (System -> Dark -> Light) instead of a simple binary toggle or a dropdown.
+**Context:** Users often want to quickly check how the app looks in a specific mode. A binary toggle that respects system preference by default can be confusing if the user doesn't know their system setting. A dropdown is too heavy.
 **Consequence:**
 
-- We trade memory usage for simplicity and robustness.
-- Since levels are relatively small JSON objects, the memory overhead is negligible.
-- We can easily restore any past state without worrying about "inverse operations".
+- The toggle button cycles through three states.
+- We prioritize immediate visual feedback (forcing Dark/Light) over returning to "System" (which is the default state but might not change the visual appearance).

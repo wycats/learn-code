@@ -142,13 +142,13 @@
 	}
 
 	.btn-cancel {
-		background-color: white;
+		background-color: var(--surface-1);
 		border-color: var(--surface-3);
 		color: var(--text-1);
 	}
 
 	.btn-cancel:hover {
-		background-color: var(--surface-1);
+		background-color: var(--surface-2);
 		border-color: var(--text-2);
 	}
 

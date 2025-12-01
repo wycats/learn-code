@@ -38,17 +38,50 @@
 
 	function getTheme(icon: string) {
 		const themes: Record<string, { bg: string; color: string }> = {
-			blue: { bg: 'var(--blue-2), var(--blue-1)', color: 'var(--blue-7)' },
-			red: { bg: 'var(--red-2), var(--red-1)', color: 'var(--red-7)' },
-			orange: { bg: 'var(--orange-2), var(--red-1)', color: 'var(--red-7)' }, // Flame style
-			yellow: { bg: 'var(--yellow-2), var(--orange-1)', color: 'var(--yellow-7)' }, // Star style
-			green: { bg: 'var(--green-2), var(--green-1)', color: 'var(--green-7)' },
-			teal: { bg: 'var(--teal-2), var(--green-1)', color: 'var(--teal-7)' }, // Trophy style
-			purple: { bg: 'var(--purple-2), var(--purple-1)', color: 'var(--purple-7)' },
-			violet: { bg: 'var(--violet-2), var(--indigo-1)', color: 'var(--violet-7)' }, // Zap style
-			pink: { bg: 'var(--pink-2), var(--red-1)', color: 'var(--pink-7)' }, // Heart style
-			cyan: { bg: 'var(--cyan-2), var(--cyan-1)', color: 'var(--cyan-7)' },
-			gray: { bg: 'var(--gray-2), var(--gray-1)', color: 'var(--gray-7)' }
+			blue: {
+				bg: 'light-dark(var(--blue-2), var(--blue-9)), light-dark(var(--blue-1), var(--blue-8))',
+				color: 'light-dark(var(--blue-7), var(--blue-1))'
+			},
+			red: {
+				bg: 'light-dark(var(--red-2), var(--red-9)), light-dark(var(--red-1), var(--red-8))',
+				color: 'light-dark(var(--red-7), var(--red-1))'
+			},
+			orange: {
+				bg: 'light-dark(var(--orange-2), var(--orange-9)), light-dark(var(--red-1), var(--red-8))',
+				color: 'light-dark(var(--red-7), var(--red-1))'
+			},
+			yellow: {
+				bg: 'light-dark(var(--yellow-2), var(--yellow-9)), light-dark(var(--orange-1), var(--orange-8))',
+				color: 'light-dark(var(--yellow-7), var(--yellow-1))'
+			},
+			green: {
+				bg: 'light-dark(var(--green-2), var(--green-9)), light-dark(var(--green-1), var(--green-8))',
+				color: 'light-dark(var(--green-7), var(--green-1))'
+			},
+			teal: {
+				bg: 'light-dark(var(--teal-2), var(--teal-9)), light-dark(var(--green-1), var(--green-8))',
+				color: 'light-dark(var(--teal-7), var(--teal-1))'
+			},
+			purple: {
+				bg: 'light-dark(var(--purple-2), var(--purple-9)), light-dark(var(--purple-1), var(--purple-8))',
+				color: 'light-dark(var(--purple-7), var(--purple-1))'
+			},
+			violet: {
+				bg: 'light-dark(var(--violet-2), var(--violet-9)), light-dark(var(--indigo-1), var(--indigo-8))',
+				color: 'light-dark(var(--violet-7), var(--violet-1))'
+			},
+			pink: {
+				bg: 'light-dark(var(--pink-2), var(--pink-9)), light-dark(var(--red-1), var(--red-8))',
+				color: 'light-dark(var(--pink-7), var(--pink-1))'
+			},
+			cyan: {
+				bg: 'light-dark(var(--cyan-2), var(--cyan-9)), light-dark(var(--cyan-1), var(--cyan-8))',
+				color: 'light-dark(var(--cyan-7), var(--cyan-1))'
+			},
+			gray: {
+				bg: 'light-dark(var(--gray-2), var(--gray-8)), light-dark(var(--gray-1), var(--gray-7))',
+				color: 'light-dark(var(--gray-7), var(--gray-1))'
+			}
 		};
 
 		const mappings: Record<string, string> = {
@@ -213,6 +246,7 @@
 		place-items: center;
 		position: relative;
 		color: var(--text-2);
+		transition: background 0.3s ease;
 	}
 
 	.difficulty-badge {
@@ -224,7 +258,7 @@
 		text-transform: uppercase;
 		padding: 2px 8px;
 		border-radius: var(--radius-pill);
-		background-color: rgba(255, 255, 255, 0.9);
+		background-color: light-dark(rgba(255, 255, 255, 0.9), var(--surface-3));
 		color: var(--text-1);
 		box-shadow: var(--shadow-1);
 	}
@@ -238,7 +272,7 @@
 	}
 
 	.icon-btn {
-		background-color: rgba(255, 255, 255, 0.9);
+		background-color: light-dark(rgba(255, 255, 255, 0.9), var(--surface-3));
 		color: var(--text-2);
 		border: none;
 		border-radius: 50%;
@@ -253,7 +287,7 @@
 	}
 
 	.icon-btn:hover {
-		background-color: white;
+		background-color: light-dark(white, var(--surface-4));
 		color: var(--brand);
 		transform: scale(1.1);
 	}

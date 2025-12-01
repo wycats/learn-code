@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { Code, ArrowRight, Hammer, ScanLine } from 'lucide-svelte';
+	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
 
 	function handleStart() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
@@ -20,6 +21,9 @@
 </script>
 
 <div class="landing-container">
+	<div class="top-bar">
+		<ThemeToggle />
+	</div>
 	<div class="hero">
 		<div class="logo-icon">
 			<Code size={64} strokeWidth={2} />
@@ -57,6 +61,14 @@
 		place-items: center;
 		background-color: var(--surface-1);
 		background-image: radial-gradient(circle at center, var(--surface-2) 0%, transparent 70%);
+		position: relative;
+	}
+
+	.top-bar {
+		position: absolute;
+		top: var(--size-3);
+		right: var(--size-3);
+		z-index: 10;
 	}
 
 	.hero {
@@ -76,6 +88,7 @@
 		padding: var(--size-4);
 		border-radius: var(--radius-round);
 		box-shadow: var(--shadow-3);
+		border: 1px solid var(--surface-3);
 	}
 
 	h1 {

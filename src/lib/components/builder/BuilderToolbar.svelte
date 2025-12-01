@@ -21,6 +21,7 @@
 	import PackManagerModal from './PackManagerModal.svelte';
 	import ShareModal from './ShareModal.svelte';
 	import { fade, slide } from 'svelte/transition';
+	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
 
 	interface Props {
 		builder: BuilderModel;
@@ -298,6 +299,8 @@
 	</div>
 
 	<div class="right-group">
+		<ThemeToggle />
+		<div class="separator"></div>
 		<button class="mode-btn primary" onclick={toggleMode}>
 			{#if builder.mode === 'edit' || builder.mode === 'story'}
 				<Play size={20} /> Play Level
@@ -318,9 +321,16 @@
 		align-items: center;
 		position: relative;
 		z-index: 100;
+		overflow-x: auto;
+		scrollbar-width: none;
 	}
 
-	.left-group {
+	.toolbar::-webkit-scrollbar {
+		display: none;
+	}
+
+	.left-group,
+	.right-group {
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);

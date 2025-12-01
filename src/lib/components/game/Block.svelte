@@ -328,13 +328,13 @@
 
 	@keyframes pulse-highlight {
 		0% {
-			box-shadow: 0 0 0 0 rgba(var(--pink-5-rgb), 0.7);
+			box-shadow: 0 0 0 0 color-mix(in srgb, var(--pink-5), transparent 30%);
 		}
 		70% {
-			box-shadow: 0 0 0 10px rgba(var(--pink-5-rgb), 0);
+			box-shadow: 0 0 0 10px color-mix(in srgb, var(--pink-5), transparent 100%);
 		}
 		100% {
-			box-shadow: 0 0 0 0 rgba(var(--pink-5-rgb), 0);
+			box-shadow: 0 0 0 0 color-mix(in srgb, var(--pink-5), transparent 100%);
 		}
 	}
 
@@ -374,7 +374,7 @@
 
 	.children {
 		min-height: 60px;
-		background-color: rgba(255, 255, 255, 0.3);
+		background-color: rgba(0, 0, 0, 0.05);
 		border-radius: var(--radius-2);
 		padding: var(--size-2);
 		display: flex;

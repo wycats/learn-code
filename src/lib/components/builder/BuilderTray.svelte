@@ -653,8 +653,8 @@
 		background-color: var(--surface-3);
 		border: none;
 		border-radius: 50%;
-		width: 32px;
-		height: 32px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -790,8 +790,8 @@
 		color: white;
 		font-size: var(--font-size-00);
 		font-weight: bold;
-		width: 32px;
-		height: 32px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
@@ -821,13 +821,14 @@
 		top: 0;
 		right: 0;
 		transform-origin: top right;
+		min-height: var(--touch-target-min);
 	}
 
 	.limit-btn {
 		background: none;
 		border: none;
 		cursor: pointer;
-		padding: 4px;
+		padding: 0;
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
@@ -835,8 +836,8 @@
 		color: var(--text-2);
 		font-weight: bold;
 		font-size: var(--font-size-00);
-		width: 32px;
-		height: 32px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		transition: background-color 0.1s;
 	}
 
@@ -851,16 +852,16 @@
 	}
 
 	.limit-btn.small {
-		width: 24px;
-		height: 24px;
-		font-size: 14px;
-		padding: 0;
+		width: 44px;
+		height: 44px;
+		font-size: 16px;
 	}
 
 	.limit-btn.text {
 		width: auto;
-		padding: 0 4px;
+		padding: 0 8px;
 		border-radius: var(--radius-1);
+		min-width: var(--touch-target-min);
 	}
 
 	.limit-value {

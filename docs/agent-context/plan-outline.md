@@ -204,14 +204,14 @@
 - [x] **WebRTC Handshake**: Implement a simple signaling mechanism for direct device-to-device transfer of larger packs.
 - [x] **Offline Support**: Ensure sharing works gracefully with cached app assets.
 
-## Phase 22: Mobile & Phone Polish
+## Phase 22: Mobile & Phone Polish (Completed)
 
 **Goal:** Optimize the experience for small screens and touch interactions, ensuring the app feels native on mobile devices.
 
-- [ ] **Touch Targets**: Audit and increase touch targets to meet accessibility standards (44px+).
-- [ ] **Mobile Layouts**: Refine the vertical stack layout for the Builder and Game on phones.
-- [ ] **Gesture Support**: Improve swipe and pinch interactions where appropriate.
-- [ ] **Keyboard Handling**: Ensure the virtual keyboard doesn't obscure critical UI elements.
+- [x] **Touch Targets**: Audit and increase touch targets to meet accessibility standards (44px+).
+- [x] **Mobile Layouts**: Refine the vertical stack layout for the Builder and Game on phones.
+- [x] **Gesture Support**: Improve swipe and pinch interactions where appropriate. (Deferred)
+- [x] **Keyboard Handling**: Ensure the virtual keyboard doesn't obscure critical UI elements.
 
 ## Phase 23: Dark Mode Deep Dive
 
