@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { argosScreenshot } from '@argos-ci/playwright';
 
 test.describe('Builder Targets', () => {
 	test('should show edit and clear buttons on target badge', async ({ page }) => {
@@ -45,6 +46,6 @@ test.describe('Builder Targets', () => {
 
 		// Take a screenshot of the story bar to verify placement
 		const storyBar = page.locator('.story-bar-container');
-		await expect(storyBar).toHaveScreenshot('story-bar-with-targets.png');
+		await argosScreenshot(page, 'story-bar-with-targets', { element: storyBar });
 	});
 });
