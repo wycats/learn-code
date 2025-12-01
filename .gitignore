@@ -1,5 +1,6 @@
 test-results
 playwright-report
+screenshots/
 node_modules
 
 # Output
