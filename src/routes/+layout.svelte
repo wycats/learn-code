@@ -1,5 +1,10 @@
 <script lang="ts">
 	import '../app.css';
+	// Fonts
+	import '@fontsource-variable/inter';
+	import '@fontsource-variable/outfit';
+	import '@fontsource-variable/jetbrains-mono';
+
 	import favicon from '$lib/assets/favicon.svg';
 	import ToastContainer from '$lib/components/common/ToastContainer.svelte';
 	import OfflineIndicator from '$lib/components/common/OfflineIndicator.svelte';

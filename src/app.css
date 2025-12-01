@@ -36,6 +36,11 @@
 		--error: var(--red-6);
 		--info: var(--blue-6);
 
+		/* Fonts */
+		--font-sans: 'Inter Variable', sans-serif;
+		--font-heading: 'Outfit Variable', sans-serif;
+		--font-mono: 'JetBrains Mono Variable', monospace;
+
 		/* Touch Interaction */
 		--touch-target-min: 44px;
 
@@ -64,6 +69,15 @@
 		min-height: var(--touch-target-min);
 		display: grid;
 		place-content: center;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		font-family: var(--font-heading);
 	}
 }
 
