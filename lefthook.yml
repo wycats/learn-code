@@ -1,0 +1,22 @@
+# Example usage:
+#
+#   Refer for explanation to following link:
+#   https://github.com/evilmartians/lefthook/blob/master/docs/configuration.md
+#
+pre-push:
+  parallel: true
+  commands:
+    check:
+      run: pnpm check
+    test:
+      run: pnpm test:unit
+
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{js,ts,svelte,json,md}"
+      run: pnpm eslint {staged_files}
+    format:
+      glob: "*.{js,ts,svelte,json,md,css,html}"
+      run: pnpm prettier --write {staged_files} && git add {staged_files}
