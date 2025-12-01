@@ -182,19 +182,19 @@
   - [x] Finish "Gauntlet" pack (make it feel less random).
   - [x] Create "Hard" built-in pack (Purple theme).
 
-## Phase 20: Function UX & Builder Polish
+## Phase 20: Function UX & Builder Polish (Completed)
 
 **Goal:** Address remaining usability issues in the Builder and improve the Function creation workflow.
 
-- [ ] **Function UX**:
-  - [ ] Improve "Call ???" block behavior (empty state/disable).
-- [ ] **Builder Polish**:
-  - [ ] Glassomorphic UI for player occlusion (Cover block).
-  - [ ] Remove tile dropdown in Level Editor.
-  - [ ] Custom amount in Repeat blocks.
-  - [ ] Fix "Infinity" targeting (hide/disable).
-  - [ ] "Use test level" text update.
-  - [ ] Undo/Redo in Level Editor.
+- [x] **Function UX**:
+  - [x] Improve "Call ???" block behavior (empty state/disable).
+- [x] **Builder Polish**:
+  - [x] Glassomorphic UI for player occlusion (Cover block).
+  - [x] Remove tile dropdown in Level Editor.
+  - [x] Custom amount in Repeat blocks.
+  - [x] Fix "Infinity" targeting (hide/disable).
+  - [x] "Use test level" text update.
+  - [x] Undo/Redo in Level Editor.
 
 ## Phase 21: Authentication Strategy
 

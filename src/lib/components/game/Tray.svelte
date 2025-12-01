@@ -837,6 +837,7 @@
 						<button
 							class="config-btn"
 							class:active={primarySelectedBlock.count === count}
+							class:highlighted={highlight?.targets?.includes(`config:loop:${count}`)}
 							onclick={() => updateLoopCount(count)}
 							data-value={count}
 						>
@@ -847,6 +848,7 @@
 						<input
 							type="number"
 							class="config-input"
+							class:highlighted={highlight?.targets?.includes(`config:loop:custom`)}
 							value={primarySelectedBlock.count ?? ''}
 							placeholder="#"
 							min="1"
@@ -862,6 +864,7 @@
 						<button
 							class="config-btn infinity"
 							class:active={primarySelectedBlock.count === undefined}
+							class:highlighted={highlight?.targets?.includes(`config:loop:infinity`)}
 							onclick={() => updateLoopCount(undefined)}
 							title="Repeat Forever"
 							data-value="infinity"
@@ -1103,6 +1106,14 @@
 		border-color: var(--blue-5);
 		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 		transform: translateY(1px);
+	}
+
+	.config-btn.highlighted,
+	.config-input.highlighted {
+		outline: 3px solid var(--pink-5);
+		box-shadow: 0 0 15px var(--pink-5);
+		z-index: 10;
+		animation: pulse-highlight 1.5s infinite;
 	}
 
 	.custom-input-wrapper {

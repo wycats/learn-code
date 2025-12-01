@@ -342,3 +342,21 @@ Refined the Builder and Game experience based on direct feedback from our primar
 - **UX Improvements**:
   - Updated "Architect's Library" back button to use SVG arrow.
   - Refined "Move" mechanics in Story Editor to auto-open the timeline.
+
+## Phase 20: Function UX & Builder Polish (Completed)
+
+**Date:** December 1, 2025
+
+**Summary:**
+Addressed remaining usability issues in the Builder and improved the Function creation workflow. This phase focused on refining the "Call Function" block behavior, adding visual polish to the Builder (Glassomorphism), and implementing a robust Undo/Redo system for the Level Editor.
+
+**Key Deliverables:**
+
+- **Function UX**:
+  - Improved `CallBlock` to show distinct states: "Select...", "Deleted", and "No Functions".
+  - Added visual cues (red border/text) for invalid states.
+- **Builder Polish**:
+  - **Glassomorphism**: Added a frosted glass effect to the "Cover" tile.
+  - **Undo/Redo**: Implemented a full state history stack for the Level Builder using `$state.snapshot`.
+  - **Loop Config**: Added a custom input field for loop counts.
+  - **UI Cleanup**: Removed redundant tile dropdown and updated button text.

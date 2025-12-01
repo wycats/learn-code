@@ -18,8 +18,6 @@
 		ChevronDown
 	} from 'lucide-svelte';
 	import PackManagerModal from './PackManagerModal.svelte';
-	import Cell from '$lib/components/game/Cell.svelte';
-	import type { CellType } from '$lib/game/types';
 	import { fade, slide } from 'svelte/transition';
 
 	interface Props {
@@ -63,14 +61,6 @@
 			return builder.activeTool.value === tool.value;
 		}
 		return true;
-	}
-
-	function getActiveTileDef() {
-		if (builder.activeTool.type !== 'terrain') return null;
-		const id = builder.activeTool.value;
-		if (builder.level.customTiles?.[id]) return builder.level.customTiles[id];
-		if (builder.pack.customTiles?.[id]) return builder.pack.customTiles[id];
-		return null;
 	}
 
 	function selectTool(tool: BuilderTool) {
@@ -265,24 +255,6 @@
 		{#if builder.mode === 'edit' || builder.mode === 'story'}
 			<div class="separator"></div>
 			<div class="tools-group">
-				<!-- Active Tile Display -->
-				{#if builder.activeTool.type === 'terrain'}
-					<div class="active-tile-display" title="Active Tile">
-						<div class="tile-preview">
-							<Cell
-								type={builder.activeTool.value as CellType}
-								customTile={getActiveTileDef() || undefined}
-							/>
-						</div>
-						<span class="tool-label">
-							{getActiveTileDef()?.name ||
-								builder.activeTool.value.charAt(0).toUpperCase() +
-									builder.activeTool.value.slice(1)}
-						</span>
-					</div>
-					<div class="separator"></div>
-				{/if}
-
 				<!-- Special Tools -->
 				{#each specialTools as { id, tool, icon: Icon, label, color } (id)}
 					<button
@@ -318,7 +290,7 @@
 	<div class="right-group">
 		<button class="mode-btn primary" onclick={toggleMode}>
 			{#if builder.mode === 'edit' || builder.mode === 'story'}
-				<Play size={20} /> Test Level
+				<Play size={20} /> Play Level
 			{:else}
 				<SquarePen size={20} /> Edit Level
 			{/if}

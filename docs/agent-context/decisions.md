@@ -390,3 +390,15 @@
 
 - We now have a dependency on `@lucide/lab`.
 - We can access a wider range of icons for specific metaphors.
+
+## Phase 20: Function UX & Builder Polish
+
+### 45. Snapshot-Based Undo/Redo for Builder
+
+**Decision:** Implement Undo/Redo in the Level Builder by taking full snapshots of the `LevelDefinition` using `$state.snapshot`.
+**Context:** The Builder state is complex (grid, actors, story, settings). Implementing the Command Pattern for every possible action (paint, move, resize, edit text) would be error-prone and tedious.
+**Consequence:**
+
+- We trade memory usage for simplicity and robustness.
+- Since levels are relatively small JSON objects, the memory overhead is negligible.
+- We can easily restore any past state without worrying about "inverse operations".

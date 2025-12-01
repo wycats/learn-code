@@ -4,13 +4,13 @@
 
 ## Function UX
 
-- [x] Improve "Call ???" block behavior (empty state/disable).
+- [x] **Function UX**: Improve "Call ???" block behavior (empty state/disable). <!-- id: 1 -->
 
 ## Builder Polish
 
-- [x] Glassomorphic UI for player occlusion (Cover block).
-- [ ] Remove tile dropdown in Level Editor.
-- [ ] Custom amount in Repeat blocks.
-- [ ] Fix "Infinity" targeting (hide/disable).
-- [ ] "Use test level" text update.
-- [ ] Undo/Redo in Level Editor.
+- [x] **Builder**: Glassomorphic UI for player occlusion (Cover block). <!-- id: 2 -->
+- [x] **Builder**: Remove tile dropdown in Level Editor. <!-- id: 3 -->
+- [x] **Builder**: Implement custom input for Repeat Block count. <!-- id: 4 -->
+- [x] **Builder**: Disable targeting for "Infinity" loop count. <!-- id: 5 -->
+- [x] **Builder**: Update text "Use current workspace" -> "Use test level". <!-- id: 6 -->
+- [x] **Builder**: Implement Undo/Redo for Level Editor. <!-- id: 7 -->

@@ -1,18 +1,20 @@
-# Phase 20 Walkthrough
+# Walkthrough: Function UX & Builder Polish (Phase 20)
 
 ## Overview
 
 This phase focuses on refining the Builder experience and improving the UX for creating and using functions.
 
-## Changes
+## Progress
 
-### Function UX
+- [x] **Function UX**: Improved the "Call" block to clearly show when a function is missing, empty, or valid. Added visual states for these conditions.
+- [x] **Builder Polish**:
+  - **Glassomorphism**: Enhanced the "Cover" tile with a glass-like effect and icon.
+  - **UI Cleanup**: Removed the redundant tile dropdown from the toolbar.
+  - **Loop Config**: Added a custom input field for loop counts and fixed targeting for the Infinity option.
+  - **Text Updates**: Clarified button text ("Play Level").
+  - **Undo/Redo**: Implemented a robust Undo/Redo system for the Level Builder, tracking state changes across terrain editing, actor movement, and configuration changes.
 
-- Implemented a generic "Call" block in the palette.
-- Added a configuration panel to select the function for a Call block.
-- Removed specific function blocks from the palette to reduce clutter and enforce a consistent workflow.
+## Key Decisions
 
-### Builder Polish
-
-- Added "Cover" block to the Builder terrain tools.
-- Verified glassomorphic styling and occlusion behavior.
+- **Undo/Redo Strategy**: Used a snapshot-based approach (`$state.snapshot`) to push the entire level definition onto a history stack. This ensures all state (layout, actors, settings) is captured reliably without complex delta tracking.
+- **Function Block States**: Instead of just disabling the block, we added distinct visual states ("Select...", "Deleted", "No Functions") to guide the user on _why_ the block might not be working.

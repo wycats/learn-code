@@ -51,6 +51,24 @@
 	const derivedLoopProgress = $derived(game ? game.loopProgress.get(block.id) : loopProgress);
 	const derivedActiveBlockId = $derived(game ? game.activeBlockId : activeBlockId);
 
+	// Function state logic
+	const functionStatus = $derived.by(() => {
+		if (block.type !== 'call') return 'na';
+		if (!block.functionName) {
+			if (game && Object.keys(game.functions).length === 0) return 'none';
+			return 'empty';
+		}
+		if (game && !game.functions[block.functionName]) return 'missing';
+		return 'valid';
+	});
+
+	const functionLabel = $derived.by(() => {
+		if (functionStatus === 'valid') return block.functionName;
+		if (functionStatus === 'missing') return 'Deleted';
+		if (functionStatus === 'none') return 'No Functions';
+		return 'Select...';
+	});
+
 	// Highlight logic
 	const targets = $derived(game?.currentStorySegment?.targets);
 	const isHighlighted = $derived.by(() => {
@@ -131,14 +149,16 @@
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<span
 					class="function-badge"
-					class:empty={!block.functionName}
+					class:empty={functionStatus === 'empty'}
+					class:missing={functionStatus === 'missing'}
+					class:none={functionStatus === 'none'}
 					class:targetable={!!onTarget}
 					onclick={(e) => {
 						if (onTarget) {
 							e.stopPropagation();
 							onTarget(`block:${block.id}:function`);
 						}
-					}}>{block.functionName || 'Select...'}</span
+					}}>{functionLabel}</span
 				>
 			{/if}
 		</span>
@@ -405,13 +425,36 @@
 		border-radius: var(--radius-2);
 		font-weight: 800;
 		font-family: var(--font-mono);
+		transition: all 0.2s;
 	}
 
 	.function-badge.empty {
+		color: var(--text-2);
+		background-color: rgba(255, 255, 255, 0.5);
+		font-style: italic;
+		border: 1px dashed var(--text-3);
+		cursor: pointer;
+	}
+
+	.function-badge.empty:hover {
+		background-color: var(--surface-1);
+		border-color: var(--text-2);
+		transform: translateY(-1px);
+	}
+
+	.function-badge.missing {
 		color: var(--red-7);
 		background-color: var(--red-1);
-		font-style: italic;
-		border: 1px dashed var(--red-3);
+		border: 1px solid var(--red-5);
+		text-decoration: line-through;
+	}
+
+	.function-badge.none {
+		color: var(--text-3);
+		background-color: var(--surface-2);
+		border: 1px solid var(--surface-3);
+		font-size: 0.8em;
+		opacity: 0.8;
 	}
 
 	.loop-badge.targetable,
