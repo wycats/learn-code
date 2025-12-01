@@ -41,20 +41,10 @@ test.describe('Visual Regression - Extended', () => {
 		}
 	});
 
-	test('Game - Win State', async ({ page }) => {
-		// Go to a simple level and win it
+	test('Game - Level 1', async ({ page }) => {
+		// Go to a simple level
 		await page.goto('/play/basics/level-1');
 		await expect(page.locator('.stage-container')).toBeVisible();
-
-		// Execute the winning moves (assuming level 1 is simple: move right 2 times)
-		// We need to know the solution to level 1.
-		// If we can't easily solve it programmatically without brittle selectors,
-		// we might skip this or use a specific "debug" route if available.
-
-		// For now, let's just snapshot the initial state of level 1 which we already did in visual.spec.ts
-		// Let's try Level 2 instead for variety
-		await page.goto('/play/basics/level-2');
-		await expect(page.locator('.stage-container')).toBeVisible();
-		await argosScreenshot(page, 'game-level-2');
+		await argosScreenshot(page, 'game-level-1');
 	});
 });

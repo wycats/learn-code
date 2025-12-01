@@ -5,5 +5,5 @@
 ## Tasks
 
 - [x] **Magic QR Codes**: Implement compressed JSON-to-QR encoding for single-level sharing. <!-- id: 1 -->
-- [ ] **WebRTC Handshake**: Implement a simple signaling mechanism for direct device-to-device transfer of larger packs. <!-- id: 2 -->
+- [x] **WebRTC Handshake**: Implement a simple signaling mechanism for direct device-to-device transfer of larger packs. <!-- id: 2 -->
 - [ ] **Offline Support**: Ensure sharing works gracefully with cached app assets. <!-- id: 3 -->

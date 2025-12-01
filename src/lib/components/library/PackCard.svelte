@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { LevelPack } from '$lib/game/schema';
 	import type { PackProgress } from '$lib/game/progress';
-	import { Save } from 'lucide-svelte';
+	import { Save, Share2 } from 'lucide-svelte';
 	import { AVATAR_ICONS } from '$lib/game/icons';
 	import { fileSystem } from '$lib/services/file-system';
 
@@ -10,9 +10,10 @@
 		progress?: PackProgress;
 		onClick: () => void;
 		onSave?: () => void;
+		onShare?: () => void;
 	}
 
-	let { pack, progress, onClick, onSave }: Props = $props();
+	let { pack, progress, onClick, onSave, onShare }: Props = $props();
 
 	const completedCount = $derived(
 		progress ? Object.values(progress.levels).filter((l) => l.completed).length : 0
@@ -28,6 +29,11 @@
 	function handleSave(e: MouseEvent) {
 		e.stopPropagation();
 		onSave?.();
+	}
+
+	function handleShare(e: MouseEvent) {
+		e.stopPropagation();
+		onShare?.();
 	}
 
 	function getTheme(icon: string) {
@@ -143,11 +149,18 @@
 		<div class="difficulty-badge" data-difficulty={pack.difficulty}>
 			{pack.difficulty}
 		</div>
-		{#if isFileSystemSupported && onSave}
-			<button class="save-btn" onclick={handleSave} title="Save to Disk">
-				<Save size={16} />
-			</button>
-		{/if}
+		<div class="actions-overlay">
+			{#if isFileSystemSupported && onSave}
+				<button class="icon-btn" onclick={handleSave} title="Save to Disk">
+					<Save size={16} />
+				</button>
+			{/if}
+			{#if onShare}
+				<button class="icon-btn" onclick={handleShare} title="Share Pack">
+					<Share2 size={16} />
+				</button>
+			{/if}
+		</div>
 	</div>
 
 	<div class="content">
@@ -216,10 +229,15 @@
 		box-shadow: var(--shadow-1);
 	}
 
-	.save-btn {
+	.actions-overlay {
 		position: absolute;
 		top: var(--size-2);
 		left: var(--size-2);
+		display: flex;
+		gap: var(--size-2);
+	}
+
+	.icon-btn {
 		background-color: rgba(255, 255, 255, 0.9);
 		color: var(--text-2);
 		border: none;
@@ -233,7 +251,7 @@
 		transition: all 0.2s;
 	}
 
-	.save-btn:hover {
+	.icon-btn:hover {
 		background-color: white;
 		color: var(--brand);
 		transform: scale(1.1);

@@ -4,25 +4,39 @@ import type { LevelDefinition } from '$lib/game/schema';
 
 export class ShareService {
 	/**
+	 * Compresses any JSON-serializable data into a URL-safe string.
+	 */
+	static compress(data: unknown): string {
+		const json = JSON.stringify(data);
+		return lz.compressToEncodedURIComponent(json);
+	}
+
+	/**
+	 * Decompresses data from a URL-safe string.
+	 */
+	static decompress<T>(compressed: string): T | null {
+		try {
+			const json = lz.decompressFromEncodedURIComponent(compressed);
+			if (!json) return null;
+			return JSON.parse(json) as T;
+		} catch (e) {
+			console.error('Failed to decompress data:', e);
+			return null;
+		}
+	}
+
+	/**
 	 * Compresses a level definition into a URL-safe string.
 	 */
 	static compressLevel(level: LevelDefinition): string {
-		const json = JSON.stringify(level);
-		return lz.compressToEncodedURIComponent(json);
+		return this.compress(level);
 	}
 
 	/**
 	 * Decompresses a level definition from a URL-safe string.
 	 */
 	static decompressLevel(compressed: string): LevelDefinition | null {
-		try {
-			const json = lz.decompressFromEncodedURIComponent(compressed);
-			if (!json) return null;
-			return JSON.parse(json);
-		} catch (e) {
-			console.error('Failed to decompress level:', e);
-			return null;
-		}
+		return this.decompress<LevelDefinition>(compressed);
 	}
 
 	/**
