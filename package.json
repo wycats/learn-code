@@ -21,7 +21,7 @@
 		"test:unit": "vitest --run",
 		"test": "pnpm run test:unit && pnpm run test:e2e",
 		"test:e2e": "playwright test",
-		"test:visual": "playwright test e2e/visual.spec.ts",
+		"test:visual": "playwright test e2e/visual*.spec.ts",
 		"test:visual:review": "playwright show-report",
 		"test:visual:approve": "playwright test e2e/visual.spec.ts --update-snapshots",
 		"db:push": "drizzle-kit push",

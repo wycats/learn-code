@@ -2,6 +2,7 @@
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
 	import { BookOpen } from 'lucide-svelte';
 	import Avatar from '$lib/components/game/Avatar.svelte';
+	import { SYSTEM_CHARACTERS } from '$lib/game/constants';
 
 	interface Props {
 		builder: BuilderModel;
@@ -36,18 +37,11 @@
 	// Helper to get character color/avatar (copied from BuilderStoryBar logic roughly)
 	// In a real app we might want to centralize this helper
 	function getCharacter(name: string) {
-		const defaultCharacters = [
-			{ id: 'Zoey', name: 'Zoey', color: 'var(--pink-3)', avatar: 'Z' },
-			{ id: 'Jonas', name: 'Jonas', color: 'var(--blue-3)', avatar: 'J' },
-			{ id: 'Guide', name: 'Guide', color: 'var(--teal-3)', avatar: 'Bot' },
-			{ id: 'System', name: 'System', color: 'var(--surface-3)', avatar: 'S' }
-		];
-
 		const packChars = builder.pack.characters || [];
 		const levelChars = builder.level.characters || [];
 
 		// Search order: Level -> Pack -> Default
-		const allChars = [...levelChars, ...packChars, ...defaultCharacters];
+		const allChars = [...levelChars, ...packChars, ...SYSTEM_CHARACTERS];
 
 		return (
 			allChars.find((c) => c.name === name) || {
