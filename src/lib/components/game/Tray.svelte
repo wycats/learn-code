@@ -1076,7 +1076,8 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--size-1);
-		max-height: 40vh;
+		max-height: 60vh;
+		min-height: 120px;
 		overflow-y: auto;
 	}
 
