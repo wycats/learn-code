@@ -297,11 +297,14 @@
 		border: none;
 		cursor: pointer;
 		color: var(--text-2);
-		padding: var(--size-2);
+		min-width: var(--touch-target-min);
+		min-height: var(--touch-target-min);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
 		border-radius: var(--radius-round);
 		transition: all 0.2s;
-		display: grid;
-		place-items: center;
 	}
 
 	.close-btn:hover {
@@ -360,8 +363,8 @@
 	}
 
 	.satellite-trigger {
-		width: 28px;
-		height: 28px;
+		width: 32px;
+		height: 32px;
 		border-radius: 50%;
 		background-color: var(--surface-1);
 		border: 2px solid var(--surface-1);
@@ -450,7 +453,8 @@
 		display: flex;
 		align-items: center;
 		gap: 4px;
-		padding: 2px 8px;
+		min-height: var(--touch-target-min);
+		padding: 0 8px;
 		border: none;
 		background: none;
 		border-radius: var(--radius-1);
@@ -634,8 +638,8 @@
 	}
 
 	.color-option {
-		width: 36px;
-		height: 36px;
+		width: 44px;
+		height: 44px;
 		border-radius: 50%;
 		border: 2px solid rgba(0, 0, 0, 0.1);
 		cursor: pointer;
@@ -663,8 +667,8 @@
 	}
 
 	.decal-option {
-		width: 36px;
-		height: 36px;
+		width: 44px;
+		height: 44px;
 		border-radius: var(--radius-2);
 		background-color: var(--surface-2);
 		border: 1px solid transparent;
@@ -703,7 +707,8 @@
 	}
 
 	.btn {
-		padding: var(--size-2) var(--size-4);
+		min-height: var(--touch-target-min);
+		padding: 0 var(--size-4);
 		border-radius: var(--radius-2);
 		font-weight: 700;
 		font-size: var(--font-size-1);

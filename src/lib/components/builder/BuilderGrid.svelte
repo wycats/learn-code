@@ -233,8 +233,8 @@
 	}
 
 	.add-btn {
-		width: 24px;
-		height: 24px;
+		width: 32px;
+		height: 32px;
 		border-radius: 50%;
 		border: 1px solid var(--surface-3);
 		background-color: var(--surface-2);
@@ -267,8 +267,8 @@
 	}
 
 	.trash-btn {
-		width: 24px;
-		height: 24px;
+		width: 32px;
+		height: 32px;
 		border-radius: 50%;
 		background-color: var(--red-1);
 		color: var(--red-7);

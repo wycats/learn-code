@@ -242,13 +242,14 @@
 		color: var(--text-2);
 		border: none;
 		border-radius: 50%;
-		width: 28px;
-		height: 28px;
+		width: 32px;
+		height: 32px;
 		display: grid;
 		place-items: center;
 		cursor: pointer;
 		box-shadow: var(--shadow-1);
 		transition: all 0.2s;
+		padding: 0;
 	}
 
 	.icon-btn:hover {

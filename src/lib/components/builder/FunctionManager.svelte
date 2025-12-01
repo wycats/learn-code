@@ -154,13 +154,15 @@
 	.action-btn {
 		background: none;
 		border: none;
-		padding: var(--size-1);
+		padding: 0;
 		border-radius: var(--radius-1);
 		cursor: pointer;
 		color: var(--text-2);
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 	}
 
 	.action-btn:hover {
@@ -197,7 +199,8 @@
 		align-items: center;
 		justify-content: center;
 		gap: var(--size-2);
-		padding: var(--size-2);
+		padding: 0 var(--size-2);
+		min-height: var(--touch-target-min);
 		background-color: var(--surface-2);
 		border: 2px dashed var(--surface-3);
 		border-radius: var(--radius-2);
@@ -238,7 +241,8 @@
 
 	.cancel-btn,
 	.confirm-btn {
-		padding: var(--size-1) var(--size-3);
+		padding: 0 var(--size-3);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-1);
 		border: none;
 		cursor: pointer;

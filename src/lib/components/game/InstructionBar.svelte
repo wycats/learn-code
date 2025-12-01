@@ -166,12 +166,14 @@
 		background-color: var(--brand);
 		color: white;
 		border: none;
-		padding: var(--size-2) var(--size-4);
+		padding: 0 var(--size-4);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-round);
 		font-weight: bold;
 		cursor: pointer;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: var(--size-2);
 		font-size: var(--font-size-1);
 		transition: transform 0.1s;

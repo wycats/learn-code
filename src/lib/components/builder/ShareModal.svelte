@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { ShareService } from '$lib/services/share';
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
-	import { X, Copy, Check } from 'lucide-svelte';
+	import { X, Copy, Check, Smartphone, QrCode } from 'lucide-svelte';
 	import { fade, scale } from 'svelte/transition';
+	import P2PModal from './P2PModal.svelte';
 
 	interface Props {
 		builder: BuilderModel;
@@ -15,9 +16,13 @@
 	let shareUrl = $state<string | null>(null);
 	let copied = $state(false);
 	let error = $state<string | null>(null);
+	let activeTab = $state<'level' | 'pack'>('level');
+	let showP2P = $state(false);
 
 	$effect(() => {
-		generate();
+		if (activeTab === 'level') {
+			generate();
+		}
 	});
 
 	async function generate() {
@@ -43,55 +48,97 @@
 	}
 </script>
 
-<div
-	class="backdrop"
-	transition:fade
-	onclick={onClose}
-	role="dialog"
-	aria-modal="true"
-	tabindex="-1"
-	onkeydown={(e) => e.key === 'Escape' && onClose()}
->
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+{#if showP2P}
+	<P2PModal
+		data={$state.snapshot(builder.pack)}
+		onClose={() => {
+			showP2P = false;
+			onClose();
+		}}
+	/>
+{:else}
 	<div
-		class="modal"
-		transition:scale
-		onclick={(e) => e.stopPropagation()}
-		role="document"
-		onkeydown={(e) => e.stopPropagation()}
+		class="backdrop"
+		transition:fade
+		onclick={onClose}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+		onkeydown={(e) => e.key === 'Escape' && onClose()}
 	>
-		<header>
-			<h2>Share Level</h2>
-			<button class="close-btn" onclick={onClose} aria-label="Close">
-				<X size={24} />
-			</button>
-		</header>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+		<div
+			class="modal"
+			transition:scale
+			onclick={(e) => e.stopPropagation()}
+			role="document"
+			onkeydown={(e) => e.stopPropagation()}
+		>
+			<header>
+				<h2>Share</h2>
+				<button class="close-btn" onclick={onClose} aria-label="Close">
+					<X size={24} />
+				</button>
+			</header>
 
-		<div class="content">
-			{#if error}
-				<div class="error">{error}</div>
-			{:else if qrCodeUrl}
-				<div class="qr-container">
-					<img src={qrCodeUrl} alt="Level QR Code" />
-				</div>
-				<p class="instruction">Scan with your camera to play!</p>
+			<div class="tabs">
+				<button
+					class="tab-btn"
+					class:active={activeTab === 'level'}
+					onclick={() => (activeTab = 'level')}
+				>
+					<QrCode size={18} /> Current Level
+				</button>
+				<button
+					class="tab-btn"
+					class:active={activeTab === 'pack'}
+					onclick={() => (activeTab = 'pack')}
+				>
+					<Smartphone size={18} /> Full Pack
+				</button>
+			</div>
 
-				<div class="link-section">
-					<input type="text" readonly value={shareUrl} aria-label="Share Link" />
-					<button class="copy-btn" onclick={copyLink} title="Copy Link">
-						{#if copied}
-							<Check size={20} />
-						{:else}
-							<Copy size={20} />
-						{/if}
-					</button>
-				</div>
-			{:else}
-				<div class="loading">Generating...</div>
-			{/if}
+			<div class="content">
+				{#if activeTab === 'level'}
+					{#if error}
+						<div class="error">{error}</div>
+					{:else if qrCodeUrl}
+						<div class="qr-container">
+							<img src={qrCodeUrl} alt="Level QR Code" />
+						</div>
+						<p class="instruction">Scan with your camera to play!</p>
+
+						<div class="link-section">
+							<input type="text" readonly value={shareUrl} aria-label="Share Link" />
+							<button class="copy-btn" onclick={copyLink} title="Copy Link">
+								{#if copied}
+									<Check size={20} />
+								{:else}
+									<Copy size={20} />
+								{/if}
+							</button>
+						</div>
+					{:else}
+						<div class="loading">Generating...</div>
+					{/if}
+				{:else}
+					<div class="pack-share-info">
+						<div class="info-icon">
+							<Smartphone size={48} />
+						</div>
+						<h3>Share "{builder.pack.name}"</h3>
+						<p>
+							Transfer the entire pack directly to another device nearby using a secure P2P
+							connection.
+						</p>
+						<p class="note">Requires both devices to be online to establish connection.</p>
+						<button class="btn-primary" onclick={() => (showP2P = true)}> Start Transfer </button>
+					</div>
+				{/if}
+			</div>
 		</div>
 	</div>
-</div>
+{/if}
 
 <style>
 	.backdrop {
@@ -133,13 +180,50 @@
 		border: none;
 		cursor: pointer;
 		color: var(--text-2);
-		padding: var(--size-1);
+		padding: 0;
+		width: 44px;
+		height: 44px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		border-radius: var(--radius-round);
 	}
 
 	.close-btn:hover {
 		background-color: var(--surface-2);
 		color: var(--text-1);
+	}
+
+	.tabs {
+		display: flex;
+		border-bottom: 1px solid var(--surface-2);
+	}
+
+	.tab-btn {
+		flex: 1;
+		background: none;
+		border: none;
+		padding: var(--size-3);
+		cursor: pointer;
+		font-weight: 600;
+		color: var(--text-2);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--size-2);
+		border-bottom: 2px solid transparent;
+		transition: all 0.2s;
+	}
+
+	.tab-btn:hover {
+		background-color: var(--surface-2);
+		color: var(--text-1);
+	}
+
+	.tab-btn.active {
+		color: var(--brand);
+		border-bottom-color: var(--brand);
+		background-color: var(--surface-1);
 	}
 
 	.content {
@@ -166,6 +250,7 @@
 	.instruction {
 		color: var(--text-2);
 		font-weight: 500;
+		text-align: center;
 	}
 
 	.link-section {
@@ -189,7 +274,9 @@
 		background-color: var(--surface-2);
 		border: 1px solid var(--surface-3);
 		border-radius: var(--radius-2);
-		padding: var(--size-2);
+		padding: 0;
+		width: 44px;
+		height: 44px;
 		cursor: pointer;
 		color: var(--text-1);
 		display: flex;
@@ -209,5 +296,56 @@
 
 	.loading {
 		color: var(--text-2);
+	}
+
+	.pack-share-info {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		gap: var(--size-3);
+		padding: var(--size-2);
+	}
+
+	.info-icon {
+		color: var(--brand);
+		background-color: var(--brand-dim);
+		padding: var(--size-4);
+		border-radius: 50%;
+		margin-bottom: var(--size-2);
+	}
+
+	.pack-share-info h3 {
+		margin: 0;
+		font-size: var(--font-size-3);
+	}
+
+	.pack-share-info p {
+		margin: 0;
+		color: var(--text-2);
+		line-height: 1.5;
+	}
+
+	.pack-share-info .note {
+		font-size: var(--font-size-0);
+		color: var(--text-3);
+		font-style: italic;
+	}
+
+	.btn-primary {
+		background-color: var(--brand);
+		color: white;
+		border: none;
+		padding: 0 var(--size-4);
+		min-height: var(--touch-target-min);
+		border-radius: var(--radius-2);
+		font-weight: bold;
+		cursor: pointer;
+		margin-top: var(--size-2);
+		width: 100%;
+	}
+
+	.btn-primary:hover {
+		background-color: var(--brand-dark);
 	}
 </style>

@@ -98,7 +98,12 @@
 		border: none;
 		cursor: pointer;
 		color: var(--text-2);
-		padding: var(--size-1);
+		min-width: var(--touch-target-min);
+		min-height: var(--touch-target-min);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
 		border-radius: var(--radius-round);
 	}
 
@@ -127,7 +132,8 @@
 	}
 
 	button {
-		padding: var(--size-2) var(--size-4);
+		min-height: var(--touch-target-min);
+		padding: 0 var(--size-4);
 		border-radius: var(--radius-2);
 		font-weight: 600;
 		cursor: pointer;

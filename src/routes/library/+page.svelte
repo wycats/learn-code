@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { PACKS } from '$lib/game/packs';
 	import { ProgressService } from '$lib/game/progress';
+	import { CampaignService } from '$lib/game/campaigns';
 	import { fileSystem } from '$lib/services/file-system';
 	import { localPacksStore } from '$lib/game/local-packs.svelte';
 	import type { LevelPack } from '$lib/game/types';
@@ -17,6 +18,7 @@
 	let showP2PModal = $state(false);
 	let p2pData = $state<unknown | undefined>(undefined);
 	let p2pMode = $state<'send' | 'receive'>('receive');
+	let customPacks = $state<LevelPack[]>([]);
 
 	function handlePackSelect(packId: string) {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
@@ -85,9 +87,11 @@
 		}
 	}
 
-	onMount(() => {
+	onMount(async () => {
 		// Refresh progress when returning to the page
 		progress = ProgressService.load();
+		// Load custom packs from IndexedDB
+		customPacks = await CampaignService.loadAll();
 	});
 </script>
 
@@ -125,6 +129,19 @@
 				<h2>Local Packs</h2>
 				<CampaignShelf
 					packs={localPacksStore.packs}
+					{progress}
+					onPackSelect={handlePackSelect}
+					onSavePack={isFileSystemSupported ? handleSavePackToDisk : undefined}
+					onSharePack={handleSharePack}
+				/>
+			</div>
+		{/if}
+
+		{#if customPacks.length > 0}
+			<div class="local-section">
+				<h2>My Projects</h2>
+				<CampaignShelf
+					packs={customPacks}
 					{progress}
 					onPackSelect={handlePackSelect}
 					onSavePack={isFileSystemSupported ? handleSavePackToDisk : undefined}

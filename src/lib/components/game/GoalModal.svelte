@@ -85,7 +85,8 @@
 	.btn-primary {
 		background-color: var(--indigo-5);
 		color: white;
-		padding: var(--size-3) var(--size-6);
+		padding: 0 var(--size-6);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-round);
 		font-weight: bold;
 		font-size: var(--font-size-2);
@@ -93,6 +94,7 @@
 		cursor: pointer;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: var(--size-2);
 		transition: transform 0.1s;
 	}

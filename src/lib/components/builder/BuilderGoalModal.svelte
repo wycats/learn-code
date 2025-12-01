@@ -268,7 +268,11 @@
 		font-size: var(--font-size-0);
 		font-weight: 700;
 		text-transform: uppercase;
-		padding: 4px 12px;
+		padding: 0 12px;
+		min-height: var(--touch-target-min);
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		border-radius: var(--radius-pill);
 		background-color: white;
 		color: var(--text-1);
@@ -415,7 +419,8 @@
 		gap: var(--size-2);
 		background-color: var(--surface-2);
 		border: 1px solid var(--surface-3);
-		padding: var(--size-1) var(--size-2);
+		padding: 0 var(--size-2);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-2);
 		cursor: pointer;
 		color: var(--text-1);
@@ -459,7 +464,8 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
-		padding: var(--size-2);
+		padding: 0 var(--size-2);
+		min-height: var(--touch-target-min);
 		border: none;
 		background: none;
 		cursor: pointer;
@@ -510,7 +516,8 @@
 	.btn-primary {
 		background-color: var(--indigo-5);
 		color: white;
-		padding: var(--size-3) var(--size-6);
+		padding: 0 var(--size-6);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-round);
 		font-weight: bold;
 		font-size: var(--font-size-2);
@@ -518,6 +525,7 @@
 		cursor: pointer;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: var(--size-2);
 		transition: transform 0.1s;
 	}
@@ -533,7 +541,8 @@
 	.btn-secondary {
 		background-color: var(--surface-2);
 		color: var(--text-1);
-		padding: var(--size-2) var(--size-4);
+		padding: 0 var(--size-4);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-round);
 		font-weight: bold;
 		font-size: var(--font-size-1);
@@ -541,6 +550,7 @@
 		cursor: pointer;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: var(--size-2);
 		transition: all 0.1s;
 	}

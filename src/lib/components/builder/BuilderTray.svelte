@@ -500,7 +500,8 @@
 		flex: 1;
 		background: none;
 		border: none;
-		padding: var(--size-2);
+		padding: 0 var(--size-2);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-2);
 		cursor: pointer;
 		color: var(--text-2);
@@ -652,8 +653,8 @@
 		background-color: var(--surface-3);
 		border: none;
 		border-radius: 50%;
-		width: 20px;
-		height: 20px;
+		width: 32px;
+		height: 32px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -789,8 +790,8 @@
 		color: white;
 		font-size: var(--font-size-00);
 		font-weight: bold;
-		width: 24px;
-		height: 24px;
+		width: 32px;
+		height: 32px;
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
@@ -834,8 +835,8 @@
 		color: var(--text-2);
 		font-weight: bold;
 		font-size: var(--font-size-00);
-		width: 24px;
-		height: 24px;
+		width: 32px;
+		height: 32px;
 		transition: background-color 0.1s;
 	}
 
@@ -850,8 +851,8 @@
 	}
 
 	.limit-btn.small {
-		width: 20px;
-		height: 20px;
+		width: 24px;
+		height: 24px;
 		font-size: 14px;
 		padding: 0;
 	}

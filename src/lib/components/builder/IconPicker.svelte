@@ -85,8 +85,8 @@
 	}
 
 	.trigger {
-		width: 40px;
-		height: 40px;
+		width: 44px;
+		height: 44px;
 		border-radius: var(--radius-2);
 		border: 1px solid var(--surface-3);
 		background: var(--surface-1);
@@ -138,7 +138,7 @@
 
 	.grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
 		gap: var(--size-1);
 		padding: var(--size-2);
 		max-height: 200px;
@@ -146,8 +146,8 @@
 	}
 
 	.icon-btn {
-		width: 36px;
-		height: 36px;
+		width: 44px;
+		height: 44px;
 		border-radius: var(--radius-2);
 		border: none;
 		background: none;

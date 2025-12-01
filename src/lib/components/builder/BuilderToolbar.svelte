@@ -336,7 +336,9 @@
 		border: none;
 		color: var(--text-2);
 		cursor: pointer;
-		padding: var(--size-2);
+		padding: 0;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		border-radius: var(--radius-2);
 		transition: background-color 0.2s;
 		display: flex;
@@ -383,7 +385,8 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
-		padding: var(--size-2) var(--size-4);
+		padding: 0 var(--size-4);
+		min-height: var(--touch-target-min);
 		background-color: var(--blue-6);
 		color: white;
 		border: none;
@@ -407,7 +410,8 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
-		padding: var(--size-1) var(--size-2);
+		padding: 0 var(--size-2);
+		min-height: var(--touch-target-min);
 		background: none;
 		border: 1px solid transparent;
 		border-radius: var(--radius-2);
@@ -489,7 +493,8 @@
 		background-color: var(--surface-1);
 		border: 1px solid var(--surface-3);
 		color: var(--text-1);
-		padding: var(--size-2) var(--size-3);
+		padding: 0 var(--size-3);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-2);
 		font-size: var(--font-size-1);
 		cursor: pointer;
@@ -532,7 +537,10 @@
 		text-align: left;
 		background: none;
 		border: none;
-		padding: var(--size-2);
+		padding: 0 var(--size-2);
+		min-height: var(--touch-target-min);
+		display: flex;
+		align-items: center;
 		cursor: pointer;
 		color: var(--text-2);
 		border-radius: var(--radius-1);

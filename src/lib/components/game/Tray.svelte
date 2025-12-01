@@ -553,6 +553,19 @@
 	});
 
 	$effect(() => {
+		// Auto-select function if there is only one
+		if (
+			primarySelectedBlock?.type === 'call' &&
+			functionNames.length === 1 &&
+			primarySelectedBlock.functionName !== functionNames[0]
+		) {
+			// Use untracked to avoid infinite loops if updateCallFunction touches signals read here (though it shouldn't)
+			// Actually, just calling it is fine as long as it stabilizes.
+			updateCallFunction(functionNames[0]);
+		}
+	});
+
+	$effect(() => {
 		return monitorForElements({
 			onDragStart: () => {
 				soundManager.play('pickup');
@@ -880,6 +893,12 @@
 				<div class="config-list">
 					{#if functionNames.length === 0}
 						<div class="empty-msg">No functions created</div>
+					{:else if functionNames.length === 1}
+						{@const name = functionNames[0]}
+						<div class="single-function-display">
+							<span class="label">Calling:</span>
+							<span class="value">{name}</span>
+						</div>
 					{:else}
 						{#each functionNames as name (name)}
 							<button
@@ -1057,8 +1076,31 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--size-1);
-		max-height: 200px;
+		max-height: 40vh;
 		overflow-y: auto;
+	}
+
+	.single-function-display {
+		background-color: var(--blue-2);
+		color: var(--blue-7);
+		border: 1px solid var(--blue-5);
+		border-radius: var(--radius-2);
+		padding: var(--size-3);
+		text-align: center;
+		font-weight: bold;
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-1);
+	}
+
+	.single-function-display .label {
+		font-size: var(--font-size-0);
+		text-transform: uppercase;
+		opacity: 0.7;
+	}
+
+	.single-function-display .value {
+		font-size: var(--font-size-2);
 	}
 
 	.empty-msg {
@@ -1253,7 +1295,9 @@
 		border: none;
 		color: var(--text-3);
 		cursor: pointer;
-		padding: 4px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
+		padding: 0;
 		border-radius: var(--radius-1);
 		display: flex;
 		align-items: center;
@@ -1418,12 +1462,15 @@
 	.context-tabs button {
 		background: none;
 		border: none;
-		padding: var(--size-1) var(--size-2);
+		padding: 0 var(--size-2);
+		min-height: var(--touch-target-min);
 		font-weight: bold;
 		color: var(--text-2);
 		cursor: pointer;
 		border-radius: var(--radius-2);
 		white-space: nowrap;
+		display: flex;
+		align-items: center;
 	}
 
 	.context-tabs button.active {

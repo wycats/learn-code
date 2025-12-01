@@ -1,47 +1,40 @@
-# Phase 21: P2P Sharing Walkthrough
+# Phase 22: Mobile & Phone Polish Walkthrough
 
 ## Overview
 
-In this phase, we implemented a peer-to-peer sharing system that allows Architects to share their creations directly with Explorers without relying on a centralized server. This aligns with our "Offline First" and "Local Ownership" axioms.
+In this phase, we are optimizing the application for mobile devices, ensuring that touch interactions are comfortable and the layout adapts gracefully to smaller screens. We also refined the P2P sharing experience based on user feedback.
 
-## Key Features
+## Key Changes
 
-### 1. Magic QR Codes (Single Level Sharing)
+### 1. Touch Target Audit
 
-For sharing individual levels, we implemented a compressed URL scheme.
+We systematically audited the codebase to ensure all interactive elements meet the 44px minimum touch target size recommendation.
 
-- **Mechanism**: The level JSON is minified, compressed (using `lz-string`), and encoded into a URL hash.
-- **QR Code**: This URL is then converted into a QR code using `qrcode`.
-- **Experience**: The receiver scans the QR code, and the app instantly loads the level from the URL hash. No network request required (other than loading the app itself).
+- **Builder Mode**: Updated all builder components (`BuilderToolbar`, `BuilderTray`, `BuilderGrid`, etc.) to use larger buttons and hit areas.
+- **Modals**: Increased the size of close buttons, action buttons, and form inputs in all modals (`StoryConfigModal`, `TileEditorModal`, `PackManagerModal`, etc.).
+- **Common Components**: Updated `ConfirmModal` and `ToastContainer` to be touch-friendly.
+- **Library**: Updated `PackCard` action buttons.
 
-### 2. WebRTC Handshake (Pack Sharing)
+### 2. CSS Variables
 
-For larger payloads like full Level Packs, we implemented a WebRTC data channel.
+We introduced `var(--touch-target-min)` (44px) to standardize touch target sizes across the application.
 
-- **Signaling**: Instead of a signaling server, we use QR codes to exchange the SDP Offer and Answer.
-  1. **Sender** creates an Offer -> QR Code.
-  2. **Receiver** scans Offer -> Generates Answer -> QR Code.
-  3. **Sender** scans Answer -> Connection Established.
-- **Data Transfer**: Once connected, the pack data is serialized and sent over the WebRTC DataChannel.
-- **Experience**: A "magic handshake" that feels like beaming data between devices.
+### 3. Local Publishing & Library Integration
 
-### 3. UI Integration
+We integrated local custom packs into the main Library view.
 
-- **Builder Toolbar**: Added a "Share" button (Share2 icon) to the main toolbar.
-- **Share Modal**: Provides options for "Link/QR" (Single Level) and "P2P Transfer" (Pack).
-- **P2P Wizard**: A step-by-step modal (`P2PModal`) guiding users through the scan-scan-connect process.
+- **My Projects**: A new section in the Library displays packs stored locally (IndexedDB).
+- **Seamless Play**: Users can play their own creations directly from the Library, just like built-in packs.
+
+### 4. UX Refinements
+
+Based on user feedback, we polished several interactions:
+
+- **P2P Sharing**: Removed the intermediate "Send/Receive" selection step. The modal now auto-detects the intent based on context (sending vs receiving) and starts the flow immediately.
+- **Function Configuration**: Simplified the "Call Function" block configuration. If only one function exists, it is automatically selected and displayed as a static label, removing the redundant selection list.
+- **Tray UI**: Fixed scrolling issues in the configuration panel by increasing the maximum height.
 
 ## Technical Decisions
 
-- **Library Choice**: Used `simple-peer` (via a lightweight wrapper `P2PConnection`) to abstract WebRTC complexity.
-- **Compression**: `lz-string` was chosen for its efficiency in compressing JSON for URL safety.
-- **Offline Support**: The entire flow works offline (once the app is loaded), leveraging the Service Worker for asset caching.
-
-## Challenges & Solutions
-
-- **QR Code Density**: Large levels created QR codes that were too dense to scan easily.
-  - _Solution_: We implemented `lz-string` compression to significantly reduce the payload size. For very large levels/packs, we force the WebRTC flow.
-- **Visual Regressions**: The new toolbar button caused layout shifts in the visual tests.
-  - _Solution_: We updated the visual snapshots to reflect the new UI state.
-- **Accessibility**: The new modals had some focus/tabindex issues.
-  - _Solution_: We audited and fixed the ARIA roles and tabindex attributes in `ShareModal` and `P2PModal`.
+- **Auto-Start P2P**: We used Svelte's `$effect` to trigger the P2P state machine transition immediately upon mounting if the props indicate a clear intent.
+- **Type Safety**: Resolved type mismatches between `CampaignService` and `getPack` to ensure robust data handling for local packs.

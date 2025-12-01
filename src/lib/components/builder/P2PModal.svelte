@@ -31,6 +31,17 @@
 	let status = $state<P2PStatus>('disconnected');
 	let error = $state<string | null>(null);
 
+	$effect(() => {
+		// Auto-start if intent is unambiguous
+		if (step === 'initial') {
+			if (data && !onReceive) {
+				startSender();
+			} else if (onReceive && !data) {
+				startReceiver();
+			}
+		}
+	});
+
 	onDestroy(() => {
 		if (p2p) {
 			p2p.pc.close();
@@ -272,7 +283,12 @@
 		border: none;
 		cursor: pointer;
 		color: var(--text-2);
-		padding: var(--size-1);
+		padding: 0;
+		width: 44px;
+		height: 44px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		border-radius: var(--radius-round);
 	}
 
@@ -362,7 +378,8 @@
 		background-color: var(--brand);
 		color: white;
 		border: none;
-		padding: var(--size-2) var(--size-4);
+		padding: 0 var(--size-4);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-2);
 		cursor: pointer;
 		display: flex;
@@ -381,6 +398,8 @@
 		align-items: center;
 		gap: var(--size-1);
 		margin-top: var(--size-2);
+		min-height: var(--touch-target-min);
+		padding: 0 var(--size-2);
 	}
 
 	.transfer-status {

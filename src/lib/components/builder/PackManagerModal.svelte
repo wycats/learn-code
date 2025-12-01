@@ -311,7 +311,12 @@
 		border: none;
 		cursor: pointer;
 		color: var(--text-2);
-		padding: var(--size-1);
+		padding: 0;
+		width: 44px;
+		height: 44px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		border-radius: var(--radius-round);
 	}
 
@@ -370,7 +375,12 @@
 		border: none;
 		cursor: pointer;
 		color: var(--text-2);
-		padding: var(--size-2);
+		padding: 0;
+		width: 44px;
+		height: 44px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		border-radius: var(--radius-1);
 	}
 
@@ -410,7 +420,8 @@
 		background-color: var(--brand);
 		color: white;
 		border: none;
-		padding: var(--size-2) var(--size-4);
+		padding: 0 var(--size-4);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-2);
 		font-weight: bold;
 		cursor: pointer;
@@ -427,7 +438,8 @@
 		background-color: var(--surface-2);
 		color: var(--text-1);
 		border: 1px solid var(--surface-3);
-		padding: var(--size-2) var(--size-4);
+		padding: 0 var(--size-4);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-2);
 		font-weight: bold;
 		cursor: pointer;

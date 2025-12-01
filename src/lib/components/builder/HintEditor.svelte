@@ -492,7 +492,7 @@
 	.icon-btn {
 		background: none;
 		border: none;
-		padding: 6px;
+		padding: 0;
 		border-radius: var(--radius-round);
 		cursor: pointer;
 		color: var(--text-3);
@@ -500,6 +500,8 @@
 		align-items: center;
 		justify-content: center;
 		transition: all 0.2s;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 	}
 
 	.icon-btn:hover {
@@ -528,7 +530,8 @@
 	}
 
 	.trigger-select-btn.compact {
-		padding: 2px 8px;
+		padding: 0 8px;
+		min-height: var(--touch-target-min);
 		background-color: var(--surface-2);
 		border: 1px solid transparent;
 		border-radius: var(--radius-pill);
@@ -659,7 +662,8 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
-		padding: var(--size-2);
+		padding: 0 var(--size-2);
+		min-height: var(--touch-target-min);
 		background: none;
 		border: none;
 		border-radius: var(--radius-1);
@@ -746,7 +750,8 @@
 		background-color: var(--brand);
 		color: white;
 		border: none;
-		padding: 4px 8px 4px 10px;
+		padding: 0 8px 0 10px;
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-pill);
 		font-size: var(--font-size-1);
 		font-weight: 700;
@@ -788,8 +793,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 28px;
-		height: 28px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		border-radius: 50%;
 		background-color: var(--green-5);
 		color: white;
@@ -823,7 +828,8 @@
 		background-color: var(--surface-2);
 		border: 1px solid var(--brand);
 		color: var(--brand);
-		padding: 2px 2px 2px 8px;
+		padding: 0 2px 0 8px;
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-pill);
 		font-size: var(--font-size-0);
 		font-weight: 700;
@@ -843,8 +849,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 20px;
-		height: 20px;
+		width: 24px;
+		height: 24px;
 		border-radius: 50%;
 		border: none;
 		cursor: pointer;
@@ -875,7 +881,8 @@
 	.add-btn {
 		background: none;
 		border: 2px dashed var(--surface-3);
-		padding: var(--size-3);
+		padding: 0 var(--size-3);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-2);
 		color: var(--text-2);
 		cursor: pointer;
