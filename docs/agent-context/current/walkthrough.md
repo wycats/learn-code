@@ -8,7 +8,7 @@ This phase focuses on enabling direct sharing of levels and packs between users 
 
 - [x] **Magic QR Codes**: Implemented `ShareService` using `lz-string` for compression and `qrcode` for generation. Added a "Share" button in the Builder and a "Scan" button on the Home screen using `html5-qrcode`.
 - [x] **WebRTC Handshake**: Implemented `P2PConnection` service and `P2PModal` UI. Users can now share full Level Packs by exchanging QR codes (Offer/Answer) to establish a direct WebRTC connection.
-- [ ] **Offline Support**: Pending.
+- [x] **Offline Support**: Verified that the existing Service Worker caches all necessary assets (including the new P2P libraries). The P2P handshake uses local ICE candidates when offline, allowing sharing on local networks without internet access.
 
 ## Key Decisions
 
