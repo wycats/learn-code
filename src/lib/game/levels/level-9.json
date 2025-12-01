@@ -84,24 +84,24 @@
 		"intro": [
 			{
 				"id": "intro-1",
-				"text": "Jonas: 'Welcome to The Gauntlet! I combined Ice AND Lava. Good luck!'",
+				"text": "Jonas: 'Welcome to my masterpiece: THE GAUNTLET! I've combined my two favorite things: slippery ice and boiling lava!'",
 				"speaker": "Jonas"
 			},
 			{
 				"id": "intro-2",
-				"text": "Zoey: 'Ice makes me slide, and Lava makes me... restart. Got it.'",
+				"text": "Zoey: 'That sounds... safe? I guess I just need to keep moving and not stop on the red stuff.'",
 				"speaker": "Zoey"
 			}
 		],
 		"outro": [
 			{
 				"id": "outro-1",
-				"text": "Zoey: 'That was close! But I made it.'",
+				"text": "Zoey: 'Phew! That was close. I almost slid right into the magma.'",
 				"speaker": "Zoey"
 			},
 			{
 				"id": "outro-2",
-				"text": "Jonas: 'Not bad. But can you handle... MOMENTUM?'",
+				"text": "Jonas: 'Not bad for a warm-up. But let's see how you handle... ZERO FRICTION!'",
 				"speaker": "Jonas"
 			}
 		]

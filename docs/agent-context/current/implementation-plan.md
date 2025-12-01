@@ -1,45 +1,36 @@
-# Implementation Plan: Builder Refinement & Targeting
+# Implementation Plan: The Architect's Polish (Phase 19)
 
 ## Phase Goal
 
-Enhance the Level Builder with precise targeting capabilities, pack-wide asset management, and further UX polish ("whimsy").
+Refine the Builder and Game experience based on direct feedback from our primary persona, Jonas. This phase focuses on visual polish, builder usability enhancements, and content refinement.
 
-## 1. Schema & Data Model
+## 1. Visual Polish
 
-- [x] **Update Schemas** (`src/lib/game/schema.ts`)
-  - [x] Replace `highlight` with `targets: string[]` in `HintSchema` and `StorySegmentSchema`.
-  - [x] Define target ID formats (`block:<uuid>`, `cell:<x>,<y>`, `ui:<id>`).
-- [x] **Migration**: Ensure existing levels (if any dynamic ones exist) are compatible or migrated.
+- [ ] **Player Occlusion**: Implement a "Cover" block style (Glassomorphism) when the player character is behind a block to ensure visibility.
+- [ ] **Icon Updates**: Replace the "Clear Blocks" icon with a "Broom" (add to Lucide if needed or find alternative).
+- [ ] **Builder UI Cleanup**: Remove the redundant tile dropdown in the Level Editor now that we have the dedicated Tile Editor.
 
-## 2. Targeting System ("Pick Mode")
+## 2. Builder Enhancements
 
-- [x] **Selection State**: Create a store/context to manage "Selection Mode" state (active, selected items).
-- [x] **Builder UI**:
-  - [x] Add "Target" button to `HintEditor`.
-  - [x] Add "Target" button to `StoryEditor`.
-  - [x] Implement "Selection Overlay" or interaction layer on the Game/Grid.
-  - [x] Allow clicking Blocks (in Tray and Workspace) and Cells to select them.
-  - [x] Show selected targets as "chips" in the editor.
-- [x] **Game Runtime**:
-  - [x] Update `HintManager` to process `targets`.
-  - [x] Implement visual highlighting (pulse/border) for targeted elements in the Game View.
+- [ ] **Repeat Block**: Allow users to input a custom repeat count instead of selecting from a preset list.
+- [ ] **Targeting**:
+  - [ ] Enable targeting of the "Repeat Count" specifically in Story Mode.
+  - [ ] Enable targeting of the "Function Name" specifically in Story Mode.
+  - [ ] Disable/Hide targeting for "Infinity" loop count as it's not a visible element in the same way.
+- [ ] **Text Updates**: Change "Use current workspace" to "Use test level" for clarity.
+- [ ] **Story Editor**: Implement reordering for story segments (Drag & Drop or Up/Down buttons).
+- [ ] **Undo/Redo**: Implement Undo/Redo functionality for the Level Editor (placing tiles, actors, etc.).
 
-## 3. Pack-Wide Assets
+## 3. Function UX
 
-- [x] **Pack Settings UI**:
-  - [x] Create `PackAssetsEditor` component.
-  - [x] Allow adding/editing/deleting Characters (Name, Color, Avatar).
-  - [x] Allow adding/editing/deleting Emotions (Name, Icon).
-- [x] **Inheritance Logic**:
-  - [x] Update `LevelDefinition` usage to merge Pack assets with Level assets.
-  - [x] Ensure "None" mood is available by default.
+- [ ] **Empty State**: Improve the "Call ???" block behavior. If no functions are defined, it should be disabled or show a helpful tooltip/state instead of being active but broken.
 
-## 4. UX Polish
+## 4. Content Polish
 
-- [x] **"None" Mood**: Ensure `none` emotion renders correctly (no icon) in Story/Dialogue views.
-- [ ] **Whimsy**: Continue refining sounds and visuals (e.g., particle effects on clear?).
+- [ ] **Gauntlet Pack**: Refine the "Gauntlet" levels to feel more cohesive and designed.
+- [ ] **New Pack**: Create a "Hard" built-in pack with a Purple theme to challenge advanced players.
 
 ## 5. Verification
 
-- [x] **Test**: Verify targeting works for Blocks, Cells, and UI.
-- [x] **Test**: Verify Pack assets appear in new levels.
+- [ ] **Visual Tests**: Update visual tests to capture the new "Cover" block style and Builder UI changes.
+- [ ] **Playtest**: Verify the new "Hard" pack and Gauntlet improvements.

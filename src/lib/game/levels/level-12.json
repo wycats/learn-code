@@ -1,0 +1,80 @@
+{
+	"id": "level-12",
+	"name": "Into the Void",
+	"description": "Jonas: 'I found this weird purple dimension. Physics might be... different.'",
+	"gridSize": {
+		"width": 8,
+		"height": 8
+	},
+	"start": {
+		"x": 1,
+		"y": 1
+	},
+	"startOrientation": "E",
+	"goal": {
+		"x": 6,
+		"y": 6
+	},
+	"defaultTerrain": "void",
+	"customTiles": {
+		"void": {
+			"id": "void",
+			"name": "The Void",
+			"type": "hazard",
+			"visuals": {
+				"color": "var(--purple-9)",
+				"decal": "skull"
+			}
+		},
+		"path": {
+			"id": "path",
+			"name": "Neon Path",
+			"type": "floor",
+			"visuals": {
+				"color": "var(--purple-5)",
+				"decal": "dot"
+			}
+		}
+	},
+	"layout": {
+		"1,1": "path",
+		"2,1": "path",
+		"3,1": "path",
+		"3,2": "path",
+		"3,3": "path",
+		"4,3": "path",
+		"5,3": "path",
+		"5,4": "path",
+		"5,5": "path",
+		"6,5": "path",
+		"6,6": "goal"
+	},
+	"availableBlocks": ["move-forward", "turn-left", "turn-right", "loop"],
+	"solutionPar": 10,
+	"story": {
+		"intro": [
+			{
+				"id": "intro-1",
+				"text": "Jonas: 'I found this weird purple dimension. Physics might be... different.'",
+				"speaker": "Jonas"
+			},
+			{
+				"id": "intro-2",
+				"text": "Zoey: 'It looks... glitchy. And very purple. I better stay on the path.'",
+				"speaker": "Zoey"
+			}
+		],
+		"outro": [
+			{
+				"id": "outro-1",
+				"text": "Zoey: 'Okay, the physics were normal. But the vibes? Definitely off.'",
+				"speaker": "Zoey"
+			},
+			{
+				"id": "outro-2",
+				"text": "Jonas: 'Just wait. The glitches are getting worse.'",
+				"speaker": "Jonas"
+			}
+		]
+	}
+}

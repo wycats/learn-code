@@ -361,3 +361,32 @@
 
 - We maintain full control over the `user` and `session` tables in our schema.
 - We avoid vendor lock-in for the authentication layer.
+
+## Phase 19: The Architect's Polish
+
+### 42. Granular Targeting via Callbacks
+
+**Decision:** Implement granular targeting (e.g., specific badges on a block) by threading an `onTarget` callback prop down the component tree.
+**Context:** The tutorial system needed to highlight specific sub-elements of a block (like the loop count or function name) which are deeply nested inside the `Block` component. CSS selectors were brittle.
+**Consequence:**
+
+- `Block.svelte` now accepts an `onTarget` prop.
+- We can programmatically trigger highlights on specific internal elements without exposing their DOM structure globally.
+
+### 43. "Ghost" Interaction Pattern for Reordering
+
+**Decision:** Adopt a "Ghost" interaction pattern (Click to Select -> Click Ghost to Move) for reordering story segments, mirroring the main program builder.
+**Context:** We initially considered simple Up/Down buttons, but this felt inconsistent with the rest of the app's "tactile" philosophy. Drag and Drop is good, but "Click-Click" is more accessible and precise for touch.
+**Consequence:**
+
+- The `BuilderStoryBar` now has a distinct "Move Mode".
+- We reuse the mental model established in the main gameplay loop.
+
+### 44. Icon Library Expansion (@lucide/lab)
+
+**Decision:** Install `@lucide/lab` to access experimental icons (specifically `Broom`).
+**Context:** The standard `lucide-svelte` library didn't have a suitable "Clear/Sweep" icon. We preferred using the official experimental lab over importing a custom SVG to maintain design consistency.
+**Consequence:**
+
+- We now have a dependency on `@lucide/lab`.
+- We can access a wider range of icons for specific metaphors.

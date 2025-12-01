@@ -1,29 +1,24 @@
 <script lang="ts">
 	import type { BuilderModel, BuilderTool } from '$lib/game/builder-model.svelte';
-	import { AVATAR_ICONS } from '$lib/game/icons';
 	import {
 		Play,
 		SquarePen,
 		RotateCw,
 		RefreshCcw,
 		Settings,
-		Box,
 		Eraser,
-		ChevronDown,
 		Save,
 		FolderOpen,
 		Plus,
-		Trees,
-		Snowflake,
-		Mountain,
-		Sun,
-		Leaf,
 		ArrowLeft,
 		Grid3x3,
-		Triangle,
-		Link
+		Link,
+		Undo,
+		Redo
 	} from 'lucide-svelte';
 	import PackManagerModal from './PackManagerModal.svelte';
+	import Cell from '$lib/components/game/Cell.svelte';
+	import type { CellType } from '$lib/game/types';
 	import { fade } from 'svelte/transition';
 
 	interface Props {
@@ -36,7 +31,6 @@
 	let { builder, showSettings, onToggleSettings, onExit }: Props = $props();
 
 	let showPackManager = $state(false);
-	let showTerrainPicker = $state(false);
 	let statusMessage = $state<string | null>(null);
 	let statusType = $state<'success' | 'error'>('success');
 
@@ -47,50 +41,6 @@
 			statusMessage = null;
 		}, 3000);
 	}
-
-	// Terrain tools (grouped)
-	const standardTerrainTools: {
-		id: string;
-		tool: BuilderTool;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		icon: any;
-		label: string;
-		color?: string;
-	}[] = [
-		{ id: 'wall', tool: { type: 'terrain', value: 'wall' }, icon: Box, label: 'Wall' },
-		{ id: 'water', tool: { type: 'terrain', value: 'water' }, icon: Box, label: 'Water' },
-		{ id: 'grass', tool: { type: 'terrain', value: 'grass' }, icon: Leaf, label: 'Grass' },
-		{ id: 'forest', tool: { type: 'terrain', value: 'forest' }, icon: Trees, label: 'Forest' },
-		{ id: 'sand', tool: { type: 'terrain', value: 'sand' }, icon: Sun, label: 'Sand' },
-		{ id: 'snow', tool: { type: 'terrain', value: 'snow' }, icon: Snowflake, label: 'Snow' },
-		{ id: 'dirt', tool: { type: 'terrain', value: 'dirt' }, icon: Mountain, label: 'Dirt' },
-		{
-			id: 'spikes',
-			tool: { type: 'terrain', value: 'spikes' },
-			icon: Triangle,
-			label: 'Spikes',
-			color: 'var(--red-7)'
-		}
-	];
-
-	let terrainTools = $derived.by(() => {
-		const customTools = Object.values(builder.level.customTiles || {}).map((tile) => {
-			const Icon =
-				tile.visuals.decal && tile.visuals.decal in AVATAR_ICONS
-					? AVATAR_ICONS[tile.visuals.decal as keyof typeof AVATAR_ICONS]
-					: Box;
-
-			return {
-				id: tile.id,
-				tool: { type: 'terrain', value: tile.id } as BuilderTool,
-				icon: Icon,
-				label: tile.name,
-				color: tile.visuals.color
-			};
-		});
-
-		return [...standardTerrainTools, ...customTools];
-	});
 
 	// Special tools (top level)
 	const specialTools: {
@@ -105,21 +55,6 @@
 		{ id: 'erase', tool: { type: 'erase' }, icon: Eraser, label: 'Erase' }
 	];
 
-	// Determine which terrain tool is "active" in the picker (last selected or default)
-	let activeTerrainTool = $state(standardTerrainTools[0]);
-	let ActiveIcon = $derived(activeTerrainTool.icon);
-
-	// Update activeTerrainTool when builder.activeTool changes to a terrain type
-	$effect(() => {
-		const tool = builder.activeTool;
-		if (tool.type === 'terrain') {
-			const found = terrainTools.find(
-				(t) => t.tool.type === 'terrain' && t.tool.value === tool.value
-			);
-			if (found) activeTerrainTool = found;
-		}
-	});
-
 	function isToolActive(tool: BuilderTool) {
 		if (builder.activeTool.type !== tool.type) return false;
 		if (builder.activeTool.type === 'terrain' && tool.type === 'terrain') {
@@ -128,18 +63,17 @@
 		return true;
 	}
 
+	function getActiveTileDef() {
+		if (builder.activeTool.type !== 'terrain') return null;
+		const id = builder.activeTool.value;
+		if (builder.level.customTiles?.[id]) return builder.level.customTiles[id];
+		if (builder.pack.customTiles?.[id]) return builder.pack.customTiles[id];
+		return null;
+	}
+
 	function selectTool(tool: BuilderTool) {
 		builder.activeTool = tool;
 		builder.selectedActor = null;
-		showTerrainPicker = false;
-	}
-
-	function handleMainPickerClick() {
-		if (isToolActive(activeTerrainTool.tool)) {
-			showTerrainPicker = !showTerrainPicker;
-		} else {
-			selectTool(activeTerrainTool.tool);
-		}
 	}
 
 	function toggleMode() {
@@ -210,6 +144,25 @@
 				<Save size={20} />
 			</button>
 
+			<div class="separator"></div>
+
+			<button
+				class="action-btn"
+				onclick={() => builder.undo()}
+				disabled={builder.history.length === 0}
+				title="Undo"
+			>
+				<Undo size={20} />
+			</button>
+			<button
+				class="action-btn"
+				onclick={() => builder.redo()}
+				disabled={builder.future.length === 0}
+				title="Redo"
+			>
+				<Redo size={20} />
+			</button>
+
 			{#if builder.isLinked}
 				{#if builder.needsPermission}
 					<button
@@ -272,36 +225,23 @@
 		{#if builder.mode === 'edit' || builder.mode === 'story'}
 			<div class="separator"></div>
 			<div class="tools-group">
-				<!-- Terrain Picker -->
-				<div class="tool-picker-container" class:active={isToolActive(activeTerrainTool.tool)}>
-					<button
-						class="tool-btn picker-btn"
-						onclick={handleMainPickerClick}
-						title={activeTerrainTool.label}
-					>
-						<ActiveIcon size={20} />
-						<span class="tool-label">{activeTerrainTool.label}</span>
-					</button>
-					<button class="picker-trigger" onclick={() => (showTerrainPicker = !showTerrainPicker)}>
-						<ChevronDown size={14} />
-					</button>
-
-					{#if showTerrainPicker}
-						<div class="tool-popover">
-							{#each terrainTools as { id, tool, icon: Icon, label, color } (id)}
-								<button
-									class="tool-option"
-									class:active={isToolActive(tool)}
-									onclick={() => selectTool(tool)}
-									style:--tool-color={color}
-								>
-									<Icon size={20} />
-									<span>{label}</span>
-								</button>
-							{/each}
+				<!-- Active Tile Display -->
+				{#if builder.activeTool.type === 'terrain'}
+					<div class="active-tile-display" title="Active Tile">
+						<div class="tile-preview">
+							<Cell
+								type={builder.activeTool.value as CellType}
+								customTile={getActiveTileDef() || undefined}
+							/>
 						</div>
-					{/if}
-				</div>
+						<span class="tool-label">
+							{getActiveTileDef()?.name ||
+								builder.activeTool.value.charAt(0).toUpperCase() +
+									builder.activeTool.value.slice(1)}
+						</span>
+					</div>
+					<div class="separator"></div>
+				{/if}
 
 				<!-- Special Tools -->
 				{#each specialTools as { id, tool, icon: Icon, label, color } (id)}
@@ -400,6 +340,16 @@
 		color: var(--green-5);
 	}
 
+	.action-btn:disabled {
+		opacity: 0.3;
+		cursor: not-allowed;
+	}
+
+	.action-btn:disabled:hover {
+		background-color: transparent;
+		color: var(--text-2);
+	}
+
 	.separator {
 		width: 1px;
 		height: 24px;
@@ -459,108 +409,23 @@
 		font-size: var(--font-size-1);
 	}
 
-	/* Tool Picker Styles */
-	.tool-picker-container {
-		position: relative;
-		display: flex;
-		align-items: stretch;
-		background-color: transparent;
-		border: 1px solid transparent;
-		border-radius: var(--radius-2);
-		transition: all 0.2s;
-	}
-
-	.tool-picker-container:hover {
-		background-color: var(--surface-3);
-	}
-
-	.tool-picker-container.active {
-		background-color: color-mix(in srgb, var(--blue-5) 10%, transparent);
-		color: var(--blue-7);
-		font-weight: bold;
-	}
-
-	.picker-btn {
-		border: none;
-		border-radius: var(--radius-2) 0 0 var(--radius-2);
-		padding-right: var(--size-1);
-		background: transparent;
-		color: inherit;
-	}
-
-	.picker-btn:hover {
-		background-color: transparent;
-	}
-
-	.picker-trigger {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0 var(--size-1);
-		background: transparent;
-		border: none;
-		cursor: pointer;
-		color: inherit;
-		border-radius: 0 var(--radius-2) var(--radius-2) 0;
-		opacity: 0.7;
-	}
-
-	.picker-trigger:hover {
-		background-color: transparent;
-		opacity: 1;
-	}
-
-	.tool-popover {
-		/* Reset UA styles */
-		margin: 0;
-		inset: auto;
-
-		/* Absolute positioning relative to container */
-		position: absolute;
-		top: 100%;
-		left: 0;
-		margin-top: var(--size-2);
-
-		background-color: var(--surface-1);
-		border: 1px solid var(--surface-3);
-		border-radius: var(--radius-2);
-		box-shadow: var(--shadow-3);
-		padding: var(--size-1);
-		display: flex;
-		flex-direction: column;
-		gap: var(--size-1);
-		min-width: 150px;
-		z-index: 1000;
-	}
-
-	.tool-popover:popover-open {
-		display: flex;
-	}
-
-	.tool-option {
+	.active-tile-display {
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
-		padding: var(--size-2);
-		background: none;
-		border: none;
+		padding: var(--size-1) var(--size-2);
+		background-color: var(--surface-1);
+		border: 1px solid var(--surface-3);
+		border-radius: var(--radius-2);
+		color: var(--text-1);
+	}
+
+	.tile-preview {
+		width: 24px;
+		height: 24px;
 		border-radius: var(--radius-1);
-		cursor: pointer;
-		text-align: left;
-		color: var(--tool-color, var(--text-2));
-		font-weight: 500;
-		transition: all 0.1s;
-	}
-
-	.tool-option:hover {
-		background-color: var(--surface-2);
-		color: var(--tool-color, var(--text-1));
-	}
-
-	.tool-option.active {
-		background-color: color-mix(in srgb, var(--tool-color, var(--blue-5)) 10%, transparent);
-		color: var(--tool-color, var(--blue-7));
-		font-weight: bold;
+		overflow: hidden;
+		box-shadow: var(--shadow-1);
 	}
 
 	.architect-section {

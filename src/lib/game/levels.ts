@@ -10,6 +10,9 @@ import level8Data from './levels/level-8.json';
 import level9Data from './levels/level-9.json';
 import level10Data from './levels/level-10.json';
 import level11Data from './levels/level-11.json';
+import level12Data from './levels/level-12.json';
+import level13Data from './levels/level-13.json';
+import level14Data from './levels/level-14.json';
 
 export const LEVEL_1 = LevelDefinitionSchema.parse(level1Data);
 export const LEVEL_2 = LevelDefinitionSchema.parse(level2Data);
@@ -22,6 +25,9 @@ export const LEVEL_8 = LevelDefinitionSchema.parse(level8Data);
 export const LEVEL_9 = LevelDefinitionSchema.parse(level9Data);
 export const LEVEL_10 = LevelDefinitionSchema.parse(level10Data);
 export const LEVEL_11 = LevelDefinitionSchema.parse(level11Data);
+export const LEVEL_12 = LevelDefinitionSchema.parse(level12Data);
+export const LEVEL_13 = LevelDefinitionSchema.parse(level13Data);
+export const LEVEL_14 = LevelDefinitionSchema.parse(level14Data);
 
 export const LEVELS = [
 	LEVEL_1,
@@ -34,5 +40,8 @@ export const LEVELS = [
 	LEVEL_8,
 	LEVEL_9,
 	LEVEL_10,
-	LEVEL_11
+	LEVEL_11,
+	LEVEL_12,
+	LEVEL_13,
+	LEVEL_14
 ];

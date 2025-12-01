@@ -15,6 +15,7 @@
 		onActorSelect?: (actor: 'start' | 'goal') => void;
 		onActorDrop?: () => void;
 		onRotateStart?: () => void;
+		onInteractionEnd?: () => void;
 	}
 
 	let {
@@ -25,7 +26,8 @@
 		onCellHover,
 		onActorSelect,
 		onActorDrop,
-		onRotateStart
+		onRotateStart,
+		onInteractionEnd
 	}: Props = $props();
 
 	let isDragging = $state(false);
@@ -77,6 +79,7 @@
 		}
 		isDragging = false;
 		dragStartPos = null;
+		onInteractionEnd?.();
 	}
 
 	function handleCharacterMouseDown(e: MouseEvent) {
@@ -162,6 +165,7 @@
 			class:targeted={isBuilder &&
 				(highlight?.targets?.includes(cell.id || '') ||
 					highlight?.targets?.includes(`cell:${cell.x},${cell.y}`))}
+			class:cover={cell.type === 'cover'}
 			style:grid-column={cell.x + 1}
 			style:grid-row={cell.y + 1}
 			onmousedown={() => handleMouseDown(cell.x, cell.y)}
@@ -283,6 +287,10 @@
 		border-radius: var(--radius-2);
 		z-index: 15;
 		box-shadow: 0 0 10px var(--brand-dim);
+	}
+
+	.grid-cell-wrapper.cover {
+		z-index: 20;
 	}
 
 	.rotate-handle {

@@ -6,6 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
+	import { ArrowLeft } from 'lucide-svelte';
 
 	let myCampaigns = $state<LevelPack[]>([]);
 
@@ -46,7 +47,9 @@
 	<header class="builder-header">
 		<div class="header-content">
 			<div class="header-left">
-				<button class="back-btn" onclick={handleBack} aria-label="Back to Main Menu"> ← </button>
+				<button class="back-btn" onclick={handleBack} aria-label="Back to Main Menu">
+					<ArrowLeft size={24} />
+				</button>
 				<h1>Architect's Library</h1>
 			</div>
 			<button class="create-btn" onclick={handleCreate}>

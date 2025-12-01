@@ -78,6 +78,57 @@ export class BuilderModel {
 	// The working program (persisted across mode switches)
 	currentProgram = $state<Block[]>([]);
 
+	// Undo/Redo History
+	history = $state<LevelDefinition[]>([]);
+	future = $state<LevelDefinition[]>([]);
+	isInteracting = false;
+
+	pushState() {
+		// Deep clone the current level
+		this.history.push($state.snapshot(this.level));
+		if (this.history.length > 50) this.history.shift();
+		this.future = []; // Clear redo stack on new action
+	}
+
+	undo() {
+		if (this.history.length === 0) return;
+		const prev = this.history.pop();
+		if (prev) {
+			this.future.push($state.snapshot(this.level));
+			// Replace current level in pack
+			const index = this.pack.levels.findIndex((l) => l.id === this.activeLevelId);
+			if (index !== -1) {
+				this.pack.levels[index] = prev;
+				this.syncGame();
+			}
+		}
+	}
+
+	redo() {
+		if (this.future.length === 0) return;
+		const next = this.future.pop();
+		if (next) {
+			this.history.push($state.snapshot(this.level));
+			// Replace current level in pack
+			const index = this.pack.levels.findIndex((l) => l.id === this.activeLevelId);
+			if (index !== -1) {
+				this.pack.levels[index] = next;
+				this.syncGame();
+			}
+		}
+	}
+
+	startInteraction() {
+		if (!this.isInteracting) {
+			this.pushState();
+			this.isInteracting = true;
+		}
+	}
+
+	endInteraction() {
+		this.isInteracting = false;
+	}
+
 	get targetSelectionMode() {
 		return this.targetingState.isActive;
 	}
@@ -387,7 +438,8 @@ export class BuilderModel {
 		// Clear selections when switching modes
 		this.selectedGridPosition = null;
 		this.selectedActor = null;
-		this.cancelTargetSelection();
+		// Don't cancel targeting selection when switching modes, so we can target UI elements in Test mode
+		// this.cancelTargetSelection();
 
 		this.syncGame();
 	}
@@ -445,6 +497,7 @@ export class BuilderModel {
 	}
 
 	rotateStartActor() {
+		this.pushState();
 		const dirs = ['N', 'E', 'S', 'W'] as const;
 		const currentIdx = dirs.indexOf(this.level.startOrientation);
 		this.level.startOrientation = dirs[(currentIdx + 1) % 4];
@@ -552,6 +605,7 @@ export class BuilderModel {
 		const newHeight = Math.max(3, Math.min(10, this.level.gridSize.height + dHeight));
 
 		if (newWidth !== this.level.gridSize.width || newHeight !== this.level.gridSize.height) {
+			this.pushState();
 			this.level.gridSize = { width: newWidth, height: newHeight };
 			this.syncGame();
 		}
@@ -560,6 +614,7 @@ export class BuilderModel {
 	addColumn(side: 'left' | 'right') {
 		if (this.level.gridSize.width >= 10) return;
 
+		this.pushState();
 		this.level.gridSize.width++;
 
 		if (side === 'left') {
@@ -592,6 +647,7 @@ export class BuilderModel {
 	addRow(side: 'top' | 'bottom') {
 		if (this.level.gridSize.height >= 10) return;
 
+		this.pushState();
 		this.level.gridSize.height++;
 
 		if (side === 'top') {
@@ -624,6 +680,7 @@ export class BuilderModel {
 	removeColumn(index: number) {
 		if (this.level.gridSize.width <= 3) return;
 
+		this.pushState();
 		// Remove cells in this column
 		const newLayout: Record<string, CellType> = {};
 		const newCellIds: Record<string, string> = {};
@@ -667,6 +724,7 @@ export class BuilderModel {
 	removeRow(index: number) {
 		if (this.level.gridSize.height <= 3) return;
 
+		this.pushState();
 		// Remove cells in this row
 		const newLayout: Record<string, CellType> = {};
 		const newCellIds: Record<string, string> = {};
@@ -717,6 +775,8 @@ export class BuilderModel {
 			this.targetingState.onToggle(target);
 			return;
 		}
+
+		this.startInteraction();
 
 		// If an actor is selected, move it to this position
 		if (this.selectedActor) {

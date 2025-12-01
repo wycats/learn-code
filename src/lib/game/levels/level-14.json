@@ -1,0 +1,104 @@
+{
+	"id": "level-14",
+	"name": "The Source",
+	"description": "Jonas: 'It's... beautiful. And terrifying.'",
+	"gridSize": {
+		"width": 10,
+		"height": 10
+	},
+	"start": {
+		"x": 1,
+		"y": 1
+	},
+	"startOrientation": "E",
+	"goal": {
+		"x": 8,
+		"y": 8
+	},
+	"defaultTerrain": "void",
+	"customTiles": {
+		"void": {
+			"id": "void",
+			"name": "The Void",
+			"type": "hazard",
+			"visuals": {
+				"color": "var(--purple-9)",
+				"decal": "skull"
+			}
+		},
+		"path": {
+			"id": "path",
+			"name": "Neon Path",
+			"type": "floor",
+			"visuals": {
+				"color": "var(--purple-5)",
+				"decal": "dot"
+			}
+		},
+		"core": {
+			"id": "core",
+			"name": "Core Wall",
+			"type": "wall",
+			"visuals": {
+				"color": "var(--cyan-5)",
+				"decal": "star"
+			}
+		}
+	},
+	"layout": {
+		"1,1": "path",
+		"2,1": "path",
+		"3,1": "path",
+		"4,1": "path",
+		"5,1": "path",
+
+		"5,2": "path",
+		"5,3": "path",
+		"5,4": "path",
+
+		"4,4": "core",
+		"6,4": "core",
+
+		"5,5": "path",
+		"5,6": "path",
+		"5,7": "path",
+
+		"6,7": "path",
+		"7,7": "path",
+		"8,7": "path",
+		"8,8": "goal"
+	},
+	"availableBlocks": ["move-forward", "turn-left", "turn-right", "loop"],
+	"solutionPar": 12,
+	"story": {
+		"intro": [
+			{
+				"id": "intro-1",
+				"text": "Jonas: 'It's... beautiful. And terrifying. The Core is right there.'",
+				"speaker": "Jonas"
+			},
+			{
+				"id": "intro-2",
+				"text": "Zoey: 'If I reach the goal, do we fix the game?'",
+				"speaker": "Zoey"
+			},
+			{
+				"id": "intro-3",
+				"text": "Jonas: 'Only one way to find out.'",
+				"speaker": "Jonas"
+			}
+		],
+		"outro": [
+			{
+				"id": "outro-1",
+				"text": "Zoey: 'We did it! The purple is fading.'",
+				"speaker": "Zoey"
+			},
+			{
+				"id": "outro-2",
+				"text": "Jonas: 'You're a master Architect now, Zoey. I have nothing left to teach you.'",
+				"speaker": "Jonas"
+			}
+		]
+	}
+}
