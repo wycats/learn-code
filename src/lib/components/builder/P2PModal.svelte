@@ -121,12 +121,12 @@
 	tabindex="-1"
 	onkeydown={(e) => e.key === 'Escape' && onClose()}
 >
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		class="modal"
 		transition:scale
 		onclick={(e) => e.stopPropagation()}
 		role="document"
-		tabindex="0"
 		onkeydown={(e) => e.stopPropagation()}
 	>
 		<header>

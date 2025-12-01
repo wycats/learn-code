@@ -360,3 +360,19 @@ Addressed remaining usability issues in the Builder and improved the Function cr
   - **Undo/Redo**: Implemented a full state history stack for the Level Builder using `$state.snapshot`.
   - **Loop Config**: Added a custom input field for loop counts.
   - **UI Cleanup**: Removed redundant tile dropdown and updated button text.
+
+## Phase 21: P2P Sharing (Completed)
+
+**Date:** December 1, 2025
+
+**Summary:**
+Enabled Architects to share their creations directly with Explorers without a centralized server. Implemented a WebRTC-based P2P sharing system that uses QR codes for the initial handshake (signaling), allowing for direct device-to-device transfer of levels and packs. This feature works entirely offline and leverages the PWA architecture.
+
+**Key Deliverables:**
+
+- **P2P Service**: `P2PConnection` class handling WebRTC offer/answer exchange and data channels.
+- **Share UI**:
+  - `ShareModal`: Generates shareable links and QR codes for single levels.
+  - `P2PModal`: Step-by-step wizard for the "Sender" and "Receiver" handshake flow.
+- **QR Code Integration**: Dynamic QR code generation for signaling data.
+- **Offline Support**: Verified functionality in offline-first PWA context.
