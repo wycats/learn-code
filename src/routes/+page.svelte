@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
-	import { Code, ArrowRight, Hammer } from 'lucide-svelte';
+	import { Code, ArrowRight, Hammer, ScanLine } from 'lucide-svelte';
 
 	function handleStart() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
@@ -11,6 +11,11 @@
 	function handleCreate() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto(`${base}/builder/packs`);
+	}
+
+	function handleScan() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		goto(`${base}/play`);
 	}
 </script>
 
@@ -31,6 +36,11 @@
 			<button class="cta-button secondary" onclick={handleCreate}>
 				<span>Builder Mode</span>
 				<Hammer size={20} />
+			</button>
+
+			<button class="cta-button tertiary" onclick={handleScan}>
+				<span>Scan Level</span>
+				<ScanLine size={20} />
 			</button>
 		</div>
 
@@ -135,6 +145,18 @@
 
 	.cta-button.secondary:hover {
 		background-color: var(--surface-4);
+	}
+
+	.cta-button.tertiary {
+		background-color: transparent;
+		color: var(--text-2);
+		box-shadow: none;
+		border: 1px solid var(--surface-3);
+	}
+
+	.cta-button.tertiary:hover {
+		background-color: var(--surface-2);
+		color: var(--text-1);
 	}
 
 	.feedback-link {

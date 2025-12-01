@@ -31,15 +31,7 @@
 
 		for (const type of Object.keys(available)) {
 			if (type === 'call') {
-				// If call is available, add all defined functions
-				const funcs = Object.keys(game.functions);
-				for (const funcName of funcs) {
-					items.push({
-						id: `palette-func-${funcName}`,
-						type: 'call',
-						functionName: funcName
-					});
-				}
+				items.push({ id: `palette-call-generic`, type: 'call' });
 			} else {
 				items.push({ id: `palette-${type}`, type: type as BlockType });
 			}
@@ -147,6 +139,12 @@
 	function updateLoopCount(count: number | undefined) {
 		if (primarySelectedBlock && primarySelectedBlock.type === 'loop') {
 			game.updateBlock(primarySelectedBlock.id, { count });
+		}
+	}
+
+	function updateCallFunction(name: string) {
+		if (primarySelectedBlock && primarySelectedBlock.type === 'call') {
+			game.updateBlock(primarySelectedBlock.id, { functionName: name });
 		}
 	}
 
@@ -839,6 +837,7 @@
 						<button
 							class="config-btn"
 							class:active={primarySelectedBlock.count === count}
+							class:highlighted={highlight?.targets?.includes(`config:loop:${count}`)}
 							onclick={() => updateLoopCount(count)}
 							data-value={count}
 						>
@@ -849,6 +848,7 @@
 						<input
 							type="number"
 							class="config-input"
+							class:highlighted={highlight?.targets?.includes(`config:loop:custom`)}
 							value={primarySelectedBlock.count ?? ''}
 							placeholder="#"
 							min="1"
@@ -864,12 +864,32 @@
 						<button
 							class="config-btn infinity"
 							class:active={primarySelectedBlock.count === undefined}
+							class:highlighted={highlight?.targets?.includes(`config:loop:infinity`)}
 							onclick={() => updateLoopCount(undefined)}
 							title="Repeat Forever"
 							data-value="infinity"
 						>
 							<InfinityIcon size={20} />
 						</button>
+					{/if}
+				</div>
+			</div>
+		{:else if primarySelectedBlock?.type === 'call'}
+			<div class="config-panel" transition:fly={{ x: -20, duration: 200 }}>
+				<div class="config-header">Call Function</div>
+				<div class="config-list">
+					{#if functionNames.length === 0}
+						<div class="empty-msg">No functions created</div>
+					{:else}
+						{#each functionNames as name (name)}
+							<button
+								class="config-btn text"
+								class:active={primarySelectedBlock.functionName === name}
+								onclick={() => updateCallFunction(name)}
+							>
+								{name}
+							</button>
+						{/each}
 					{/if}
 				</div>
 			</div>
@@ -1033,6 +1053,22 @@
 		gap: var(--size-2);
 	}
 
+	.config-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-1);
+		max-height: 200px;
+		overflow-y: auto;
+	}
+
+	.empty-msg {
+		font-size: var(--font-size-0);
+		color: var(--text-3);
+		font-style: italic;
+		text-align: center;
+		padding: var(--size-2);
+	}
+
 	.config-btn {
 		aspect-ratio: 1;
 		background-color: rgba(255, 255, 255, 0.5);
@@ -1056,12 +1092,28 @@
 		color: var(--text-1);
 	}
 
+	.config-btn.text {
+		width: 100%;
+		aspect-ratio: auto;
+		padding: var(--size-2);
+		justify-content: flex-start;
+		text-align: left;
+	}
+
 	.config-btn.active {
 		background-color: var(--blue-2);
 		color: var(--blue-7);
 		border-color: var(--blue-5);
 		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 		transform: translateY(1px);
+	}
+
+	.config-btn.highlighted,
+	.config-input.highlighted {
+		outline: 3px solid var(--pink-5);
+		box-shadow: 0 0 15px var(--pink-5);
+		z-index: 10;
+		animation: pulse-highlight 1.5s infinite;
 	}
 
 	.custom-input-wrapper {

@@ -11,7 +11,8 @@
 		Mountain,
 		Leaf,
 		Sun,
-		Triangle
+		Triangle,
+		Cloud
 	} from 'lucide-svelte';
 
 	interface Props {
@@ -89,7 +90,9 @@
 			<Triangle size={24} color="var(--red-7)" fill="var(--red-7)" />
 		</div>
 	{:else if type === 'cover'}
-		<div class="cover-marker"></div>
+		<div class="cover-marker">
+			<Cloud size={32} color="rgba(255,255,255,0.8)" />
+		</div>
 	{/if}
 </div>
 
@@ -134,11 +137,13 @@
 	}
 
 	.cell[data-type='cover'] {
-		background-color: rgba(255, 255, 255, 0.2);
-		backdrop-filter: blur(8px);
-		-webkit-backdrop-filter: blur(8px);
-		border: 1px solid rgba(255, 255, 255, 0.4);
-		box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.2);
+		background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		border: 1px solid rgba(255, 255, 255, 0.5);
+		box-shadow:
+			0 4px 6px rgba(0, 0, 0, 0.1),
+			inset 0 0 20px rgba(255, 255, 255, 0.3);
 	}
 
 	.cell[data-type='wall'] {

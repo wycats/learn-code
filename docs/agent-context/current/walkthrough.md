@@ -1,45 +1,47 @@
-# Walkthrough: The Architect's Polish (Phase 19)
+# Phase 21: P2P Sharing Walkthrough
 
 ## Overview
 
-This phase focuses on refining the Builder and Game experience based on feedback from Jonas. We are addressing visual polish, usability issues in the Builder, and expanding the content.
+In this phase, we implemented a peer-to-peer sharing system that allows Architects to share their creations directly with Explorers without relying on a centralized server. This aligns with our "Offline First" and "Local Ownership" axioms.
 
-## Progress
+## Key Features
 
-- [x] **Visual Polish**
-  - Updated "Clear Blocks" icon to Broom (via `@lucide/lab`).
-  - Improved "Call ???" block empty state with distinct styling.
-- [x] **Builder Enhancements**
-  - Implemented Story Segment reordering using Drag & Drop and "Ghost" move system.
-  - Refined Move mechanics: "Move" button now toggles the timeline view and highlights the active segment.
-  - Enabled targeting of specific block properties (Repeat Count, Function Name) for tutorials.
-  - Polished Builder Toolbar to show active tile preview.
-- [x] **Content Polish**
-  - Polished "Gauntlet" pack levels with improved narrative.
-  - Created "The Void" (Hard) pack with 3 new levels featuring a purple "glitch" theme.
-  - Updated "Architect's Library" back button to use SVG arrow.
+### 1. Magic QR Codes (Single Level Sharing)
 
-## Key Decisions
+For sharing individual levels, we implemented a compressed URL scheme.
 
-- **Targeting Granularity**: We decided to allow targeting specific parts of a block (like the loop count badge) by threading an `onTarget` callback down the component tree. This allows the tutorial system to be very specific about what the user should click.
-- **Icon Selection**: We installed `@lucide/lab` to access the `Broom` icon as requested, replacing the temporary `Eraser`.
-- **Story Reordering**: Adopted the "Ghost" move system (click-click) and Drag & Drop for story segments to match the interaction model of the program builder.
+- **Mechanism**: The level JSON is minified, compressed (using `lz-string`), and encoded into a URL hash.
+- **QR Code**: This URL is then converted into a QR code using `qrcode`.
+- **Experience**: The receiver scans the QR code, and the app instantly loads the level from the URL hash. No network request required (other than loading the app itself).
 
-## How to Try It Out
+### 2. WebRTC Handshake (Pack Sharing)
 
-1.  **Story Reordering**:
-    - Go to **Architect's Library** -> **Create New Pack** -> **Edit Level**.
-    - Open the **Story Editor** (Book icon).
-    - Add multiple segments to the Intro or Outro.
-    - Click the **Move** button (crossed arrows) on a segment.
-    - Observe the timeline list opening and the active segment highlighting.
-    - Click another segment to see "Ghost" targets, or drag and drop segments to reorder.
+For larger payloads like full Level Packs, we implemented a WebRTC data channel.
 
-2.  **Gauntlet & Hard Packs**:
-    - Go to **Architect's Library**.
-    - Clone "The Gauntlet" or "The Void" pack.
-    - Play through the levels to see the new narrative and "glitch" theme (Level 12-14).
+- **Signaling**: Instead of a signaling server, we use QR codes to exchange the SDP Offer and Answer.
+  1. **Sender** creates an Offer -> QR Code.
+  2. **Receiver** scans Offer -> Generates Answer -> QR Code.
+  3. **Sender** scans Answer -> Connection Established.
+- **Data Transfer**: Once connected, the pack data is serialized and sent over the WebRTC DataChannel.
+- **Experience**: A "magic handshake" that feels like beaming data between devices.
 
-3.  **Visual Polish**:
-    - In the Game view, check the "Clear Program" button (Broom icon).
-    - Drag a "Call Function" block without selecting a function to see the improved empty state.
+### 3. UI Integration
+
+- **Builder Toolbar**: Added a "Share" button (Share2 icon) to the main toolbar.
+- **Share Modal**: Provides options for "Link/QR" (Single Level) and "P2P Transfer" (Pack).
+- **P2P Wizard**: A step-by-step modal (`P2PModal`) guiding users through the scan-scan-connect process.
+
+## Technical Decisions
+
+- **Library Choice**: Used `simple-peer` (via a lightweight wrapper `P2PConnection`) to abstract WebRTC complexity.
+- **Compression**: `lz-string` was chosen for its efficiency in compressing JSON for URL safety.
+- **Offline Support**: The entire flow works offline (once the app is loaded), leveraging the Service Worker for asset caching.
+
+## Challenges & Solutions
+
+- **QR Code Density**: Large levels created QR codes that were too dense to scan easily.
+  - _Solution_: We implemented `lz-string` compression to significantly reduce the payload size. For very large levels/packs, we force the WebRTC flow.
+- **Visual Regressions**: The new toolbar button caused layout shifts in the visual tests.
+  - _Solution_: We updated the visual snapshots to reflect the new UI state.
+- **Accessibility**: The new modals had some focus/tabindex issues.
+  - _Solution_: We audited and fixed the ARIA roles and tabindex attributes in `ShareModal` and `P2PModal`.

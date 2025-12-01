@@ -8,11 +8,15 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
-	import { Hammer, FolderOpen } from 'lucide-svelte';
+	import { Hammer, FolderOpen, Share2 } from 'lucide-svelte';
 	import { toast } from '$lib/stores/toast.svelte';
+	import P2PModal from '$lib/components/builder/P2PModal.svelte';
 
 	let progress = $state(ProgressService.load());
 	let isFileSystemSupported = fileSystem.isSupported;
+	let showP2PModal = $state(false);
+	let p2pData = $state<unknown | undefined>(undefined);
+	let p2pMode = $state<'send' | 'receive'>('receive');
 
 	function handlePackSelect(packId: string) {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
@@ -54,6 +58,33 @@
 		}
 	}
 
+	function handleSharePack(pack: LevelPack) {
+		p2pData = $state.snapshot(pack);
+		p2pMode = 'send';
+		showP2PModal = true;
+	}
+
+	function handleReceivePack() {
+		p2pData = undefined;
+		p2pMode = 'receive';
+		showP2PModal = true;
+	}
+
+	function onP2PReceive(data: unknown) {
+		try {
+			// Basic validation
+			const pack = data as LevelPack;
+			if (!pack.id || !pack.levels) throw new Error('Invalid pack data');
+
+			localPacksStore.addPack(pack);
+			toast.success(`Received pack: ${pack.name}`);
+			showP2PModal = false;
+		} catch (e) {
+			console.error(e);
+			toast.error('Failed to receive pack. Invalid data.');
+		}
+	}
+
 	onMount(() => {
 		// Refresh progress when returning to the page
 		progress = ProgressService.load();
@@ -71,6 +102,9 @@
 					<FolderOpen size={20} /> Open Local Folder
 				</button>
 			{/if}
+			<button class="action-btn" onclick={handleReceivePack}>
+				<Share2 size={20} /> Receive Pack
+			</button>
 			<button class="action-btn primary" onclick={handleBuilder}>
 				<Hammer size={20} /> Pack Builder
 			</button>
@@ -83,6 +117,7 @@
 			{progress}
 			onPackSelect={handlePackSelect}
 			onSavePack={isFileSystemSupported ? handleSavePackToDisk : undefined}
+			onSharePack={handleSharePack}
 		/>
 
 		{#if localPacksStore.packs.length > 0}
@@ -93,10 +128,19 @@
 					{progress}
 					onPackSelect={handlePackSelect}
 					onSavePack={isFileSystemSupported ? handleSavePackToDisk : undefined}
+					onSharePack={handleSharePack}
 				/>
 			</div>
 		{/if}
 	</main>
+
+	{#if showP2PModal}
+		<P2PModal
+			data={p2pMode === 'send' ? p2pData : undefined}
+			onReceive={p2pMode === 'receive' ? onP2PReceive : undefined}
+			onClose={() => (showP2PModal = false)}
+		/>
+	{/if}
 </div>
 
 <style>

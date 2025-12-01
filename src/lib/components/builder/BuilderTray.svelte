@@ -59,7 +59,8 @@
 		{ id: 'sand', value: 'sand', label: 'Sand' },
 		{ id: 'snow', value: 'snow', label: 'Snow' },
 		{ id: 'dirt', value: 'dirt', label: 'Dirt' },
-		{ id: 'spikes', value: 'spikes', label: 'Spikes', color: 'var(--red-7)' }
+		{ id: 'spikes', value: 'spikes', label: 'Spikes', color: 'var(--red-7)' },
+		{ id: 'cover', value: 'cover', label: 'Cover', color: 'var(--blue-3)' }
 	];
 
 	let terrainTools = $derived.by(() => {
@@ -157,6 +158,8 @@
 			return;
 		}
 
+		builder.pushState();
+
 		if (type in builder.level.availableBlocks) {
 			// Save current limit before removing
 			previousLimits[type] = builder.level.availableBlocks[type];
@@ -173,6 +176,7 @@
 	}
 
 	function setLimit(type: BlockType, limit: number | 'unlimited') {
+		builder.pushState();
 		builder.level.availableBlocks = { ...builder.level.availableBlocks, [type]: limit };
 	}
 
@@ -218,6 +222,7 @@
 			if (editingScope === 'pack') {
 				if (builder.pack.customTiles) delete builder.pack.customTiles[tile.id];
 			} else {
+				builder.pushState();
 				if (builder.level.customTiles) delete builder.level.customTiles[tile.id];
 			}
 		}
@@ -226,6 +231,7 @@
 			if (!builder.pack.customTiles) builder.pack.customTiles = {};
 			builder.pack.customTiles[tile.id] = tile;
 		} else {
+			builder.pushState();
 			if (!builder.level.customTiles) builder.level.customTiles = {};
 			builder.level.customTiles[tile.id] = tile;
 		}
@@ -244,6 +250,7 @@
 				builder.syncGame();
 			}
 		} else {
+			builder.pushState();
 			if (builder.level.customTiles) {
 				const newTiles = { ...builder.level.customTiles };
 				delete newTiles[id];

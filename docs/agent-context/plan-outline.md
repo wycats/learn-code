@@ -182,21 +182,47 @@
   - [x] Finish "Gauntlet" pack (make it feel less random).
   - [x] Create "Hard" built-in pack (Purple theme).
 
-## Phase 20: Function UX & Builder Polish
+## Phase 20: Function UX & Builder Polish (Completed)
 
 **Goal:** Address remaining usability issues in the Builder and improve the Function creation workflow.
 
-- [ ] **Function UX**:
-  - [ ] Improve "Call ???" block behavior (empty state/disable).
-- [ ] **Builder Polish**:
-  - [ ] Glassomorphic UI for player occlusion (Cover block).
-  - [ ] Remove tile dropdown in Level Editor.
-  - [ ] Custom amount in Repeat blocks.
-  - [ ] Fix "Infinity" targeting (hide/disable).
-  - [ ] "Use test level" text update.
-  - [ ] Undo/Redo in Level Editor.
+- [x] **Function UX**:
+  - [x] Improve "Call ???" block behavior (empty state/disable).
+- [x] **Builder Polish**:
+  - [x] Glassomorphic UI for player occlusion (Cover block).
+  - [x] Remove tile dropdown in Level Editor.
+  - [x] Custom amount in Repeat blocks.
+  - [x] Fix "Infinity" targeting (hide/disable).
+  - [x] "Use test level" text update.
+  - [x] Undo/Redo in Level Editor.
 
-## Phase 21: Authentication Strategy
+## Phase 21: P2P Sharing (Completed)
+
+**Goal:** Enable Architects to share their creations directly with Explorers without a centralized server.
+
+- [x] **Magic QR Codes**: Implement compressed JSON-to-QR encoding for single-level sharing.
+- [x] **WebRTC Handshake**: Implement a simple signaling mechanism for direct device-to-device transfer of larger packs.
+- [x] **Offline Support**: Ensure sharing works gracefully with cached app assets.
+
+## Phase 22: Mobile & Phone Polish
+
+**Goal:** Optimize the experience for small screens and touch interactions, ensuring the app feels native on mobile devices.
+
+- [ ] **Touch Targets**: Audit and increase touch targets to meet accessibility standards (44px+).
+- [ ] **Mobile Layouts**: Refine the vertical stack layout for the Builder and Game on phones.
+- [ ] **Gesture Support**: Improve swipe and pinch interactions where appropriate.
+- [ ] **Keyboard Handling**: Ensure the virtual keyboard doesn't obscure critical UI elements.
+
+## Phase 23: Dark Mode Deep Dive
+
+**Goal:** Conduct a comprehensive audit and polish of the dark mode experience to ensure visual consistency and comfort.
+
+- [ ] **Color Audit**: Review all semantic tokens and ensure sufficient contrast in dark mode.
+- [ ] **Shadows & Depth**: Adjust shadow values for dark backgrounds to maintain depth perception.
+- [ ] **Image Assets**: Ensure all icons and illustrations work well on dark backgrounds.
+- [ ] **Theme Toggle**: Verify the theme toggle persists and respects system preferences.
+
+## Phase 24: Authentication Strategy
 
 **Goal:** Evaluate and implement a robust authentication strategy to support cloud persistence and user accounts.
 
@@ -205,15 +231,7 @@
 - [ ] **Implementation**: Implement the chosen authentication strategy.
 - [ ] **Cloud Persistence**: Enable saving user progress and levels to the cloud.
 
-## Phase 21: P2P Sharing
-
-**Goal:** Enable Architects to share their creations directly with Explorers without a centralized server.
-
-- [ ] **Magic QR Codes**: Implement compressed JSON-to-QR encoding for single-level sharing.
-- [ ] **WebRTC Handshake**: Implement a simple signaling mechanism for direct device-to-device transfer of larger packs.
-- [ ] **Offline Support**: Ensure sharing works gracefully with cached app assets.
-
-## Phase 22: Feedback System
+## Phase 25: Feedback System
 
 **Goal:** Create a robust feedback loop that empowers users to report issues with full context.
 
@@ -222,7 +240,7 @@
 - [ ] **Offline Queue**: Ensure feedback is queued and sent when online (already partially implemented).
 - [ ] **Admin Dashboard**: Simple view to triage feedback (optional/later).
 
-## Phase 23: Curriculum Expansion (Post-Launch)
+## Phase 26: Curriculum Expansion (Post-Launch)
 
 **Goal:** Introduce advanced programming concepts like Variables and Scoping.
 
