@@ -238,6 +238,7 @@
 					class:stop={isRunning && !isPaused}
 					onclick={handlePlay}
 					disabled={!isRunning && game.program.length === 0}
+					aria-label={isRunning && !isPaused ? 'Stop' : 'Play'}
 				>
 					{#if isRunning && !isPaused}
 						<Square size={16} fill="currentColor" /> <span class="btn-label">Stop</span>

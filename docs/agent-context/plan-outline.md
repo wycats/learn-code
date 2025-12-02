@@ -213,16 +213,24 @@
 - [x] **Gesture Support**: Improve swipe and pinch interactions where appropriate. (Deferred)
 - [x] **Keyboard Handling**: Ensure the virtual keyboard doesn't obscure critical UI elements.
 
-## Phase 23: Dark Mode Deep Dive
+## Phase 23: Dark Mode Deep Dive (Completed)
 
 **Goal:** Conduct a comprehensive audit and polish of the dark mode experience to ensure visual consistency and comfort.
 
-- [ ] **Color Audit**: Review all semantic tokens and ensure sufficient contrast in dark mode.
-- [ ] **Shadows & Depth**: Adjust shadow values for dark backgrounds to maintain depth perception.
-- [ ] **Image Assets**: Ensure all icons and illustrations work well on dark backgrounds.
-- [ ] **Theme Toggle**: Verify the theme toggle persists and respects system preferences.
+- [x] **Color Audit**: Review all semantic tokens and ensure sufficient contrast in dark mode.
+- [x] **Shadows & Depth**: Adjust shadow values for dark backgrounds to maintain depth perception.
+- [x] **Image Assets**: Ensure all icons and illustrations work well on dark backgrounds.
+- [x] **Theme Toggle**: Verify the theme toggle persists and respects system preferences.
 
-## Phase 24: Authentication Strategy
+## Phase 24: Visual Polish & Coverage (Completed)
+
+**Goal:** Address remaining visual friction points (especially on mobile) and establish a comprehensive visual regression test suite.
+
+- [x] **Expanded Visual Coverage**: Create a dedicated test suite covering all major routes (Home, Library, Builder, Game).
+- [x] **Mobile Polish**: Refine layout and spacing on the Packs and Builder screens based on visual feedback.
+- [x] **Argos Integration**: Ensure the new test suite reports correctly to Argos CI.
+
+## Phase 25: Authentication Strategy
 
 **Goal:** Evaluate and implement a robust authentication strategy to support cloud persistence and user accounts.
 

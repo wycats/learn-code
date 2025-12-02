@@ -244,7 +244,7 @@
 		border-radius: var(--radius-3);
 		box-shadow: var(--shadow-4);
 		text-align: center;
-		min-width: 350px;
+		min-width: min(350px, 90vw);
 		max-width: 90%;
 	}
 

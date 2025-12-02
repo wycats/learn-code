@@ -1,23 +1,21 @@
-# Phase 23: Dark Mode Deep Dive
+# Phase 24 Task List
 
-**Goal:** Conduct a comprehensive audit and polish of the dark mode experience to ensure visual consistency and comfort.
+## Visual Regression Suite
 
-- [x] **Color Audit**
-  - [x] Review all semantic tokens in `app.css`.
-  - [x] Ensure sufficient contrast ratios for text and UI elements in dark mode.
-  - [x] Check brand colors for vibrancy and readability on dark backgrounds.
-- [x] **Shadows & Depth**
-  - [x] Adjust shadow values (`--shadow-*`) for dark backgrounds.
-  - [x] Consider using lighter borders or overlays to define depth where shadows are less visible.
-- [x] **Image Assets & Icons**
-  - [x] Ensure all SVG icons and illustrations work well on dark backgrounds.
-  - [x] Invert or adjust colors for specific assets if necessary.
-- [x] **Theme Toggle**
-  - [x] Verify the theme toggle persists across sessions.
-  - [x] Ensure it respects system preferences by default.
-  - [x] Add a visual transition when switching themes.
-- [x] **Component Audit**
-  - [x] Check `Game.svelte` (Grid, Tray, InstructionBar).
-  - [x] Check `Builder.svelte` (Toolbar, Palette).
-  - [x] Check Modals and Overlays.
-  - [x] Check Library and Home screens.
+- [x] **Scaffold Test Suite**: Create `e2e/visual-comprehensive.spec.ts`.
+- [x] **Home & Library**: Implement tests for Home and Library screens (Desktop/Mobile, Light/Dark).
+- [x] **Game Interface**: Implement tests for the Game UI in various states (Start, Win, Dialogue).
+- [x] **Builder Interface**: Implement tests for the Builder UI (Tray, Grid, Bottom Sheets).
+- [ ] **CI Integration**: Verify Argos upload in GitHub Actions.
+
+## Mobile Polish
+
+- [x] **Packs Screen Audit**: Review and fix layout issues on mobile (375px).
+- [x] **Builder Layout Audit**: Review and fix stacking/spacing issues in the Builder on mobile.
+- [x] **General Spacing**: Audit global margins/padding for mobile.
+
+## Schema Stability (Ad-hoc)
+
+- [x] **Fixture Generation**: Create `src/fixtures/levels/v1` and generate initial snapshots.
+- [x] **Compatibility Test**: Implement `schema-compat.test.ts` to validate fixtures.
+- [x] **Comprehensive Fixture**: Create a synthetic fixture covering all schema features.

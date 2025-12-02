@@ -494,6 +494,14 @@
 		padding-bottom: var(--size-2);
 		flex-shrink: 0;
 		overflow-x: auto;
+		max-width: 100%;
+		/* Hide scrollbar for cleaner look but keep functionality */
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.tray-tabs::-webkit-scrollbar {
+		display: none;
 	}
 
 	.tab-btn {

@@ -177,6 +177,29 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--size-3);
+	}
+
+	@media (max-width: 600px) {
+		.library-header {
+			flex-direction: column;
+			align-items: stretch;
+			padding: var(--size-3);
+		}
+
+		.logo {
+			text-align: center;
+		}
+
+		.actions {
+			justify-content: center;
+			flex-wrap: wrap;
+		}
+
+		.library-content {
+			padding: var(--size-3);
+		}
 	}
 
 	.logo h1 {

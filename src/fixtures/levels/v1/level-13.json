@@ -1,0 +1,74 @@
+{
+	"id": "level-13",
+	"name": "Glitch in the Matrix",
+	"description": "Zoey: 'Why are there walls inside the floor?'",
+	"gridSize": {
+		"width": 8,
+		"height": 8
+	},
+	"start": {
+		"x": 0,
+		"y": 0
+	},
+	"startOrientation": "S",
+	"goal": {
+		"x": 7,
+		"y": 7
+	},
+	"defaultTerrain": "void",
+	"layout": {
+		"0,0": "path",
+		"0,1": "path",
+		"0,2": "path",
+		"0,3": "path",
+		"1,3": "path",
+		"2,3": "path",
+		"3,3": "glitch",
+		"2,4": "path",
+		"2,5": "path",
+		"2,6": "path",
+		"3,6": "path",
+		"4,6": "path",
+		"5,6": "path",
+		"5,5": "glitch",
+		"5,7": "path",
+		"6,7": "path",
+		"7,7": "goal"
+	},
+	"availableBlocks": {
+		"move-forward": "unlimited",
+		"turn-left": "unlimited",
+		"turn-right": "unlimited",
+		"loop": "unlimited"
+	},
+	"customTiles": {
+		"void": {
+			"id": "void",
+			"name": "The Void",
+			"type": "hazard",
+			"visuals": {
+				"color": "var(--purple-9)",
+				"decal": "skull"
+			}
+		},
+		"path": {
+			"id": "path",
+			"name": "Neon Path",
+			"type": "floor",
+			"visuals": {
+				"color": "var(--purple-5)",
+				"decal": "dot"
+			}
+		},
+		"glitch": {
+			"id": "glitch",
+			"name": "Glitch Wall",
+			"type": "wall",
+			"visuals": {
+				"color": "var(--pink-5)",
+				"decal": "alert"
+			}
+		}
+	},
+	"solutionPar": 14
+}

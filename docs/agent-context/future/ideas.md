@@ -40,3 +40,11 @@
   - **Educational Value**: This provides an entry point for kids to learn about Git, GitHub, and the open-source contribution workflow (PRs, code review).
   - **Workflow**: Since levels are just JSON files, the barrier to entry is low. We can provide a guide or a simplified UI to help generate the PR.
   - **Considerations**: Not all parents will want their kids to have GitHub accounts. We should support submitting proposals via other means (e.g., feedback form) but encourage the "real" workflow for those who are ready.
+
+## Tooling & Infrastructure
+
+- [ ] **Zod Schema Diff / Compatibility Checker**: A library or tool that implements "Spec-ulation" rules (Rich Hickey) for Zod schemas.
+  - **Goal**: Statically detect breaking changes in Zod schemas without needing a full fixture suite.
+  - **Heuristic**: Inputs can be widened (contravariant), outputs can be narrowed (covariant).
+  - **Implementation**: Likely involves converting Zod to JSON Schema and performing a semantic diff, or building a custom Zod walker.
+  - **Value**: Useful for framework authors and library maintainers to prevent accidental breaking changes in their public API contracts.

@@ -398,3 +398,23 @@ Optimized the application for mobile devices and touch interactions, ensuring a 
 - **Visual Polish**:
   - Upgraded typography to variable fonts (`Outfit`, `Inter`, `JetBrains Mono`).
   - Refined visual presentation of status indicators.
+
+## Phase 24: Visual Polish & Coverage (Completed)
+
+**Date:** December 1, 2025
+
+**Summary:**
+Addressed remaining visual friction points (especially on mobile) and established a comprehensive visual regression test suite. This phase also included an ad-hoc "Schema Stability" initiative to ensure backward compatibility for user data.
+
+**Key Deliverables:**
+
+- **Visual Regression Suite**:
+  - Created `e2e/visual-comprehensive.spec.ts` covering Home, Library, Game, and Builder.
+  - Implemented "Golden Master" testing for schema stability (`src/fixtures/levels/v1`).
+- **Mobile Polish**:
+  - Fixed `BuilderGoalModal` overflow on small screens.
+  - Implemented responsive stacking for the Library header.
+  - Verified horizontal scrolling for the Builder toolbar.
+- **Schema Stability**:
+  - Created comprehensive JSON fixtures for all level features.
+  - Implemented `schema-compat.test.ts` to validate fixtures against the Zod schema.

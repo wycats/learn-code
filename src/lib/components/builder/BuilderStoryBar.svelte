@@ -996,12 +996,30 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-4);
-		width: 100%;
+		flex: 1;
+		min-width: 0; /* Allow shrinking */
 		max-width: 800px;
 		background-color: var(--surface-2); /* Highlight that it's editable */
 		padding: var(--size-2);
 		border-radius: var(--radius-3);
 		border: 1px dashed var(--surface-3);
+	}
+
+	@media (max-width: 600px) {
+		.instruction-bar-editor {
+			padding: var(--size-2);
+			gap: var(--size-1);
+		}
+
+		.instruction-content {
+			gap: var(--size-2);
+			padding: var(--size-1);
+		}
+
+		.editor-controls .nav-btn {
+			width: 32px;
+			height: 32px;
+		}
 	}
 
 	.character-portrait {
