@@ -1,11 +1,21 @@
 <script lang="ts">
 	import type { Block } from '$lib/game/types';
 	import type { GameModel } from '$lib/game/model.svelte';
-	import { draggableBlock, dropTarget } from '$lib/actions/dnd';
+	import { draggableBlock, dropTarget, dropTargetForVariable } from '$lib/actions/dnd';
 	import { getDragContext } from '$lib/game/drag-context.svelte';
 	import BlockComponent from './Block.svelte';
 	import DropIndicator from './DropIndicator.svelte';
-	import { ArrowUp, RotateCcw, RotateCw, Repeat, Check, XCircle, Wand2 } from 'lucide-svelte';
+	import {
+		ArrowUp,
+		RotateCcw,
+		RotateCw,
+		Repeat,
+		Check,
+		XCircle,
+		Wand2,
+		Grab,
+		Brain
+	} from 'lucide-svelte';
 
 	interface Props {
 		block: Block;
@@ -20,6 +30,7 @@
 		isSuccess?: boolean;
 		loopProgress?: number;
 		onTarget?: (target: string) => void;
+		isTargetMode?: boolean;
 	}
 
 	let {
@@ -33,7 +44,8 @@
 		isBlocked = false,
 		isSuccess = false,
 		loopProgress = 0,
-		onTarget
+		onTarget,
+		isTargetMode = false
 	}: Props = $props();
 
 	const dragCtx = getDragContext();
@@ -93,6 +105,25 @@
 			onContainerClick(block.id);
 		}
 	}
+
+	function handleVariableDrop() {
+		if (game && block.type === 'loop') {
+			game.updateBlock(block.id, {
+				count: { type: 'variable', variableId: 'heldItem' }
+			});
+		}
+	}
+
+	function handleBadgeClick(e: MouseEvent) {
+		if (onTarget && block.count !== undefined) {
+			e.stopPropagation();
+			onTarget(`block:${block.id}:count`);
+		}
+	}
+
+	const isVariable = $derived(
+		typeof block.count === 'object' && block.count !== null && 'type' in block.count
+	);
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -116,6 +147,8 @@
 				<RotateCcw size={24} />
 			{:else if block.type === 'turn-right'}
 				<RotateCw size={24} />
+			{:else if block.type === 'pick-up'}
+				<Grab size={24} />
 			{:else if block.type === 'loop'}
 				<Repeat size={24} />
 			{:else if block.type === 'call'}
@@ -129,20 +162,29 @@
 				Left
 			{:else if block.type === 'turn-right'}
 				Right
+			{:else if block.type === 'pick-up'}
+				Pick Up
 			{:else if block.type === 'loop'}
 				Repeat
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<span
 					class="loop-badge"
-					class:targetable={!!onTarget && block.count !== undefined}
-					onclick={(e) => {
-						if (onTarget && block.count !== undefined) {
-							e.stopPropagation();
-							onTarget(`block:${block.id}:count`);
-						}
-					}}>{block.count ? `${block.count}x` : '∞'}</span
+					class:targetable={isTargetMode && block.count !== undefined}
+					class:variable={isVariable}
+					use:dropTargetForVariable={{
+						onDrop: handleVariableDrop,
+						allowedTypes: ['number']
+					}}
+					onclick={handleBadgeClick}
+					data-target={`block:${block.id}:count`}
 				>
+					{#if isVariable}
+						<Brain size={14} />
+					{:else}
+						{block.count ? `${block.count}x` : '∞'}
+					{/if}
+				</span>
 			{:else if block.type === 'call'}
 				Call
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -152,7 +194,7 @@
 					class:empty={functionStatus === 'empty'}
 					class:missing={functionStatus === 'missing'}
 					class:none={functionStatus === 'none'}
-					class:targetable={!!onTarget}
+					class:targetable={isTargetMode}
 					onclick={(e) => {
 						if (onTarget) {
 							e.stopPropagation();
@@ -204,6 +246,8 @@
 							{selectedBlockIds}
 							{onSelect}
 							{onContainerClick}
+							{onTarget}
+							{isTargetMode}
 						/>
 					</div>
 
@@ -460,11 +504,31 @@
 	.loop-badge.targetable,
 	.function-badge.targetable {
 		cursor: crosshair;
+		animation: pulse-target 2s infinite;
 	}
 
 	.loop-badge.targetable:hover,
 	.function-badge.targetable:hover {
 		background: rgba(255, 255, 255, 0.2);
 		outline: 2px solid var(--accent-color);
+	}
+
+	.loop-badge:global(.drag-over) {
+		background-color: var(--brand-dim, var(--blue-2));
+		outline: 2px solid var(--brand, var(--blue-5));
+		transform: scale(1.1);
+		z-index: 10;
+	}
+
+	@keyframes pulse-target {
+		0% {
+			box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); /* blue-5 */
+		}
+		70% {
+			box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+		}
 	}
 </style>

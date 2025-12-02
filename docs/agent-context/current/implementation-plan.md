@@ -1,56 +1,54 @@
-# Phase 24: Visual Polish & Coverage Implementation Plan
+# Implementation Plan: Test Coverage & Quality Assurance
 
-## Goals
+## Phase Goal
 
-The primary goal of this phase is to ensure the visual integrity of the application across all devices and themes, with a specific focus on mobile polish and comprehensive automated visual regression testing.
+Increase test coverage to a respectable level (aiming for >50% initially, then >70%) to ensure stability and prevent regressions.
 
-## Scope
+## 1. Coverage Analysis & Strategy
 
-### 1. Expanded Visual Coverage
+We currently have ~15% coverage. The goal is to systematically improve this by targeting high-value, high-risk areas first.
 
-We need to move beyond basic "smoke tests" for visual regression and implement a comprehensive suite that captures the application in various states.
+### Priority Areas
 
-- **Routes to Cover**:
-  - Home Screen (Empty, Populated)
-  - Library (Built-in Packs, Local Packs)
-  - Pack Details (Level List, Difficulty Indicators)
-  - Game (Start, Running, Win, Loss, Dialogue)
-  - Builder (Tray, Grid, Story Editor, Function Editor)
-- **Variations**:
-  - Desktop (1280px) vs Mobile (375px)
-  - Light Mode vs Dark Mode
+1.  **Core Game Logic (`src/lib/game`)**:
+    - `model.svelte.ts`: The heart of the application. Needs thorough testing of state transitions, history (undo/redo), and level loading.
+    - `interpreter.ts`: The execution engine. Needs to cover all block types and edge cases (already partially covered).
+    - `analysis.ts`: Static analysis of user code.
 
-### 2. Mobile Polish
+2.  **Core UI Components (`src/lib/components/game`)**:
+    - `Block.svelte`: The fundamental building block. Needs tests for rendering, interaction (click, drag), and state reflection (blocked, success).
+    - `Tray.svelte`: The palette and program area. Needs tests for drag-and-drop, selection, and toolbar actions.
+    - `Game.svelte`: The main game container. Needs integration tests for the game loop.
 
-Based on recent usage and visual feedback, we need to refine the mobile experience.
+3.  **Services (`src/lib/services`)**:
+    - `file-system.ts`: Persistence layer.
 
-- **Packs Screen**: Ensure cards stack correctly and touch targets are generous.
-- **Builder**: Verify the "Stacked" layout works well on small screens, especially the bottom sheet interactions.
-- **Spacing**: Audit margins and padding on mobile to prevent cramping.
+## 2. Testing Infrastructure
 
-### 3. Argos Integration
+- **Vitest**: Our unit test runner.
+- **Vitest Browser Mode**: For testing Svelte components in a real browser environment (headless Chromium).
+- **Playwright**: For E2E tests (already set up).
 
-We are using Argos CI for visual diffs. We need to ensure our Playwright setup is correctly configured to upload screenshots to Argos.
+## 3. Execution Plan
 
-- **Configuration**: Verify `playwright.config.ts` settings.
-- **CI Pipeline**: Ensure the GitHub Actions workflow includes the Argos upload step.
+### Step 1: Core Logic Hardening
 
-## Technical Approach
+- Write comprehensive tests for `GameModel`.
+- Expand `StackInterpreter` tests to cover new block types (PickUp, Variables).
 
-### Visual Testing Strategy
+### Step 2: Component Testing
 
-We will create a new test file `e2e/visual-comprehensive.spec.ts` that iterates through a defined list of scenarios.
+- Expand `Tray.svelte` tests (started in Phase 25).
+- Create `Block.svelte` tests.
+- Create `Game.svelte` integration tests.
 
-- Use `test.step` to organize the flow.
-- Use `page.evaluate` to force specific application states (e.g., unlocking all levels) to avoid needing complex UI interaction sequences for every screenshot.
-- Use `argos-ci/playwright` integration if applicable, or standard Playwright snapshots.
+### Step 3: Threshold Tuning
 
-### Mobile Polish
+- Incrementally raise the coverage thresholds in `vite.config.ts` as we add tests.
+- Final Goal: 50% Statements/Branches/Functions/Lines.
 
-- Use the "Device Emulation" feature in Chrome DevTools (via Playwright or manually) to identify layout issues.
-- Apply CSS fixes using standard media queries or container queries.
+## 4. Success Criteria
 
-## Risks
-
-- **Flakiness**: Visual tests are prone to flakiness due to animations or rendering differences. We must disable animations/transitions during tests.
-- **Maintenance**: A large suite of screenshots can be a burden to maintain. We should focus on _key_ states rather than every possible permutation.
+- `pnpm test:unit` passes with new thresholds.
+- Critical paths (Game Loop, Level Editing, Persistence) are covered.
+- No regressions in existing functionality.

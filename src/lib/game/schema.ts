@@ -3,7 +3,31 @@ import { z } from 'zod';
 export const DirectionSchema = z.enum(['N', 'E', 'S', 'W']);
 export type Direction = z.infer<typeof DirectionSchema>;
 
-export const BlockTypeSchema = z.enum(['move-forward', 'turn-left', 'turn-right', 'loop', 'call']);
+export const ItemTypeSchema = z.enum(['key', 'number', 'color']);
+export type ItemType = z.infer<typeof ItemTypeSchema>;
+
+export const HeldItemSchema = z.object({
+	type: ItemTypeSchema,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	value: z.any(), // z.union([z.boolean(), z.number(), z.string()])
+	icon: z.string()
+});
+export type HeldItem = z.infer<typeof HeldItemSchema>;
+
+export const VariableRefSchema = z.object({
+	type: z.literal('variable'),
+	variableId: z.literal('heldItem')
+});
+export type VariableRef = z.infer<typeof VariableRefSchema>;
+
+export const BlockTypeSchema = z.enum([
+	'move-forward',
+	'turn-left',
+	'turn-right',
+	'loop',
+	'call',
+	'pick-up'
+]);
 export type BlockType = z.infer<typeof BlockTypeSchema>;
 
 // Recursive schema for Block needs lazy evaluation if we want full validation,
@@ -12,7 +36,7 @@ export type BlockType = z.infer<typeof BlockTypeSchema>;
 export type Block = {
 	id: string;
 	type: BlockType;
-	count?: number;
+	count?: number | VariableRef;
 	children?: Block[];
 	isGhost?: boolean;
 	functionName?: string;
@@ -22,7 +46,7 @@ export const BlockSchema: z.ZodType<Block> = z.lazy(() =>
 	z.object({
 		id: z.string(),
 		type: BlockTypeSchema,
-		count: z.number().optional(),
+		count: z.union([z.number(), VariableRefSchema]).optional(),
 		children: z.array(BlockSchema).optional(),
 		isGhost: z.boolean().optional(),
 		functionName: z.string().optional()
@@ -68,7 +92,8 @@ export type CellType = z.infer<typeof CellTypeSchema>;
 
 export const CellSchema = z.object({
 	type: CellTypeSchema,
-	position: GridPositionSchema
+	position: GridPositionSchema,
+	item: HeldItemSchema.optional()
 });
 export type Cell = z.infer<typeof CellSchema>;
 
@@ -181,6 +206,7 @@ export const LevelDefinitionSchema = z.object({
 	goal: GridPositionSchema,
 	defaultTerrain: CellTypeSchema.optional(),
 	layout: z.record(z.string(), CellTypeSchema), // Key is "x,y"
+	items: z.record(z.string(), HeldItemSchema).optional(), // Key is "x,y"
 	cellIds: z.record(z.string(), z.string()).optional(), // Key is "x,y", Value is UUID
 	availableBlocks: z
 		.union([

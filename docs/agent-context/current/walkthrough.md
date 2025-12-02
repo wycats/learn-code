@@ -1,86 +1,34 @@
-# Phase 24 Walkthrough
+# Walkthrough - Phase 26: Variable Interaction Refinement
 
-## Schema Stability (Ad-hoc Request)
+## Overview
 
-Before diving into the visual work, we addressed a request to ensure the stability of our level data schema. As the project grows, ensuring that old levels (user data) continue to load correctly is critical.
+This phase focused on refining the "Variables" feature based on user feedback. We improved the visual affordances, added a dedicated "Thought Bubble" metaphor, and implemented stricter typing for variable interactions.
 
-### The "Golden Master" Approach
+## Changes
 
-We implemented a "Golden Master" testing strategy. Instead of relying on static schema diffs (which can miss runtime validation logic), we save actual JSON snapshots of our levels and run them through the current Zod parser.
+### 1. Visual Affordances & Metaphor
 
-1.  **Fixtures**: We created `src/fixtures/levels/v1/` and populated it with JSON exports of all current built-in levels.
-2.  **Compatibility Test**: We wrote `src/lib/game/schema-compat.test.ts`. This test:
-    - Reads every file in the fixtures directory.
-    - Runs `LevelDefinitionSchema.safeParse(json)`.
-    - Fails if the parse fails.
-3.  **Migration Support**: We added a `migrateLevel` hook. If parsing fails, the test attempts to run the JSON through this migration function and tries parsing again. This gives us a clear path to handle breaking changes: write a migration.
-4.  **Comprehensive Coverage**: To ensure we catch changes to fields not currently used in the game (like `characters` or `media`), we created a synthetic `comprehensive.json` fixture that exercises every optional field and union type in the schema.
+- **Iconography**: Replaced the generic `MessageCircle` icon with the `Brain` icon to represent the "Thought Bubble" metaphor.
+- **Tray**: The "Held Item" token now uses the `Brain` icon and has a clearer label.
+- **Block**: The Loop block's badge now uses the `Brain` icon when a variable is assigned.
 
-This infrastructure provides a safety net for future development, ensuring we don't accidentally break user content.
+### 2. Interaction Improvements
 
-## Visual Regression Suite
+- **Targeting Mode**: Implemented a dedicated "Targeting Mode" visual state. When the user clicks the "Held Item" token in the tray (Architect Mode), valid targets (Loop blocks) now pulse with a distinct animation to indicate they can be clicked.
+- **Drag & Drop**: Added `drag-over` styles to the Loop badge to provide immediate feedback when dragging a variable over it.
+- **Click-Click**: The "Click-Click" interaction is now visually distinct from normal block selection.
 
-With the schema stable, we moved to the primary goal of Phase 24: Visual Polish & Coverage. We established a comprehensive visual regression test suite using Playwright and Argos CI.
+### 3. Technical Refinements
 
-### Test Architecture
+- **Typing**: Updated `dnd.ts` to support `allowedTypes` in `dropTargetForVariable`. The Loop block now explicitly accepts only `number` type variables.
+- **Story**: Updated `level-keys.json` to explain the "Thought Bubble" metaphor in the intro text.
 
-We created `e2e/visual-comprehensive.spec.ts` to serve as our visual baseline. This suite covers:
+## Verification
 
-- **Home Screen**: Light and Dark mode.
-- **Library**: Pack listing and details.
-- **Game Interface**: The core gameplay UI, including the instruction bar and grid.
-- **Builder Interface**: The level editor, including the tool tray and story editor.
+- **Unit Tests**: Ran `pnpm test:unit` to ensure no regressions.
+- **Visual Check**: Verified the new icons and styles in the code.
 
-### Key Implementation Details
+## Next Steps
 
-- **Animation Disabling**: We injected CSS to disable animations and transitions during tests to ensure consistent snapshots.
-- **Theme Forcing**: We programmatically toggle `data-theme` to capture both Light and Dark modes in a single run.
-- **Interaction Testing**: The tests don't just load pages; they interact with the UI (e.g., opening the Story Editor in the Builder) to capture dynamic states.
-
-## Mobile Polish
-
-Using the insights from our visual review and code audit, we improved the mobile experience.
-
-### Builder Improvements
-
-- **Modal Responsiveness**: We updated `BuilderGoalModal` to use `min(350px, 90vw)` for its width. This prevents the modal from overflowing the screen on small devices (like iPhone SE), ensuring the "Done" button is always accessible.
-- **Toolbar Layout**: Verified that the Builder toolbar handles overflow gracefully with horizontal scrolling.
-
-### Library Improvements
-
-- **Responsive Header**: We added a media query to the Library page. On screens narrower than 600px, the header now stacks the logo and action buttons vertically. This prevents the buttons from squashing the title or overflowing the viewport.
-- **Padding Adjustments**: Reduced container padding on mobile to maximize usable screen real estate.
-
-## How to Try It Out
-
-### 1. Run Visual Tests
-
-To verify the visual regression suite locally:
-
-```bash
-# Run the comprehensive visual suite
-pnpm exec playwright test e2e/visual-comprehensive.spec.ts
-```
-
-This will generate screenshots in the `test-results` directory.
-
-### 2. Verify Mobile Layouts
-
-To see the mobile polish improvements:
-
-1.  Start the dev server: `pnpm dev`
-2.  Open your browser's DevTools and toggle Device Mode.
-3.  Select a small device (e.g., iPhone SE or Pixel 5).
-4.  **Library**: Navigate to `/library`. Observe that the header buttons stack vertically below the logo.
-5.  **Builder**: Navigate to `/builder`. Open the Settings (gear icon). Verify the modal fits within the screen width and the "Done" button is visible without scrolling the page body.
-
-### 3. Check Schema Stability
-
-To verify the schema compatibility tests:
-
-```bash
-# Run the schema compatibility test
-pnpm test src/lib/game/schema-compat.test.ts
-```
-
-This ensures all "Golden Master" fixtures still parse correctly against the current schema.
+- Continue to refine the "Architect Mode" if more complex interactions are needed.
+- Add more variable types (e.g., boolean) in future levels.

@@ -418,3 +418,26 @@ Addressed remaining visual friction points (especially on mobile) and establishe
 - **Schema Stability**:
   - Created comprehensive JSON fixtures for all level features.
   - Implemented `schema-compat.test.ts` to validate fixtures against the Zod schema.
+
+## Phase 25: Variables & Memory ("The Thought Bubble") (Completed)
+
+**Date:** December 2, 2025
+
+**Summary:**
+Implemented the "Thought Bubble" variable system, introducing the concept of state and possession to the game. This allows the character to pick up items (like keys) and use them as parameters in blocks (like Loop counts). The system uses a "Held Item" token that can be dragged or clicked to assign its value to other blocks.
+
+**Key Deliverables:**
+
+- **Core Logic**:
+  - Updated `GameModel` to track `heldItem`.
+  - Implemented `PickUp` block logic.
+  - Implemented `VariableRef` parameter resolution in `StackInterpreter`.
+- **UI Components**:
+  - **Held Item Token**: A draggable/clickable token in the Tray representing the character's inventory.
+  - **Loop Badge**: Clickable badge on Loop blocks to assign variables.
+  - **Loop Popover**: Added "Use Held Item" button for quick assignment.
+- **Interaction Design**:
+  - Implemented "Click-Click" interaction pattern (Select Source -> Click Target) as an alternative to Drag-and-Drop.
+- **Testing**:
+  - Added unit tests for the new "Click-Click" interaction flow.
+  - Enforced code coverage thresholds in CI.

@@ -1,4 +1,4 @@
-import type { LevelDefinition, GameStatus, Block, Direction } from './types';
+import type { LevelDefinition, GameStatus, Block, Direction, HeldItem } from './types';
 import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 import { HintManager } from './hints.svelte';
 
@@ -13,6 +13,8 @@ export class GameModel {
 	activeBlockId = $state<string | null>(null);
 	readonly executionState = new SvelteMap<string, 'success' | 'failure' | 'running'>();
 	readonly loopProgress = new SvelteMap<string, number>();
+	heldItem = $state<HeldItem | null>(null);
+	readonly collectedItems = new SvelteSet<string>(); // "x,y" coordinates of collected items
 
 	// Level State
 	level: LevelDefinition;
@@ -98,6 +100,8 @@ export class GameModel {
 		this.activeBlockId = null;
 		this.lastEvent = null; // Clear last event (e.g. blocked/fail)
 		this.resetExecutionState();
+		this.heldItem = null;
+		this.collectedItems.clear();
 		this.hintManager.reset();
 		// We don't clear program on reset, usually just execution state
 		// But if it's a "hard" reset, maybe? For now, let's keep program.

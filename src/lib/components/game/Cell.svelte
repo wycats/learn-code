@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CellType } from '$lib/game/types';
+	import type { CellType, HeldItem } from '$lib/game/types';
 	import type { TileDefinition } from '$lib/game/schema';
 	import { AVATAR_ICONS } from '$lib/game/icons';
 	import {
@@ -12,12 +12,14 @@
 		Leaf,
 		Sun,
 		Triangle,
-		Cloud
+		Cloud,
+		Key
 	} from 'lucide-svelte';
 
 	interface Props {
 		type: CellType;
 		customTile?: TileDefinition;
+		item?: HeldItem;
 		x?: number;
 		y?: number;
 		id?: string;
@@ -26,7 +28,7 @@
 			| undefined;
 	}
 
-	let { type, customTile, x, y, id, highlight }: Props = $props();
+	let { type, customTile, item, x, y, id, highlight }: Props = $props();
 
 	const isHighlighted = $derived(
 		highlight &&
@@ -92,6 +94,18 @@
 	{:else if type === 'cover'}
 		<div class="cover-marker">
 			<Cloud size={32} color="rgba(255,255,255,0.8)" />
+		</div>
+	{/if}
+
+	{#if item}
+		<div class="item-marker">
+			{#if item.type === 'key'}
+				<Key size={24} color="var(--amber-7)" fill="var(--amber-3)" />
+			{:else if item.type === 'number'}
+				<span class="number-item">{item.value}</span>
+			{:else if item.type === 'color'}
+				<div class="color-item" style:background-color={item.value}></div>
+			{/if}
 		</div>
 	{/if}
 </div>
@@ -161,9 +175,35 @@
 	}
 
 	.goal-marker,
-	.marker {
+	.marker,
+	.item-marker {
 		display: grid;
 		place-items: center;
+	}
+
+	.item-marker {
+		position: absolute;
+		z-index: 5;
+		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+	}
+
+	.number-item {
+		font-family: var(--font-mono);
+		font-weight: bold;
+		font-size: var(--font-size-3);
+		color: var(--text-1);
+		background: var(--surface-1);
+		padding: 2px 6px;
+		border-radius: var(--radius-2);
+		border: 1px solid var(--surface-4);
+	}
+
+	.color-item {
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		border: 2px solid white;
+		box-shadow: var(--shadow-1);
 	}
 
 	.cell.highlighted {

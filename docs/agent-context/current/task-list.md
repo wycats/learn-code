@@ -1,21 +1,23 @@
-# Phase 24 Task List
+# Task List: Phase 26
 
-## Visual Regression Suite
+## Core Logic
 
-- [x] **Scaffold Test Suite**: Create `e2e/visual-comprehensive.spec.ts`.
-- [x] **Home & Library**: Implement tests for Home and Library screens (Desktop/Mobile, Light/Dark).
-- [x] **Game Interface**: Implement tests for the Game UI in various states (Start, Win, Dialogue).
-- [x] **Builder Interface**: Implement tests for the Builder UI (Tray, Grid, Bottom Sheets).
-- [ ] **CI Integration**: Verify Argos upload in GitHub Actions.
+- [x] Test `GameModel` (State transitions, History, Level Loading) - _Initial coverage added_
+- [ ] Test `StackInterpreter` (New blocks, Edge cases)
 
-## Mobile Polish
+## UI Components
 
-- [x] **Packs Screen Audit**: Review and fix layout issues on mobile (375px).
-- [x] **Builder Layout Audit**: Review and fix stacking/spacing issues in the Builder on mobile.
-- [x] **General Spacing**: Audit global margins/padding for mobile.
+- [ ] Test `Block.svelte` (Rendering, Interactions)
+- [x] Test `Tray.svelte` (Drag & Drop, Toolbar) - _Initial test added_
+- [ ] Test `Game.svelte` (Integration)
 
-## Schema Stability (Ad-hoc)
+## Variable Refinement (New)
 
-- [x] **Fixture Generation**: Create `src/fixtures/levels/v1` and generate initial snapshots.
-- [x] **Compatibility Test**: Implement `schema-compat.test.ts` to validate fixtures.
-- [x] **Comprehensive Fixture**: Create a synthetic fixture covering all schema features.
+- [x] Improve Visual Affordances (Icons, Drop Zones)
+- [x] Implement "Thought Bubble" Metaphor
+- [x] Add "Targeting Mode" for Architect Mode
+- [x] Implement Strict Typing for Variables
+
+## Infrastructure
+
+- [ ] Update `vite.config.ts` thresholds to 50%

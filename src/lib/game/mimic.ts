@@ -1,8 +1,23 @@
 import type { GameModel } from './model.svelte';
-import type { Block, Direction, GridPosition } from './types';
+import type { Block, Direction, GridPosition, VariableRef } from './types';
 import { soundManager } from './sound';
 
 const DIRECTIONS: Direction[] = ['N', 'E', 'S', 'W'];
+
+function resolveValue(
+	game: GameModel,
+	value: number | VariableRef | undefined
+): number | undefined {
+	if (value === undefined) return undefined;
+	if (typeof value === 'number') return value;
+	if (value.type === 'variable' && value.variableId === 'heldItem') {
+		if (game.heldItem && game.heldItem.type === 'number') {
+			return game.heldItem.value;
+		}
+		return 0;
+	}
+	return 0;
+}
 
 function getTileType(game: GameModel, x: number, y: number): string {
 	const key = `${x},${y}`;
@@ -206,7 +221,7 @@ export class StackInterpreter {
 				}
 
 				// Enter loop
-				const count = block.count ?? Infinity;
+				const count = resolveValue(this.game, block.count) ?? Infinity;
 				this.stack.push({
 					blocks: block.children || [],
 					index: 0,
@@ -380,6 +395,30 @@ export class StackInterpreter {
 				this.game.characterOrientation = rotate(this.game.characterOrientation, 'right');
 				soundManager.play('turn');
 				return true;
+			case 'pick-up': {
+				const pos = this.game.characterPosition;
+				const key = `${pos.x},${pos.y}`;
+
+				if (this.game.collectedItems.has(key)) {
+					soundManager.play('fail');
+					this.game.lastEvent = { type: 'fail', timestamp: Date.now() };
+					this.game.recordFailure();
+					return false;
+				}
+
+				const item = this.game.level.items?.[key];
+				if (item) {
+					this.game.heldItem = item;
+					this.game.collectedItems.add(key);
+					soundManager.play('step'); // TODO: Add pickup sound
+					return true;
+				}
+
+				soundManager.play('fail');
+				this.game.lastEvent = { type: 'fail', timestamp: Date.now() };
+				this.game.recordFailure();
+				return false;
+			}
 		}
 		return true;
 	}

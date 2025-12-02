@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { draggableBlock, dropTarget } from '$lib/actions/dnd';
+	import { draggableBlock, dropTarget, draggableVariable } from '$lib/actions/dnd';
 	import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 	import {
 		extractClosestEdge,
@@ -10,7 +10,7 @@
 	import type { Block, BlockType } from '$lib/game/types';
 	import type { GameModel } from '$lib/game/model.svelte';
 	import { setDragContext } from '$lib/game/drag-context.svelte';
-	import { Trash2, Move, ListChecks, Copy, Infinity as InfinityIcon } from 'lucide-svelte';
+	import { Trash2, Move, ListChecks, Copy, Infinity as InfinityIcon, Brain } from 'lucide-svelte';
 	import { Icon } from 'lucide-svelte';
 	import { broom } from '@lucide/lab';
 	import { soundManager } from '$lib/game/sound';
@@ -38,6 +38,11 @@
 		}
 		return items;
 	});
+
+	const hasVariables = $derived(
+		'pick-up' in game.level.availableBlocks ||
+			(game.level.items && Object.keys(game.level.items).length > 0)
+	);
 
 	// Helper to count blocks by type across the entire solution (program + functions)
 	function countBlocksByType(
@@ -98,6 +103,7 @@
 	// Selection State
 	const selectedBlockIds = new SvelteSet<string>();
 	let isMultiSelectMode = $state(false);
+	let isVariableSelected = $state(false);
 
 	// Insertion Mode State
 	let insertionMode = $state<{ type: BlockType } | null>(null);
@@ -136,9 +142,42 @@
 	const primarySelectedBlock = $derived(selectedBlocks.length === 1 ? selectedBlocks[0] : null);
 	const selectedBlockId = $derived(primarySelectedBlock?.id ?? null); // Backwards compatibility for logic that expects single ID
 
-	function updateLoopCount(count: number | undefined) {
+	function handleVariableClick() {
+		if (isDisabled) return;
+		isVariableSelected = !isVariableSelected;
+		if (isVariableSelected) {
+			selectedBlockIds.clear();
+			if (onTarget) onTarget('variable:heldItem');
+		}
+	}
+
+	function handleTargetClick(target: string) {
+		if (isVariableSelected) {
+			// Parse target string 'block:{id}:count'
+			const match = target.match(/^block:(.+):count$/);
+			if (match) {
+				const blockId = match[1];
+				game.updateBlock(blockId, {
+					count: { type: 'variable', variableId: 'heldItem' }
+				});
+				soundManager.play('click');
+				isVariableSelected = false;
+				selectedBlockIds.clear();
+			}
+		} else if (onTarget) {
+			onTarget(target);
+		}
+	}
+
+	function updateLoopCount(count: number | undefined | 'variable') {
 		if (primarySelectedBlock && primarySelectedBlock.type === 'loop') {
-			game.updateBlock(primarySelectedBlock.id, { count });
+			if (count === 'variable') {
+				game.updateBlock(primarySelectedBlock.id, {
+					count: { type: 'variable', variableId: 'heldItem' }
+				});
+			} else {
+				game.updateBlock(primarySelectedBlock.id, { count });
+			}
 		}
 	}
 
@@ -390,6 +429,7 @@
 		if (selectedBlockId !== id) {
 			isMoveMode = false;
 			isPasteMode = false; // Exit paste mode if we select normally
+			isVariableSelected = false; // Deselect variable
 			selectedBlockIds.clear();
 			selectedBlockIds.add(id);
 		} else {
@@ -707,6 +747,26 @@
 					{/if}
 				</div>
 			{/if}
+
+			{#if hasVariables}
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div
+					class="variable-token"
+					use:draggableVariable={{ type: 'number' }}
+					title="Drag to use held item"
+					class:disabled={isDisabled}
+					class:selected={isVariableSelected}
+					onclick={handleVariableClick}
+					data-target="variable:heldItem"
+				>
+					<div class="token-icon">
+						<Brain size={20} />
+					</div>
+					<span class="token-label">Held Item</span>
+				</div>
+			{/if}
+
 			{#each paletteItems as item (item.id)}
 				{@const limit = getLimit(item.type)}
 				{@const used = usedCounts[item.type] || 0}
@@ -821,7 +881,8 @@
 									{selectedBlockIds}
 									onSelect={handleSelect}
 									onContainerClick={handleContainerClick}
-									{onTarget}
+									onTarget={handleTargetClick}
+									isTargetMode={isVariableSelected}
 								/>
 							</div>
 
@@ -862,7 +923,9 @@
 							type="number"
 							class="config-input"
 							class:highlighted={highlight?.targets?.includes(`config:loop:custom`)}
-							value={primarySelectedBlock.count ?? ''}
+							value={typeof primarySelectedBlock.count === 'number'
+								? primarySelectedBlock.count
+								: ''}
 							placeholder="#"
 							min="1"
 							max="99"
@@ -873,6 +936,18 @@
 							onclick={(e) => e.stopPropagation()}
 						/>
 					</div>
+					{#if hasVariables}
+						<button
+							class="config-btn variable"
+							class:active={typeof primarySelectedBlock.count === 'object'}
+							class:highlighted={highlight?.targets?.includes(`config:loop:variable`)}
+							onclick={() => updateLoopCount('variable')}
+							title="Use Held Item"
+							data-value="variable"
+						>
+							<Brain size={20} />
+						</button>
+					{/if}
 					{#if game.level.allowInfiniteLoop !== false}
 						<button
 							class="config-btn infinity"
@@ -1533,5 +1608,53 @@
 	.limit-badge.full {
 		background-color: var(--surface-4);
 		color: var(--text-3);
+	}
+
+	.variable-token {
+		grid-column: 1 / -1; /* Span full width */
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		padding: var(--size-2) var(--size-3);
+		background-color: var(--surface-2);
+		border: 2px solid var(--surface-3);
+		border-radius: var(--radius-round);
+		cursor: grab;
+		width: fit-content;
+		margin: 0 auto var(--size-2) auto;
+		transition: all 0.2s;
+	}
+
+	.variable-token:hover {
+		border-color: var(--brand);
+		background-color: var(--surface-3);
+		transform: translateY(-2px);
+	}
+
+	.variable-token.selected {
+		border-color: var(--brand);
+		background-color: var(--brand-dim);
+		box-shadow: 0 0 0 2px var(--brand);
+	}
+
+	.variable-token.disabled {
+		opacity: 0.5;
+		pointer-events: none;
+	}
+
+	.variable-token :global(.dragging) {
+		opacity: 0.5;
+	}
+
+	.token-icon {
+		color: var(--brand);
+		display: grid;
+		place-items: center;
+	}
+
+	.token-label {
+		font-weight: bold;
+		font-size: var(--font-size-0);
+		color: var(--text-1);
 	}
 </style>

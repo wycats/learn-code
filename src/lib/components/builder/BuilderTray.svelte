@@ -7,6 +7,7 @@
 	import HintEditor from './HintEditor.svelte';
 	import TileEditorModal from './TileEditorModal.svelte';
 	import FunctionManager from './FunctionManager.svelte';
+	import { draggableVariable } from '$lib/actions/dnd';
 
 	import {
 		Infinity as InfinityIcon,
@@ -17,7 +18,8 @@
 		Pencil,
 		Trash2,
 		FunctionSquare,
-		Globe
+		Globe,
+		MessageCircle
 	} from 'lucide-svelte';
 	import { fade, scale } from 'svelte/transition';
 
@@ -146,6 +148,7 @@
 		{ type: 'move-forward', label: 'Move' },
 		{ type: 'turn-left', label: 'Left' },
 		{ type: 'turn-right', label: 'Right' },
+		{ type: 'pick-up', label: 'Pick Up' },
 		{ type: 'loop', label: 'Loop' },
 		{ type: 'call', label: 'Call' }
 	];
@@ -350,6 +353,15 @@
 			</div>
 		{:else if activeTab === 'logic'}
 			<div class="backpack-section" transition:fade={{ duration: 200 }}>
+				<div class="variables-section">
+					<div class="variable-token" use:draggableVariable title="Drag to use held item">
+						<div class="token-icon">
+							<MessageCircle size={20} />
+						</div>
+						<span class="token-label">Held Item</span>
+					</div>
+				</div>
+
 				<div class="block-list">
 					{#each blockTypes as { type, comingSoon } (type)}
 						{@const isIncluded = type in builder.level.availableBlocks}
@@ -543,6 +555,49 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--size-2);
+	}
+
+	.variables-section {
+		padding: var(--size-2);
+		background-color: var(--surface-1);
+		border-radius: var(--radius-2);
+		display: flex;
+		justify-content: center;
+	}
+
+	.variable-token {
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		padding: var(--size-2) var(--size-3);
+		background-color: var(--surface-2);
+		border: 2px solid var(--surface-3);
+		border-radius: var(--radius-round);
+		cursor: grab;
+		width: fit-content;
+		transition: all 0.2s;
+	}
+
+	.variable-token:hover {
+		border-color: var(--brand);
+		background-color: var(--surface-3);
+		transform: translateY(-2px);
+	}
+
+	.variable-token :global(.dragging) {
+		opacity: 0.5;
+	}
+
+	.token-icon {
+		color: var(--brand);
+		display: grid;
+		place-items: center;
+	}
+
+	.token-label {
+		font-weight: bold;
+		font-size: var(--font-size-0);
+		color: var(--text-1);
 	}
 
 	/* Terrain Tools */

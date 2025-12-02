@@ -230,7 +230,27 @@
 - [x] **Mobile Polish**: Refine layout and spacing on the Packs and Builder screens based on visual feedback.
 - [x] **Argos Integration**: Ensure the new test suite reports correctly to Argos CI.
 
-## Phase 25: Authentication Strategy
+## Phase 25: Variables & Memory ("The Thought Bubble") (Completed)
+
+**Goal:** Implement the "Thought Bubble" variable system, allowing the character to pick up items, hold them (visible state), and use them in block parameters.
+
+- [x] **Schema & State**: Update `CharacterState` to support holding items (Keys, Numbers).
+- [x] **Visual Metaphor**: Implement the "Thought Bubble" visualization above the character.
+- [x] **New Blocks**: Implement `PickUp` block and `VariableRef` parameter type.
+- [x] **Editor Interaction**: Allow dragging the "Bubble Token" into block parameters.
+- [x] **Curriculum**: Create "The Keeper of Keys" levels to teach possession.
+- [x] **UX Polish**: "Click-Click" interaction for variables and Loop Popover integration.
+
+## Phase 26: Test Coverage & Quality Assurance
+
+**Goal:** Increase test coverage to a respectable level (e.g., 70%+) to ensure stability and prevent regressions.
+
+- [ ] **Coverage Analysis**: Identify critical low-coverage areas.
+- [ ] **Unit Tests**: Expand unit tests for UI components and game logic.
+- [ ] **Integration Tests**: Add integration tests for complex flows.
+- [ ] **CI Enforcement**: Tune coverage thresholds to block regressions.
+
+## Phase 27: Authentication Strategy
 
 **Goal:** Evaluate and implement a robust authentication strategy to support cloud persistence and user accounts.
 
@@ -239,7 +259,7 @@
 - [ ] **Implementation**: Implement the chosen authentication strategy.
 - [ ] **Cloud Persistence**: Enable saving user progress and levels to the cloud.
 
-## Phase 25: Feedback System
+## Phase 28: Feedback System
 
 **Goal:** Create a robust feedback loop that empowers users to report issues with full context.
 
@@ -247,10 +267,3 @@
 - [ ] **State Dump**: Automatically attach the current level JSON and interpreter state.
 - [ ] **Offline Queue**: Ensure feedback is queued and sent when online (already partially implemented).
 - [ ] **Admin Dashboard**: Simple view to triage feedback (optional/later).
-
-## Phase 26: Curriculum Expansion (Post-Launch)
-
-**Goal:** Introduce advanced programming concepts like Variables and Scoping.
-
-- [ ] **The Box Metaphor**: Design and implement variables using a physical "box" metaphor for scoping.
-- [ ] **Curriculum Update**: Create new levels to teach these concepts.

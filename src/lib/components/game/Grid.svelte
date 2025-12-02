@@ -3,6 +3,7 @@
 	import type { GridPosition } from '$lib/game/types';
 	import Cell from './Cell.svelte';
 	import Character from './Character.svelte';
+	import ThoughtBubble from './ThoughtBubble.svelte';
 	import { RotateCw } from 'lucide-svelte';
 	import { fade } from 'svelte/transition';
 
@@ -111,6 +112,8 @@
 				const type = game.level.layout[key] || game.level.defaultTerrain || 'grass';
 				const customTile = game.level.customTiles?.[type];
 				const id = game.level.cellIds?.[key];
+				const item = game.level.items?.[key];
+				const isCollected = game.collectedItems.has(key);
 
 				// Check if this is the goal position
 				const isGoal = game.level.goal.x === x && game.level.goal.y === y;
@@ -127,7 +130,8 @@
 					y,
 					id,
 					type: isGoal && !isCharacterHere ? 'goal' : isGoal ? 'grass' : type,
-					customTile
+					customTile,
+					item: !isCollected ? item : undefined
 				});
 			}
 		}
@@ -174,6 +178,7 @@
 			<Cell
 				type={cell.type}
 				customTile={cell.customTile}
+				item={cell.item}
 				x={cell.x}
 				y={cell.y}
 				id={cell.id}
@@ -195,6 +200,7 @@
 		tabindex="0"
 	>
 		<Character direction={game.characterOrientation} {game} />
+		<ThoughtBubble item={game.heldItem} />
 
 		{#if isBuilder && (selectedActor === 'start' || isHoveringCharacter)}
 			<button

@@ -38,6 +38,24 @@ export default defineConfig({
 					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
 				}
 			}
-		]
+		],
+		coverage: {
+			provider: 'v8',
+			reporter: ['text', 'json', 'html'],
+			thresholds: {
+				statements: 15,
+				branches: 15,
+				functions: 15,
+				lines: 15
+			},
+			include: ['src/**/*.{js,ts,svelte}'],
+			exclude: [
+				'src/lib/paraglide/**',
+				'src/**/*.d.ts',
+				'src/stories/**',
+				'src/**/*.json',
+				'src/lib/game/levels/**'
+			]
+		}
 	}
 });
