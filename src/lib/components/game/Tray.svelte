@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { draggableBlock, dropTarget, draggableVariable } from '$lib/actions/dnd';
+	import { draggableVariable } from '$lib/actions/dnd';
+	import { interactionTarget, interactionManager } from '$lib/interactions';
+	import { focusManager } from '$lib/interactions/focus.svelte';
+	import { editorState } from '$lib/interactions/editor.svelte';
+	import { dropTarget } from '$lib/interactions/dnd';
 	import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 	import {
 		extractClosestEdge,
@@ -9,12 +13,10 @@
 	import DropIndicator from './DropIndicator.svelte';
 	import type { Block, BlockType } from '$lib/game/types';
 	import type { GameModel } from '$lib/game/model.svelte';
-	import { setDragContext } from '$lib/game/drag-context.svelte';
 	import { Trash2, Move, ListChecks, Copy, Infinity as InfinityIcon, Brain } from 'lucide-svelte';
 	import { Icon } from 'lucide-svelte';
 	import { broom } from '@lucide/lab';
 	import { soundManager } from '$lib/game/sound';
-	import { SvelteSet } from 'svelte/reactivity';
 	import { fly, fade } from 'svelte/transition';
 
 	interface Props {
@@ -98,27 +100,17 @@
 	});
 
 	// Drag State
-	const dragCtx = setDragContext();
+	let isDragging = $state(false);
 
 	// Selection State
-	const selectedBlockIds = new SvelteSet<string>();
-	let isMultiSelectMode = $state(false);
 	let isVariableSelected = $state(false);
 
 	// Insertion Mode State
 	let insertionMode = $state<{ type: BlockType } | null>(null);
 
-	// Move Mode State
-	let isMoveMode = $state(false);
-
-	// Paste Mode State
-	let isPasteMode = $state(false);
-	let clipboard = $state<Block[]>([]);
-
-	// Ghost State
-	let ghostTargetId = $state<string | null>(null);
-	let ghostSourceType = $state<BlockType | null>(null);
-	let defaultGhostId = $state<string | null>(null);
+	// Editor State Delegation
+	const isMoveMode = $derived(editorState.mode === 'move');
+	const isPasteMode = $derived(editorState.mode === 'paste');
 
 	// Trash State
 	let isTrashActive = $state(false);
@@ -135,7 +127,7 @@
 	}
 
 	const selectedBlocks = $derived(
-		Array.from(selectedBlockIds)
+		Array.from(interactionManager.selection)
 			.map((id) => findBlock(game.activeProgram, id))
 			.filter((b) => b !== null) as Block[]
 	);
@@ -146,7 +138,7 @@
 		if (isDisabled) return;
 		isVariableSelected = !isVariableSelected;
 		if (isVariableSelected) {
-			selectedBlockIds.clear();
+			interactionManager.clearSelection();
 			if (onTarget) onTarget('variable:heldItem');
 		}
 	}
@@ -162,7 +154,7 @@
 				});
 				soundManager.play('click');
 				isVariableSelected = false;
-				selectedBlockIds.clear();
+				interactionManager.clearSelection();
 			}
 		} else if (onTarget) {
 			onTarget(target);
@@ -187,256 +179,19 @@
 		}
 	}
 
-	function deepCloneWithNewIds(block: Block): Block {
-		const newBlock = { ...block, id: crypto.randomUUID() };
-		if (newBlock.children) {
-			newBlock.children = newBlock.children.map((child) => deepCloneWithNewIds(child));
-		}
-		// Remove ghost flag if present (shouldn't be, but safety)
-		delete newBlock.isGhost;
-		return newBlock;
-	}
-
-	function clearGhosts() {
-		ghostTargetId = null;
-		ghostSourceType = null;
-		defaultGhostId = null;
-		function removeGhosts(blocks: Block[]) {
-			for (let i = blocks.length - 1; i >= 0; i--) {
-				if (blocks[i].isGhost) {
-					blocks.splice(i, 1);
-				} else {
-					const children = blocks[i].children;
-					if (children) {
-						removeGhosts(children);
-					}
-				}
-			}
-		}
-		removeGhosts(game.activeProgram);
-		game.activeProgram = [...game.activeProgram];
-	}
-
-	function confirmGhost(ghostBlock: Block) {
-		game.commit();
-
-		// If we are in move mode, we need to delete the original block first
-		if (isMoveMode && selectedBlockId) {
-			// We need to find the original block ID.
-			// Wait, selectedBlockId IS the original block ID in move mode.
-			// But if we clicked a ghost, selectedBlockId is now the ghost ID?
-			// No, handleSelect sets selectedBlockId to ghost ID *after* confirmGhost.
-			// So selectedBlockId is still the original block here.
-
-			// However, we need to be careful not to delete the ghost we just clicked.
-			// The ghost is in the tree. The original is also in the tree.
-
-			// Let's remove the original block
-			removeBlock(game.activeProgram, selectedBlockId);
-			isMoveMode = false;
-		}
-
-		if (isPasteMode && clipboard.length > 0) {
-			const newBlocks = clipboard.map((b) => deepCloneWithNewIds(b));
-
-			function finalizePaste(blocks: Block[]) {
-				for (let i = blocks.length - 1; i >= 0; i--) {
-					const b = blocks[i];
-					if (b.id === ghostBlock.id) {
-						// Replace ghost with new blocks
-						blocks.splice(i, 1, ...newBlocks);
-					} else if (b.isGhost) {
-						blocks.splice(i, 1);
-					}
-					if (b.children) finalizePaste(b.children);
-				}
-			}
-			finalizePaste(game.activeProgram);
-			game.activeProgram = [...game.activeProgram];
-
-			selectedBlockIds.clear();
-			for (const b of newBlocks) selectedBlockIds.add(b.id);
-			isPasteMode = false;
-			return;
-		}
-
-		function finalize(blocks: Block[]) {
-			for (let i = blocks.length - 1; i >= 0; i--) {
-				const b = blocks[i];
-				if (b.id === ghostBlock.id) {
-					delete b.isGhost;
-				} else if (b.isGhost) {
-					blocks.splice(i, 1);
-				}
-
-				if (b.children) {
-					finalize(b.children);
-				}
-			}
-		}
-		finalize(game.activeProgram);
-		game.activeProgram = [...game.activeProgram];
-
-		// Restore selection to the target block (if it exists) so we can keep editing relative to it
-		if (ghostTargetId) {
-			selectedBlockIds.clear();
-			selectedBlockIds.add(ghostTargetId);
-		} else {
-			// Fallback to selecting the new block if we lost context
-			selectedBlockIds.clear();
-			selectedBlockIds.add(ghostBlock.id);
-		}
-	}
-
-	function showGhosts(targetBlock: Block, source: Block | BlockType) {
-		const sourceType = typeof source === 'string' ? source : source.type;
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const { id, ...sourceProps } = typeof source === 'string' ? { id: '' } : source;
-
-		ghostTargetId = targetBlock.id;
-		ghostSourceType = sourceType;
-
-		const ghostBefore: Block = {
-			id: crypto.randomUUID(),
-			type: sourceType,
-			isGhost: true,
-			...sourceProps
-		};
-		const ghostAfter: Block = {
-			id: crypto.randomUUID(),
-			type: sourceType,
-			isGhost: true,
-			...sourceProps
-		};
-		const ghostInside: Block = {
-			id: crypto.randomUUID(),
-			type: sourceType,
-			isGhost: true,
-			...sourceProps
-		};
-
-		function insertGhostsRecursive(blocks: Block[]): boolean {
-			const index = blocks.findIndex((b) => b.id === targetBlock.id);
-			if (index !== -1) {
-				// If target is loop, offer Before, Inside and After
-				if (targetBlock.type === 'loop') {
-					// Insert ghost after loop
-					blocks.splice(index + 1, 0, ghostAfter);
-					// Insert ghost before loop
-					blocks.splice(index, 0, ghostBefore);
-
-					// Insert ghost inside loop
-					if (!targetBlock.children) targetBlock.children = [];
-					targetBlock.children.push(ghostInside);
-
-					defaultGhostId = ghostInside.id;
-				} else {
-					// If target is regular block, offer Before and After
-					blocks.splice(index + 1, 0, ghostAfter);
-					blocks.splice(index, 0, ghostBefore);
-
-					defaultGhostId = ghostAfter.id;
-				}
-				return true;
-			}
-
-			for (const block of blocks) {
-				if (block.children && insertGhostsRecursive(block.children)) return true;
-			}
-			return false;
-		}
-
-		insertGhostsRecursive(game.activeProgram);
-		game.activeProgram = [...game.activeProgram];
-	}
-
 	function handleSelect(id: string) {
-		const block = findBlock(game.activeProgram, id);
+		editorState.handleBlockClick(game, id);
 
-		// If we clicked a ghost, confirm it
-		if (block?.isGhost) {
-			confirmGhost(block);
-			return;
-		}
-
-		// Paste Mode Logic
-		if (isPasteMode && clipboard.length > 0 && block) {
-			// If we click the SAME target again, confirm default ghost
-			if (id === ghostTargetId && defaultGhostId) {
-				const defaultGhost = findBlock(game.activeProgram, defaultGhostId);
-				if (defaultGhost) {
-					confirmGhost(defaultGhost);
-					return;
-				}
-			}
-
-			clearGhosts();
-			showGhosts(block, clipboard[0]);
-			return;
-		}
-
-		// If we are in Move Mode (and didn't click a ghost), show ghosts around the clicked block
-		if (isMoveMode && selectedBlockId && block) {
-			// Don't move into self
-			if (block.id === selectedBlockId) return;
-
-			// If we click the SAME target again, confirm the default ghost
-			if (id === ghostTargetId && defaultGhostId) {
-				const defaultGhost = findBlock(game.activeProgram, defaultGhostId);
-				if (defaultGhost) {
-					confirmGhost(defaultGhost);
-					return;
-				}
-			}
-
-			// Don't move into children (cycle)
-			function isChild(parent: Block, targetId: string): boolean {
-				if (!parent.children) return false;
-				for (const child of parent.children) {
-					if (child.id === targetId) return true;
-					if (isChild(child, targetId)) return true;
-				}
-				return false;
-			}
-			const sourceBlock = findBlock(game.activeProgram, selectedBlockId);
-			if (sourceBlock && isChild(sourceBlock, block.id)) return;
-
-			clearGhosts();
-			if (sourceBlock) {
-				showGhosts(block, sourceBlock);
-			}
-			return;
-		}
+		// If we select a different block (and not in multi-select), we might need to sync local state?
+		// No, local state is gone.
 
 		if (insertionMode) {
 			insertionMode = null;
 		}
 
-		// Clear ghosts if we select something else
-		clearGhosts();
-
-		// Multi-Select Logic
-		if (isMultiSelectMode) {
-			if (selectedBlockIds.has(id)) {
-				selectedBlockIds.delete(id);
-			} else {
-				selectedBlockIds.add(id);
-			}
-			return;
-		}
-
-		// If we select a different block, exit move mode
-		if (selectedBlockId !== id) {
-			isMoveMode = false;
-			isPasteMode = false; // Exit paste mode if we select normally
-			isVariableSelected = false; // Deselect variable
-			selectedBlockIds.clear();
-			selectedBlockIds.add(id);
-		} else {
-			// Deselect
-			selectedBlockIds.clear();
-			isMoveMode = false;
-			isPasteMode = false;
+		// Variable selection logic
+		if (id !== selectedBlockId) {
+			isVariableSelected = false;
 		}
 	}
 
@@ -448,23 +203,27 @@
 		// If we have a selected block, show ghosts around it
 		if (selectedBlockId) {
 			// If we click the SAME palette item again, confirm the default ghost
-			if (selectedBlockId === ghostTargetId && ghostSourceType === type && defaultGhostId) {
-				const defaultGhost = findBlock(game.activeProgram, defaultGhostId);
+			if (
+				selectedBlockId === editorState.ghostTargetId &&
+				editorState.ghostSourceType === type &&
+				editorState.defaultGhostId
+			) {
+				const defaultGhost = findBlock(game.activeProgram, editorState.defaultGhostId);
 				if (defaultGhost) {
-					confirmGhost(defaultGhost);
+					editorState.confirmGhost(game, defaultGhost);
 					return;
 				}
 			}
 
-			clearGhosts();
+			editorState.clearGhosts();
 			const target = findBlock(game.activeProgram, selectedBlockId);
 			if (target) {
-				showGhosts(target, sourceBlock);
+				editorState.showGhosts(game, target, sourceBlock);
 				return;
 			}
 		}
 
-		clearGhosts();
+		editorState.clearGhosts();
 
 		// Create new block with properties
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -477,8 +236,7 @@
 		if (lastBlock && lastBlock.type === 'loop') {
 			game.insertBlockIntoContainer(lastBlock.id, newBlock);
 			// Select the container so we can edit its properties (and subsequent clicks use ghosts)
-			selectedBlockIds.clear();
-			selectedBlockIds.add(lastBlock.id);
+			interactionManager.select(lastBlock.id);
 		} else {
 			// Otherwise, append to end of main program
 			game.addBlock(newBlock);
@@ -488,31 +246,27 @@
 	}
 
 	function handleDeleteSelected() {
-		if (selectedBlockIds.size === 0) return;
+		if (interactionManager.selection.size === 0) return;
 		soundManager.play('delete');
-		game.deleteBlocks(Array.from(selectedBlockIds));
-		selectedBlockIds.clear();
+		game.deleteBlocks(Array.from(interactionManager.selection));
+		interactionManager.clearSelection();
 	}
 
 	function handleDuplicate() {
-		if (selectedBlockIds.size === 0) return;
+		if (interactionManager.selection.size === 0) return;
 		soundManager.play('click');
 
 		// Deep clone selected blocks
-		const blocks = Array.from(selectedBlockIds)
+		const blocks = Array.from(interactionManager.selection)
 			.map((id) => findBlock(game.activeProgram, id))
 			.filter((b) => b !== null) as Block[];
 
-		// Store in clipboard
-		clipboard = JSON.parse(JSON.stringify(blocks));
-
-		isPasteMode = true;
-		isMoveMode = false;
-		isMultiSelectMode = false;
+		editorState.copy(blocks);
+		editorState.isMultiSelectMode = false;
 
 		// Show ghosts around the primary selection immediately
-		if (primarySelectedBlock) {
-			showGhosts(primarySelectedBlock, clipboard[0]);
+		if (primarySelectedBlock && editorState.clipboard.length > 0) {
+			editorState.showGhosts(game, primarySelectedBlock, editorState.clipboard[0]);
 		}
 	}
 
@@ -569,12 +323,36 @@
 		game.clearProgram();
 	}
 
+	function handleWindowKeydown(e: KeyboardEvent) {
+		if (isDisabled) return;
+
+		// If we are editing a text input, ignore
+		if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+		if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+			const current = document.activeElement?.getAttribute('data-interaction-id');
+			if (current) {
+				e.preventDefault();
+				focusManager.navigate(current, 'next');
+			} else if (game.activeProgram.length > 0) {
+				// If nothing focused, focus the first block in program
+				e.preventDefault();
+				focusManager.focus(game.activeProgram[0].id);
+			}
+		} else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+			const current = document.activeElement?.getAttribute('data-interaction-id');
+			if (current) {
+				e.preventDefault();
+				focusManager.navigate(current, 'prev');
+			}
+		}
+	}
+
 	$effect(() => {
 		if (game.status === 'running') {
-			selectedBlockIds.clear();
-			isMoveMode = false;
-			isPasteMode = false;
-			isMultiSelectMode = false;
+			interactionManager.clearSelection();
+			editorState.setMode('idle');
+			editorState.isMultiSelectMode = false;
 			insertionMode = null;
 		}
 	});
@@ -609,7 +387,7 @@
 		return monitorForElements({
 			onDragStart: () => {
 				soundManager.play('pickup');
-				dragCtx.isDragging = true;
+				isDragging = true;
 				isTrashActive = false;
 			},
 			onDrag: ({ location }) => {
@@ -617,19 +395,13 @@
 				if (target) {
 					const data = target.data;
 					isTrashActive = data.type === 'trash';
-					dragCtx.targetId = (data.blockId as string) || 'program-list';
-					dragCtx.closestEdge = extractClosestEdge(data);
 				} else {
 					isTrashActive = false;
-					dragCtx.targetId = null;
-					dragCtx.closestEdge = null;
 				}
 			},
 			onDrop: ({ source, location }) => {
 				if (isDisabled) return;
-				dragCtx.isDragging = false;
-				dragCtx.targetId = null;
-				dragCtx.closestEdge = null;
+				isDragging = false;
 				isTrashActive = false;
 
 				const target = location.current.dropTargets[0];
@@ -734,6 +506,8 @@
 	});
 </script>
 
+<svelte:window onkeydown={handleWindowKeydown} />
+
 <div class="tray">
 	<div class="palette">
 		<h3>Blocks</h3>
@@ -775,11 +549,6 @@
 					class:opacity-50={typeFull || isDisabled}
 					class:highlighted={highlight?.targets?.includes(`block:${item.type}`)}
 					class:fading={highlight?.targets?.includes(`block:${item.type}`) && highlight?.fading}
-					use:draggableBlock={{
-						block: item,
-						isPaletteItem: true,
-						disabled: typeFull || isDisabled
-					}}
 					style:position="relative"
 				>
 					<BlockComponent
@@ -787,6 +556,7 @@
 						isPalette={true}
 						onSelect={() => handlePaletteClick(item)}
 						{onTarget}
+						disabled={typeFull || isDisabled}
 					/>
 					{#if limit !== 'unlimited'}
 						<div class="limit-badge" class:full={typeFull}>
@@ -849,36 +619,63 @@
 					in:fly={{ x: 20, duration: 300, delay: 100 }}
 					out:fade={{ duration: 100 }}
 					data-block-id="program-list"
-					use:dropTarget={{
-						blockId: 'program-list',
-						type: 'drop-target'
+					use:interactionTarget={{
+						node: {
+							id: 'program-list',
+							role: 'root',
+							dataType: 'statement',
+							accepts: ['statement']
+						},
+						api: {
+							highlight: () => {},
+							clearHighlight: () => {},
+							scrollIntoView: () => {},
+							getBoundingRect: () => new DOMRect(),
+							focus: () => document.querySelector('[data-block-id="program-list"]')?.focus()
+						}
 					}}
-					onclick={() => selectedBlockIds.clear()}
+					use:dropTarget={{
+						id: 'program-list',
+						data: { type: 'drop-target', blockId: 'program-list' }
+					}}
+					onclick={() => interactionManager.clearSelection()}
 					role="button"
 					tabindex="0"
 					onkeydown={(e) => {
-						if (e.key === 'Enter' || e.key === ' ') selectedBlockIds.clear();
+						if (e.key === 'Enter' || e.key === ' ') interactionManager.clearSelection();
 					}}
 				>
 					{#each game.activeProgram as item, index (item.id)}
+						{@const itemState = interactionManager.getComponentState(item.id)}
 						<div class="block-wrapper" style:position="relative">
-							{#if dragCtx.targetId === item.id && dragCtx.closestEdge === 'top'}
+							{#if itemState.status === 'candidate' && itemState.isHovered && itemState.edge === 'top'}
 								<DropIndicator edge="top" />
 							{/if}
 
 							<div
-								use:draggableBlock={{ block: item, disabled: isDisabled }}
+								use:interactionTarget={{
+									node: {
+										id: `gap-${item.id}`,
+										role: 'slot',
+										dataType: 'statement',
+										accepts: ['statement']
+									},
+									api: {
+										highlight: () => {},
+										clearHighlight: () => {},
+										scrollIntoView: () => {},
+										getBoundingRect: () => new DOMRect()
+									}
+								}}
 								use:dropTarget={{
-									blockId: item.id,
-									index: index,
-									type: 'drop-target'
+									id: `gap-${item.id}`,
+									data: { type: 'drop-target', blockId: item.id, index: index }
 								}}
 							>
 								<BlockComponent
 									block={item}
 									{game}
 									activeBlockId={game.activeBlockId}
-									{selectedBlockIds}
 									onSelect={handleSelect}
 									onContainerClick={handleContainerClick}
 									onTarget={handleTargetClick}
@@ -886,7 +683,7 @@
 								/>
 							</div>
 
-							{#if dragCtx.targetId === item.id && dragCtx.closestEdge === 'bottom'}
+							{#if itemState.status === 'candidate' && itemState.isHovered && itemState.edge === 'bottom'}
 								<DropIndicator edge="bottom" />
 							{/if}
 						</div>
@@ -901,7 +698,7 @@
 	</div>
 
 	<!-- Floating Toolbar (Trash / Inspector) -->
-	<div class="floating-toolbar" class:visible={dragCtx.isDragging || selectedBlockIds.size > 0}>
+	<div class="floating-toolbar" class:visible={isDragging || interactionManager.selection.size > 0}>
 		<!-- Configuration Panel (Left of Toolbar) -->
 		{#if primarySelectedBlock?.type === 'loop'}
 			<div class="config-panel" transition:fly={{ x: -20, duration: 200 }}>
@@ -993,8 +790,19 @@
 			<div
 				class="toolbar-btn trash-zone"
 				class:active={isTrashActive}
+				use:interactionTarget={{
+					node: { id: 'trash-zone', role: 'root', dataType: 'any', accepts: ['any'] },
+					api: {
+						highlight: () => {},
+						clearHighlight: () => {},
+						scrollIntoView: () => {},
+						getBoundingRect: () => new DOMRect(),
+						focus: () => {} // TODO: Implement focus
+					}
+				}}
 				use:dropTarget={{
-					type: 'trash'
+					id: 'trash-zone',
+					data: { type: 'trash' }
 				}}
 				onclick={handleDeleteSelected}
 				title="Drag here to delete, or click to delete selected"
@@ -1006,12 +814,12 @@
 			>
 				<Trash2 size={24} />
 				<span class="label">Delete</span>
-				{#if selectedBlockIds.size > 1}
-					<span class="badge">{selectedBlockIds.size}</span>
+				{#if interactionManager.selection.size > 1}
+					<span class="badge">{interactionManager.selection.size}</span>
 				{/if}
 			</div>
 
-			{#if selectedBlockIds.size > 0}
+			{#if interactionManager.selection.size > 0}
 				<div
 					class="toolbar-btn"
 					class:active={isPasteMode}
@@ -1029,13 +837,14 @@
 
 				<div
 					class="toolbar-btn"
-					class:active={isMultiSelectMode}
-					onclick={() => (isMultiSelectMode = !isMultiSelectMode)}
+					class:active={editorState.isMultiSelectMode}
+					onclick={() => (editorState.isMultiSelectMode = !editorState.isMultiSelectMode)}
 					title="Toggle Multi-Select Mode"
 					role="button"
 					tabindex="0"
 					onkeydown={(e) => {
-						if (e.key === 'Enter' || e.key === ' ') isMultiSelectMode = !isMultiSelectMode;
+						if (e.key === 'Enter' || e.key === ' ')
+							editorState.isMultiSelectMode = !editorState.isMultiSelectMode;
 					}}
 				>
 					<ListChecks size={24} />
@@ -1043,16 +852,17 @@
 				</div>
 			{/if}
 
-			{#if selectedBlockIds.size === 1}
+			{#if interactionManager.selection.size === 1}
 				<div
 					class="toolbar-btn"
 					class:active={isMoveMode}
-					onclick={() => (isMoveMode = !isMoveMode)}
+					onclick={() => editorState.setMode(isMoveMode ? 'idle' : 'move')}
 					title="Move selected block"
 					role="button"
 					tabindex="0"
 					onkeydown={(e) => {
-						if (e.key === 'Enter' || e.key === ' ') isMoveMode = !isMoveMode;
+						if (e.key === 'Enter' || e.key === ' ')
+							editorState.setMode(isMoveMode ? 'idle' : 'move');
 					}}
 				>
 					<Move size={24} />

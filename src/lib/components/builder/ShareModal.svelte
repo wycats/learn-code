@@ -2,7 +2,6 @@
 	import { ShareService } from '$lib/services/share';
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
 	import { X, Copy, Check, Smartphone, QrCode } from 'lucide-svelte';
-	import { fade, scale } from 'svelte/transition';
 	import P2PModal from './P2PModal.svelte';
 
 	interface Props {
@@ -18,6 +17,13 @@
 	let error = $state<string | null>(null);
 	let activeTab = $state<'level' | 'pack'>('level');
 	let showP2P = $state(false);
+	let dialog: HTMLDialogElement;
+
+	$effect(() => {
+		if (!showP2P) {
+			dialog?.showModal();
+		}
+	});
 
 	$effect(() => {
 		if (activeTab === 'level') {
@@ -53,113 +59,100 @@
 		data={$state.snapshot(builder.pack)}
 		onClose={() => {
 			showP2P = false;
-			onClose();
+			// When P2P closes, we want to show ShareModal again?
+			// Or close everything?
+			// The original code just set showP2P = false, which would re-render ShareModal.
+			// And our effect will call showModal() again.
 		}}
 	/>
 {:else}
-	<div
-		class="backdrop"
-		transition:fade
-		onclick={onClose}
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
-		onkeydown={(e) => e.key === 'Escape' && onClose()}
+	<dialog
+		bind:this={dialog}
+		class="share-modal"
+		onclose={onClose}
+		onclick={(e) => e.target === dialog && onClose()}
 	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div
-			class="modal"
-			transition:scale
-			onclick={(e) => e.stopPropagation()}
-			role="document"
-			onkeydown={(e) => e.stopPropagation()}
-		>
-			<header>
-				<h2>Share</h2>
-				<button class="close-btn" onclick={onClose} aria-label="Close">
-					<X size={24} />
-				</button>
-			</header>
+		<header>
+			<h2>Share</h2>
+			<button class="close-btn" onclick={onClose} aria-label="Close">
+				<X size={24} />
+			</button>
+		</header>
 
-			<div class="tabs">
-				<button
-					class="tab-btn"
-					class:active={activeTab === 'level'}
-					onclick={() => (activeTab = 'level')}
-				>
-					<QrCode size={18} /> Current Level
-				</button>
-				<button
-					class="tab-btn"
-					class:active={activeTab === 'pack'}
-					onclick={() => (activeTab = 'pack')}
-				>
-					<Smartphone size={18} /> Full Pack
-				</button>
-			</div>
-
-			<div class="content">
-				{#if activeTab === 'level'}
-					{#if error}
-						<div class="error">{error}</div>
-					{:else if qrCodeUrl}
-						<div class="qr-container">
-							<img src={qrCodeUrl} alt="Level QR Code" />
-						</div>
-						<p class="instruction">Scan with your camera to play!</p>
-
-						<div class="link-section">
-							<input type="text" readonly value={shareUrl} aria-label="Share Link" />
-							<button class="copy-btn" onclick={copyLink} title="Copy Link">
-								{#if copied}
-									<Check size={20} />
-								{:else}
-									<Copy size={20} />
-								{/if}
-							</button>
-						</div>
-					{:else}
-						<div class="loading">Generating...</div>
-					{/if}
-				{:else}
-					<div class="pack-share-info">
-						<div class="info-icon">
-							<Smartphone size={48} />
-						</div>
-						<h3>Share "{builder.pack.name}"</h3>
-						<p>
-							Transfer the entire pack directly to another device nearby using a secure P2P
-							connection.
-						</p>
-						<p class="note">Requires both devices to be online to establish connection.</p>
-						<button class="btn-primary" onclick={() => (showP2P = true)}> Start Transfer </button>
-					</div>
-				{/if}
-			</div>
+		<div class="tabs">
+			<button
+				class="tab-btn"
+				class:active={activeTab === 'level'}
+				onclick={() => (activeTab = 'level')}
+			>
+				<QrCode size={18} /> Current Level
+			</button>
+			<button
+				class="tab-btn"
+				class:active={activeTab === 'pack'}
+				onclick={() => (activeTab = 'pack')}
+			>
+				<Smartphone size={18} /> Full Pack
+			</button>
 		</div>
-	</div>
+
+		<div class="content">
+			{#if activeTab === 'level'}
+				{#if error}
+					<div class="error">{error}</div>
+				{:else if qrCodeUrl}
+					<div class="qr-container">
+						<img src={qrCodeUrl} alt="Level QR Code" />
+					</div>
+					<p class="instruction">Scan with your camera to play!</p>
+
+					<div class="link-section">
+						<input type="text" readonly value={shareUrl} aria-label="Share Link" />
+						<button class="copy-btn" onclick={copyLink} title="Copy Link">
+							{#if copied}
+								<Check size={20} />
+							{:else}
+								<Copy size={20} />
+							{/if}
+						</button>
+					</div>
+				{:else}
+					<div class="loading">Generating...</div>
+				{/if}
+			{:else}
+				<div class="pack-share-info">
+					<div class="info-icon">
+						<Smartphone size={48} />
+					</div>
+					<h3>Share "{builder.pack.name}"</h3>
+					<p>
+						Transfer the entire pack directly to another device nearby using a secure P2P
+						connection.
+					</p>
+					<p class="note">Requires both devices to be online to establish connection.</p>
+					<button class="btn-primary" onclick={() => (showP2P = true)}> Start Transfer </button>
+				</div>
+			{/if}
+		</div>
+	</dialog>
 {/if}
 
 <style>
-	.backdrop {
-		position: fixed;
-		inset: 0;
-		background-color: rgba(0, 0, 0, 0.5);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1000;
-		backdrop-filter: blur(4px);
-	}
-
-	.modal {
+	.share-modal {
 		background-color: var(--surface-1);
 		border-radius: var(--radius-3);
 		box-shadow: var(--shadow-5);
 		width: 90%;
 		max-width: 400px;
 		overflow: hidden;
-		border: 1px solid var(--surface-3);
+		border: none;
+		padding: 0;
+		color: var(--text-1);
+	}
+
+	.share-modal::backdrop {
+		background-color: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(4px);
 	}
 
 	header {

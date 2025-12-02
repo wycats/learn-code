@@ -1,54 +1,34 @@
-# Implementation Plan: Test Coverage & Quality Assurance
+# Implementation Plan - Phase 27: Component Architecture & Shared Abstractions
 
-## Phase Goal
+## Goal
 
-Increase test coverage to a respectable level (aiming for >50% initially, then >70%) to ensure stability and prevent regressions.
+Extract shared interaction patterns into reusable components and test them rigorously. This phase focuses on refactoring the codebase to improve maintainability, reduce duplication, and ensure consistent behavior across the application.
 
-## 1. Coverage Analysis & Strategy
+## Scope
 
-We currently have ~15% coverage. The goal is to systematically improve this by targeting high-value, high-risk areas first.
+- **Interaction Primitives**: Extract core interaction logic (Click-Click, Drag, Focus) into reusable Svelte actions or components.
+- **UI Components**: Identify and refactor shared UI patterns (e.g., Buttons, Modals, Tooltips) into the `src/lib/components/common` directory.
+- **Testing**: Implement comprehensive unit and interaction tests for the new shared components.
 
-### Priority Areas
+## Key Components to Refactor
 
-1.  **Core Game Logic (`src/lib/game`)**:
-    - `model.svelte.ts`: The heart of the application. Needs thorough testing of state transitions, history (undo/redo), and level loading.
-    - `interpreter.ts`: The execution engine. Needs to cover all block types and edge cases (already partially covered).
-    - `analysis.ts`: Static analysis of user code.
+1.  **Interaction Logic**:
+    - `draggableBlock` / `draggableVariable` -> Unified Drag Source
+    - `dropTarget` / `dropTargetForVariable` -> Unified Drop Target
+    - "Click-Click" Selection Logic (currently in `Tray.svelte` and `Block.svelte`)
+    - Focus Management (Keyboard Navigation)
 
-2.  **Core UI Components (`src/lib/components/game`)**:
-    - `Block.svelte`: The fundamental building block. Needs tests for rendering, interaction (click, drag), and state reflection (blocked, success).
-    - `Tray.svelte`: The palette and program area. Needs tests for drag-and-drop, selection, and toolbar actions.
-    - `Game.svelte`: The main game container. Needs integration tests for the game loop.
+2.  **UI Patterns**:
+    - `BlockComponent` (ensure it uses shared primitives)
+    - `Tray` (Toolbar buttons, Palette items)
+    - Modals (Standardize on a single Modal primitive)
 
-3.  **Services (`src/lib/services`)**:
-    - `file-system.ts`: Persistence layer.
+## User Involvement
 
-## 2. Testing Infrastructure
+- **Collaborative Design**: The user has requested deep involvement in the extraction and structuring process. We will stop for feedback before finalizing major architectural decisions.
 
-- **Vitest**: Our unit test runner.
-- **Vitest Browser Mode**: For testing Svelte components in a real browser environment (headless Chromium).
-- **Playwright**: For E2E tests (already set up).
+## Verification Plan
 
-## 3. Execution Plan
-
-### Step 1: Core Logic Hardening
-
-- Write comprehensive tests for `GameModel`.
-- Expand `StackInterpreter` tests to cover new block types (PickUp, Variables).
-
-### Step 2: Component Testing
-
-- Expand `Tray.svelte` tests (started in Phase 25).
-- Create `Block.svelte` tests.
-- Create `Game.svelte` integration tests.
-
-### Step 3: Threshold Tuning
-
-- Incrementally raise the coverage thresholds in `vite.config.ts` as we add tests.
-- Final Goal: 50% Statements/Branches/Functions/Lines.
-
-## 4. Success Criteria
-
-- `pnpm test:unit` passes with new thresholds.
-- Critical paths (Game Loop, Level Editing, Persistence) are covered.
-- No regressions in existing functionality.
+- **Unit Tests**: Verify each new shared component in isolation.
+- **Integration Tests**: Ensure refactored components work correctly in the Game and Builder contexts.
+- **Visual Regression**: Verify no visual regressions in the UI.

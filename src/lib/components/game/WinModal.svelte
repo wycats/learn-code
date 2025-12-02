@@ -9,46 +9,44 @@
 	}
 
 	let { onReplay, onNext, hasNextLevel }: Props = $props();
+
+	let dialog: HTMLDialogElement;
+
+	$effect(() => {
+		dialog?.showModal();
+	});
 </script>
 
-<div class="overlay success">
-	<div class="modal">
-		<Stack gap="var(--size-4)" align="center">
-			<h2><PartyPopper size={32} /> Level Complete!</h2>
-			<p>Great job! You solved the puzzle.</p>
-			<div class="actions">
-				<button class="btn-secondary" onclick={onReplay}>
-					<RotateCcw size={16} /> Replay
+<dialog
+	bind:this={dialog}
+	class="win-modal"
+	onclose={onReplay}
+	oncancel={(e) => {
+		e.preventDefault(); // Prevent closing on Esc if we want to force a choice?
+		// Actually, for WinModal, maybe Esc should just replay or do nothing?
+		// Let's allow Esc to close (replay) for now as "light dismissal"
+	}}
+>
+	<Stack gap="var(--size-4)" align="center">
+		<h2><PartyPopper size={32} /> Level Complete!</h2>
+		<p>Great job! You solved the puzzle.</p>
+		<div class="actions">
+			<button class="btn-secondary" onclick={onReplay}>
+				<RotateCcw size={16} /> Replay
+			</button>
+			{#if hasNextLevel}
+				<button class="btn-primary" onclick={onNext} autofocus>
+					Next Level <ChevronRight size={16} />
 				</button>
-				{#if hasNextLevel}
-					<button class="btn-primary" onclick={onNext}>
-						Next Level <ChevronRight size={16} />
-					</button>
-				{:else}
-					<p class="finished">You finished all available levels!</p>
-				{/if}
-			</div>
-		</Stack>
-	</div>
-</div>
+			{:else}
+				<p class="finished">You finished all available levels!</p>
+			{/if}
+		</div>
+	</Stack>
+</dialog>
 
 <style>
-	.overlay {
-		position: absolute;
-		inset: 0;
-		background-color: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5));
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		color: white;
-		border-radius: var(--radius-3);
-		backdrop-filter: blur(8px);
-		animation: fade-in 0.3s ease;
-		z-index: 50;
-	}
-
-	.modal {
+	.win-modal {
 		background-color: var(--surface-1);
 		color: var(--text-1);
 		padding: var(--size-6);
@@ -57,8 +55,14 @@
 		text-align: center;
 		min-width: 300px;
 		max-width: 90%;
+		border: none;
 		animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
-		animation-delay: 0.1s;
+	}
+
+	.win-modal::backdrop {
+		background-color: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5));
+		backdrop-filter: blur(8px);
+		animation: fade-in 0.3s ease;
 	}
 
 	h2 {

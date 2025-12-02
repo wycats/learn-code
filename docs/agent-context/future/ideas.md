@@ -25,6 +25,9 @@
 - [ ] **Publishing**: A way to share levels (maybe a simple file-based repo or lightweight backend).
 - [ ] **Feedback Button**: A way for players to send feedback to level creators (e.g., "Too hard", "Fun!", "Broken"). (Partially addressed in Phase 16 via mailto)
 - [ ] **Local Network Sharing**: If on the same Wi-Fi, perhaps a direct IP connection (harder with HTTPS requirements).
+- [ ] **Story/Tutorial Control**:
+  - **Unmask Blocks**: Allow the Architect to specify a point in the dialogue where the block tray becomes interactive (unmasked). Currently, it's either all hidden or all shown.
+  - **Interactive Tutorials**: (Future) Validate that the user performed a specific action (e.g., "Move the block") before advancing the story.
 
 ## Mechanics & Blocks
 

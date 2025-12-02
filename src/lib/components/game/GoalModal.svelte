@@ -9,45 +9,34 @@
 	}
 
 	let { onStart, levelName, par }: Props = $props();
+
+	let dialog: HTMLDialogElement;
+
+	$effect(() => {
+		dialog?.showModal();
+	});
 </script>
 
-<div class="overlay goal">
-	<div class="modal">
-		<Stack gap="var(--size-4)" align="center">
-			<div class="icon-wrapper">
-				<Star size={48} color="var(--star-color)" fill="var(--star-fill)" />
-			</div>
-			<div class="content">
-				<h2>{levelName}</h2>
-				<p>Program the robot to reach the star!</p>
-				{#if par}
-					<p class="hint">Try to solve it in <strong>{par} blocks</strong>.</p>
-				{/if}
-			</div>
-			<button class="btn-primary" onclick={onStart}>
-				<Play size={16} fill="currentColor" /> Start Planning
-			</button>
-		</Stack>
-	</div>
-</div>
+<dialog bind:this={dialog} class="goal-modal" onclose={onStart} oncancel={onStart}>
+	<Stack gap="var(--size-4)" align="center">
+		<div class="icon-wrapper">
+			<Star size={48} color="var(--star-color)" fill="var(--star-fill)" />
+		</div>
+		<div class="content">
+			<h2>{levelName}</h2>
+			<p>Program the robot to reach the star!</p>
+			{#if par}
+				<p class="hint">Try to solve it in <strong>{par} blocks</strong>.</p>
+			{/if}
+		</div>
+		<button class="btn-primary" onclick={onStart} autofocus>
+			<Play size={16} fill="currentColor" /> Start Planning
+		</button>
+	</Stack>
+</dialog>
 
 <style>
-	.overlay {
-		position: absolute;
-		inset: 0;
-		background-color: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5));
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		color: white;
-		border-radius: var(--radius-3);
-		backdrop-filter: blur(8px);
-		animation: fade-in 0.3s ease;
-		z-index: 50;
-	}
-
-	.modal {
+	.goal-modal {
 		background-color: var(--surface-1);
 		color: var(--text-1);
 		padding: var(--size-6);
@@ -56,6 +45,14 @@
 		text-align: center;
 		min-width: 300px;
 		max-width: 90%;
+		border: none;
+		animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+	}
+
+	.goal-modal::backdrop {
+		background-color: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5));
+		backdrop-filter: blur(8px);
+		animation: fade-in 0.3s ease;
 	}
 
 	.icon-wrapper {

@@ -116,5 +116,15 @@ _Best for: Complex editing tasks, secondary configuration, "Inspector" views._
 - **Principle**: "Details on Demand." The primary view remains clean and focused on the high-level structure (the list of hints, the grid of tiles). Complex details are hidden until explicitly requested.
 - **Implementation**:
   - **Native APIs**: We use the standard HTML `<dialog>` and `popover` APIs. This ensures accessible focus management, "light dismiss" (click-outside to close), and correct z-indexing without custom JavaScript state.
+  - **Declarative Control**: We prefer `popovertarget` and `command` invokers over manual event listeners.
   - **Satellite Triggers**: For small, contextual tweaks (like changing a color or icon), use small "satellite" buttons attached to the main element that trigger a popover menu.
   - **Accordion Lists**: For managing lists of complex objects (like Hints), use a collapsed summary view by default. Expanding an item reveals the full editor inline or in a popover, preventing the "wall of inputs" effect.
+
+## Drag & Drop Philosophy
+
+We lean heavily on native behavior and unified physics.
+
+- **Native First**: We use `@atlaskit/pragmatic-drag-and-drop` to leverage browser-native drag events while smoothing over cross-browser quirks.
+- **Input Equivalence**: All drags work as touch moves and vice versa. There is no "mouse mode" vs "touch mode".
+- **Mediated Moves**: All drag operations are conceptually "Move" operations. This mandates a "Click-Click" equivalent for every drag action.
+  - _Example_: If you can drag a block to the trash, you must also be able to click the block (to select/highlight it) and then click the trash icon to delete it.

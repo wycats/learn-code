@@ -1,23 +1,32 @@
-# Task List: Phase 26
+# Task List: Phase 27
 
-## Core Logic
+## Analysis & Design
 
-- [x] Test `GameModel` (State transitions, History, Level Loading) - _Initial coverage added_
-- [ ] Test `StackInterpreter` (New blocks, Edge cases)
+- [x] Analyze current `dnd.ts` and identify common patterns.
+- [x] Analyze `Tray.svelte` and `Block.svelte` for "Click-Click" logic duplication.
+- [x] Propose a new directory structure for shared interaction primitives.
+- [x] **STOP**: Review the proposed architecture with the user.
 
-## UI Components
+## Implementation: Interaction Primitives
 
-- [ ] Test `Block.svelte` (Rendering, Interactions)
-- [x] Test `Tray.svelte` (Drag & Drop, Toolbar) - _Initial test added_
-- [ ] Test `Game.svelte` (Integration)
+- [x] Define `InteractionRole` and `DataType` types.
+- [x] Implement `InteractionRegistry` (Logical & Visual).
+- [x] Implement `InteractionSession` (State Machine).
+- [x] Implement `InteractionManager` (Orchestrator).
+- [x] Implement `use:interactionTarget` Svelte Action.
+- [x] Refactor Drag & Drop adapters into a unified system.
+- [x] Extract "Click-Click" state machine into a reusable store or class.
+- [x] Implement Focus Management primitive.
 
-## Variable Refinement (New)
+## Implementation: UI Components
 
-- [x] Improve Visual Affordances (Icons, Drop Zones)
-- [x] Implement "Thought Bubble" Metaphor
-- [x] Add "Targeting Mode" for Architect Mode
-- [x] Implement Strict Typing for Variables
+- [x] Refactor `Block.svelte` to use new primitives.
+- [x] Refactor `Tray.svelte` to use new primitives.
+- [x] Standardize Modal components (Native `<dialog>` & `popover`).
 
-## Infrastructure
+## Testing
 
-- [ ] Update `vite.config.ts` thresholds to 50%
+- [x] Unit tests for Drag & Drop primitives.
+- [x] Unit tests for Click-Click logic.
+- [x] Unit tests for Focus Management.
+- [x] Integration tests for `Tray` and `Block` using new components.

@@ -14,14 +14,13 @@ import * as path from 'path';
 
 test('Visual Verification', async ({ page }) => {
 	// --- AGENT: CONFIGURE HERE ---
-	const url = '/library'; // The URL to visit
+	const url = '/builder'; // The URL to visit
 
 	// Optional: Actions to perform before capture
-	// await page.goto(url);
-	// await page.getByRole('button', { name: 'Play' }).click();
-	// -----------------------------
-
 	await page.goto(url);
+	await page.getByTitle('Level Settings').click();
+	await page.waitForSelector('dialog[open]');
+	// -----------------------------
 
 	// Wait for network idle to ensure assets are loaded
 	await page.waitForLoadState('networkidle');

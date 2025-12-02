@@ -794,7 +794,6 @@
 		position: relative;
 		width: 100%;
 		height: 100%;
-		z-index: 50;
 		display: grid;
 		grid-template-areas: 'stack';
 	}
@@ -811,7 +810,6 @@
 		border-bottom: 1px solid var(--surface-3);
 		gap: var(--size-2);
 		position: relative;
-		z-index: 60; /* Above popover */
 		anchor-name: --story-bar;
 	}
 

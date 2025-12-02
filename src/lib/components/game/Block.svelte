@@ -1,8 +1,10 @@
 <script lang="ts">
 	import type { Block } from '$lib/game/types';
 	import type { GameModel } from '$lib/game/model.svelte';
-	import { draggableBlock, dropTarget, dropTargetForVariable } from '$lib/actions/dnd';
-	import { getDragContext } from '$lib/game/drag-context.svelte';
+	import { interactionTarget, interactionManager } from '$lib/interactions';
+	import { draggableSource, dropTarget } from '$lib/interactions/dnd';
+	import { dropTargetForVariable } from '$lib/actions/dnd';
+	import type { ComponentInterface } from '$lib/interactions/types';
 	import BlockComponent from './Block.svelte';
 	import DropIndicator from './DropIndicator.svelte';
 	import {
@@ -21,7 +23,6 @@
 		block: Block;
 		game?: GameModel;
 		activeBlockId?: string | null;
-		selectedBlockIds?: Set<string>;
 		onSelect?: (id: string) => void;
 		onContainerClick?: (id: string) => void;
 		isPalette?: boolean;
@@ -31,13 +32,13 @@
 		loopProgress?: number;
 		onTarget?: (target: string) => void;
 		isTargetMode?: boolean;
+		disabled?: boolean;
 	}
 
 	let {
 		block,
 		game,
 		activeBlockId = null,
-		selectedBlockIds = new Set(),
 		onSelect,
 		onContainerClick,
 		isPalette = false,
@@ -45,10 +46,36 @@
 		isSuccess = false,
 		loopProgress = 0,
 		onTarget,
-		isTargetMode = false
+		isTargetMode = false,
+		disabled = false
 	}: Props = $props();
 
-	const dragCtx = getDragContext();
+	// Interaction State
+	let node: HTMLElement | undefined = $state();
+	let slotNode: HTMLElement | undefined = $state();
+	let interactionState = $derived(interactionManager.getComponentState(block.id));
+	let slotState = $derived(interactionManager.getComponentState(`${block.id}-children`));
+	let highlightStyle = $state<'ghost' | 'ring' | 'pulse' | null>(null);
+
+	const api: ComponentInterface = {
+		highlight: (style) => {
+			highlightStyle = style;
+		},
+		clearHighlight: () => {
+			highlightStyle = null;
+		},
+		scrollIntoView: () => node?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+		getBoundingRect: () => node?.getBoundingClientRect() || new DOMRect(),
+		focus: () => node?.focus()
+	};
+
+	const slotApi: ComponentInterface = {
+		highlight: () => {}, // TODO: Implement slot highlighting
+		clearHighlight: () => {},
+		scrollIntoView: () => slotNode?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+		getBoundingRect: () => slotNode?.getBoundingClientRect() || new DOMRect(),
+		focus: () => slotNode?.focus()
+	};
 
 	// Derived state from game model if available
 	const derivedIsSuccess = $derived(
@@ -132,12 +159,36 @@
 	class="block"
 	data-type={block.type}
 	class:active={derivedActiveBlockId === block.id}
-	class:selected={selectedBlockIds.has(block.id)}
-	class:ghost={block.isGhost}
+	class:selected={interactionState.isSelected}
+	class:ghost={block.isGhost || interactionState.status === 'source' || highlightStyle === 'ghost'}
 	class:blocked={derivedIsBlocked}
 	class:success={derivedIsSuccess}
-	class:highlighted={isHighlighted}
+	class:highlighted={isHighlighted || highlightStyle === 'pulse'}
+	class:ring={interactionState.status === 'candidate' || highlightStyle === 'ring'}
 	onclick={handleClick}
+	onkeydown={(e) => {
+		if (e.key === 'Enter' || e.key === ' ') {
+			e.preventDefault();
+			handleClick(e as unknown as MouseEvent);
+		}
+	}}
+	tabindex="0"
+	role="button"
+	bind:this={node}
+	use:interactionTarget={{
+		node: {
+			id: block.id,
+			role: 'block',
+			dataType: 'statement',
+			data: block
+		},
+		api
+	}}
+	use:draggableSource={{
+		id: block.id,
+		data: { type: 'block', block: block, isPaletteItem: isPalette },
+		disabled: disabled
+	}}
 >
 	<div class="header">
 		<div class="icon">
@@ -219,31 +270,33 @@
 	{#if block.type === 'loop' && !isPalette}
 		<div
 			class="children"
-			use:dropTarget={{
-				blockId: `${block.id}-children`,
-				type: 'drop-target'
+			bind:this={slotNode}
+			use:interactionTarget={{
+				node: {
+					id: `${block.id}-children`,
+					role: 'slot',
+					dataType: 'statement',
+					accepts: ['statement'],
+					parentId: block.id
+				},
+				api: slotApi
 			}}
+			use:dropTarget={{ id: `${block.id}-children` }}
+			class:ring={slotState.status === 'candidate'}
 			onclick={handleContainerClick}
 		>
-			{#each block.children || [] as child, index (child.id)}
+			{#each block.children || [] as child (child.id)}
+				{@const childState = interactionManager.getComponentState(child.id)}
 				<div class="block-wrapper" style:position="relative">
-					{#if dragCtx?.targetId === child.id && dragCtx?.closestEdge === 'top'}
+					{#if childState.status === 'candidate' && childState.isHovered && childState.edge === 'top'}
 						<DropIndicator edge="top" />
 					{/if}
 
-					<div
-						use:draggableBlock={{ block: child }}
-						use:dropTarget={{
-							blockId: child.id,
-							index: index,
-							type: 'drop-target'
-						}}
-					>
+					<div>
 						<BlockComponent
 							block={child}
 							{game}
 							activeBlockId={derivedActiveBlockId}
-							{selectedBlockIds}
 							{onSelect}
 							{onContainerClick}
 							{onTarget}
@@ -251,7 +304,7 @@
 						/>
 					</div>
 
-					{#if dragCtx?.targetId === child.id && dragCtx?.closestEdge === 'bottom'}
+					{#if childState.status === 'candidate' && childState.isHovered && childState.edge === 'bottom'}
 						<DropIndicator edge="bottom" />
 					{/if}
 				</div>

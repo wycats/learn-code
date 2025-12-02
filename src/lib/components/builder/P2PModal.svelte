@@ -3,7 +3,6 @@
 	import { ShareService } from '$lib/services/share';
 	import QRScanner from '$lib/components/common/QRScanner.svelte';
 	import { X, Check, ArrowRight, ArrowLeft, Smartphone, Upload, Download } from 'lucide-svelte';
-	import { fade, scale } from 'svelte/transition';
 	import { onDestroy } from 'svelte';
 
 	interface Props {
@@ -30,6 +29,11 @@
 	let qrCodeUrl = $state<string | null>(null);
 	let status = $state<P2PStatus>('disconnected');
 	let error = $state<string | null>(null);
+	let dialog: HTMLDialogElement;
+
+	$effect(() => {
+		dialog?.showModal();
+	});
 
 	$effect(() => {
 		// Auto-start if intent is unambiguous
@@ -123,138 +127,115 @@
 	}
 </script>
 
-<div
-	class="backdrop"
-	transition:fade
-	onclick={onClose}
-	role="dialog"
-	aria-modal="true"
-	tabindex="-1"
-	onkeydown={(e) => e.key === 'Escape' && onClose()}
+<dialog
+	bind:this={dialog}
+	class="p2p-modal"
+	onclose={onClose}
+	onclick={(e) => e.target === dialog && onClose()}
 >
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div
-		class="modal"
-		transition:scale
-		onclick={(e) => e.stopPropagation()}
-		role="document"
-		onkeydown={(e) => e.stopPropagation()}
-	>
-		<header>
-			<h2>P2P Transfer</h2>
-			<button class="close-btn" onclick={onClose} aria-label="Close">
-				<X size={24} />
-			</button>
-		</header>
+	<header>
+		<h2>P2P Transfer</h2>
+		<button class="close-btn" onclick={onClose} aria-label="Close">
+			<X size={24} />
+		</button>
+	</header>
 
-		<div class="content">
-			{#if error}
-				<div class="error-state">
-					<p class="error">{error}</p>
-					<button
-						onclick={() => {
-							error = null;
-							step = 'initial';
-						}}>Try Again</button
-					>
-				</div>
-			{:else if step === 'initial'}
-				<div class="actions">
-					{#if data}
-						<button class="action-btn primary" onclick={startSender}>
-							<Upload size={32} />
-							<span>Send Data</span>
-							<small>Show QR code to receiver</small>
-						</button>
-					{/if}
-					{#if onReceive}
-						<button class="action-btn secondary" onclick={startReceiver}>
-							<Download size={32} />
-							<span>Receive Data</span>
-							<small>Scan sender's QR code</small>
-						</button>
-					{/if}
-				</div>
-			{:else if step === 'sender-offer'}
-				<div class="step-container">
-					<h3>Step 1: Show this to Receiver</h3>
-					{#if qrCodeUrl}
-						<div class="qr-container">
-							<img src={qrCodeUrl} alt="Offer QR Code" />
-						</div>
-						<p class="instruction">Ask the receiver to scan this code.</p>
-						<button class="btn-next" onclick={() => (step = 'sender-scan-answer')}>
-							Next: Scan Receiver's Answer <ArrowRight size={16} />
-						</button>
-					{:else}
-						<div class="loading">Generating Offer...</div>
-					{/if}
-				</div>
-			{:else if step === 'sender-scan-answer'}
-				<div class="step-container">
-					<h3>Step 2: Scan Receiver's Answer</h3>
-					<div class="scanner-wrapper">
-						<QRScanner onScan={handleScan} onError={(e) => console.warn(e)} />
-					</div>
-					<button class="btn-back" onclick={() => (step = 'sender-offer')}>
-						<ArrowLeft size={16} /> Back to Offer
+	<div class="content">
+		{#if error}
+			<div class="error-state">
+				<p class="error">{error}</p>
+				<button
+					onclick={() => {
+						error = null;
+						step = 'initial';
+					}}>Try Again</button
+				>
+			</div>
+		{:else if step === 'initial'}
+			<div class="actions">
+				{#if data}
+					<button class="action-btn primary" onclick={startSender}>
+						<Upload size={32} />
+						<span>Send Data</span>
+						<small>Show QR code to receiver</small>
 					</button>
-				</div>
-			{:else if step === 'receiver-scan-offer'}
-				<div class="step-container">
-					<h3>Step 1: Scan Sender's Offer</h3>
-					<div class="scanner-wrapper">
-						<QRScanner onScan={handleScan} onError={(e) => console.warn(e)} />
+				{/if}
+				{#if onReceive}
+					<button class="action-btn secondary" onclick={startReceiver}>
+						<Download size={32} />
+						<span>Receive Data</span>
+						<small>Scan sender's QR code</small>
+					</button>
+				{/if}
+			</div>
+		{:else if step === 'sender-offer'}
+			<div class="step-container">
+				<h3>Step 1: Show this to Receiver</h3>
+				{#if qrCodeUrl}
+					<div class="qr-container">
+						<img src={qrCodeUrl} alt="Offer QR Code" />
 					</div>
+					<p class="instruction">Ask the receiver to scan this code.</p>
+					<button class="btn-next" onclick={() => (step = 'sender-scan-answer')}>
+						Next: Scan Receiver's Answer <ArrowRight size={16} />
+					</button>
+				{:else}
+					<div class="loading">Generating Offer...</div>
+				{/if}
+			</div>
+		{:else if step === 'sender-scan-answer'}
+			<div class="step-container">
+				<h3>Step 2: Scan Receiver's Answer</h3>
+				<div class="scanner-wrapper">
+					<QRScanner onScan={handleScan} onError={(e) => console.warn(e)} />
 				</div>
-			{:else if step === 'receiver-answer'}
-				<div class="step-container">
-					<h3>Step 2: Show this to Sender</h3>
-					{#if qrCodeUrl}
-						<div class="qr-container">
-							<img src={qrCodeUrl} alt="Answer QR Code" />
-						</div>
-						<p class="instruction">Ask the sender to scan this code.</p>
-						<div class="status">Waiting for connection...</div>
-					{:else}
-						<div class="loading">Generating Answer...</div>
-					{/if}
+				<button class="btn-back" onclick={() => (step = 'sender-offer')}>
+					<ArrowLeft size={16} /> Back to Offer
+				</button>
+			</div>
+		{:else if step === 'receiver-scan-offer'}
+			<div class="step-container">
+				<h3>Step 1: Scan Sender's Offer</h3>
+				<div class="scanner-wrapper">
+					<QRScanner onScan={handleScan} onError={(e) => console.warn(e)} />
 				</div>
-			{:else if step === 'connected' || step === 'transferring'}
-				<div class="step-container">
-					<h3>Connected!</h3>
-					<div class="transfer-status">
-						<Smartphone size={48} />
-						<div class="dots">...</div>
-						<Smartphone size={48} />
+			</div>
+		{:else if step === 'receiver-answer'}
+			<div class="step-container">
+				<h3>Step 2: Show this to Sender</h3>
+				{#if qrCodeUrl}
+					<div class="qr-container">
+						<img src={qrCodeUrl} alt="Answer QR Code" />
 					</div>
-					<p>Status: {status}</p>
-					<p>Transferring data...</p>
+					<p class="instruction">Ask the sender to scan this code.</p>
+					<div class="status">Waiting for connection...</div>
+				{:else}
+					<div class="loading">Generating Answer...</div>
+				{/if}
+			</div>
+		{:else if step === 'connected' || step === 'transferring'}
+			<div class="step-container">
+				<h3>Connected!</h3>
+				<div class="transfer-status">
+					<Smartphone size={48} />
+					<div class="dots">...</div>
+					<Smartphone size={48} />
 				</div>
-			{:else if step === 'completed'}
-				<div class="step-container success">
-					<Check size={64} color="var(--green-5)" />
-					<h3>Transfer Complete!</h3>
-					<button class="btn-primary" onclick={onClose}>Done</button>
-				</div>
-			{/if}
-		</div>
+				<p>Status: {status}</p>
+				<p>Transferring data...</p>
+			</div>
+		{:else if step === 'completed'}
+			<div class="step-container success">
+				<Check size={64} color="var(--green-5)" />
+				<h3>Transfer Complete!</h3>
+				<button class="btn-primary" onclick={onClose}>Done</button>
+			</div>
+		{/if}
 	</div>
-</div>
+</dialog>
 
 <style>
-	.backdrop {
-		position: fixed;
-		inset: 0;
-		background-color: rgba(0, 0, 0, 0.5);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1000;
-		backdrop-filter: blur(4px);
-	}
-
-	.modal {
+	.p2p-modal {
 		background-color: var(--surface-1);
 		border-radius: var(--radius-3);
 		box-shadow: var(--shadow-5);
@@ -262,7 +243,14 @@
 		max-width: 500px;
 		max-height: 90vh;
 		overflow-y: auto;
-		border: 1px solid var(--surface-3);
+		border: none;
+		padding: 0;
+		color: var(--text-1);
+	}
+
+	.p2p-modal::backdrop {
+		background-color: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(4px);
 	}
 
 	header {

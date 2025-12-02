@@ -54,9 +54,7 @@
 				</div>
 
 				{#if showSettings}
-					<div class="settings-overlay">
-						<BuilderGoalModal {builder} onClose={() => (showSettings = false)} />
-					</div>
+					<BuilderGoalModal {builder} onClose={() => (showSettings = false)} />
 				{/if}
 			</div>
 
@@ -115,15 +113,6 @@
 		place-items: center;
 		overflow: auto;
 		padding: var(--size-4);
-	}
-
-	.settings-overlay {
-		position: absolute;
-		inset: 0;
-		display: grid;
-		place-items: center;
-		background-color: rgba(0, 0, 0, 0.5);
-		z-index: 20;
 	}
 
 	.tray-area {

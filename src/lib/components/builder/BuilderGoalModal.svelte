@@ -11,7 +11,6 @@
 		ChevronDown
 	} from 'lucide-svelte';
 	import { Stack } from '$lib';
-	import { slide } from 'svelte/transition';
 	import IconPicker from './IconPicker.svelte';
 
 	interface Props {
@@ -20,12 +19,16 @@
 	}
 
 	let { builder, onClose }: Props = $props();
-	let showBiomePicker = $state(false);
+	let dialog: HTMLDialogElement;
 	let snapshotStatus = $state<'idle' | 'saved'>('idle');
 
 	// Local state for constraints toggles
 	let parEnabled = $state(!!builder.level.solutionPar);
 	let maxBlocksEnabled = $state(!!builder.level.maxBlocks);
+
+	$effect(() => {
+		dialog?.showModal();
+	});
 
 	// Sync local state to model
 	$effect(() => {
@@ -77,7 +80,9 @@
 	function selectBiome(value: string) {
 		builder.level.defaultTerrain = value;
 		builder.syncGame();
-		showBiomePicker = false;
+		// Popover closes automatically when clicking outside or we can close it manually if needed,
+		// but for native popover, clicking a button inside doesn't auto-close unless it's a submit/reset or we call hidePopover.
+		// We'll handle it in the markup.
 	}
 
 	function toggleDifficulty() {
@@ -97,10 +102,16 @@
 			snapshotStatus = 'idle';
 		}, 2000);
 	}
+
+	function handleBackdropClick(e: MouseEvent) {
+		if (e.target === dialog) {
+			onClose();
+		}
+	}
 </script>
 
-<div class="overlay goal">
-	<div class="modal">
+<dialog bind:this={dialog} class="goal-modal" onclose={onClose} onclick={handleBackdropClick}>
+	<div class="modal-content">
 		<Stack gap="var(--size-4)" align="center">
 			<div class="icon-wrapper">
 				<IconPicker
@@ -138,7 +149,7 @@
 						<div class="picker-wrapper">
 							<button
 								class="biome-trigger"
-								onclick={() => (showBiomePicker = !showBiomePicker)}
+								popovertarget="biome-popover"
 								style:--biome-color={currentBiome.color}
 							>
 								<currentBiome.icon size={16} />
@@ -148,21 +159,22 @@
 								</span>
 							</button>
 
-							{#if showBiomePicker}
-								<div class="popover" transition:slide={{ duration: 200 }}>
-									{#each BIOME_OPTIONS as option (option.value)}
-										<button
-											class="option"
-											class:selected={option.value === builder.level.defaultTerrain}
-											onclick={() => selectBiome(option.value)}
-											style:--option-color={option.color}
-										>
-											<option.icon size={16} />
-											<span>{option.label}</span>
-										</button>
-									{/each}
-								</div>
-							{/if}
+							<div id="biome-popover" popover="auto" class="popover">
+								{#each BIOME_OPTIONS as option (option.value)}
+									<button
+										class="option"
+										class:selected={option.value === builder.level.defaultTerrain}
+										onclick={(e) => {
+											selectBiome(option.value);
+											e.currentTarget.closest('[popover]')?.hidePopover();
+										}}
+										style:--option-color={option.color}
+									>
+										<option.icon size={16} />
+										<span>{option.label}</span>
+									</button>
+								{/each}
+							</div>
 						</div>
 					</div>
 
@@ -219,33 +231,29 @@
 			</button>
 		</Stack>
 	</div>
-</div>
+</dialog>
 
 <style>
-	.overlay {
-		position: absolute;
-		inset: 0;
-		background-color: rgba(255, 255, 255, 0.5);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		color: white;
-		border-radius: var(--radius-3);
-		backdrop-filter: blur(8px);
-		animation: fade-in 0.3s ease;
-		z-index: 50;
-	}
-
-	.modal {
+	.goal-modal {
 		background-color: var(--surface-1);
 		color: var(--text-1);
-		padding: var(--size-6);
+		padding: 0;
 		border-radius: var(--radius-3);
 		box-shadow: var(--shadow-4);
 		text-align: center;
 		min-width: min(350px, 90vw);
 		max-width: 90%;
+		border: none;
+		overflow: visible;
+	}
+
+	.goal-modal::backdrop {
+		background-color: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(8px);
+	}
+
+	.modal-content {
+		padding: var(--size-6);
 	}
 
 	.icon-wrapper {

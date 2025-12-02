@@ -239,9 +239,26 @@
 - [x] **New Blocks**: Implement `PickUp` block and `VariableRef` parameter type.
 - [x] **Editor Interaction**: Allow dragging the "Bubble Token" into block parameters.
 - [x] **Curriculum**: Create "The Keeper of Keys" levels to teach possession.
-- [x] **UX Polish**: "Click-Click" interaction for variables and Loop Popover integration.
 
-## Phase 26: Test Coverage & Quality Assurance
+## Phase 26: Variable Interaction Refinement (Completed)
+
+**Goal:** Refine the "Variables" feature based on user feedback, improving visual affordances and type safety.
+
+- [x] **Visual Affordances**: "Brain" icon, "Thought Bubble" metaphor, and clearer drop zones.
+- [x] **Targeting Mode**: Visual pulsing for valid targets in Architect Mode.
+- [x] **Strict Typing**: Enforce type safety for variable drops (e.g., Loop only accepts Numbers).
+- [x] **Story Update**: Explain the metaphor in the level intro.
+
+## Phase 27: Component Architecture & Shared Abstractions
+
+**Goal:** Extract shared interaction patterns into reusable components and test them rigorously.
+
+- [ ] **Interaction Abstraction**: Extract "Click-Click", "Drag", and "Focus" logic into shared primitives.
+- [ ] **Component Extraction**: Identify and refactor other shared UI patterns.
+- [ ] **Rigorous Testing**: Comprehensive unit and interaction tests for the new shared components.
+- [ ] **Collaborative Design**: Deep user involvement in the extraction and structuring process.
+
+## Phase 28: Test Coverage & Quality Assurance
 
 **Goal:** Increase test coverage to a respectable level (e.g., 70%+) to ensure stability and prevent regressions.
 
@@ -250,7 +267,7 @@
 - [ ] **Integration Tests**: Add integration tests for complex flows.
 - [ ] **CI Enforcement**: Tune coverage thresholds to block regressions.
 
-## Phase 27: Authentication Strategy
+## Phase 29: Authentication Strategy
 
 **Goal:** Evaluate and implement a robust authentication strategy to support cloud persistence and user accounts.
 
@@ -259,7 +276,7 @@
 - [ ] **Implementation**: Implement the chosen authentication strategy.
 - [ ] **Cloud Persistence**: Enable saving user progress and levels to the cloud.
 
-## Phase 28: Feedback System
+## Phase 30: Feedback System
 
 **Goal:** Create a robust feedback loop that empowers users to report issues with full context.
 

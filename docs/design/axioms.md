@@ -96,3 +96,26 @@ We respect the user's creations.
   - **Migration**: If the internal model changes, we must provide a migration path (e.g., `transformV1toV2`) that runs transparently on load.
   - **Validation**: We validate inputs, but we are lenient with outputs. If a field is missing, provide a sensible default rather than crashing.
 - **Anti-Pattern**: A "Corrupted Save" error after an app update.
+
+## 11. Native Modality & Layering
+
+We respect the browser's native layering model.
+
+- **Principle**: Never reinvent the wheel for z-index or focus management.
+- **Application**:
+  - **Modals**: Always use `<dialog>`.
+  - **Popovers**: Always use the `popover` attribute.
+  - **Control**: Use declarative triggers (`popovertarget`, `command` invokers) wherever possible.
+  - **Dismissal**: All modals must support "light dismissal" (Esc key, backdrop click) and have a visible close button unless strictly modal (e.g., critical error).
+- **Anti-Pattern**: "Portal" hacks, manual z-index management, or custom overlay divs.
+
+## 12. Unified Interaction Physics
+
+Touch and Mouse are citizens of the same world.
+
+- **Principle**: The interaction model is unified, not bifurcated.
+- **Application**:
+  - **Equivalence**: All drags work as touch moves, and vice versa.
+  - **Mediation**: All drag operations are mediated through a "Move" operation.
+  - **Click-Click**: Every drag operation must have a click-click equivalent. If you can drag to trash, you must be able to click to select and then click trash.
+- **Anti-Pattern**: Features that only work with a specific input device.

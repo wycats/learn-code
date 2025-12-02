@@ -23,9 +23,9 @@
 				</h1>
 				<div class="clearfix">
 					<div class="fl pad1y space-right2">
-						<span class="strong">33.33% </span>
+						<span class="strong">11.11% </span>
 						<span class="quiet">Statements</span>
-						<span class="fraction">12/36</span>
+						<span class="fraction">4/36</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
@@ -35,15 +35,15 @@
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">26.08% </span>
+						<span class="strong">8.69% </span>
 						<span class="quiet">Functions</span>
-						<span class="fraction">6/23</span>
+						<span class="fraction">2/23</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">35.29% </span>
+						<span class="strong">11.76% </span>
 						<span class="quiet">Lines</span>
-						<span class="fraction">12/34</span>
+						<span class="fraction">4/34</span>
 					</div>
 				</div>
 				<p class="quiet">
@@ -192,10 +192,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -214,11 +214,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -231,18 +231,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -251,8 +245,14 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -309,11 +309,11 @@ export interface DraggableOptions {
 	disabled?: boolean;
 }
 &nbsp;
-export function draggableBlock(node: HTMLElement, options: DraggableOptions) {
-	let cleanup = setup();
+export function <span class="fstat-no" title="function not covered" >draggableBlock(n</span>ode: HTMLElement, options: DraggableOptions) {
+	let cleanup = <span class="cstat-no" title="statement not covered" >setup();</span>
 &nbsp;
-	function setup() {
-		return draggable({
+	function <span class="fstat-no" title="function not covered" >setup() {</span>
+<span class="cstat-no" title="statement not covered" >		return draggable({</span>
 			element: node,
 			canDrag: <span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >!</span>options.disabled,</span>
 			getInitialData: <span class="fstat-no" title="function not covered" >() =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
@@ -332,11 +332,11 @@ export function draggableBlock(node: HTMLElement, options: DraggableOptions) {
 		});
 	}
 &nbsp;
-	return {
-		update(newOptions: DraggableOptions) {
-			options = newOptions;
-			cleanup();
-			cleanup = setup();
+<span class="cstat-no" title="statement not covered" >	return {</span>
+<span class="fstat-no" title="function not covered" >		update(n</span>ewOptions: DraggableOptions) {
+<span class="cstat-no" title="statement not covered" >			options = newOptions;</span>
+<span class="cstat-no" title="statement not covered" >			cleanup();</span>
+<span class="cstat-no" title="statement not covered" >			cleanup = setup();</span>
 		},
 		destroy: <span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >c</span>leanup()</span>
 	};
@@ -348,8 +348,8 @@ export interface DropTargetOptions {
 	type?: 'drop-target' | 'trash';
 }
 &nbsp;
-export function dropTarget(node: HTMLElement, options: DropTargetOptions) {
-	const cleanup = dropTargetForElements({
+export function <span class="fstat-no" title="function not covered" >dropTarget(n</span>ode: HTMLElement, options: DropTargetOptions) {
+	const cleanup = <span class="cstat-no" title="statement not covered" >dropTargetForElements({</span>
 		element: node,
 		getData: <span class="fstat-no" title="function not covered" >({</span> input, element }) =&gt; {
 			const data = <span class="cstat-no" title="statement not covered" >{</span>
@@ -370,7 +370,7 @@ export function dropTarget(node: HTMLElement, options: DropTargetOptions) {
 		}
 	});
 &nbsp;
-	return {
+<span class="cstat-no" title="statement not covered" >	return {</span>
 		destroy: cleanup
 	};
 }
@@ -422,7 +422,7 @@ export function dropTargetForVariable(
 		<div class="footer quiet pad2 space-top1 center small">
 			Code coverage generated by
 			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-			at 2025-12-02T17:31:56.475Z
+			at 2025-12-02T22:05:17.489Z
 		</div>
 		<script src="../../../prettify.js"></script>
 		<script>
