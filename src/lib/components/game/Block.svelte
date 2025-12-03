@@ -231,7 +231,9 @@
 					data-target={`block:${block.id}:count`}
 				>
 					{#if isVariable}
-						<Brain size={14} />
+						<div class="variable-token-mini">
+							<Brain size={14} />
+						</div>
 					{:else}
 						{block.count ? `${block.count}x` : '∞'}
 					{/if}
@@ -514,6 +516,29 @@
 		padding: 0 6px;
 		border-radius: var(--radius-round);
 		font-weight: 800;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 24px;
+		height: 24px;
+	}
+
+	.loop-badge.variable {
+		padding: 0;
+		background: transparent;
+	}
+
+	.variable-token-mini {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		background-color: var(--surface-1);
+		border: 2px solid var(--blue-3);
+		border-radius: 50%;
+		color: var(--blue-7);
+		box-shadow: var(--shadow-1);
 	}
 
 	.function-badge {

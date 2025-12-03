@@ -1,60 +1,26 @@
-# Phase 28 Walkthrough: Test Coverage & Quality Assurance
+# Phase 29: Variable Visual Feedback
 
-## Overview
+## Goal
 
-This phase focuses on hardening the codebase by increasing test coverage and ensuring critical flows are protected against regressions. We will analyze the current coverage, identify gaps, and systematically add unit and integration tests.
+Address visual feedback regarding the variables feature to improve clarity and usability. The focus is on making the "Thought Bubble" metaphor and variable interactions (picking up, holding, using) more intuitive and visually polished.
 
-## Progress
+## Changes
 
-### Coverage Analysis
+### 1. Visual Consistency for Variables
 
-- [x] Initial coverage report generated.
-- [x] Targets identified: `BuilderModel`, `GameModel`, `StackInterpreter`.
+- **Cell Rendering**: Updated `Cell.svelte` to render "Number" items (variables) with a `Brain` icon alongside the value, wrapped in a styled container (`.thought-token`). This reinforces the "Thought Bubble" metaphor on the grid.
+- **Held Item Rendering**: Updated `ThoughtBubble.svelte` (the floating indicator above the character) to also include the `Brain` icon next to the number.
 
-### Refactoring for Testability
+### 2. Loop Block Polish
 
-- [x] Refactored `FileSystemService` to use Dependency Injection.
-  - Created `FileSystemService` interface.
-  - Renamed original implementation to `BrowserFileSystemService`.
-  - Created `InMemoryFileSystemService` for testing.
-- [x] Refactored `PersistenceService` consumers to use singleton instance.
-  - Updated `PackManagerModal` and `CampaignService` to use `persistence` singleton instead of deprecated standalone functions.
+- **Variable Badge**: Updated `Block.svelte` to render a polished `.variable-token-mini` inside the Loop block when a variable is assigned. This replaces the raw `Brain` icon with a styled token that matches the rest of the UI, preventing visual clashes with the block label.
 
-### Unit Tests
+### 3. Interaction Polish
 
-- [x] `BuilderModel` tests created and passing.
-  - Added comprehensive tests for grid manipulation, tool selection, and level metadata.
-  - Used `InMemoryFileSystemService` to test persistence without browser APIs.
-- [x] `StackInterpreter` tests expanded.
-  - Added tests for error handling (hitting walls, invalid moves).
-  - Added tests for complex control flow (nested loops, function calls).
-  - Added tests for game mechanics (hazards, ice, pick-up).
-- [x] `SoundManager` tests expanded.
-  - Mocked `AudioContext` and `AudioBuffer`.
-  - Tested `playFile` and `playAmbient` logic.
-  - Tested mute/unmute state persistence.
-- [x] `Drag and Drop` adapters tested.
-  - Mocked `@atlaskit/pragmatic-drag-and-drop`.
-  - Verified interaction with `interactionManager`.
+- **Overlap Handling**: Updated `Grid.svelte` to hide the item on the ground when the character occupies the same cell. This prevents the "weird overlap" where the character (and their held thought bubble) would visually clash with the item they are standing on.
 
-### Visual Regression Tests
+## Verification
 
-- [x] Expanded `visual-suite.spec.ts`.
-  - Added tests for Mobile Viewports (Game & Builder).
-  - Added tests for Modals (Share, Settings).
-  - Added tests for Dark Mode.
-
-### CI Enforcement
-
-- [x] Thresholds updated in `vite.config.ts`.
-  - Enforced high coverage for critical logic files (`mimic.ts`, `sound.ts`, `model.svelte.ts`, `dnd.ts`).
-
-### Final Polish & Fixes
-
-- [x] Fixed `FileSystemService` tests.
-  - Recreated `file-system.test.ts` to fix corruption.
-  - Aligned mock types with `FileSystemDirectoryHandle` interface.
-- [x] Resolved Linting & Type Errors.
-  - Fixed `no-explicit-any` in `sound.test.ts` and `schema.ts`.
-  - Fixed `no-unused-vars` in `file-system.test.ts` and `memory.ts`.
-  - Fixed `builder-model.test.ts` to match `LevelPack` schema (`name` vs `title`).
+- Verified that the `Brain` icon appears consistently across all representations of a variable (Grid, Held, Block).
+- Verified that the item on the ground disappears when the character steps on it.
+- Verified that the Loop block displays a clean token when a variable is used.

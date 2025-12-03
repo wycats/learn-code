@@ -13,7 +13,8 @@
 		Sun,
 		Triangle,
 		Cloud,
-		Key
+		Key,
+		Brain
 	} from 'lucide-svelte';
 
 	interface Props {
@@ -102,7 +103,10 @@
 			{#if item.type === 'key'}
 				<Key size={24} color="var(--amber-7)" fill="var(--amber-3)" />
 			{:else if item.type === 'number'}
-				<span class="number-item">{item.value}</span>
+				<div class="thought-token">
+					<Brain size={16} color="var(--blue-7)" />
+					<span class="number-item">{item.value}</span>
+				</div>
 			{:else if item.type === 'color'}
 				<div class="color-item" style:background-color={item.value}></div>
 			{/if}
@@ -187,15 +191,21 @@
 		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 	}
 
+	.thought-token {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		background: var(--surface-1);
+		padding: 4px 8px;
+		border-radius: var(--radius-round);
+		border: 2px solid var(--blue-3);
+	}
+
 	.number-item {
 		font-family: var(--font-mono);
 		font-weight: bold;
-		font-size: var(--font-size-3);
+		font-size: var(--font-size-1);
 		color: var(--text-1);
-		background: var(--surface-1);
-		padding: 2px 6px;
-		border-radius: var(--radius-2);
-		border: 1px solid var(--surface-4);
 	}
 
 	.color-item {

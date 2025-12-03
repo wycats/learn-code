@@ -131,7 +131,7 @@
 					id,
 					type: isGoal && !isCharacterHere ? 'goal' : isGoal ? 'grass' : type,
 					customTile,
-					item: !isCollected ? item : undefined
+					item: !isCollected && !isCharacterHere ? item : undefined
 				});
 			}
 		}

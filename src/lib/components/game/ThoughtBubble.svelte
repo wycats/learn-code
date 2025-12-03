@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HeldItem } from '$lib/game/types';
-	import { Key } from 'lucide-svelte';
+	import { Key, Brain } from 'lucide-svelte';
 	import { scale } from 'svelte/transition';
 
 	interface Props {
@@ -16,6 +16,7 @@
 			{#if item.type === 'key'}
 				<Key size={16} color="var(--amber-7)" />
 			{:else if item.type === 'number'}
+				<Brain size={16} color="var(--blue-7)" style="margin-right: 4px;" />
 				<span class="number">{item.value}</span>
 			{:else if item.type === 'color'}
 				<div class="color-swatch" style:background-color={item.value}></div>
