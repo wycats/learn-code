@@ -7,10 +7,4 @@
 
 ## Phase 19 (The Architect's Polish)
 
-- **Visual**: Implement Glassomorphic "Cover" block style for player occlusion.
-- **Builder**: Remove tile dropdown from Level Editor.
-- **Builder**: Implement custom input for Repeat Block count.
-- **Builder**: Disable targeting for "Infinity" loop count.
-- **Builder**: Update text "Use current workspace" -> "Use test level".
-- **Builder**: Implement Undo/Redo for Level Editor.
-- **Function UX**: Improve UX for creating and managing functions.
+(All items moved to Phase 30)

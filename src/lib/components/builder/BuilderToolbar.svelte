@@ -22,6 +22,7 @@
 	import ShareModal from './ShareModal.svelte';
 	import { fade, slide } from 'svelte/transition';
 	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
+	import { fileSystem } from '$lib/services/file-system';
 
 	interface Props {
 		builder: BuilderModel;
@@ -172,7 +173,7 @@
 			<button
 				class="action-btn"
 				onclick={() => builder.undo()}
-				disabled={builder.history.length === 0}
+				disabled={!builder.canUndo}
 				title="Undo"
 			>
 				<Undo size={20} />
@@ -180,34 +181,36 @@
 			<button
 				class="action-btn"
 				onclick={() => builder.redo()}
-				disabled={builder.future.length === 0}
+				disabled={!builder.canRedo}
 				title="Redo"
 			>
 				<Redo size={20} />
 			</button>
 
-			{#if builder.isLinked}
-				{#if builder.needsPermission}
-					<button
-						class="action-btn warning"
-						onclick={handleReconnect}
-						title="Permission Needed - Click to Reconnect"
-					>
-						<Link size={20} />
-					</button>
+			{#if fileSystem.isSupported}
+				{#if builder.isLinked}
+					{#if builder.needsPermission}
+						<button
+							class="action-btn warning"
+							onclick={handleReconnect}
+							title="Permission Needed - Click to Reconnect"
+						>
+							<Link size={20} />
+						</button>
+					{:else}
+						<button
+							class="action-btn success"
+							onclick={handleLink}
+							title="Linked to Disk (Click to Change)"
+						>
+							<Link size={20} />
+						</button>
+					{/if}
 				{:else}
-					<button
-						class="action-btn success"
-						onclick={handleLink}
-						title="Linked to Disk (Click to Change)"
-					>
+					<button class="action-btn" onclick={handleLink} title="Link to Disk">
 						<Link size={20} />
 					</button>
 				{/if}
-			{:else}
-				<button class="action-btn" onclick={handleLink} title="Link to Disk">
-					<Link size={20} />
-				</button>
 			{/if}
 
 			{#if statusMessage}
@@ -494,6 +497,12 @@
 
 	.level-select-wrapper {
 		position: relative;
+	}
+
+	@media (max-width: 600px) {
+		.level-select-wrapper {
+			display: none;
+		}
 	}
 
 	.level-trigger {

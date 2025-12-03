@@ -1,4 +1,5 @@
 import { GameModel } from './model.svelte';
+import { HistoryManager } from './history.svelte';
 import type {
 	LevelDefinition,
 	CellType,
@@ -79,22 +80,23 @@ export class BuilderModel {
 	currentProgram = $state<Block[]>([]);
 
 	// Undo/Redo History
-	history = $state<LevelDefinition[]>([]);
-	future = $state<LevelDefinition[]>([]);
-	isInteracting = false;
+	historyManager = new HistoryManager<LevelDefinition>();
+
+	get canUndo() {
+		return this.historyManager.canUndo;
+	}
+
+	get canRedo() {
+		return this.historyManager.canRedo;
+	}
 
 	pushState() {
-		// Deep clone the current level
-		this.history.push($state.snapshot(this.level));
-		if (this.history.length > 50) this.history.shift();
-		this.future = []; // Clear redo stack on new action
+		this.historyManager.pushState($state.snapshot(this.level));
 	}
 
 	undo() {
-		if (this.history.length === 0) return;
-		const prev = this.history.pop();
+		const prev = this.historyManager.undo($state.snapshot(this.level));
 		if (prev) {
-			this.future.push($state.snapshot(this.level));
 			// Replace current level in pack
 			const index = this.pack.levels.findIndex((l) => l.id === this.activeLevelId);
 			if (index !== -1) {
@@ -105,10 +107,8 @@ export class BuilderModel {
 	}
 
 	redo() {
-		if (this.future.length === 0) return;
-		const next = this.future.pop();
+		const next = this.historyManager.redo($state.snapshot(this.level));
 		if (next) {
-			this.history.push($state.snapshot(this.level));
 			// Replace current level in pack
 			const index = this.pack.levels.findIndex((l) => l.id === this.activeLevelId);
 			if (index !== -1) {
@@ -119,14 +119,11 @@ export class BuilderModel {
 	}
 
 	startInteraction() {
-		if (!this.isInteracting) {
-			this.pushState();
-			this.isInteracting = true;
-		}
+		this.historyManager.startInteraction($state.snapshot(this.level));
 	}
 
 	endInteraction() {
-		this.isInteracting = false;
+		this.historyManager.endInteraction();
 	}
 
 	get targetSelectionMode() {
@@ -515,12 +512,14 @@ export class BuilderModel {
 		}
 		if (this.level.functions[name]) return; // Already exists
 
+		this.pushState();
 		this.level.functions[name] = [];
 		this.syncGame();
 	}
 
 	deleteFunction(name: string) {
 		if (!this.level.functions) return;
+		this.pushState();
 		delete this.level.functions[name];
 		this.syncGame();
 	}

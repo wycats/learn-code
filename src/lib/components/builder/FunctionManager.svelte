@@ -14,9 +14,11 @@
 
 	function createFunction() {
 		if (!newFunctionName.trim()) return;
-		builder.createFunction(newFunctionName.trim());
+		const name = newFunctionName.trim();
+		builder.createFunction(name);
 		newFunctionName = '';
 		isCreating = false;
+		builder.editFunction(name);
 	}
 
 	function requestDelete(name: string) {

@@ -23,7 +23,16 @@
 </script>
 
 {#if builder.mode === 'test'}
-	<Game game={builder.game} architectMode={true} onExit={() => builder.setMode('edit')} />
+	<Game
+		game={builder.game}
+		architectMode={true}
+		onExit={() => builder.setMode('edit')}
+		onTarget={(target) => {
+			if (builder.targetingState.isActive) {
+				builder.targetingState.onToggle(target);
+			}
+		}}
+	/>
 {:else}
 	<div class="builder-interface" class:targeting-active={builder.targetingState.isActive}>
 		{#if builder.targetingState.isActive}

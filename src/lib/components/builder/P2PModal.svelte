@@ -27,6 +27,9 @@
 	let step = $state<Step>('initial');
 	let p2p = $state<P2PConnection | null>(null);
 	let qrCodeUrl = $state<string | null>(null);
+	let currentCodeData = $state<string | null>(null);
+	let showManualInput = $state(false);
+	let manualInputValue = $state('');
 	let status = $state<P2PStatus>('disconnected');
 	let error = $state<string | null>(null);
 	let dialog: HTMLDialogElement;
@@ -72,6 +75,7 @@
 			);
 
 			const offer = await p2p.createOffer();
+			currentCodeData = offer;
 			qrCodeUrl = await ShareService.generateQRCode(offer);
 		} catch (e) {
 			error = 'Failed to create offer';
@@ -104,6 +108,7 @@
 		try {
 			if (step === 'receiver-scan-offer') {
 				const answer = await p2p.handleOffer(scannedData);
+				currentCodeData = answer;
 				qrCodeUrl = await ShareService.generateQRCode(answer);
 				step = 'receiver-answer';
 			} else if (step === 'sender-scan-answer') {
@@ -111,9 +116,16 @@
 				// Wait for connection...
 			}
 		} catch (e) {
-			error = 'Invalid QR Code';
+			error = 'Invalid Code';
 			console.error(e);
 		}
+	}
+
+	async function handleManualSubmit() {
+		if (!manualInputValue) return;
+		await handleScan(manualInputValue);
+		showManualInput = false;
+		manualInputValue = '';
 	}
 
 	function startTransfer() {
@@ -176,6 +188,19 @@
 						<img src={qrCodeUrl} alt="Offer QR Code" />
 					</div>
 					<p class="instruction">Ask the receiver to scan this code.</p>
+
+					<details class="manual-code-details">
+						<summary>Show Manual Code</summary>
+						<div class="manual-code-box">
+							<textarea readonly value={currentCodeData} onclick={(e) => e.currentTarget.select()}
+							></textarea>
+							<button
+								class="btn-copy"
+								onclick={() => navigator.clipboard.writeText(currentCodeData || '')}>Copy</button
+							>
+						</div>
+					</details>
+
 					<button class="btn-next" onclick={() => (step = 'sender-scan-answer')}>
 						Next: Scan Receiver's Answer <ArrowRight size={16} />
 					</button>
@@ -186,9 +211,23 @@
 		{:else if step === 'sender-scan-answer'}
 			<div class="step-container">
 				<h3>Step 2: Scan Receiver's Answer</h3>
-				<div class="scanner-wrapper">
-					<QRScanner onScan={handleScan} onError={(e) => console.warn(e)} />
-				</div>
+				{#if showManualInput}
+					<div class="manual-input-box">
+						<textarea bind:value={manualInputValue} placeholder="Paste code here..."></textarea>
+						<div class="manual-actions">
+							<button class="btn-secondary" onclick={() => (showManualInput = false)}>Cancel</button
+							>
+							<button class="btn-primary" onclick={handleManualSubmit}>Submit</button>
+						</div>
+					</div>
+				{:else}
+					<div class="scanner-wrapper">
+						<QRScanner onScan={handleScan} onError={(e) => console.warn(e)} />
+					</div>
+					<button class="btn-text" onclick={() => (showManualInput = true)}
+						>Enter Manual Code</button
+					>
+				{/if}
 				<button class="btn-back" onclick={() => (step = 'sender-offer')}>
 					<ArrowLeft size={16} /> Back to Offer
 				</button>
@@ -196,9 +235,23 @@
 		{:else if step === 'receiver-scan-offer'}
 			<div class="step-container">
 				<h3>Step 1: Scan Sender's Offer</h3>
-				<div class="scanner-wrapper">
-					<QRScanner onScan={handleScan} onError={(e) => console.warn(e)} />
-				</div>
+				{#if showManualInput}
+					<div class="manual-input-box">
+						<textarea bind:value={manualInputValue} placeholder="Paste code here..."></textarea>
+						<div class="manual-actions">
+							<button class="btn-secondary" onclick={() => (showManualInput = false)}>Cancel</button
+							>
+							<button class="btn-primary" onclick={handleManualSubmit}>Submit</button>
+						</div>
+					</div>
+				{:else}
+					<div class="scanner-wrapper">
+						<QRScanner onScan={handleScan} onError={(e) => console.warn(e)} />
+					</div>
+					<button class="btn-text" onclick={() => (showManualInput = true)}
+						>Enter Manual Code</button
+					>
+				{/if}
 			</div>
 		{:else if step === 'receiver-answer'}
 			<div class="step-container">
@@ -208,6 +261,19 @@
 						<img src={qrCodeUrl} alt="Answer QR Code" />
 					</div>
 					<p class="instruction">Ask the sender to scan this code.</p>
+
+					<details class="manual-code-details">
+						<summary>Show Manual Code</summary>
+						<div class="manual-code-box">
+							<textarea readonly value={currentCodeData} onclick={(e) => e.currentTarget.select()}
+							></textarea>
+							<button
+								class="btn-copy"
+								onclick={() => navigator.clipboard.writeText(currentCodeData || '')}>Copy</button
+							>
+						</div>
+					</details>
+
 					<div class="status">Waiting for connection...</div>
 				{:else}
 					<div class="loading">Generating Answer...</div>
@@ -418,5 +484,93 @@
 	.error-state {
 		color: var(--red-6);
 		text-align: center;
+	}
+
+	.manual-code-details {
+		width: 100%;
+		max-width: 300px;
+		text-align: left;
+		margin-top: var(--size-2);
+	}
+
+	.manual-code-details summary {
+		cursor: pointer;
+		color: var(--brand);
+		font-weight: bold;
+		margin-bottom: var(--size-2);
+	}
+
+	.manual-code-box {
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-2);
+	}
+
+	.manual-code-box textarea {
+		width: 100%;
+		height: 100px;
+		padding: var(--size-2);
+		border: 1px solid var(--surface-3);
+		border-radius: var(--radius-2);
+		background-color: var(--surface-2);
+		color: var(--text-2);
+		font-family: var(--font-mono);
+		font-size: var(--font-size-0);
+		resize: none;
+	}
+
+	.btn-copy {
+		background-color: var(--surface-2);
+		border: 1px solid var(--surface-3);
+		border-radius: var(--radius-2);
+		padding: var(--size-2);
+		cursor: pointer;
+		color: var(--text-1);
+		font-weight: bold;
+	}
+
+	.btn-copy:hover {
+		background-color: var(--surface-3);
+	}
+
+	.manual-input-box {
+		width: 100%;
+		max-width: 300px;
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-2);
+	}
+
+	.manual-input-box textarea {
+		width: 100%;
+		height: 150px;
+		padding: var(--size-2);
+		border: 1px solid var(--surface-3);
+		border-radius: var(--radius-2);
+		background-color: var(--surface-1);
+		color: var(--text-1);
+		font-family: var(--font-mono);
+		font-size: var(--font-size-0);
+		resize: none;
+	}
+
+	.manual-actions {
+		display: flex;
+		gap: var(--size-2);
+		justify-content: flex-end;
+	}
+
+	.btn-text {
+		background: none;
+		border: none;
+		color: var(--brand);
+		font-weight: bold;
+		cursor: pointer;
+		margin-top: var(--size-2);
+		text-decoration: underline;
+	}
+
+	.btn-text:hover {
+		color: var(--brand-dark);
 	}
 </style>

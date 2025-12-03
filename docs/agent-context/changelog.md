@@ -522,15 +522,56 @@ Refined the visual representation of variables to strengthen the "Memory" metaph
 - **Grid Polish**:
   - **Overlap Handling**: Hidden items on the ground when the character is standing on them.
 
-## Phase 29 Polish: Variable Visual Refinement (Completed)
+## Phase 30: Builder Polish & Undo/Redo (Completed)
 
 **Date:** December 2, 2025
 
 **Summary:**
-Further refined the "Variables" visuals based on user feedback. The "Thought Bubble" is now persistent (showing an empty state) to solidify the memory metaphor, and items on the ground now "dock" to the corner when the character stands on them, ensuring they remain visible. Additionally, implemented a smooth "pickup" animation where the item shrinks and moves into the thought bubble when collected.
+Addressed deferred items from Phase 19 to refine the Level Builder experience. Implemented a robust Undo/Redo system for the Level Editor, allowing users to revert changes to terrain, logic, and settings. Polished the visual and interaction design of the Builder, including a Glassomorphic "Cover" block, improved Repeat Block input, and a smoother Function creation workflow.
 
 **Key Deliverables:**
 
-- **Persistent Thought Bubble**: Always visible; shows dashed outline/gray brain when empty.
-- **Corner Docking**: Ground items move to the top-right corner when the character overlaps them.
-- **Pickup Animation**: Implemented `crossfade` transition for items moving from the grid to the thought bubble.
+- **Undo/Redo System**:
+  - Implemented history stack in `BuilderModel` using `$state.snapshot`.
+  - Integrated `pushState()` calls across all builder actions (Terrain, Logic, Settings, Functions).
+- **Visual Polish**:
+  - **Glassomorphism**: Verified "Cover" block style.
+  - **Tile Dropdown**: Removed redundant dropdown in favor of the grid-based tool palette.
+- **Interaction Polish**:
+  - **Repeat Block**: Replaced standard number input with a custom, touch-friendly text input.
+  - **Infinity Targeting**: Disabled highlighting for the Infinity button to prevent tutorial confusion.
+  - **Function UX**: Implemented auto-edit behavior when creating a new function.
+  - **Text Updates**: Changed "Set as Start" to "Use Test Level" for clarity.
+
+## Phase 30.5: Fresh Eyes Polish (Completed)
+
+**Date:** December 3, 2025
+
+**Summary:**
+Addressed friction points identified in the "Fresh Eyes Review II" and user feedback, focusing on mobile ergonomics, P2P sharing fallback, and code maintainability. Refactored the Undo/Redo logic into a generic `HistoryManager` class, optimized the Builder toolbar for mobile devices, and added a manual fallback for P2P sharing to support users with camera/scanning issues.
+
+**Key Deliverables:**
+
+- **HistoryManager Refactoring**:
+  - Extracted Undo/Redo logic from `BuilderModel` into a generic `HistoryManager<T>` class.
+  - Added comprehensive unit tests for the new class.
+  - Integrated `HistoryManager` back into `BuilderModel`.
+- **Mobile Polish**:
+  - **Toolbar**: Hid the "Level Selector" on mobile screens (<600px) to reduce clutter.
+  - **Browser Support**: Wrapped "Link to Disk" buttons in a feature check for `fileSystem.isSupported`.
+- **P2P Manual Fallback**:
+  - **Show Code**: Added ability to reveal the raw connection string in the P2P modal.
+  - **Enter Code**: Added manual input mode for pasting connection strings when scanning fails.
+  - **UI**: Implemented clean, toggleable UI for manual code entry/display.
+
+## Phase 30.5: Fresh Eyes Polish (Completed)
+
+**Goal:** Address friction points identified in the "Fresh Eyes Review II" and user feedback, focusing on mobile ergonomics, P2P sharing fallback, and code maintainability.
+
+### Key Achievements
+
+- **HistoryManager Refactoring**: Extracted Undo/Redo logic from `BuilderModel` into a generic `HistoryManager<T>` class, improving code maintainability and testability.
+- **Mobile Polish**: Optimized the Builder toolbar for mobile devices by hiding the "Level Selector" on screens narrower than 600px.
+- **Browser Support**: Added graceful fallbacks for the File System Access API, ensuring users on unsupported browsers (like Firefox) don't see broken "Link to Disk" buttons.
+- **P2P Manual Fallback**: Implemented a manual code entry/display system for P2P sharing, providing a robust alternative when QR code scanning fails.
+- **Verification**: Added comprehensive unit tests for `HistoryManager` and verified UI changes manually.

@@ -719,18 +719,19 @@
 					{/each}
 					<div class="custom-input-wrapper">
 						<input
-							type="number"
+							type="text"
+							inputmode="numeric"
 							class="config-input"
 							class:highlighted={highlight?.targets?.includes(`config:loop:custom`)}
 							value={typeof primarySelectedBlock.count === 'number'
 								? primarySelectedBlock.count
 								: ''}
 							placeholder="#"
-							min="1"
-							max="99"
 							oninput={(e) => {
 								const val = parseInt(e.currentTarget.value);
-								updateLoopCount(isNaN(val) ? undefined : val);
+								if (!isNaN(val) && val > 0) {
+									updateLoopCount(val);
+								}
 							}}
 							onclick={(e) => e.stopPropagation()}
 						/>
@@ -751,7 +752,6 @@
 						<button
 							class="config-btn infinity"
 							class:active={primarySelectedBlock.count === undefined}
-							class:highlighted={highlight?.targets?.includes(`config:loop:infinity`)}
 							onclick={() => updateLoopCount(undefined)}
 							title="Repeat Forever"
 							data-value="infinity"

@@ -432,3 +432,29 @@
 
 - We created reusable mock implementations in test files.
 - We aligned these mocks with the TypeScript interfaces to ensure type safety in tests.
+
+## Phase 30: Builder Polish & Undo/Redo
+
+### 50. Undo/Redo via State Snapshots
+
+**Decision:** Implement Undo/Redo by capturing full state snapshots using `$state.snapshot` rather than the Command Pattern.
+**Context:** The `BuilderModel` state is complex and deeply nested (grid, actors, logic, settings). Implementing a Command Pattern (reversible actions) for every possible mutation would be error-prone and verbose. Svelte 5's `$state.snapshot` allows us to cheaply serialize the reactive state.
+**Consequence:**
+
+- We store a stack of state objects.
+- "Undo" simply replaces the current state with a previous snapshot.
+- This approach is memory-intensive but acceptable for the scale of data we are handling (small JSON levels).
+
+## Phase 30.5: Fresh Eyes Polish
+
+### Generic HistoryManager
+
+- **Context**: The Undo/Redo logic in `BuilderModel` was becoming complex and tightly coupled.
+- **Decision**: Extract the logic into a generic `HistoryManager<T>` class.
+- **Rationale**: This separates concerns, makes the history logic reusable (potentially for the Game loop later), and simplifies unit testing.
+
+### P2P Manual Fallback
+
+- **Context**: QR code scanning is convenient but fragile (lighting, camera quality).
+- **Decision**: Add a manual "Copy/Paste Code" option as a fallback.
+- **Rationale**: Ensures that P2P sharing is accessible even when hardware or environmental conditions prevent scanning. We chose a simple text-based exchange (base64 encoded JSON) as it is universal.

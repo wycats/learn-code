@@ -117,6 +117,7 @@
 				<IconPicker
 					value={builder.level.icon}
 					onChange={(icon) => {
+						builder.pushState();
 						builder.level.icon = icon;
 						builder.syncGame();
 					}}
@@ -126,12 +127,22 @@
 				<input
 					type="text"
 					class="title-input"
-					bind:value={builder.level.name}
+					value={builder.level.name}
+					onchange={(e) => {
+						builder.pushState();
+						builder.level.name = e.currentTarget.value;
+						builder.syncGame();
+					}}
 					placeholder="Level Name"
 				/>
 				<textarea
 					class="description-input"
-					bind:value={builder.level.description}
+					value={builder.level.description}
+					onchange={(e) => {
+						builder.pushState();
+						builder.level.description = e.currentTarget.value;
+						builder.syncGame();
+					}}
 					placeholder="Enter a short description or instruction for the level..."
 					rows="2"
 				></textarea>
@@ -139,7 +150,13 @@
 				<div class="settings-grid">
 					<div class="setting-item">
 						<div class="picker-wrapper">
-							<button class="difficulty-badge" onclick={toggleDifficulty}>
+							<button
+								class="difficulty-badge"
+								onclick={() => {
+									builder.pushState();
+									toggleDifficulty();
+								}}
+							>
 								{builder.level.difficulty || 'beginner'}
 							</button>
 						</div>
@@ -165,6 +182,7 @@
 										class="option"
 										class:selected={option.value === builder.level.defaultTerrain}
 										onclick={(e) => {
+											builder.pushState();
 											selectBiome(option.value);
 											// eslint-disable-next-line @typescript-eslint/no-explicit-any
 											(e.currentTarget.closest('[popover]') as any)?.hidePopover();
@@ -181,13 +199,26 @@
 
 					<div class="constraints">
 						<div class="constraint-line">
-							<input type="checkbox" bind:checked={parEnabled} id="par-toggle" />
+							<input
+								type="checkbox"
+								checked={parEnabled}
+								onchange={(e) => {
+									builder.pushState();
+									parEnabled = e.currentTarget.checked;
+								}}
+								id="par-toggle"
+							/>
 							<label for="par-toggle" class:disabled={!parEnabled}>
 								Solve in
 								<div class="inline-edit" class:disabled={!parEnabled}>
 									<input
 										type="number"
-										bind:value={builder.level.solutionPar}
+										value={builder.level.solutionPar}
+										onchange={(e) => {
+											builder.pushState();
+											builder.level.solutionPar = parseInt(e.currentTarget.value);
+											builder.syncGame();
+										}}
 										min="1"
 										max="99"
 										disabled={!parEnabled}
@@ -199,13 +230,26 @@
 						</div>
 
 						<div class="constraint-line">
-							<input type="checkbox" bind:checked={maxBlocksEnabled} id="max-toggle" />
+							<input
+								type="checkbox"
+								checked={maxBlocksEnabled}
+								onchange={(e) => {
+									builder.pushState();
+									maxBlocksEnabled = e.currentTarget.checked;
+								}}
+								id="max-toggle"
+							/>
 							<label for="max-toggle" class:disabled={!maxBlocksEnabled}>
 								Max
 								<div class="inline-edit" class:disabled={!maxBlocksEnabled}>
 									<input
 										type="number"
-										bind:value={builder.level.maxBlocks}
+										value={builder.level.maxBlocks}
+										onchange={(e) => {
+											builder.pushState();
+											builder.level.maxBlocks = parseInt(e.currentTarget.value);
+											builder.syncGame();
+										}}
 										min={parEnabled ? builder.level.solutionPar : 1}
 										max="50"
 										disabled={!maxBlocksEnabled}
@@ -222,7 +266,7 @@
 					<div class="starting-code-section">
 						<button class="btn-secondary" onclick={handleSnapshot}>
 							<Camera size={20} />
-							{snapshotStatus === 'saved' ? 'Saved!' : 'Set as Start'}
+							{snapshotStatus === 'saved' ? 'Saved!' : 'Use Test Level'}
 						</button>
 					</div>
 				</div>

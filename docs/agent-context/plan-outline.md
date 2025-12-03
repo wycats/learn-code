@@ -267,15 +267,33 @@
 - [x] **Integration Tests**: Add integration tests for complex flows.
 - [x] **CI Enforcement**: Tune coverage thresholds to block regressions.
 
-## Phase 29: Variable Visual Feedback
+## Phase 29: Variable Visual Feedback (Completed)
 
 **Goal:** Address visual feedback regarding the variables feature to improve clarity and usability.
 
-- [ ] **Visual Audit**: Review current variable interactions and visual cues.
-- [ ] **Feedback Implementation**: Implement specific visual improvements requested by the user.
-- [ ] **Refinement**: Polish animations and transitions for variable states.
+- [x] **Visual Audit**: Review current variable interactions and visual cues.
+- [x] **Feedback Implementation**: Implement specific visual improvements requested by the user (Persistent Thought Bubble, Corner Docking, Pickup Animation).
+- [x] **Refinement**: Polish animations and transitions for variable states.
 
-## Phase 30: Authentication Strategy
+## Phase 30: Builder Polish & Undo/Redo (Completed)
+
+**Goal:** Address the deferred items from Phase 19 to refine the Level Builder experience, specifically focusing on Undo/Redo capabilities and visual refinements.
+
+- [x] **Undo/Redo System**: Implement a robust Undo/Redo history for the Level Builder.
+- [x] **Visual Polish**: Glassomorphic "Cover" block style, remove tile dropdown.
+- [x] **Interaction Polish**: Custom input for Repeat Block count, disable targeting for "Infinity".
+- [x] **Function UX**: Improve the UX for creating and managing functions.
+
+## Phase 30.5: Fresh Eyes Polish (Completed)
+
+**Goal:** Address friction points identified in the "Fresh Eyes Review II" and user feedback, focusing on mobile ergonomics, P2P sharing fallback, and code maintainability.
+
+- [x] **HistoryManager Refactoring**: Extract Undo/Redo logic into a generic class.
+- [x] **Mobile Polish**: Optimize Builder toolbar for mobile (hide Level Selector).
+- [x] **Browser Support**: Graceful fallback for File System Access API.
+- [x] **P2P Manual Fallback**: Add manual code entry/display for P2P sharing.
+
+## Phase 31: Authentication Strategy
 
 **Goal:** Evaluate and implement a robust authentication strategy to support cloud persistence and user accounts.
 
@@ -284,7 +302,7 @@
 - [ ] **Implementation**: Implement the chosen authentication strategy.
 - [ ] **Cloud Persistence**: Enable saving user progress and levels to the cloud.
 
-## Phase 31: Feedback System
+## Phase 32: Feedback System
 
 **Goal:** Create a robust feedback loop that empowers users to report issues with full context.
 
