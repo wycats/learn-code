@@ -505,3 +505,19 @@ Hardened the codebase by significantly increasing test coverage and resolving te
 - **Refactoring**:
   - **Dependency Injection**: Refactored `FileSystemService` and `PersistenceService` for better testability.
   - **Mocking**: Improved mock implementations for browser APIs (`AudioContext`, `FileSystemHandle`).
+
+## Phase 29: Variable Visual Feedback (Completed)
+
+**Date:** December 2, 2025
+
+**Summary:**
+Refined the visual representation of variables to strengthen the "Memory" metaphor. Added a "Brain" icon to the held item (Thought Bubble) and variable slots in blocks, while keeping the item on the ground simple (raw value). This distinction clarifies that the "Brain" represents the character's internal storage. Also improved grid rendering to prevent visual clutter when the character stands on an item.
+
+**Key Deliverables:**
+
+- **Visual Metaphor**:
+  - **Thought Bubble**: Added `Brain` icon to indicate "Memory".
+  - **Ground Item**: Kept simple (no icon) to distinguish from held state.
+  - **Variable Slots**: Added "Mini Brain Token" to Loop blocks when a variable is used.
+- **Grid Polish**:
+  - **Overlap Handling**: Hidden items on the ground when the character is standing on them.

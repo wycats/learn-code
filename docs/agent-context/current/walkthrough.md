@@ -1,26 +1,42 @@
 # Phase 29: Variable Visual Feedback
 
-## Goal
+## Context
 
-Address visual feedback regarding the variables feature to improve clarity and usability. The focus is on making the "Thought Bubble" metaphor and variable interactions (picking up, holding, using) more intuitive and visually polished.
+User feedback indicated that the "Variables" feature (Thought Bubble) was visually confusing. Specifically:
+
+1. It wasn't clear that the "Brain" represented memory/storage.
+2. The connection between the held item and the variable slot in blocks was weak.
+3. The item on the ground looked too much like the held item (initially), causing confusion.
+4. When the character stood on an item, the visual overlap was messy.
 
 ## Changes
 
-### 1. Visual Consistency for Variables
+### 1. Visual Metaphor Refinement
 
-- **Cell Rendering**: Updated `Cell.svelte` to render "Number" items (variables) with a `Brain` icon alongside the value, wrapped in a styled container (`.thought-token`). This reinforces the "Thought Bubble" metaphor on the grid.
-- **Held Item Rendering**: Updated `ThoughtBubble.svelte` (the floating indicator above the character) to also include the `Brain` icon next to the number.
+- **Thought Bubble (Held Item)**: Added a "Brain" icon to the `ThoughtBubble` component to explicitly link it to the concept of "Memory/Storage".
+- **Ground Item**: Explicitly _removed_ the "Brain" icon from the item on the ground (`Cell.svelte`). The ground item is just the raw value (e.g., a number). The "Brain" only appears when the character _picks it up_ (puts it in memory).
 
-### 2. Loop Block Polish
+### 2. Block Visualization
 
-- **Variable Badge**: Updated `Block.svelte` to render a polished `.variable-token-mini` inside the Loop block when a variable is assigned. This replaces the raw `Brain` icon with a styled token that matches the rest of the UI, preventing visual clashes with the block label.
+- **Loop Block**: Updated the variable badge on the Loop block to display a "Mini Token" with the Brain icon when a variable is assigned. This creates a strong visual link: "The thing in the thought bubble goes here".
 
-### 3. Interaction Polish
+### 3. Grid Cleanup
 
-- **Overlap Handling**: Updated `Grid.svelte` to hide the item on the ground when the character occupies the same cell. This prevents the "weird overlap" where the character (and their held thought bubble) would visually clash with the item they are standing on.
+- **Overlap Handling**: Updated `Grid.svelte` to hide the item on the ground if the character is currently standing on that cell (`!isCharacterHere`). This prevents the "double rendering" artifact where the character and the item fight for visual space, clarifying that the character has "covered" or "picked up" the item.
+
+## Technical Details
+
+- **Components Modified**:
+  - `Cell.svelte`: Reverted to simple number display (no Brain).
+  - `ThoughtBubble.svelte`: Added `Brain` icon from `lucide-svelte`.
+  - `Block.svelte`: Added conditional rendering for `variable-token-mini` inside the loop badge.
+  - `Grid.svelte`: Added logic to check `isCharacterHere` before rendering the cell's item.
 
 ## Verification
 
-- Verified that the `Brain` icon appears consistently across all representations of a variable (Grid, Held, Block).
-- Verified that the item on the ground disappears when the character steps on it.
-- Verified that the Loop block displays a clean token when a variable is used.
+- **Visual Check**:
+  - Ground item: Just a number.
+  - Held item: Brain icon + Number.
+  - Loop block (with variable): Brain icon inside the badge.
+  - Character on item: Item hidden (no overlap).
+- **Type Check**: `pnpm check` passed.
