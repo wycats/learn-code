@@ -317,12 +317,14 @@ export class StackInterpreter {
 	}
 
 	stepBack(): boolean {
-		if (this.history.length <= 1) return false;
+		if (this.history.length === 0) return false;
 
-		this.history.pop(); // Remove current state
-		const previous = this.history[this.history.length - 1];
-		this.restoreSnapshot(previous);
-		return true;
+		const previous = this.history.pop(); // Remove and get current state
+		if (previous) {
+			this.restoreSnapshot(previous);
+			return true;
+		}
+		return false;
 	}
 
 	executeBlockAction(block: Block): boolean {

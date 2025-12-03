@@ -8,7 +8,6 @@ export type ItemType = z.infer<typeof ItemTypeSchema>;
 
 export const HeldItemSchema = z.object({
 	type: ItemTypeSchema,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	value: z.any(), // z.union([z.boolean(), z.number(), z.string()])
 	icon: z.string()
 });

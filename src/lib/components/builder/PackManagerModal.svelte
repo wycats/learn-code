@@ -1,12 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		listPacks,
-		loadPack,
-		deletePack,
-		createDefaultPack,
-		savePack
-	} from '$lib/game/persistence';
+	import { persistence, createDefaultPack } from '$lib/game/persistence';
 	import { fileSystem } from '$lib/services/file-system';
 	import { localPacksStore } from '$lib/game/local-packs.svelte';
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
@@ -28,7 +22,7 @@
 	let isFileSystemSupported = fileSystem.isSupported;
 
 	onMount(async () => {
-		packs = await listPacks();
+		packs = await persistence.listPacks();
 		dialog?.showModal();
 	});
 
@@ -46,8 +40,8 @@
 
 	async function confirmDelete() {
 		if (deletingPackId) {
-			await deletePack(deletingPackId);
-			packs = await listPacks();
+			await persistence.deletePack(deletingPackId);
+			packs = await persistence.listPacks();
 			deletingPackId = null;
 		}
 	}
@@ -66,11 +60,11 @@
 	}
 
 	async function saveEdit(id: string) {
-		const pack = await loadPack(id);
+		const pack = await persistence.loadPack(id);
 		if (pack) {
 			pack.name = editName;
 			pack.description = editDesc;
-			await savePack(pack);
+			await persistence.savePack(pack);
 
 			// If this is the currently loaded pack, update the builder too
 			if (builder.pack.id === id) {
@@ -79,7 +73,7 @@
 			}
 
 			editingPackId = null;
-			packs = await listPacks();
+			packs = await persistence.listPacks();
 		}
 	}
 

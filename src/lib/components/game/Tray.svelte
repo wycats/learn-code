@@ -631,7 +631,8 @@
 							clearHighlight: () => {},
 							scrollIntoView: () => {},
 							getBoundingRect: () => new DOMRect(),
-							focus: () => document.querySelector('[data-block-id="program-list"]')?.focus()
+							focus: () =>
+								(document.querySelector('[data-block-id="program-list"]') as HTMLElement)?.focus()
 						}
 					}}
 					use:dropTarget={{
@@ -664,7 +665,8 @@
 										highlight: () => {},
 										clearHighlight: () => {},
 										scrollIntoView: () => {},
-										getBoundingRect: () => new DOMRect()
+										getBoundingRect: () => new DOMRect(),
+										focus: () => {}
 									}
 								}}
 								use:dropTarget={{

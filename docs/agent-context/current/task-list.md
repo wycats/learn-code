@@ -1,32 +1,43 @@
-# Task List: Phase 27
+# Phase 28: Test Coverage & Quality Assurance
 
-## Analysis & Design
+**Goal:** Increase test coverage to a respectable level (e.g., 70%+) to ensure stability and prevent regressions.
 
-- [x] Analyze current `dnd.ts` and identify common patterns.
-- [x] Analyze `Tray.svelte` and `Block.svelte` for "Click-Click" logic duplication.
-- [x] Propose a new directory structure for shared interaction primitives.
-- [x] **STOP**: Review the proposed architecture with the user.
+## Tasks
 
-## Implementation: Interaction Primitives
+- [x] **Coverage Analysis**
+  - [x] Run coverage report and identify critical low-coverage areas.
+  - [x] Prioritize areas based on risk and complexity.
 
-- [x] Define `InteractionRole` and `DataType` types.
-- [x] Implement `InteractionRegistry` (Logical & Visual).
-- [x] Implement `InteractionSession` (State Machine).
-- [x] Implement `InteractionManager` (Orchestrator).
-- [x] Implement `use:interactionTarget` Svelte Action.
-- [x] Refactor Drag & Drop adapters into a unified system.
-- [x] Extract "Click-Click" state machine into a reusable store or class.
-- [x] Implement Focus Management primitive.
+- [x] **Builder Model (`src/lib/game/builder-model.svelte.ts`)**
+  - [x] Test `setTool` and tool switching logic.
+  - [x] Test `updateCell` and `updateActor` methods.
+  - [x] Test `undo`/`redo` specifically for builder state.
 
-## Implementation: UI Components
+- [x] **Interpreter (`src/lib/game/mimic.ts`)**
+  - [x] Test error handling (hitting walls, invalid moves).
+  - [x] Test complex control flow (nested loops, function calls).
+  - [x] Test generator state transitions.
+  - [x] Test game mechanics (hazards, ice, pick-up).
 
-- [x] Refactor `Block.svelte` to use new primitives.
-- [x] Refactor `Tray.svelte` to use new primitives.
-- [x] Standardize Modal components (Native `<dialog>` & `popover`).
+- [x] **Sound Manager (`src/lib/game/sound.ts`)**
+  - [x] Mock `AudioContext` and `AudioBuffer`.
+  - [x] Test `playFile` and `playAmbient` logic.
+  - [x] Test mute/unmute state persistence.
 
-## Testing
+- [x] **File System Service (`src/lib/services/file-system.ts`)**
+  - [x] Refactor to Interface/Implementation pattern.
+  - [x] Create `InMemoryFileSystemService` for testing.
+  - [x] Test `savePack` and `loadPack` flows (via integration/fakes).
 
-- [x] Unit tests for Drag & Drop primitives.
-- [x] Unit tests for Click-Click logic.
-- [x] Unit tests for Focus Management.
-- [x] Integration tests for `Tray` and `Block` using new components.
+- [x] **Drag and Drop Adapters (`src/lib/interactions/dnd.ts`)**
+  - [x] Test `draggable` and `dropTarget` adapter creation.
+  - [x] Test event mapping.
+
+- [x] **Visual Regression Expansion**
+  - [x] Add tests for Mobile Layouts (Game & Builder).
+  - [x] Add tests for Modals (P2P, Share, Settings).
+  - [x] Add tests for Dark Mode specific components.
+
+- [x] **CI Enforcement**
+  - [x] Tune coverage thresholds in `vitest.config.ts` to block regressions.
+  - [x] Ensure CI pipeline runs all tests and reports coverage correctly.

@@ -401,3 +401,34 @@
 
 - The toggle button cycles through three states.
 - We prioritize immediate visual feedback (forcing Dark/Light) over returning to "System" (which is the default state but might not change the visual appearance).
+
+## Phase 28: Test Coverage & Quality Assurance
+
+### 47. Dependency Injection for Services
+
+**Decision:** Refactor `FileSystemService` and `PersistenceService` to use Dependency Injection (DI) via constructor arguments in models.
+**Context:** Previously, these services were imported directly as singletons or global objects. This made unit testing `BuilderModel` and `GameModel` difficult because we couldn't easily mock the file system or local storage.
+**Consequence:**
+
+- `BuilderModel` now accepts `persistenceService` and `fileSystemService` in its constructor.
+- We created `InMemoryFileSystemService` and `InMemoryPersistenceService` implementations for fast, isolated unit tests.
+- The production code uses default parameter values to inject the real services, maintaining ease of use.
+
+### 48. Strict Linting Enforcement
+
+**Decision:** Enable and enforce strict ESLint rules, specifically `no-explicit-any` and `no-unused-vars`.
+**Context:** The codebase had accumulated "lazy" typing (`any`) and unused variables, which are potential sources of bugs and make refactoring harder.
+**Consequence:**
+
+- We spent time fixing or explicitly suppressing (with justification) all lint errors.
+- `zod` schemas now use `z.preprocess` with safe casting instead of raw `any` casts where necessary.
+- Test files use `_` prefix for unused mock arguments to signal intent.
+
+### 49. Mocking Strategy for Browser APIs
+
+**Decision:** Use `vi.stubGlobal` and custom mock classes for browser APIs like `AudioContext` and `FileSystemHandle`.
+**Context:** `jsdom` (our test environment) does not implement these modern APIs. We needed a way to test logic that depends on them without mocking the entire universe.
+**Consequence:**
+
+- We created reusable mock implementations in test files.
+- We aligned these mocks with the TypeScript interfaces to ensure type safety in tests.

@@ -210,7 +210,11 @@
 <a name='L149'></a><a href='#L149'>149</a>
 <a name='L150'></a><a href='#L150'>150</a>
 <a name='L151'></a><a href='#L151'>151</a>
-<a name='L152'></a><a href='#L152'>152</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -226,6 +230,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -235,16 +253,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -372,46 +380,44 @@
 	}
 &nbsp;
 	let { onReplay, onNext, hasNextLevel<span class="cstat-no" title="statement not covered" > }: Props = $props();</span>
+&nbsp;
+	let dialog: HTMLDialogElement;
+&nbsp;
+	$effect(() =&gt; {
+		dialog?.showModal();
+	});
 &lt;/script&gt;
 &nbsp;
-&lt;div class="overlay success"&gt;
-	&lt;div class="modal"&gt;
-		&lt;Stack gap="var(--size-4)" align="center"&gt;
-			&lt;h2&gt;&lt;PartyPopper size={<span class="cstat-no" title="statement not covered" >32} /&gt; Level Complete!&lt;/h2&gt;</span>
-			&lt;p&gt;Great job! You solved the puzzle.&lt;/p&gt;
-			&lt;div class="actions"&gt;
-				&lt;button class="btn-secondary" onclick={onReplay}&gt;
-					&lt;RotateCcw size={<span class="cstat-no" title="statement not covered" >16} /&gt; Replay</span>
+&lt;dialog
+	bind:this={dialog}
+	class="win-modal"
+	onclose={onReplay}
+	oncancel={(e) =&gt; {
+		e.preventDefault(); // Prevent closing on Esc if we want to force a choice?
+		// Actually, for WinModal, maybe Esc should just replay or do nothing?
+		// Let's allow Esc to close (replay) for now as "light dismissal"
+	}}
+&gt;
+	&lt;Stack gap="var(--size-4)" align="center"&gt;
+		&lt;h2&gt;&lt;PartyPopper size={<span class="cstat-no" title="statement not covered" >32} /&gt; Level Complete!&lt;/h2&gt;</span>
+		&lt;p&gt;Great job! You solved the puzzle.&lt;/p&gt;
+		&lt;div class="actions"&gt;
+			&lt;button class="btn-secondary" onclick={onReplay}&gt;
+				&lt;RotateCcw size={<span class="cstat-no" title="statement not covered" >16} /&gt; Replay</span>
+			&lt;/button&gt;
+			{#if hasNextLevel}
+				&lt;button class="btn-primary" onclick={onNext} autofocus&gt;
+					Next Level &lt;ChevronRight size={<span class="cstat-no" title="statement not covered" >16} /&gt;</span>
 				&lt;/button&gt;
-				{#if hasNextLevel}
-					&lt;button class="btn-primary" onclick={onNext}&gt;
-						Next Level &lt;ChevronRight size={<span class="cstat-no" title="statement not covered" >16} /&gt;</span>
-					&lt;/button&gt;
-				{:else}
-					&lt;p class="finished"&gt;You finished all available levels!&lt;/p&gt;
-				{/if}
-			&lt;/div&gt;
-		&lt;/Stack&gt;
-	&lt;/div&gt;
-&lt;/div&gt;
+			{:else}
+				&lt;p class="finished"&gt;You finished all available levels!&lt;/p&gt;
+			{/if}
+		&lt;/div&gt;
+	&lt;/Stack&gt;
+&lt;/dialog&gt;
 &nbsp;
 &lt;style&gt;
-	.overlay {
-		position: absolute;
-		inset: 0;
-		background-color: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5));
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		color: white;
-		border-radius: var(--radius-3);
-		backdrop-filter: blur(8px);
-		animation: fade-in 0.3s ease;
-		z-index: 50;
-	}
-&nbsp;
-	.modal {
+	.win-modal {
 		background-color: var(--surface-1);
 		color: var(--text-1);
 		padding: var(--size-6);
@@ -420,8 +426,14 @@
 		text-align: center;
 		min-width: 300px;
 		max-width: 90%;
+		border: none;
 		animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
-		animation-delay: 0.1s;
+	}
+&nbsp;
+	.win-modal::backdrop {
+		background-color: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5));
+		backdrop-filter: blur(8px);
+		animation: fade-in 0.3s ease;
 	}
 &nbsp;
 	h2 {
@@ -521,7 +533,7 @@
 		<div class="footer quiet pad2 space-top1 center small">
 			Code coverage generated by
 			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-			at 2025-12-02T22:05:17.489Z
+			at 2025-12-03T03:26:28.004Z
 		</div>
 		<script src="../../../../prettify.js"></script>
 		<script>

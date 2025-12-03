@@ -97,6 +97,7 @@ describe('Tray Component', () => {
 		] as Block[];
 		game.activeProgram = blocks;
 		game.program = blocks;
+		// @ts-expect-error - blockCount is readonly in real model
 		game.blockCount = 2;
 
 		const { container } = render(Tray, { game });
@@ -133,6 +134,7 @@ describe('Tray Component', () => {
 		const blocks = [{ id: 'b1', type: 'move-forward' }] as Block[];
 		game.activeProgram = blocks;
 		game.program = blocks;
+		// @ts-expect-error - blockCount is readonly in real model
 		game.blockCount = 1;
 
 		const { getByTitle } = render(Tray, { game });

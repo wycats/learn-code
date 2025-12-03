@@ -331,28 +331,26 @@
 <a name='L270'></a><a href='#L270'>270</a>
 <a name='L271'></a><a href='#L271'>271</a>
 <a name='L272'></a><a href='#L272'>272</a>
-<a name='L273'></a><a href='#L273'>273</a>
-<a name='L274'></a><a href='#L274'>274</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L273'></a><a href='#L273'>273</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -361,9 +359,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -373,9 +371,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -604,277 +602,276 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { interactionManager as defaultManager, InteractionManager } from './manager.svelte';
 import type { Block, BlockType } from '$lib/game/types';
 import type { GameModel } from '$lib/game/model.svelte';
-import { SvelteSet } from 'svelte/reactivity';
 &nbsp;
 export type EditorMode = 'idle' | 'move' | 'paste' | 'insert';
 &nbsp;
 export class EditorState {
-    mode = $state&lt;EditorMode&gt;('idle');
-    clipboard = $state&lt;Block[]&gt;([]);
-    isMultiSelectMode = $state(false);
-    
-    // Ghost State
-    ghostTargetId = $state&lt;string | null&gt;(null);
-    ghostSourceType = $state&lt;BlockType | null&gt;(null);
-    defaultGhostId = $state&lt;string | null&gt;(null);
+	mode = $state&lt;EditorMode&gt;('idle');
+	clipboard = $state&lt;Block[]&gt;([]);
+	isMultiSelectMode = $state(false);
 &nbsp;
-    manager: InteractionManager;
+	// Ghost State
+	ghostTargetId = $state&lt;string | null&gt;(null);
+	ghostSourceType = $state&lt;BlockType | null&gt;(null);
+	defaultGhostId = $state&lt;string | null&gt;(null);
 &nbsp;
-    constructor(manager: InteractionManager = defaultManager) {
-        this.manager = manager;
-    }
+	manager: InteractionManager;
 &nbsp;
-    // Selection is handled by interactionManager, but we provide helpers
-    get <span class="fstat-no" title="function not covered" >selection() {</span>
-        return <span class="cstat-no" title="statement not covered" >this.manager.selection;</span>
-    }
+	constructor(manager: InteractionManager = defaultManager) {
+		this.manager = manager;
+	}
 &nbsp;
-    setMode(mode: EditorMode) {
-        this.mode = mode;
-        if (mode === 'idle') {
-            this.clearGhosts();
-        }
-    }
+	// Selection is handled by interactionManager, but we provide helpers
+	get <span class="fstat-no" title="function not covered" >selection() {</span>
+		return <span class="cstat-no" title="statement not covered" >this.manager.selection;</span>
+	}
 &nbsp;
-    copy(blocks: Block[]) {
-        this.clipboard = JSON.parse(JSON.stringify(blocks));
-        this.mode = 'paste';
-    }
+	setMode(mode: EditorMode) {
+		this.mode = mode;
+		if (mode === 'idle') {
+			this.clearGhosts();
+		}
+	}
 &nbsp;
-    clearGhosts() {
-        this.ghostTargetId = null;
-        this.ghostSourceType = null;
-        this.defaultGhostId = null;
-    }
+	copy(blocks: Block[]) {
+		this.clipboard = JSON.parse(JSON.stringify(blocks));
+		this.mode = 'paste';
+	}
 &nbsp;
-    handleBlockClick(game: GameModel, id: string) {
-        const block = this.findBlock(game.activeProgram, id);
+	clearGhosts() {
+		this.ghostTargetId = null;
+		this.ghostSourceType = null;
+		this.defaultGhostId = null;
+	}
 &nbsp;
-        // If we clicked a ghost, confirm it
-        if (<span class="missing-if-branch" title="if path not taken" >I</span>block?.isGhost) {
-<span class="cstat-no" title="statement not covered" >            this.confirmGhost(game, block);</span>
-            return;
-        }
+	handleBlockClick(game: GameModel, id: string) {
+		const block = this.findBlock(game.activeProgram, id);
 &nbsp;
-        if (!<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>block) return;</span>
+		// If we clicked a ghost, confirm it
+		if (<span class="missing-if-branch" title="if path not taken" >I</span>block?.isGhost) {
+<span class="cstat-no" title="statement not covered" >			this.confirmGhost(game, block);</span>
+			return;
+		}
 &nbsp;
-        // Move/Paste Mode Logic
-        if (<span class="missing-if-branch" title="else path not taken" >E</span>this.mode === 'move' || <span class="branch-1 cbranch-no" title="branch not covered" >this.mode === 'paste') {</span>
-            // If we click the same target again, confirm the default ghost
-            if (this.ghostTargetId === id &amp;&amp; this.defaultGhostId) {
-                const ghost = this.findBlock(game.activeProgram, this.defaultGhostId);
-                if (<span class="missing-if-branch" title="else path not taken" >E</span>ghost) {
-                    this.confirmGhost(game, ghost);
-                    return;
-                }
-            }
+		if (!<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>block) return;</span>
 &nbsp;
-            // Clean up any existing ghosts before showing new ones
-            this.removeGhosts(game.activeProgram);
+		// Move/Paste Mode Logic
+		if (<span class="missing-if-branch" title="else path not taken" >E</span>this.mode === 'move' || <span class="branch-1 cbranch-no" title="branch not covered" >this.mode === 'paste') {</span>
+			// If we click the same target again, confirm the default ghost
+			if (this.ghostTargetId === id &amp;&amp; this.defaultGhostId) {
+				const ghost = this.findBlock(game.activeProgram, this.defaultGhostId);
+				if (<span class="missing-if-branch" title="else path not taken" >E</span>ghost) {
+					this.confirmGhost(game, ghost);
+					return;
+				}
+			}
 &nbsp;
-            if (this.mode === 'move') {
-                const sourceId = Array.from(this.manager.selection)[0];
-                if (<span class="missing-if-branch" title="if path not taken" >I</span>sourceId === id) {
-                    // Clicked source again -&gt; do nothing (or maybe toggle selection?)
-                    return;
-                }
-                
-                const sourceBlock = this.findBlock(game.activeProgram, sourceId!);
-                if (<span class="missing-if-branch" title="else path not taken" >E</span>sourceBlock) {
-                    this.showGhosts(game, block, sourceBlock);
-                }
-<span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="else path not taken" >E</span>} else if (this.mode === 'paste' &amp;&amp; this.clipboard.length &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >                this.showGhosts(game, block, this.clipboard[0]);</span>
-            }
-            return;
-        }
+			// Clean up any existing ghosts before showing new ones
+			this.removeGhosts(game.activeProgram);
 &nbsp;
-        // Multi-Select Logic
-        if (<span class="cstat-no" title="statement not covered" >this.isMultiSelectMode) {</span>
-<span class="cstat-no" title="statement not covered" >            this.manager.select(id, true);</span>
-            return;
-        }
+			if (this.mode === 'move') {
+				const sourceId = Array.from(this.manager.selection)[0];
+				if (<span class="missing-if-branch" title="if path not taken" >I</span>sourceId === id) {
+					// Clicked source again -&gt; do nothing (or maybe toggle selection?)
+					return;
+				}
 &nbsp;
-        // Default Selection
-<span class="cstat-no" title="statement not covered" >        this.manager.select(id);</span>
-    }
+				const sourceBlock = this.findBlock(game.activeProgram, sourceId!);
+				if (<span class="missing-if-branch" title="else path not taken" >E</span>sourceBlock) {
+					this.showGhosts(game, block, sourceBlock);
+				}
+<span class="cstat-no" title="statement not covered" >			<span class="missing-if-branch" title="else path not taken" >E</span>} else if (this.mode === 'paste' &amp;&amp; this.clipboard.length &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >				this.showGhosts(game, block, this.clipboard[0]);</span>
+			}
+			return;
+		}
 &nbsp;
-    showGhosts(game: GameModel, targetBlock: Block, source: Block | BlockType) {
-        const sourceType = typeof source === 'string' ? source : source.type;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { id, ...sourceProps } = typeof source === 'string' ? { id: '' } : source;
+		// Multi-Select Logic
+		if (<span class="cstat-no" title="statement not covered" >this.isMultiSelectMode) {</span>
+<span class="cstat-no" title="statement not covered" >			this.manager.select(id, true);</span>
+			return;
+		}
 &nbsp;
-        this.ghostTargetId = targetBlock.id;
-        this.ghostSourceType = sourceType;
+		// Default Selection
+<span class="cstat-no" title="statement not covered" >		this.manager.select(id);</span>
+	}
 &nbsp;
-        const ghostBefore: Block = {
-            id: crypto.randomUUID(),
-            type: sourceType,
-            isGhost: true,
-            ...sourceProps
-        };
-        const ghostAfter: Block = {
-            id: crypto.randomUUID(),
-            type: sourceType,
-            isGhost: true,
-            ...sourceProps
-        };
-        const ghostInside: Block = {
-            id: crypto.randomUUID(),
-            type: sourceType,
-            isGhost: true,
-            ...sourceProps
-        };
+	showGhosts(game: GameModel, targetBlock: Block, source: Block | BlockType) {
+		const sourceType = typeof source === 'string' ? source : source.type;
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { id, ...sourceProps } = typeof source === 'string' ? { id: '' } : source;
 &nbsp;
-        const insertGhostsRecursive = (blocks: Block[]): boolean =&gt; {
-            const index = blocks.findIndex((b) =&gt; b.id === targetBlock.id);
-            if (<span class="missing-if-branch" title="else path not taken" >E</span>index !== -1) {
-                // If target is loop, offer Before, Inside and After
-                if (<span class="missing-if-branch" title="if path not taken" >I</span>targetBlock.type === 'loop') {
-                    // Insert ghost after loop
-<span class="cstat-no" title="statement not covered" >                    blocks.splice(index + 1, 0, ghostAfter);</span>
-                    // Insert ghost before loop
-<span class="cstat-no" title="statement not covered" >                    blocks.splice(index, 0, ghostBefore);</span>
+		this.ghostTargetId = targetBlock.id;
+		this.ghostSourceType = sourceType;
 &nbsp;
-                    // Insert ghost inside loop
-                    if (!<span class="cstat-no" title="statement not covered" >targetBlock.children) <span class="cstat-no" title="statement not covered" >targetBlock.children = [];</span></span>
-<span class="cstat-no" title="statement not covered" >                    targetBlock.children.push(ghostInside);</span>
+		const ghostBefore: Block = {
+			id: crypto.randomUUID(),
+			type: sourceType,
+			isGhost: true,
+			...sourceProps
+		};
+		const ghostAfter: Block = {
+			id: crypto.randomUUID(),
+			type: sourceType,
+			isGhost: true,
+			...sourceProps
+		};
+		const ghostInside: Block = {
+			id: crypto.randomUUID(),
+			type: sourceType,
+			isGhost: true,
+			...sourceProps
+		};
 &nbsp;
-<span class="cstat-no" title="statement not covered" >                    this.defaultGhostId = ghostInside.id;</span>
-                } else {
-                    // If target is regular block, offer Before and After
-                    blocks.splice(index + 1, 0, ghostAfter);
-                    blocks.splice(index, 0, ghostBefore);
+		const insertGhostsRecursive = (blocks: Block[]): boolean =&gt; {
+			const index = blocks.findIndex((b) =&gt; b.id === targetBlock.id);
+			if (<span class="missing-if-branch" title="else path not taken" >E</span>index !== -1) {
+				// If target is loop, offer Before, Inside and After
+				if (<span class="missing-if-branch" title="if path not taken" >I</span>targetBlock.type === 'loop') {
+					// Insert ghost after loop
+<span class="cstat-no" title="statement not covered" >					blocks.splice(index + 1, 0, ghostAfter);</span>
+					// Insert ghost before loop
+<span class="cstat-no" title="statement not covered" >					blocks.splice(index, 0, ghostBefore);</span>
 &nbsp;
-                    this.defaultGhostId = ghostAfter.id;
-                }
-                return true;
-            }
+					// Insert ghost inside loop
+					if (!<span class="cstat-no" title="statement not covered" >targetBlock.children) <span class="cstat-no" title="statement not covered" >targetBlock.children = [];</span></span>
+<span class="cstat-no" title="statement not covered" >					targetBlock.children.push(ghostInside);</span>
 &nbsp;
-            for (const <span class="cstat-no" title="statement not covered" >block of blocks) {</span>
-                if (<span class="cstat-no" title="statement not covered" >block.children &amp;&amp; insertGhostsRecursive(block.children<span class="cstat-no" title="statement not covered" >)) return true;</span></span>
-            }
-            return <span class="cstat-no" title="statement not covered" >false;</span>
-        }
+<span class="cstat-no" title="statement not covered" >					this.defaultGhostId = ghostInside.id;</span>
+				} else {
+					// If target is regular block, offer Before and After
+					blocks.splice(index + 1, 0, ghostAfter);
+					blocks.splice(index, 0, ghostBefore);
 &nbsp;
-        insertGhostsRecursive(game.activeProgram);
-        game.activeProgram = [...game.activeProgram];
-    }
+					this.defaultGhostId = ghostAfter.id;
+				}
+				return true;
+			}
 &nbsp;
-    confirmGhost(game: GameModel, ghostBlock: Block) {
-        game.commit();
+			for (const <span class="cstat-no" title="statement not covered" >block of blocks) {</span>
+				if (<span class="cstat-no" title="statement not covered" >block.children &amp;&amp; insertGhostsRecursive(block.children<span class="cstat-no" title="statement not covered" >)) return true;</span></span>
+			}
+			return <span class="cstat-no" title="statement not covered" >false;</span>
+		};
 &nbsp;
-        // Move Mode: Delete original block
-        if (this.mode === 'move') {
-            const selectedId = Array.from(this.manager.selection)[0];
-            if (selectedId) {
-                this.removeBlock(game.activeProgram, selectedId);
-            }
-            this.setMode('idle');
-        }
+		insertGhostsRecursive(game.activeProgram);
+		game.activeProgram = [...game.activeProgram];
+	}
 &nbsp;
-        // Paste Mode: Replace ghost with clipboard copies
-        if (this.mode === 'paste' &amp;&amp; this.clipboard.length &gt; 0) {
-            const newBlocks = this.clipboard.map(b =&gt; this.deepCloneWithNewIds(b));
-            
-            const finalizePaste = (blocks: Block[]) =&gt; {
-                for (let i = blocks.length - 1; i &gt;= 0; i--) {
-                    const b = blocks[i];
-                    if (b.id === ghostBlock.id) {
-                        // Replace ghost with new blocks
-                        blocks.splice(i, 1, ...newBlocks);
-                    <span class="missing-if-branch" title="if path not taken" >I</span>} else if (b.isGhost) {
-<span class="cstat-no" title="statement not covered" >                        blocks.splice(i, 1);</span>
-                    }
-                    if (<span class="missing-if-branch" title="if path not taken" >I</span>b.children) <span class="cstat-no" title="statement not covered" >finalizePaste(b.children);</span>
-                }
-            }
-            finalizePaste(game.activeProgram);
-            game.activeProgram = [...game.activeProgram];
+	confirmGhost(game: GameModel, ghostBlock: Block) {
+		game.commit();
 &nbsp;
-            this.manager.clearSelection();
-            for (const b of newBlocks) this.manager.select(b.id, true);
-            this.setMode('idle');
-            this.clearGhosts();
-            return;
-        }
+		// Move Mode: Delete original block
+		if (this.mode === 'move') {
+			const selectedId = Array.from(this.manager.selection)[0];
+			if (selectedId) {
+				this.removeBlock(game.activeProgram, selectedId);
+			}
+			this.setMode('idle');
+		}
 &nbsp;
-        const finalize = (blocks: Block[]) =&gt; {
-            for (let i = blocks.length - 1; i &gt;= 0; i--) {
-                const b = blocks[i];
-                if (b.id === ghostBlock.id) {
-                    delete b.isGhost;
-                } else if (b.isGhost) {
-                    blocks.splice(i, 1);
-                }
+		// Paste Mode: Replace ghost with clipboard copies
+		if (this.mode === 'paste' &amp;&amp; this.clipboard.length &gt; 0) {
+			const newBlocks = this.clipboard.map((b) =&gt; this.deepCloneWithNewIds(b));
 &nbsp;
-                if (<span class="missing-if-branch" title="if path not taken" >I</span>b.children) {
-<span class="cstat-no" title="statement not covered" >                    finalize(b.children);</span>
-                }
-            }
-        }
-        finalize(game.activeProgram);
-        game.activeProgram = [...game.activeProgram];
+			const finalizePaste = (blocks: Block[]) =&gt; {
+				for (let i = blocks.length - 1; i &gt;= 0; i--) {
+					const b = blocks[i];
+					if (b.id === ghostBlock.id) {
+						// Replace ghost with new blocks
+						blocks.splice(i, 1, ...newBlocks);
+					<span class="missing-if-branch" title="if path not taken" >I</span>} else if (b.isGhost) {
+<span class="cstat-no" title="statement not covered" >						blocks.splice(i, 1);</span>
+					}
+					if (<span class="missing-if-branch" title="if path not taken" >I</span>b.children) <span class="cstat-no" title="statement not covered" >finalizePaste(b.children);</span>
+				}
+			};
+			finalizePaste(game.activeProgram);
+			game.activeProgram = [...game.activeProgram];
 &nbsp;
-        // Restore selection to the target block (if it exists) so we can keep editing relative to it
-        if (<span class="missing-if-branch" title="if path not taken" >I</span>this.ghostTargetId) {
-<span class="cstat-no" title="statement not covered" >            this.manager.select(this.ghostTargetId);</span>
-        } else {
-            // Fallback to selecting the new block if we lost context
-            this.manager.select(ghostBlock.id);
-        }
-        
-        this.clearGhosts();
-    }
+			this.manager.clearSelection();
+			for (const b of newBlocks) this.manager.select(b.id, true);
+			this.setMode('idle');
+			this.clearGhosts();
+			return;
+		}
 &nbsp;
-    private removeGhosts(blocks: Block[]) {
-        for (let i = blocks.length - 1; i &gt;= 0; i--) {
-            const b = blocks[i];
-            if (<span class="missing-if-branch" title="if path not taken" >I</span>b.isGhost) {
-<span class="cstat-no" title="statement not covered" >                blocks.splice(i, 1);</span>
-            <span class="missing-if-branch" title="if path not taken" >I</span>} else if (b.children) {
-<span class="cstat-no" title="statement not covered" >                this.removeGhosts(b.children);</span>
-            }
-        }
-    }
+		const finalize = (blocks: Block[]) =&gt; {
+			for (let i = blocks.length - 1; i &gt;= 0; i--) {
+				const b = blocks[i];
+				if (b.id === ghostBlock.id) {
+					delete b.isGhost;
+				} else if (b.isGhost) {
+					blocks.splice(i, 1);
+				}
 &nbsp;
-    private findBlock(blocks: Block[], id: string): Block | null {
-        for (const block of blocks) {
-            if (block.id === id) return block;
-            if (<span class="missing-if-branch" title="if path not taken" >I</span>block.children) {
-                const found = <span class="cstat-no" title="statement not covered" >this.findBlock(block.children, id);</span>
-                if (<span class="cstat-no" title="statement not covered" >found) return found;</span>
-            }
-        }
-        return <span class="cstat-no" title="statement not covered" >null;</span>
-    }
+				if (<span class="missing-if-branch" title="if path not taken" >I</span>b.children) {
+<span class="cstat-no" title="statement not covered" >					finalize(b.children);</span>
+				}
+			}
+		};
+		finalize(game.activeProgram);
+		game.activeProgram = [...game.activeProgram];
 &nbsp;
-    private removeBlock(blocks: Block[], id: string): boolean {
-        const index = blocks.findIndex((b) =&gt; b.id === id);
-        if (<span class="missing-if-branch" title="else path not taken" >E</span>index !== -1) {
-            blocks.splice(index, 1);
-            return true;
-        }
-        for (const <span class="cstat-no" title="statement not covered" >block of blocks) {</span>
-            if (<span class="cstat-no" title="statement not covered" >block.children &amp;&amp; this.removeBlock(block.children, id)) {</span>
-                return <span class="cstat-no" title="statement not covered" >true;</span>
-            }
-        }
-        return <span class="cstat-no" title="statement not covered" >false;</span>
-    }
+		// Restore selection to the target block (if it exists) so we can keep editing relative to it
+		if (<span class="missing-if-branch" title="if path not taken" >I</span>this.ghostTargetId) {
+<span class="cstat-no" title="statement not covered" >			this.manager.select(this.ghostTargetId);</span>
+		} else {
+			// Fallback to selecting the new block if we lost context
+			this.manager.select(ghostBlock.id);
+		}
 &nbsp;
-    private deepCloneWithNewIds(block: Block): Block {
-        const newBlock = { ...block, id: crypto.randomUUID() };
-        if (<span class="missing-if-branch" title="if path not taken" >I</span>newBlock.children) {
-<span class="cstat-no" title="statement not covered" >            newBlock.children = newBlock.children.<span class="fstat-no" title="function not covered" >map((c</span>hild) =&gt; <span class="cstat-no" title="statement not covered" >this.deepCloneWithNewIds(child));</span></span>
-        }
-        delete newBlock.isGhost;
-        return newBlock;
-    }
+		this.clearGhosts();
+	}
+&nbsp;
+	private removeGhosts(blocks: Block[]) {
+		for (let i = blocks.length - 1; i &gt;= 0; i--) {
+			const b = blocks[i];
+			if (<span class="missing-if-branch" title="if path not taken" >I</span>b.isGhost) {
+<span class="cstat-no" title="statement not covered" >				blocks.splice(i, 1);</span>
+			<span class="missing-if-branch" title="if path not taken" >I</span>} else if (b.children) {
+<span class="cstat-no" title="statement not covered" >				this.removeGhosts(b.children);</span>
+			}
+		}
+	}
+&nbsp;
+	private findBlock(blocks: Block[], id: string): Block | null {
+		for (const block of blocks) {
+			if (block.id === id) return block;
+			if (<span class="missing-if-branch" title="if path not taken" >I</span>block.children) {
+				const found = <span class="cstat-no" title="statement not covered" >this.findBlock(block.children, id);</span>
+				if (<span class="cstat-no" title="statement not covered" >found) return found;</span>
+			}
+		}
+		return <span class="cstat-no" title="statement not covered" >null;</span>
+	}
+&nbsp;
+	private removeBlock(blocks: Block[], id: string): boolean {
+		const index = blocks.findIndex((b) =&gt; b.id === id);
+		if (<span class="missing-if-branch" title="else path not taken" >E</span>index !== -1) {
+			blocks.splice(index, 1);
+			return true;
+		}
+		for (const <span class="cstat-no" title="statement not covered" >block of blocks) {</span>
+			if (<span class="cstat-no" title="statement not covered" >block.children &amp;&amp; this.removeBlock(block.children, id)) {</span>
+				return <span class="cstat-no" title="statement not covered" >true;</span>
+			}
+		}
+		return <span class="cstat-no" title="statement not covered" >false;</span>
+	}
+&nbsp;
+	private deepCloneWithNewIds(block: Block): Block {
+		const newBlock = { ...block, id: crypto.randomUUID() };
+		if (<span class="missing-if-branch" title="if path not taken" >I</span>newBlock.children) {
+<span class="cstat-no" title="statement not covered" >			newBlock.children = newBlock.children.<span class="fstat-no" title="function not covered" >map((c</span>hild) =&gt; <span class="cstat-no" title="statement not covered" >this.deepCloneWithNewIds(child));</span></span>
+		}
+		delete newBlock.isGhost;
+		return newBlock;
+	}
 }
 &nbsp;
 export const editorState = new EditorState();
@@ -887,7 +884,7 @@ export const editorState = new EditorState();
 		<div class="footer quiet pad2 space-top1 center small">
 			Code coverage generated by
 			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-			at 2025-12-02T22:05:17.489Z
+			at 2025-12-03T03:26:28.004Z
 		</div>
 		<script src="../../../prettify.js"></script>
 		<script>

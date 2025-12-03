@@ -1,93 +1,60 @@
-# Walkthrough: Phase 27 - Headless Interaction System
+# Phase 28 Walkthrough: Test Coverage & Quality Assurance
 
 ## Overview
 
-In this phase, we implemented a **Headless Interaction System** to decouple interaction logic (Drag & Drop, Selection) from UI components (`Block.svelte`, `Tray.svelte`). We adopted the **Ember Pattern** (Pull-based reactivity) using Svelte 5 Runes.
+This phase focuses on hardening the codebase by increasing test coverage and ensuring critical flows are protected against regressions. We will analyze the current coverage, identify gaps, and systematically add unit and integration tests.
 
-## Key Changes
+## Progress
 
-### 1. Interaction Primitives (`src/lib/interactions/`)
+### Coverage Analysis
 
-We created a new directory for the interaction system:
+- [x] Initial coverage report generated.
+- [x] Targets identified: `BuilderModel`, `GameModel`, `StackInterpreter`.
 
-- **`manager.ts`**: The singleton `InteractionManager` that orchestrates the system. It holds the `InteractionSession` and `InteractionRegistry`.
-- **`session.ts`**: A state machine representing the current interaction (e.g., dragging a block). It tracks `activeTargetId`, `activeEdge`, and `candidates`.
-- **`registry.ts`**: Manages the registration of interactive elements (Logical Index).
-- **`types.ts`**: Defines core types like `InteractionNode`, `ComponentState`, and `InteractionRole`.
-- **`dnd.ts`**: Adapters for `@atlaskit/pragmatic-drag-and-drop` that integrate with the `InteractionManager`.
+### Refactoring for Testability
 
-### 2. Pull-Based Reactivity
+- [x] Refactored `FileSystemService` to use Dependency Injection.
+  - Created `FileSystemService` interface.
+  - Renamed original implementation to `BrowserFileSystemService`.
+  - Created `InMemoryFileSystemService` for testing.
+- [x] Refactored `PersistenceService` consumers to use singleton instance.
+  - Updated `PackManagerModal` and `CampaignService` to use `persistence` singleton instead of deprecated standalone functions.
 
-Components now "pull" their interaction state from the manager using `$derived`:
+### Unit Tests
 
-```typescript
-let interactionState = $derived(interactionManager.getComponentState(block.id));
-```
+- [x] `BuilderModel` tests created and passing.
+  - Added comprehensive tests for grid manipulation, tool selection, and level metadata.
+  - Used `InMemoryFileSystemService` to test persistence without browser APIs.
+- [x] `StackInterpreter` tests expanded.
+  - Added tests for error handling (hitting walls, invalid moves).
+  - Added tests for complex control flow (nested loops, function calls).
+  - Added tests for game mechanics (hazards, ice, pick-up).
+- [x] `SoundManager` tests expanded.
+  - Mocked `AudioContext` and `AudioBuffer`.
+  - Tested `playFile` and `playAmbient` logic.
+  - Tested mute/unmute state persistence.
+- [x] `Drag and Drop` adapters tested.
+  - Mocked `@atlaskit/pragmatic-drag-and-drop`.
+  - Verified interaction with `interactionManager`.
 
-This ensures that components are purely reactive to the central state, eliminating "push" logic where actions manually update component state.
+### Visual Regression Tests
 
-### 3. Edge Detection & Visual Fidelity
+- [x] Expanded `visual-suite.spec.ts`.
+  - Added tests for Mobile Viewports (Game & Builder).
+  - Added tests for Modals (Share, Settings).
+  - Added tests for Dark Mode.
 
-We integrated `closest-edge` detection into the `InteractionSession`.
+### CI Enforcement
 
-- The `dnd.ts` adapter calculates the closest edge during drag.
-- It updates `session.activeEdge`.
-- `InteractionManager` exposes this edge in `ComponentState`.
-- Components (`Block.svelte`, `Tray.svelte`) use `interactionState.edge` to render `<DropIndicator />`.
+- [x] Thresholds updated in `vite.config.ts`.
+  - Enforced high coverage for critical logic files (`mimic.ts`, `sound.ts`, `model.svelte.ts`, `dnd.ts`).
 
-### 4. Component Refactoring
+### Final Polish & Fixes
 
-- **`Block.svelte`**: Refactored to use `use:interactionTarget` and `interactionState`. Removed local `dragCtx` usage for drop indicators.
-- **`Tray.svelte`**: Refactored to use `interactionState` for drop indicators in the program list. Kept `monitorForElements` for game logic (model updates) and variable dragging.
-
-### 5. Editor Logic Extraction (`EditorState`)
-
-We extracted the complex "Click-Click" interaction logic (Move, Copy, Paste, Ghosts) from `Tray.svelte` into a headless `EditorState` class.
-
-- **`EditorState`**: Manages high-level editor modes (`idle`, `move`, `paste`) and the "Ghost" logic (recursive placement of placeholders).
-- **TDD Approach**: We implemented `EditorState` using Test-Driven Development, ensuring robust logic for recursive ghost insertion and complex move/paste operations before integrating with the UI.
-- **UI Integration**: `Tray.svelte` was refactored to delegate all state transitions and interaction logic to `editorState`, removing fragile local state.
-
-## Technical Decisions
-
-- **Singleton Manager**: We used a singleton `interactionManager` for simplicity, as there is only one active interaction context in the game.
-- **Hybrid Approach for Tray**: We kept `monitorForElements` in `Tray.svelte` for the "Controller" logic (executing drops) while moving the "View" logic (indicators) to the `InteractionManager`. This provides a clean separation of concerns.
-- **Edge in State**: We added `edge` to `ComponentState` to ensure that visual indicators are driven by the same reactive source as other interaction states.
-- **Headless Editor**: By moving editor logic to `EditorState`, we made it testable without a DOM environment.
-
-### 6. Focus Management
-
-We implemented a `FocusManager` to handle keyboard navigation and accessibility.
-
-- **`FocusManager`**: A singleton that manages focus traversal (Next/Prev) based on the `InteractionRegistry`.
-- **Keyboard Support**: `Tray.svelte` now listens for Arrow keys to navigate between interactive elements.
-- **Component API**: The `ComponentInterface` was extended to include a `focus()` method, allowing the manager to imperatively focus DOM elements without direct DOM access.
-
-### 7. Native Modality Standardization
-
-We enforced the "Native Modality" axiom by refactoring all custom overlay components to use native web standards.
-
-- **`<dialog>`**: Replaced all `div.overlay` and `div.backdrop` implementations with native `<dialog>` elements.
-  - `WinModal`, `GoalModal`, `ShareModal`, `P2PModal`, `BuilderGoalModal`.
-  - Leveraged `::backdrop` for consistent styling.
-  - Used `$effect(() => dialog.showModal())` for lifecycle management.
-- **`popover`**: Adopted the Popover API for lightweight overlays.
-  - `ToastContainer`: Converted to `popover="manual"` to avoid `z-index: 9999`.
-  - `BuilderGoalModal`: Updated biome picker to use `popover="auto"`.
-- **Z-Index Cleanup**: Removed "z-index hacks" from `BuilderStoryBar` and `+page.svelte`, relying on natural stacking contexts and top-layer promotion where appropriate.
-
-## Technical Decisions
-
-- **Singleton Manager**: We used a singleton `interactionManager` for simplicity, as there is only one active interaction context in the game.
-
-## Testing
-
-We implemented a comprehensive testing strategy for the interaction system:
-
-- **Unit Tests (`dnd.svelte.test.ts`)**: Verified the `draggableSource` and `dropTarget` adapters in a browser-like environment using `vitest-browser-svelte`.
-- **Integration Tests (`Block.svelte.test.ts`, `Tray.svelte.test.ts`)**: Verified that UI components correctly register with the `InteractionManager` and reflect state changes (selection, ghosts, drop indicators).
-- **Logic Tests (`editor.test.ts`, `interactions.test.ts`)**: Verified the core state machines and business logic in isolation.
-
-## Next Steps
-
-- Proceed to Phase Transition.
+- [x] Fixed `FileSystemService` tests.
+  - Recreated `file-system.test.ts` to fix corruption.
+  - Aligned mock types with `FileSystemDirectoryHandle` interface.
+- [x] Resolved Linting & Type Errors.
+  - Fixed `no-explicit-any` in `sound.test.ts` and `schema.ts`.
+  - Fixed `no-unused-vars` in `file-system.test.ts` and `memory.ts`.
+  - Fixed `builder-model.test.ts` to match `LevelPack` schema (`name` vs `title`).

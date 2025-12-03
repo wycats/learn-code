@@ -481,20 +481,7 @@
 <a name='L420'></a><a href='#L420'>420</a>
 <a name='L421'></a><a href='#L421'>421</a>
 <a name='L422'></a><a href='#L422'>422</a>
-<a name='L423'></a><a href='#L423'>423</a>
-<a name='L424'></a><a href='#L424'>424</a>
-<a name='L425'></a><a href='#L425'>425</a>
-<a name='L426'></a><a href='#L426'>426</a>
-<a name='L427'></a><a href='#L427'>427</a>
-<a name='L428'></a><a href='#L428'>428</a>
-<a name='L429'></a><a href='#L429'>429</a>
-<a name='L430'></a><a href='#L430'>430</a>
-<a name='L431'></a><a href='#L431'>431</a>
-<a name='L432'></a><a href='#L432'>432</a>
-<a name='L433'></a><a href='#L433'>433</a>
-<a name='L434'></a><a href='#L434'>434</a>
-<a name='L435'></a><a href='#L435'>435</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L423'></a><a href='#L423'>423</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -525,6 +512,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -614,17 +606,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -729,11 +710,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -932,7 +908,6 @@
 	import { ShareService } from '$lib/services/share';
 	import QRScanner from '$lib/components/common/QRScanner.svelte';
 	import { X, Check, ArrowRight, ArrowLeft, Smartphone, Upload, Download } from 'lucide-svelte';
-	import { fade, scale } from 'svelte/transition';
 	import { onDestroy } from 'svelte';
 &nbsp;
 	interface Props {
@@ -959,6 +934,11 @@
 	let qrCodeUrl = $state&lt;string | null&gt;(<span class="cstat-no" title="statement not covered" >null)</span>;
 	let status = $state&lt;P2PStatus&gt;(<span class="cstat-no" title="statement not covered" >'disconnected')</span>;
 	let error = $state&lt;string | null&gt;(<span class="cstat-no" title="statement not covered" >null)</span>;
+	let dialog: HTMLDialogElement;
+&nbsp;
+	$effect(() =&gt; {
+		dialog?.showModal();
+	});
 &nbsp;
 	$effect(() =&gt; {
 		// Auto-start if intent is unambiguous
@@ -1052,138 +1032,115 @@
 	}
 &lt;/script&gt;
 &nbsp;
-&lt;div
-	class="backdrop"
-	transition:fade
-	onclick={onClose}
-	role="dialog"
-	aria-modal="true"
-	tabindex="-1"
-	onkeydown={(e) =&gt; e.key === 'Escape' &amp;&amp; onClose()}
+&lt;dialog
+	bind:this={dialog}
+	class="p2p-modal"
+	onclose={onClose}
+	onclick={(e) =&gt; e.target === dialog &amp;&amp; onClose()}
 &gt;
-	&lt;!-- svelte-ignore a11y_no_noninteractive_element_interactions --&gt;
-	&lt;div
-		class="modal"
-		transition:scale
-		onclick={(e) =&gt; e.stopPropagation()}
-		role="document"
-		onkeydown={(e) =&gt; e.stopPropagation()}
-	&gt;
-		&lt;header&gt;
-			&lt;h2&gt;P2P Transfer&lt;/h2&gt;
-			&lt;button class="close-btn" onclick={onClose} aria-label="Close"&gt;
-				&lt;X size={<span class="cstat-no" title="statement not covered" >24} /&gt;</span>
-			&lt;/button&gt;
-		&lt;/header&gt;
+	&lt;header&gt;
+		&lt;h2&gt;P2P Transfer&lt;/h2&gt;
+		&lt;button class="close-btn" onclick={onClose} aria-label="Close"&gt;
+			&lt;X size={<span class="cstat-no" title="statement not covered" >24} /&gt;</span>
+		&lt;/button&gt;
+	&lt;/header&gt;
 &nbsp;
-		&lt;div class="content"&gt;
-			{#if error}
-				&lt;div class="error-state"&gt;
-					&lt;p class="error"&gt;{<span class="cstat-no" title="statement not covered" >error}&lt;/p&gt;</span>
-					&lt;button
-						onclick={() =&gt; {
-							error = null;
-							step = 'initial';
-						}}&gt;Try Again&lt;/button
-					&gt;
-				&lt;/div&gt;
-			{:else if step === 'initial'}
-				&lt;div class="actions"&gt;
-					{#if data}
-						&lt;button class="action-btn primary" onclick={startSender}&gt;
-							&lt;Upload size={<span class="cstat-no" title="statement not covered" >32} /&gt;</span>
-							&lt;span&gt;Send Data&lt;/span&gt;
-							&lt;small&gt;Show QR code to receiver&lt;/small&gt;
-						&lt;/button&gt;
-					{/if}
-					{#if onReceive}
-						&lt;button class="action-btn secondary" onclick={startReceiver}&gt;
-							&lt;Download size={<span class="cstat-no" title="statement not covered" >32} /&gt;</span>
-							&lt;span&gt;Receive Data&lt;/span&gt;
-							&lt;small&gt;Scan sender's QR code&lt;/small&gt;
-						&lt;/button&gt;
-					{/if}
-				&lt;/div&gt;
-			{:else if step === 'sender-offer'}
-				&lt;div class="step-container"&gt;
-					&lt;h3&gt;Step 1: Show this to Receiver&lt;/h3&gt;
-					{#if qrCodeUrl}
-						&lt;div class="qr-container"&gt;
-							&lt;img src={<span class="cstat-no" title="statement not covered" >qrCodeUrl} alt="Offer QR Code" /&gt;</span>
-						&lt;/div&gt;
-						&lt;p class="instruction"&gt;Ask the receiver to scan this code.&lt;/p&gt;
-						&lt;button class="btn-next" onclick={() =&gt; (step = 'sender-scan-answer')}&gt;
-							Next: Scan Receiver's Answer &lt;ArrowRight size={<span class="cstat-no" title="statement not covered" >16} /&gt;</span>
-						&lt;/button&gt;
-					{:else}
-						&lt;div class="loading"&gt;Generating Offer...&lt;/div&gt;
-					{/if}
-				&lt;/div&gt;
-			{:else if step === 'sender-scan-answer'}
-				&lt;div class="step-container"&gt;
-					&lt;h3&gt;Step 2: Scan Receiver's Answer&lt;/h3&gt;
-					&lt;div class="scanner-wrapper"&gt;
-						&lt;QRScanner onScan={<span class="cstat-no" title="statement not covered" >handleScan<span class="fstat-no" title="function not covered" >} onError={(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >console.warn(e)} /&gt;</span></span>
-					&lt;/div&gt;
-					&lt;button class="btn-back" onclick={() =&gt; (step = 'sender-offer')}&gt;
-						&lt;ArrowLeft size={<span class="cstat-no" title="statement not covered" >16} /&gt; Back to Offer</span>
+	&lt;div class="content"&gt;
+		{#if error}
+			&lt;div class="error-state"&gt;
+				&lt;p class="error"&gt;{<span class="cstat-no" title="statement not covered" >error}&lt;/p&gt;</span>
+				&lt;button
+					onclick={() =&gt; {
+						error = null;
+						step = 'initial';
+					}}&gt;Try Again&lt;/button
+				&gt;
+			&lt;/div&gt;
+		{:else if step === 'initial'}
+			&lt;div class="actions"&gt;
+				{#if data}
+					&lt;button class="action-btn primary" onclick={startSender}&gt;
+						&lt;Upload size={<span class="cstat-no" title="statement not covered" >32} /&gt;</span>
+						&lt;span&gt;Send Data&lt;/span&gt;
+						&lt;small&gt;Show QR code to receiver&lt;/small&gt;
 					&lt;/button&gt;
-				&lt;/div&gt;
-			{:else if step === 'receiver-scan-offer'}
-				&lt;div class="step-container"&gt;
-					&lt;h3&gt;Step 1: Scan Sender's Offer&lt;/h3&gt;
-					&lt;div class="scanner-wrapper"&gt;
-						&lt;QRScanner onScan={<span class="cstat-no" title="statement not covered" >handleScan<span class="fstat-no" title="function not covered" >} onError={(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >console.warn(e)} /&gt;</span></span>
+				{/if}
+				{#if onReceive}
+					&lt;button class="action-btn secondary" onclick={startReceiver}&gt;
+						&lt;Download size={<span class="cstat-no" title="statement not covered" >32} /&gt;</span>
+						&lt;span&gt;Receive Data&lt;/span&gt;
+						&lt;small&gt;Scan sender's QR code&lt;/small&gt;
+					&lt;/button&gt;
+				{/if}
+			&lt;/div&gt;
+		{:else if step === 'sender-offer'}
+			&lt;div class="step-container"&gt;
+				&lt;h3&gt;Step 1: Show this to Receiver&lt;/h3&gt;
+				{#if qrCodeUrl}
+					&lt;div class="qr-container"&gt;
+						&lt;img src={<span class="cstat-no" title="statement not covered" >qrCodeUrl} alt="Offer QR Code" /&gt;</span>
 					&lt;/div&gt;
+					&lt;p class="instruction"&gt;Ask the receiver to scan this code.&lt;/p&gt;
+					&lt;button class="btn-next" onclick={() =&gt; (step = 'sender-scan-answer')}&gt;
+						Next: Scan Receiver's Answer &lt;ArrowRight size={<span class="cstat-no" title="statement not covered" >16} /&gt;</span>
+					&lt;/button&gt;
+				{:else}
+					&lt;div class="loading"&gt;Generating Offer...&lt;/div&gt;
+				{/if}
+			&lt;/div&gt;
+		{:else if step === 'sender-scan-answer'}
+			&lt;div class="step-container"&gt;
+				&lt;h3&gt;Step 2: Scan Receiver's Answer&lt;/h3&gt;
+				&lt;div class="scanner-wrapper"&gt;
+					&lt;QRScanner onScan={<span class="cstat-no" title="statement not covered" >handleScan<span class="fstat-no" title="function not covered" >} onError={(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >console.warn(e)} /&gt;</span></span>
 				&lt;/div&gt;
-			{:else if step === 'receiver-answer'}
-				&lt;div class="step-container"&gt;
-					&lt;h3&gt;Step 2: Show this to Sender&lt;/h3&gt;
-					{#if qrCodeUrl}
-						&lt;div class="qr-container"&gt;
-							&lt;img src={<span class="cstat-no" title="statement not covered" >qrCodeUrl} alt="Answer QR Code" /&gt;</span>
-						&lt;/div&gt;
-						&lt;p class="instruction"&gt;Ask the sender to scan this code.&lt;/p&gt;
-						&lt;div class="status"&gt;Waiting for connection...&lt;/div&gt;
-					{:else}
-						&lt;div class="loading"&gt;Generating Answer...&lt;/div&gt;
-					{/if}
+				&lt;button class="btn-back" onclick={() =&gt; (step = 'sender-offer')}&gt;
+					&lt;ArrowLeft size={<span class="cstat-no" title="statement not covered" >16} /&gt; Back to Offer</span>
+				&lt;/button&gt;
+			&lt;/div&gt;
+		{:else if step === 'receiver-scan-offer'}
+			&lt;div class="step-container"&gt;
+				&lt;h3&gt;Step 1: Scan Sender's Offer&lt;/h3&gt;
+				&lt;div class="scanner-wrapper"&gt;
+					&lt;QRScanner onScan={<span class="cstat-no" title="statement not covered" >handleScan<span class="fstat-no" title="function not covered" >} onError={(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >console.warn(e)} /&gt;</span></span>
 				&lt;/div&gt;
-			{:else if step === 'connected' || step === 'transferring'}
-				&lt;div class="step-container"&gt;
-					&lt;h3&gt;Connected!&lt;/h3&gt;
-					&lt;div class="transfer-status"&gt;
-						&lt;Smartphone size={<span class="cstat-no" title="statement not covered" >48} /&gt;</span>
-						&lt;div class="dots"&gt;...&lt;/div&gt;
-						&lt;Smartphone size={<span class="cstat-no" title="statement not covered" >48} /&gt;</span>
+			&lt;/div&gt;
+		{:else if step === 'receiver-answer'}
+			&lt;div class="step-container"&gt;
+				&lt;h3&gt;Step 2: Show this to Sender&lt;/h3&gt;
+				{#if qrCodeUrl}
+					&lt;div class="qr-container"&gt;
+						&lt;img src={<span class="cstat-no" title="statement not covered" >qrCodeUrl} alt="Answer QR Code" /&gt;</span>
 					&lt;/div&gt;
-					&lt;p&gt;Status: {<span class="cstat-no" title="statement not covered" >status}&lt;/p&gt;</span>
-					&lt;p&gt;Transferring data...&lt;/p&gt;
+					&lt;p class="instruction"&gt;Ask the sender to scan this code.&lt;/p&gt;
+					&lt;div class="status"&gt;Waiting for connection...&lt;/div&gt;
+				{:else}
+					&lt;div class="loading"&gt;Generating Answer...&lt;/div&gt;
+				{/if}
+			&lt;/div&gt;
+		{:else if step === 'connected' || step === 'transferring'}
+			&lt;div class="step-container"&gt;
+				&lt;h3&gt;Connected!&lt;/h3&gt;
+				&lt;div class="transfer-status"&gt;
+					&lt;Smartphone size={<span class="cstat-no" title="statement not covered" >48} /&gt;</span>
+					&lt;div class="dots"&gt;...&lt;/div&gt;
+					&lt;Smartphone size={<span class="cstat-no" title="statement not covered" >48} /&gt;</span>
 				&lt;/div&gt;
-			{:else if step === 'completed'}
-				&lt;div class="step-container success"&gt;
-					&lt;Check size={<span class="cstat-no" title="statement not covered" >64} color="var(--green-5)" /&gt;</span>
-					&lt;h3&gt;Transfer Complete!&lt;/h3&gt;
-					&lt;button class="btn-primary" onclick={onClose}&gt;Done&lt;/button&gt;
-				&lt;/div&gt;
-			{/if}
-		&lt;/div&gt;
+				&lt;p&gt;Status: {<span class="cstat-no" title="statement not covered" >status}&lt;/p&gt;</span>
+				&lt;p&gt;Transferring data...&lt;/p&gt;
+			&lt;/div&gt;
+		{:else if step === 'completed'}
+			&lt;div class="step-container success"&gt;
+				&lt;Check size={<span class="cstat-no" title="statement not covered" >64} color="var(--green-5)" /&gt;</span>
+				&lt;h3&gt;Transfer Complete!&lt;/h3&gt;
+				&lt;button class="btn-primary" onclick={onClose}&gt;Done&lt;/button&gt;
+			&lt;/div&gt;
+		{/if}
 	&lt;/div&gt;
-&lt;/div&gt;
+&lt;/dialog&gt;
 &nbsp;
 &lt;style&gt;
-	.backdrop {
-		position: fixed;
-		inset: 0;
-		background-color: rgba(0, 0, 0, 0.5);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1000;
-		backdrop-filter: blur(4px);
-	}
-&nbsp;
-	.modal {
+	.p2p-modal {
 		background-color: var(--surface-1);
 		border-radius: var(--radius-3);
 		box-shadow: var(--shadow-5);
@@ -1191,7 +1148,14 @@
 		max-width: 500px;
 		max-height: 90vh;
 		overflow-y: auto;
-		border: 1px solid var(--surface-3);
+		border: none;
+		padding: 0;
+		color: var(--text-1);
+	}
+&nbsp;
+	.p2p-modal::backdrop {
+		background-color: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(4px);
 	}
 &nbsp;
 	header {
@@ -1370,7 +1334,7 @@
 		<div class="footer quiet pad2 space-top1 center small">
 			Code coverage generated by
 			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-			at 2025-12-02T22:05:17.489Z
+			at 2025-12-03T03:26:28.004Z
 		</div>
 		<script src="../../../../prettify.js"></script>
 		<script>

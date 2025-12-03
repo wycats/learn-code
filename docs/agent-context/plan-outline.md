@@ -249,25 +249,33 @@
 - [x] **Strict Typing**: Enforce type safety for variable drops (e.g., Loop only accepts Numbers).
 - [x] **Story Update**: Explain the metaphor in the level intro.
 
-## Phase 27: Component Architecture & Shared Abstractions
+## Phase 27: Component Architecture & Shared Abstractions (Completed)
 
 **Goal:** Extract shared interaction patterns into reusable components and test them rigorously.
 
-- [ ] **Interaction Abstraction**: Extract "Click-Click", "Drag", and "Focus" logic into shared primitives.
-- [ ] **Component Extraction**: Identify and refactor other shared UI patterns.
-- [ ] **Rigorous Testing**: Comprehensive unit and interaction tests for the new shared components.
-- [ ] **Collaborative Design**: Deep user involvement in the extraction and structuring process.
+- [x] **Interaction Abstraction**: Extract "Click-Click", "Drag", and "Focus" logic into shared primitives.
+- [x] **Component Extraction**: Identify and refactor other shared UI patterns.
+- [x] **Rigorous Testing**: Comprehensive unit and interaction tests for the new shared components.
+- [x] **Collaborative Design**: Deep user involvement in the extraction and structuring process.
 
-## Phase 28: Test Coverage & Quality Assurance
+## Phase 28: Test Coverage & Quality Assurance (Completed)
 
-**Goal:** Increase test coverage to a respectable level (e.g., 70%+) to ensure stability and prevent regressions.
+**Goal:** Increase test coverage to a respectable level (e.g., 80%+) to ensure stability and prevent regressions.
 
-- [ ] **Coverage Analysis**: Identify critical low-coverage areas.
-- [ ] **Unit Tests**: Expand unit tests for UI components and game logic.
-- [ ] **Integration Tests**: Add integration tests for complex flows.
-- [ ] **CI Enforcement**: Tune coverage thresholds to block regressions.
+- [x] **Coverage Analysis**: Identify critical low-coverage areas.
+- [x] **Unit Tests**: Expand unit tests for UI components and game logic.
+- [x] **Integration Tests**: Add integration tests for complex flows.
+- [x] **CI Enforcement**: Tune coverage thresholds to block regressions.
 
-## Phase 29: Authentication Strategy
+## Phase 29: Variable Visual Feedback
+
+**Goal:** Address visual feedback regarding the variables feature to improve clarity and usability.
+
+- [ ] **Visual Audit**: Review current variable interactions and visual cues.
+- [ ] **Feedback Implementation**: Implement specific visual improvements requested by the user.
+- [ ] **Refinement**: Polish animations and transitions for variable states.
+
+## Phase 30: Authentication Strategy
 
 **Goal:** Evaluate and implement a robust authentication strategy to support cloud persistence and user accounts.
 
@@ -276,7 +284,7 @@
 - [ ] **Implementation**: Implement the chosen authentication strategy.
 - [ ] **Cloud Persistence**: Enable saving user progress and levels to the cloud.
 
-## Phase 30: Feedback System
+## Phase 31: Feedback System
 
 **Goal:** Create a robust feedback loop that empowers users to report issues with full context.
 

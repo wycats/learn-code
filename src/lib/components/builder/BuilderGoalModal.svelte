@@ -166,7 +166,8 @@
 										class:selected={option.value === builder.level.defaultTerrain}
 										onclick={(e) => {
 											selectBiome(option.value);
-											e.currentTarget.closest('[popover]')?.hidePopover();
+											// eslint-disable-next-line @typescript-eslint/no-explicit-any
+											(e.currentTarget.closest('[popover]') as any)?.hidePopover();
 										}}
 										style:--option-color={option.color}
 									>

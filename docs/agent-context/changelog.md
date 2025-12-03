@@ -441,3 +441,67 @@ Implemented the "Thought Bubble" variable system, introducing the concept of sta
 - **Testing**:
   - Added unit tests for the new "Click-Click" interaction flow.
   - Enforced code coverage thresholds in CI.
+
+## Phase 26: Variable Interaction Refinement (Completed)
+
+**Date:** December 2, 2025
+
+**Summary:**
+Refined the "Variables" feature based on user feedback, improving visual affordances and type safety. The "Thought Bubble" metaphor was strengthened with clearer iconography and drop zones. Strict typing was enforced to prevent invalid variable assignments (e.g., dropping a string into a number field).
+
+**Key Deliverables:**
+
+- **Visual Affordances**:
+  - Updated "Brain" icon and "Thought Bubble" visual style.
+  - Added clearer drop zone indicators for variable targets.
+- **Targeting Mode**:
+  - Implemented visual pulsing for valid targets when dragging a variable.
+- **Strict Typing**:
+  - Enforced type checks in `InteractionManager` to prevent invalid drops.
+- **Narrative**:
+  - Updated level intros to explain the "Thought Bubble" concept.
+
+## Phase 27: Component Architecture & Shared Abstractions (Completed)
+
+**Date:** December 2, 2025
+
+**Summary:**
+Refactored the core interaction logic into a "Headless Interaction System" and implemented "Native Modality" support. This separation of concerns allows for robust, testable interaction patterns (Drag-and-Drop, Click-Click, Keyboard) that are decoupled from the UI rendering. The system uses a central `InteractionManager` and `InteractionRegistry` to coordinate state, while `dnd.ts` adapters handle the specific input methods.
+
+**Key Deliverables:**
+
+- **Headless Interaction System**:
+  - `InteractionManager`: Central state machine for interaction sessions (Source, Target, Candidates).
+  - `InteractionRegistry`: Registry for interactive elements (Blocks, Slots, Tokens).
+  - `InteractionSession`: Transient state object for active interactions.
+- **Native Modality**:
+  - **Drag-and-Drop**: Implemented via `@atlaskit/pragmatic-drag-and-drop` adapters in `dnd.ts`.
+  - **Click-Click**: Implemented via `ActionManager` for accessible, pointer-based interactions.
+- **Refactoring**:
+  - Updated `Tray.svelte` and `Block.svelte` to use the new system.
+  - Removed ad-hoc event handling logic from components.
+- **Testing**:
+  - Comprehensive unit tests for `InteractionManager`, `dnd` adapters, and `Tray` integration.
+  - Verified "Click-Click" and "Drag-and-Drop" flows.
+
+## Phase 28: Test Coverage & Quality Assurance (Completed)
+
+**Date:** December 2, 2025
+
+**Summary:**
+Hardened the codebase by significantly increasing test coverage and resolving technical debt. This phase focused on ensuring the stability of critical systems like the Builder, Interpreter, and File System integration. We also addressed strict linting rules and type safety issues to ensure a clean and maintainable codebase.
+
+**Key Deliverables:**
+
+- **Test Coverage**:
+  - **BuilderModel**: Added comprehensive tests for grid manipulation, tool selection, and persistence.
+  - **StackInterpreter**: Expanded tests for error handling, complex control flow, and game mechanics.
+  - **SoundManager**: Added tests for audio playback logic and state persistence.
+  - **FileSystemService**: Recreated and fixed tests for the File System Access API wrapper.
+- **Quality Assurance**:
+  - **Linting**: Resolved strict ESLint errors (`no-explicit-any`, `no-unused-vars`) across the codebase.
+  - **Type Safety**: Fixed type mismatches in `LevelPack` schema and test mocks.
+  - **CI Enforcement**: Updated coverage thresholds to block regressions in critical files.
+- **Refactoring**:
+  - **Dependency Injection**: Refactored `FileSystemService` and `PersistenceService` for better testability.
+  - **Mocking**: Improved mock implementations for browser APIs (`AudioContext`, `FileSystemHandle`).

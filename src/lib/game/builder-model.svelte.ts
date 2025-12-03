@@ -8,8 +8,8 @@ import type {
 	Character,
 	Emotion
 } from './types';
-import { createDefaultPack, savePack, loadPack, listPacks } from './persistence';
-import { fileSystem } from '$lib/services/file-system';
+import { persistence, createDefaultPack, type PersistenceService } from './persistence';
+import { fileSystem, type FileSystemService } from '$lib/services/file-system';
 import { SYSTEM_CHARACTERS, SYSTEM_EMOTIONS } from './constants';
 
 export type BuilderTool =
@@ -169,7 +169,10 @@ export class BuilderModel {
 		})
 	);
 
-	constructor() {
+	constructor(
+		private persistenceService: PersistenceService = persistence,
+		private fileSystemService: FileSystemService = fileSystem
+	) {
 		// Initialize with the first level of the default pack if available,
 		// otherwise keep the default new level.
 		if (this.pack.levels.length === 0) {
@@ -251,7 +254,7 @@ export class BuilderModel {
 		}
 
 		// Fallback: Load the first available pack
-		const packs = await listPacks();
+		const packs = await this.persistenceService.listPacks();
 		if (packs.length > 0) {
 			await this.load(packs[0].id);
 		}
@@ -260,11 +263,11 @@ export class BuilderModel {
 
 	async linkToDisk() {
 		try {
-			await fileSystem.linkPackToDisk(this.pack.id);
+			await this.fileSystemService.linkPackToDisk(this.pack.id);
 			this.isLinked = true;
 			this.needsPermission = false;
 			// After linking, we should probably save the current state to disk immediately
-			await fileSystem.syncPackToDisk(this.pack.id, $state.snapshot(this.pack));
+			await this.fileSystemService.syncPackToDisk(this.pack.id, $state.snapshot(this.pack));
 		} catch (err) {
 			console.error('Failed to link pack:', err);
 			throw err;
@@ -274,14 +277,15 @@ export class BuilderModel {
 	debouncedSave(packData: LevelPack) {
 		if (this.saveTimeout) clearTimeout(this.saveTimeout);
 		this.saveTimeout = setTimeout(() => {
-			savePack(packData)
+			this.persistenceService
+				.savePack(packData)
 				.then(async () => {
 					if (typeof localStorage !== 'undefined') {
 						localStorage.setItem('lastActivePackId', packData.id);
 					}
 					// Sync to disk
 					try {
-						await fileSystem.syncPackToDisk(packData.id, packData);
+						await this.fileSystemService.syncPackToDisk(packData.id, packData);
 					} catch (err) {
 						console.warn('Failed to sync to disk:', err);
 					}
@@ -294,11 +298,11 @@ export class BuilderModel {
 		// Manual save (immediate)
 		if (this.saveTimeout) clearTimeout(this.saveTimeout);
 		const packData = $state.snapshot(this.pack);
-		await savePack(packData);
+		await this.persistenceService.savePack(packData);
 
 		// Try to sync to disk if linked
 		try {
-			await fileSystem.syncPackToDisk(packData.id, packData);
+			await this.fileSystemService.syncPackToDisk(packData.id, packData);
 		} catch (err) {
 			console.warn('Failed to sync to disk:', err);
 			throw err;
@@ -311,14 +315,14 @@ export class BuilderModel {
 
 	async load(packId: string) {
 		// Check if linked
-		this.isLinked = await fileSystem.isPackLinked(packId);
+		this.isLinked = await this.fileSystemService.isPackLinked(packId);
 		this.needsPermission = false;
 
 		// Try to load from disk first if linked
 		let loaded: LevelPack | null = null;
 		if (this.isLinked) {
 			try {
-				loaded = await fileSystem.loadLinkedPack(packId);
+				loaded = await this.fileSystemService.loadLinkedPack(packId);
 			} catch (err) {
 				console.warn('Failed to load linked pack from disk (likely permission):', err);
 				this.needsPermission = true;
@@ -326,7 +330,7 @@ export class BuilderModel {
 		}
 
 		if (!loaded) {
-			loaded = await loadPack(packId);
+			loaded = await this.persistenceService.loadPack(packId);
 		}
 
 		if (loaded) {
@@ -382,7 +386,7 @@ export class BuilderModel {
 	async reconnectDisk() {
 		if (!this.isLinked) return;
 		// This will trigger permission prompt (must be called from user gesture)
-		const loaded = await fileSystem.loadLinkedPack(this.pack.id);
+		const loaded = await this.fileSystemService.loadLinkedPack(this.pack.id);
 		if (loaded) {
 			this.pack = loaded;
 			this.needsPermission = false;
