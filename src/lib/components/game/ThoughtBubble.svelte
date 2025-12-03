@@ -21,16 +21,16 @@
 				out:scale={{ duration: 200, start: 0.5 }}
 			>
 				{#if item.type === 'key'}
-					<Key size={16} color="var(--amber-7)" />
+					<Key size={20} color="var(--amber-7)" />
 				{:else if item.type === 'number'}
-					<Brain size={16} color="var(--blue-7)" style="margin-right: 4px;" />
+					<Brain size={20} color="var(--blue-7)" style="margin-right: 4px;" />
 					<span class="number">{item.value}</span>
 				{:else if item.type === 'color'}
 					<div class="color-swatch" style:background-color={item.value}></div>
 				{/if}
 			</div>
 		{:else}
-			<Brain size={16} color="var(--stone-4)" style="opacity: 0.5;" />
+			<Brain size={20} color="var(--stone-4)" style="opacity: 0.5;" />
 		{/if}
 	</div>
 	<div class="bubble-tail"></div>
@@ -39,15 +39,15 @@
 <style>
 	.thought-bubble {
 		position: absolute;
-		top: -30px;
+		top: -42px;
 		left: 50%;
 		transform: translateX(-50%);
 		background: white;
 		border: 2px solid var(--surface-4);
-		border-radius: var(--radius-round);
-		padding: 4px;
-		min-width: 32px;
-		height: 32px;
+		border-radius: 50%;
+		padding: 6px;
+		min-width: 44px;
+		height: 44px;
 		display: grid;
 		place-items: center;
 		box-shadow: var(--shadow-2);
@@ -66,6 +66,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		width: 100%;
+		height: 100%;
 	}
 
 	.item-wrapper {
@@ -76,32 +78,57 @@
 
 	.bubble-tail {
 		position: absolute;
-		bottom: -4px;
+		bottom: -14px;
 		left: 50%;
-		transform: translateX(-50%) rotate(45deg);
-		width: 8px;
-		height: 8px;
-		background: white;
-		border-right: 2px solid var(--surface-4);
-		border-bottom: 2px solid var(--surface-4);
+		transform: translateX(-50%);
+		width: 0;
+		height: 0;
 	}
 
-	.thought-bubble.empty .bubble-tail {
+	.bubble-tail::before,
+	.bubble-tail::after {
+		content: '';
+		position: absolute;
+		background: white;
+		border: 2px solid var(--surface-4);
+		border-radius: 50%;
+		left: 50%;
+		transform: translateX(-50%);
+		box-shadow: var(--shadow-1);
+	}
+
+	/* Medium dot */
+	.bubble-tail::before {
+		bottom: 8px;
+		width: 10px;
+		height: 10px;
+	}
+
+	/* Small dot */
+	.bubble-tail::after {
+		bottom: 0px;
+		width: 6px;
+		height: 6px;
+	}
+
+	.thought-bubble.empty .bubble-tail::before,
+	.thought-bubble.empty .bubble-tail::after {
 		background: var(--surface-1);
 		border-color: var(--stone-4);
 		border-style: dashed;
+		box-shadow: none;
 	}
 
 	.number {
 		font-family: var(--font-mono);
 		font-weight: bold;
-		font-size: var(--font-size-1);
+		font-size: var(--font-size-2);
 		color: var(--text-1);
 	}
 
 	.color-swatch {
-		width: 16px;
-		height: 16px;
+		width: 20px;
+		height: 20px;
 		border-radius: 50%;
 		border: 1px solid var(--surface-4);
 	}
