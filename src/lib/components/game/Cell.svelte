@@ -43,6 +43,11 @@
 		send = () => () => ({ duration: 0 })
 	}: Props = $props();
 
+	let lastItem = $state(item);
+	$effect(() => {
+		if (item) lastItem = item;
+	});
+
 	const isHighlighted = $derived(
 		highlight &&
 			((id && highlight.targets?.includes(id)) ||
@@ -111,18 +116,17 @@
 	{/if}
 
 	{#if item}
-		{@const activeItem = item}
 		<div
 			class="item-marker"
 			class:docked={isCharacterHere}
-			out:send={{ key: `item-${activeItem.type}-${activeItem.value}` }}
+			out:send={{ key: `item-${lastItem?.type}-${lastItem?.value}` }}
 		>
-			{#if activeItem.type === 'key'}
+			{#if lastItem?.type === 'key'}
 				<Key size={24} color="var(--amber-7)" fill="var(--amber-3)" />
-			{:else if activeItem.type === 'number'}
-				<span class="number-item">{activeItem.value}</span>
-			{:else if activeItem.type === 'color'}
-				<div class="color-item" style:background-color={activeItem.value}></div>
+			{:else if lastItem?.type === 'number'}
+				<span class="number-item">{lastItem.value}</span>
+			{:else if lastItem?.type === 'color'}
+				<div class="color-item" style:background-color={lastItem.value}></div>
 			{/if}
 		</div>
 	{/if}
