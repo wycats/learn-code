@@ -131,7 +131,8 @@
 					id,
 					type: isGoal && !isCharacterHere ? 'goal' : isGoal ? 'grass' : type,
 					customTile,
-					item: !isCollected && !isCharacterHere ? item : undefined
+					item: !isCollected ? item : undefined,
+					isCharacterHere
 				});
 			}
 		}
@@ -182,6 +183,7 @@
 				x={cell.x}
 				y={cell.y}
 				id={cell.id}
+				isCharacterHere={cell.isCharacterHere}
 				{highlight}
 			/>
 		</div>

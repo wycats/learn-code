@@ -1,42 +1,29 @@
-# Phase 29: Variable Visual Feedback
+# Phase 29 Polish: Variable Visual Refinement
 
 ## Context
 
-User feedback indicated that the "Variables" feature (Thought Bubble) was visually confusing. Specifically:
+Following the initial Phase 29 implementation, user feedback requested further refinements to the "Variables" feature:
 
-1. It wasn't clear that the "Brain" represented memory/storage.
-2. The connection between the held item and the variable slot in blocks was weak.
-3. The item on the ground looked too much like the held item (initially), causing confusion.
-4. When the character stood on an item, the visual overlap was messy.
+1.  **Persistent Thought Bubble**: The thought bubble should always be visible (even when empty) to reinforce the "Memory" metaphor.
+2.  **Item Visibility**: Items on the ground should not disappear when the character stands on them; instead, they should move to the corner to remain visible.
 
 ## Changes
 
-### 1. Visual Metaphor Refinement
+### 1. Persistent Thought Bubble
 
-- **Thought Bubble (Held Item)**: Added a "Brain" icon to the `ThoughtBubble` component to explicitly link it to the concept of "Memory/Storage".
-- **Ground Item**: Explicitly _removed_ the "Brain" icon from the item on the ground (`Cell.svelte`). The ground item is just the raw value (e.g., a number). The "Brain" only appears when the character _picks it up_ (puts it in memory).
+- **Empty State**: Updated `ThoughtBubble.svelte` to always render. When no item is held, it displays a dashed border and a grayed-out "Brain" icon.
+- **Visuals**: Added CSS for the `.empty` state, including a dashed tail.
 
-### 2. Block Visualization
+### 2. Grid & Cell Updates
 
-- **Loop Block**: Updated the variable badge on the Loop block to display a "Mini Token" with the Brain icon when a variable is assigned. This creates a strong visual link: "The thing in the thought bubble goes here".
-
-### 3. Grid Cleanup
-
-- **Overlap Handling**: Updated `Grid.svelte` to hide the item on the ground if the character is currently standing on that cell (`!isCharacterHere`). This prevents the "double rendering" artifact where the character and the item fight for visual space, clarifying that the character has "covered" or "picked up" the item.
-
-## Technical Details
-
-- **Components Modified**:
-  - `Cell.svelte`: Reverted to simple number display (no Brain).
-  - `ThoughtBubble.svelte`: Added `Brain` icon from `lucide-svelte`.
-  - `Block.svelte`: Added conditional rendering for `variable-token-mini` inside the loop badge.
-  - `Grid.svelte`: Added logic to check `isCharacterHere` before rendering the cell's item.
+- **Corner Docking**: Updated `Grid.svelte` to pass an `isCharacterHere` prop to `Cell.svelte`.
+- **Cell Rendering**: Updated `Cell.svelte` to apply a `.docked` class to the item marker when the character is present. This moves the item to the top-right corner and scales it down (0.7x), ensuring it remains visible without obscuring the character.
 
 ## Verification
 
 - **Visual Check**:
-  - Ground item: Just a number.
-  - Held item: Brain icon + Number.
-  - Loop block (with variable): Brain icon inside the badge.
-  - Character on item: Item hidden (no overlap).
+  - **Empty Bubble**: Visible with dashed outline.
+  - **Held Item**: Normal bubble with Brain + Value.
+  - **Ground Item**: Normal center position.
+  - **Character on Item**: Item moves to top-right corner.
 - **Type Check**: `pnpm check` passed.

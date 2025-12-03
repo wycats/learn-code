@@ -10,9 +10,9 @@
 	let { item }: Props = $props();
 </script>
 
-{#if item}
-	<div class="thought-bubble" transition:scale={{ duration: 200, start: 0.5 }}>
-		<div class="bubble-content">
+<div class="thought-bubble" class:empty={!item} transition:scale={{ duration: 200, start: 0.5 }}>
+	<div class="bubble-content">
+		{#if item}
 			{#if item.type === 'key'}
 				<Key size={16} color="var(--amber-7)" />
 			{:else if item.type === 'number'}
@@ -21,10 +21,12 @@
 			{:else if item.type === 'color'}
 				<div class="color-swatch" style:background-color={item.value}></div>
 			{/if}
-		</div>
-		<div class="bubble-tail"></div>
+		{:else}
+			<Brain size={16} color="var(--stone-4)" style="opacity: 0.5;" />
+		{/if}
 	</div>
-{/if}
+	<div class="bubble-tail"></div>
+</div>
 
 <style>
 	.thought-bubble {
@@ -42,6 +44,14 @@
 		place-items: center;
 		box-shadow: var(--shadow-2);
 		z-index: 20;
+		transition: all 0.2s var(--ease-3);
+	}
+
+	.thought-bubble.empty {
+		border-style: dashed;
+		border-color: var(--stone-4);
+		background: var(--surface-1);
+		box-shadow: none;
 	}
 
 	.bubble-content {
@@ -60,6 +70,12 @@
 		background: white;
 		border-right: 2px solid var(--surface-4);
 		border-bottom: 2px solid var(--surface-4);
+	}
+
+	.thought-bubble.empty .bubble-tail {
+		background: var(--surface-1);
+		border-color: var(--stone-4);
+		border-style: dashed;
 	}
 
 	.number {

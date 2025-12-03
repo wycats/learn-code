@@ -521,3 +521,15 @@ Refined the visual representation of variables to strengthen the "Memory" metaph
   - **Variable Slots**: Added "Mini Brain Token" to Loop blocks when a variable is used.
 - **Grid Polish**:
   - **Overlap Handling**: Hidden items on the ground when the character is standing on them.
+
+## Phase 29 Polish: Variable Visual Refinement (Completed)
+
+**Date:** December 2, 2025
+
+**Summary:**
+Further refined the "Variables" visuals based on user feedback. The "Thought Bubble" is now persistent (showing an empty state) to solidify the memory metaphor, and items on the ground now "dock" to the corner when the character stands on them, ensuring they remain visible.
+
+**Key Deliverables:**
+
+- **Persistent Thought Bubble**: Always visible; shows dashed outline/gray brain when empty.
+- **Corner Docking**: Ground items move to the top-right corner when the character overlaps them.

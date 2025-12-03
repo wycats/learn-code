@@ -26,9 +26,10 @@
 		highlight?:
 			| { targets: string[]; type?: 'pulse' | 'arrow' | 'dim' | 'selection'; fading?: boolean }
 			| undefined;
+		isCharacterHere?: boolean;
 	}
 
-	let { type, customTile, item, x, y, id, highlight }: Props = $props();
+	let { type, customTile, item, x, y, id, highlight, isCharacterHere = false }: Props = $props();
 
 	const isHighlighted = $derived(
 		highlight &&
@@ -98,7 +99,7 @@
 	{/if}
 
 	{#if item}
-		<div class="item-marker">
+		<div class="item-marker" class:docked={isCharacterHere}>
 			{#if item.type === 'key'}
 				<Key size={24} color="var(--amber-7)" fill="var(--amber-3)" />
 			{:else if item.type === 'number'}
@@ -185,6 +186,14 @@
 		position: absolute;
 		z-index: 5;
 		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+		transition: all 0.3s var(--ease-spring-3);
+	}
+
+	.item-marker.docked {
+		top: 4px;
+		right: 4px;
+		transform: scale(0.7);
+		z-index: 20;
 	}
 
 	.number-item {
