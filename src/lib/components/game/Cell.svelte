@@ -15,6 +15,7 @@
 		Cloud,
 		Key
 	} from 'lucide-svelte';
+	import type { CrossfadeParams, TransitionConfig } from 'svelte/transition';
 
 	interface Props {
 		type: CellType;
@@ -27,9 +28,20 @@
 			| { targets: string[]; type?: 'pulse' | 'arrow' | 'dim' | 'selection'; fading?: boolean }
 			| undefined;
 		isCharacterHere?: boolean;
+		send?: (node: Element, params: CrossfadeParams & { key: unknown }) => () => TransitionConfig;
 	}
 
-	let { type, customTile, item, x, y, id, highlight, isCharacterHere = false }: Props = $props();
+	let {
+		type,
+		customTile,
+		item,
+		x,
+		y,
+		id,
+		highlight,
+		isCharacterHere = false,
+		send = () => () => ({ duration: 0 })
+	}: Props = $props();
 
 	const isHighlighted = $derived(
 		highlight &&
@@ -99,7 +111,11 @@
 	{/if}
 
 	{#if item}
-		<div class="item-marker" class:docked={isCharacterHere}>
+		<div
+			class="item-marker"
+			class:docked={isCharacterHere}
+			out:send={{ key: `item-${item.type}-${item.value}` }}
+		>
 			{#if item.type === 'key'}
 				<Key size={24} color="var(--amber-7)" fill="var(--amber-3)" />
 			{:else if item.type === 'number'}

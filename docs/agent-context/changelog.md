@@ -527,9 +527,10 @@ Refined the visual representation of variables to strengthen the "Memory" metaph
 **Date:** December 2, 2025
 
 **Summary:**
-Further refined the "Variables" visuals based on user feedback. The "Thought Bubble" is now persistent (showing an empty state) to solidify the memory metaphor, and items on the ground now "dock" to the corner when the character stands on them, ensuring they remain visible.
+Further refined the "Variables" visuals based on user feedback. The "Thought Bubble" is now persistent (showing an empty state) to solidify the memory metaphor, and items on the ground now "dock" to the corner when the character stands on them, ensuring they remain visible. Additionally, implemented a smooth "pickup" animation where the item shrinks and moves into the thought bubble when collected.
 
 **Key Deliverables:**
 
 - **Persistent Thought Bubble**: Always visible; shows dashed outline/gray brain when empty.
 - **Corner Docking**: Ground items move to the top-right corner when the character overlaps them.
+- **Pickup Animation**: Implemented `crossfade` transition for items moving from the grid to the thought bubble.

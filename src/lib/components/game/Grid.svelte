@@ -5,7 +5,8 @@
 	import Character from './Character.svelte';
 	import ThoughtBubble from './ThoughtBubble.svelte';
 	import { RotateCw } from 'lucide-svelte';
-	import { fade } from 'svelte/transition';
+	import { fade, crossfade } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 
 	interface Props {
 		game: GameModel;
@@ -30,6 +31,11 @@
 		onRotateStart,
 		onInteractionEnd
 	}: Props = $props();
+
+	const [send, receive] = crossfade({
+		duration: 400,
+		easing: quintOut
+	});
 
 	let isDragging = $state(false);
 	let dragStartPos = $state<GridPosition | null>(null);
@@ -185,6 +191,7 @@
 				id={cell.id}
 				isCharacterHere={cell.isCharacterHere}
 				{highlight}
+				{send}
 			/>
 		</div>
 	{/each}
@@ -202,7 +209,7 @@
 		tabindex="0"
 	>
 		<Character direction={game.characterOrientation} {game} />
-		<ThoughtBubble item={game.heldItem} />
+		<ThoughtBubble item={game.heldItem} {receive} />
 
 		{#if isBuilder && (selectedActor === 'start' || isHoveringCharacter)}
 			<button
