@@ -111,17 +111,18 @@
 	{/if}
 
 	{#if item}
+		{@const activeItem = item}
 		<div
 			class="item-marker"
 			class:docked={isCharacterHere}
-			out:send={{ key: `item-${item.type}-${item.value}` }}
+			out:send={{ key: `item-${activeItem.type}-${activeItem.value}` }}
 		>
-			{#if item.type === 'key'}
+			{#if activeItem.type === 'key'}
 				<Key size={24} color="var(--amber-7)" fill="var(--amber-3)" />
-			{:else if item.type === 'number'}
-				<span class="number-item">{item.value}</span>
-			{:else if item.type === 'color'}
-				<div class="color-item" style:background-color={item.value}></div>
+			{:else if activeItem.type === 'number'}
+				<span class="number-item">{activeItem.value}</span>
+			{:else if activeItem.type === 'color'}
+				<div class="color-item" style:background-color={activeItem.value}></div>
 			{/if}
 		</div>
 	{/if}
