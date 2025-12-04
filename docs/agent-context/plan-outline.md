@@ -373,6 +373,7 @@
 - [ ] **Visual Feedback**: Show icons/indicators on tiles in the Builder to represent their properties (e.g., a small boat icon for water, a skull for void).
 - [ ] **Void Visuals**: Implement the "shrink away" animation for the Void/Hazard death effect.
 - [ ] **Hybrid Terrain**: Verify and demo a "Magic Door" (Wall + PassableBy Key) tile.
+- [ ] **Stage Props**: Add decorative "Prop" tiles (trees, rocks) that have no logic but enhance the "Story" (Axiom 1).
 
 ## Phase 39: Community & Sharing
 
@@ -381,6 +382,7 @@
 - [ ] **Export to GitHub**: Allow users to export their packs to a GitHub repository (via OAuth).
 - [ ] **Public Library**: A simple read-only view of shared packs (curated or community).
 - [ ] **Import from URL**: Ability to load a pack from a raw JSON URL.
+- [ ] **Remixing**: Allow users to "Fork" a shared level to modify it (Axiom 3).
 
 ## Phase 40: Advanced Mechanics - Survival Mode
 
@@ -404,6 +406,7 @@
 - [ ] **Code View**: A read-only panel showing the generated JavaScript/TypeScript code for the current program.
 - [ ] **Syntax Highlighting**: Use Shiki or similar to highlight the code.
 - [ ] **Live Updates**: Code updates in real-time as blocks are dragged.
+- [ ] **Ghost Replay**: Visualize the "Staff Ghost" solution for verification (Axiom 4).
 
 ## Phase 43: Feedback System
 
