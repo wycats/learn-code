@@ -1,5 +1,7 @@
 # Project Plan Outline: Wonderblocks Learning Tool
 
+## Epoch 1: Foundation & MVP
+
 ## Phase 1: Foundation & Research (Completed)
 
 **Goal:** Establish the pedagogical and technical foundation.
@@ -44,6 +46,8 @@
 
 - [x] Functions (Magic Blocks).
 - [x] Audio System (SFX & Ambience).
+
+## Epoch 2: The Builder & Architect
 
 ## Phase 7: Level Builder (Completed)
 
@@ -204,6 +208,8 @@
 - [x] **WebRTC Handshake**: Implement a simple signaling mechanism for direct device-to-device transfer of larger packs.
 - [x] **Offline Support**: Ensure sharing works gracefully with cached app assets.
 
+## Epoch 3: Refinement & Expansion
+
 ## Phase 22: Mobile & Phone Polish (Completed)
 
 **Goal:** Optimize the experience for small screens and touch interactions, ensuring the app feels native on mobile devices.
@@ -347,6 +353,8 @@
 - [x] **Content Authoring**: Write the initial chapters (Survival Basics, Automation) with the three-voice system (Guide, Zoey, Jonas).
 - [x] **Interactive Widgets**: Implement embedded "Playgrounds" and dynamic state reflection within the book pages.
 
+## Epoch 4: Advanced Mechanics & Community
+
 ## Phase 37: Advanced Mechanics - The Boat
 
 **Goal:** Implement the "Boat" mechanic suggested by Zoey, allowing the character to traverse water tiles when holding the boat item.
@@ -405,3 +413,22 @@
 - [ ] **State Dump**: Automatically attach the current level JSON and interpreter state.
 - [ ] **Offline Queue**: Ensure feedback is queued and sent when online (already partially implemented).
 - [ ] **Admin Dashboard**: Simple view to triage feedback (optional/later).
+
+## Phase 44: The Master Teacher
+
+**Goal:** Empower the Architect with advanced tools to control the learning experience and provide context-aware guidance.
+
+- [ ] **Story/Tutorial Control**:
+  - [ ] **Unmask Blocks**: Allow the Architect to specify a point in the dialogue where the block tray becomes interactive.
+  - [ ] **Interactive Tutorials**: Validate that the user performed a specific action before advancing the story.
+- [ ] **Field Guide Improvements**:
+  - [ ] **Context-Aware Manual**: Customize the Field Guide for the current level.
+  - [ ] **Architect Control**: Give the Architect control over the Field Guide content for their levels.
+
+## Phase 45: Engine Upgrade
+
+**Goal:** Modernize the underlying execution engine to support advanced features and better performance.
+
+- [ ] **PXT / MakeCode Integration**: Investigate using Microsoft's PXT as the underlying engine.
+- [ ] **Zod Schema Diff**: Implement "Spec-ulation" rules for Zod schemas to prevent breaking changes.
+- [ ] **Variables & Scoping**: Refine the variable system with lexical scoping and "box" metaphor.
