@@ -83,8 +83,8 @@ The user owns their data.
 - **Application**:
   - Use `OPFS` (Origin Private File System) for persistence.
   - No required login or server round-trips for core gameplay.
-  - "Cloud" features are for sharing, not saving.
-- **Anti-Pattern**: "Loading..." spinners for local actions.
+  - **Distributed Ownership**: There is no "Master" device. Every device is a peer. Sync is a merge operation, not a "download".
+- **Anti-Pattern**: "Loading..." spinners for local actions, or "Sign in to play".
 
 ## 10. Schema Stability (No Breaking Changes)
 

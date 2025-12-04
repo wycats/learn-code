@@ -237,7 +237,10 @@ export const LevelDefinitionSchema = z.object({
 	outro: z.array(StorySegmentSchema).optional(),
 	hints: z.array(HintSchema).optional(),
 	characters: z.array(CharacterSchema).optional(),
-	emotions: z.array(EmotionSchema).optional()
+	emotions: z.array(EmotionSchema).optional(),
+	// Provenance tracking
+	versionId: z.string().optional(), // Unique ID for this specific version (fast equality check)
+	vectorClock: z.record(z.string(), z.number()).optional() // Vector Clock: ActorID -> Counter
 });
 export type LevelDefinition = z.infer<typeof LevelDefinitionSchema>;
 

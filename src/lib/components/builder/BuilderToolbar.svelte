@@ -448,25 +448,6 @@
 		font-size: var(--font-size-1);
 	}
 
-	.active-tile-display {
-		display: flex;
-		align-items: center;
-		gap: var(--size-2);
-		padding: var(--size-1) var(--size-2);
-		background-color: var(--surface-1);
-		border: 1px solid var(--surface-3);
-		border-radius: var(--radius-2);
-		color: var(--text-1);
-	}
-
-	.tile-preview {
-		width: 24px;
-		height: 24px;
-		border-radius: var(--radius-1);
-		overflow: hidden;
-		box-shadow: var(--shadow-1);
-	}
-
 	.architect-section {
 		display: flex;
 		align-items: center;

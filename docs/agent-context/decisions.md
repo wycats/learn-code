@@ -458,3 +458,35 @@
 - **Context**: QR code scanning is convenient but fragile (lighting, camera quality).
 - **Decision**: Add a manual "Copy/Paste Code" option as a fallback.
 - **Rationale**: Ensures that P2P sharing is accessible even when hardware or environmental conditions prevent scanning. We chose a simple text-based exchange (base64 encoded JSON) as it is universal.
+
+## Phase 31: Authentication Strategy
+
+### Custom Auth vs. Neon Auth
+
+- **Context**: We need to implement user accounts to support cloud persistence. We evaluated Neon Auth (via Stack Auth) vs. a custom solution (using Oslo/Arctic).
+- **Decision**: Use **Custom Authentication** (based on the existing scaffolding in `src/lib/server/auth.ts`).
+- **Rationale**:
+  1.  **Control**: We want full control over the `user` schema and not rely on a read-only sync table.
+  2.  **Educational Value**: Implementing auth demonstrates core web concepts (sessions, cookies, OAuth).
+  3.  **Simplicity**: For our needs, a simple session-based auth with GitHub OAuth is sufficient. We avoid introducing a third-party identity provider dependency (Stack Auth) that might have its own pricing/limitations.
+  4.  **Offline-First**: We need to carefully manage the merge between local (offline) data and cloud data. Owning the auth flow gives us more hooks to handle this "post-login sync" gracefully.
+
+## Phase 32: Sync Optimization & Builder Polish
+
+### 51. Allocation-Free Vector Clocks
+
+**Decision:** Optimize `compareVectorClocks` to be allocation-free (O(N) single pass) instead of using `Set` operations.
+**Context:** Vector clock comparison is a hot path in the synchronization logic, potentially called thousands of times during a sync operation. The previous implementation created multiple intermediate `Set` and array objects.
+**Consequence:**
+
+- Reduced garbage collection pressure during sync.
+- Slightly more verbose code, but significantly more performant for high-frequency calls.
+
+### 52. Programmatic Navigation for Safety
+
+**Decision:** Use `goto()` with `onclick` handlers instead of `<a>` tags for internal navigation in Auth flows.
+**Context:** The `svelte/no-navigation-without-resolve` lint rule flags `<a>` tags with dynamic or external-looking URLs (even if they are internal routes like `/login/google`).
+**Consequence:**
+
+- We bypass the static analysis limitation while maintaining correct navigation behavior.
+- We explicitly handle the navigation intent in code, which is safer for complex auth flows.

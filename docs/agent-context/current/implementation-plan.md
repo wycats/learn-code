@@ -1,21 +1,23 @@
-# Phase 30.5: Fresh Eyes Polish
+# Phase 31: Authentication & Child Safety
 
-**Goal:** Address the friction points identified in the "Fresh Eyes Review II" and user feedback, focusing on mobile ergonomics, P2P sharing fallback, and code maintainability.
+**Goal:** Implement a secure, COPPA-compliant authentication system that supports the "Netflix Model" (Parent-owned account, Child profiles) and solves the Family Link constraint via QR Handshake.
 
 ## High-Level Outline
 
-1.  **Refactoring: HistoryManager**
-    - Extract the Undo/Redo logic from `BuilderModel` into a generic `HistoryManager<T>` class.
-    - Add comprehensive unit tests for the new class.
-    - Integrate it back into `BuilderModel`.
+1.  **Database Schema**
+    - Define tables for Users (Parents), Profiles (Children), and Device Auth.
+    - Ensure cascade deletes work correctly (deleting parent deletes profiles).
 
-2.  **Mobile Polish: Toolbar**
-    - **Level Selector**: Hide the level selector on mobile devices to save space. Users can switch levels via the Pack Manager or by going back.
-    - **Save/Link Buttons**: Hide the "Link to Disk" button on browsers that don't support the File System Access API.
+2.  **Authentication Infrastructure**
+    - Set up OAuth providers (Google, GitHub).
+    - Implement "Sudo Mode" middleware/checks.
+    - Implement QR Code generation and polling logic.
 
-3.  **P2P Polish: Manual Fallback**
-    - Add a "Show Code" option to the P2P modal.
-    - This should be a subtle/premium UI (not a big tab) that reveals the connection string for manual copying/pasting if the camera fails.
+3.  **User Interface**
+    - **Parent Gate**: A clear distinction between "Child Mode" and "Parent Mode".
+    - **Profile Picker**: The primary entry point for children.
+    - **Settings**: A protected area for managing profiles.
 
-4.  **Code Cleanup**
-    - Look for other opportunities to reduce complexity in `BuilderModel` or `Tray`.
+4.  **Integration**
+    - Connect the Auth system to the existing Game/Builder state.
+    - Handle offline/online transitions gracefully.

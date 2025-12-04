@@ -36,6 +36,8 @@ export class BuilderModel {
 		// Absolute fallback
 		return {
 			id: 'fallback',
+			versionId: 'fallback-version',
+			vectorClock: {},
 			name: 'Fallback Level',
 			gridSize: { width: 5, height: 5 },
 			start: { x: 0, y: 0 },
@@ -94,6 +96,37 @@ export class BuilderModel {
 		this.historyManager.pushState($state.snapshot(this.level));
 	}
 
+	markModified() {
+		const now = Date.now();
+
+		// Provenance Logic (Vector Clock)
+		if (!this.level.vectorClock) {
+			this.level.vectorClock = {};
+		}
+
+		// Get persistent actor ID
+		let actorId = 'unknown-actor';
+		if (typeof localStorage !== 'undefined') {
+			let stored = localStorage.getItem('device_actor_id');
+			if (!stored) {
+				stored = crypto.randomUUID();
+				localStorage.setItem('device_actor_id', stored);
+			}
+			actorId = stored;
+		}
+
+		// Increment clock
+		const current = this.level.vectorClock[actorId] || 0;
+		this.level.vectorClock[actorId] = current + 1;
+
+		// Generate a new version ID for this state (fast equality check)
+		this.level.versionId = crypto.randomUUID();
+
+		// Keep pack updated for sorting/metadata
+		this.pack.updated = now;
+		this.syncGame();
+	}
+
 	undo() {
 		const prev = this.historyManager.undo($state.snapshot(this.level));
 		if (prev) {
@@ -101,7 +134,7 @@ export class BuilderModel {
 			const index = this.pack.levels.findIndex((l) => l.id === this.activeLevelId);
 			if (index !== -1) {
 				this.pack.levels[index] = prev;
-				this.syncGame();
+				this.markModified();
 			}
 		}
 	}
@@ -113,7 +146,7 @@ export class BuilderModel {
 			const index = this.pack.levels.findIndex((l) => l.id === this.activeLevelId);
 			if (index !== -1) {
 				this.pack.levels[index] = next;
-				this.syncGame();
+				this.markModified();
 			}
 		}
 	}
@@ -176,6 +209,8 @@ export class BuilderModel {
 			// Ensure the default level is in the pack
 			const defaultLevel: LevelDefinition = {
 				id: crypto.randomUUID(),
+				versionId: crypto.randomUUID(),
+				vectorClock: {},
 				name: 'New Level',
 				gridSize: { width: 5, height: 5 },
 				start: { x: 0, y: 0 },
@@ -348,6 +383,10 @@ export class BuilderModel {
 			level.outro?.forEach((s) => {
 				if (!s.id) s.id = crypto.randomUUID();
 			});
+
+			// Ensure provenance fields exist
+			if (!level.versionId) level.versionId = crypto.randomUUID();
+			if (!level.vectorClock) level.vectorClock = {};
 		});
 
 		this.pack = pack;
@@ -355,6 +394,8 @@ export class BuilderModel {
 			// Create a default level if pack is empty
 			const defaultLevel: LevelDefinition = {
 				id: crypto.randomUUID(),
+				versionId: crypto.randomUUID(),
+				vectorClock: {},
 				name: 'New Level',
 				gridSize: { width: 5, height: 5 },
 				start: { x: 0, y: 0 },
@@ -394,6 +435,8 @@ export class BuilderModel {
 	createNewLevel() {
 		const newLevel: LevelDefinition = {
 			id: crypto.randomUUID(),
+			versionId: crypto.randomUUID(),
+			vectorClock: {},
 			name: `Level ${this.pack.levels.length + 1}`,
 			gridSize: { width: 5, height: 5 },
 			start: { x: 0, y: 0 },
@@ -502,7 +545,7 @@ export class BuilderModel {
 		const dirs = ['N', 'E', 'S', 'W'] as const;
 		const currentIdx = dirs.indexOf(this.level.startOrientation);
 		this.level.startOrientation = dirs[(currentIdx + 1) % 4];
-		this.syncGame();
+		this.markModified();
 	}
 
 	// Function Management
@@ -514,14 +557,14 @@ export class BuilderModel {
 
 		this.pushState();
 		this.level.functions[name] = [];
-		this.syncGame();
+		this.markModified();
 	}
 
 	deleteFunction(name: string) {
 		if (!this.level.functions) return;
 		this.pushState();
 		delete this.level.functions[name];
-		this.syncGame();
+		this.markModified();
 	}
 
 	editFunction(name: string) {
@@ -610,7 +653,7 @@ export class BuilderModel {
 		if (newWidth !== this.level.gridSize.width || newHeight !== this.level.gridSize.height) {
 			this.pushState();
 			this.level.gridSize = { width: newWidth, height: newHeight };
-			this.syncGame();
+			this.markModified();
 		}
 	}
 
@@ -644,7 +687,7 @@ export class BuilderModel {
 			this.level.start.x++;
 			this.level.goal.x++;
 		}
-		this.syncGame();
+		this.markModified();
 	}
 
 	addRow(side: 'top' | 'bottom') {
@@ -677,7 +720,7 @@ export class BuilderModel {
 			this.level.start.y++;
 			this.level.goal.y++;
 		}
-		this.syncGame();
+		this.markModified();
 	}
 
 	removeColumn(index: number) {
@@ -721,7 +764,7 @@ export class BuilderModel {
 		else if (this.level.goal.x > index) this.level.goal.x--;
 
 		this.level.gridSize.width--;
-		this.syncGame();
+		this.markModified();
 	}
 
 	removeRow(index: number) {
@@ -765,7 +808,7 @@ export class BuilderModel {
 		else if (this.level.goal.y > index) this.level.goal.y--;
 
 		this.level.gridSize.height--;
-		this.syncGame();
+		this.markModified();
 	}
 
 	handleCellClick(pos: GridPosition) {
@@ -798,7 +841,7 @@ export class BuilderModel {
 				this.level.goal = { ...pos };
 			}
 			// Don't deselect here, let the UI handle drop
-			this.syncGame();
+			this.markModified();
 			return;
 		}
 
@@ -838,6 +881,6 @@ export class BuilderModel {
 
 		// For now, let's just re-sync the whole game model to be safe and simple.
 		// Optimization: Update the specific part of GameModel.
-		this.syncGame();
+		this.markModified();
 	}
 }

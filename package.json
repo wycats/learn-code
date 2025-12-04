@@ -91,6 +91,7 @@
 		"@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.1.0",
 		"@node-rs/argon2": "^2.0.2",
 		"@vercel/postgres": "^0.10.0",
+		"arctic": "^3.7.0",
 		"html5-qrcode": "^2.3.8",
 		"lz-string": "^1.5.0",
 		"open-props": "^1.7.16",

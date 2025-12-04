@@ -289,11 +289,30 @@
 **Goal:** Address friction points identified in the "Fresh Eyes Review II" and user feedback, focusing on mobile ergonomics, P2P sharing fallback, and code maintainability.
 
 - [x] **HistoryManager Refactoring**: Extract Undo/Redo logic into a generic class.
-- [x] **Mobile Polish**: Optimize Builder toolbar for mobile (hide Level Selector).
+- [x] **Mobile Polish**:
+  - [x] Optimize Builder toolbar for mobile (hide Level Selector).
+  - [x] **Tray Keypad**: Custom keypad for Loop blocks.
 - [x] **Browser Support**: Graceful fallback for File System Access API.
 - [x] **P2P Manual Fallback**: Add manual code entry/display for P2P sharing.
+- [x] **Visual Polish**: Glassmorphic "Cover" block style.
 
-## Phase 31: Authentication Strategy
+## Phase 31: P2P Progress Sync (Completed)
+
+**Goal:** Enable users to sync their progress (levels unlocked, stars earned) between devices without creating a cloud account, using the existing P2P infrastructure.
+
+- [x] **Sync Logic**: Implement `SyncService` to merge progress data (best score wins).
+- [x] **Sync UI**: Create `SyncModal` reusing the `P2PModal` component.
+- [x] **Entry Point**: Add "Sync Devices" button to the Home screen.
+- [x] **Verification**: E2E tests for the modal and visual regression.
+
+## Phase 32: Sync Optimization & Builder Polish Refinement (Completed)
+
+**Goal:** Optimize performance and verify the Builder Polish implementation.
+
+- [x] **Sync Optimization**: Allocation-free Vector Clock comparison.
+- [x] **Builder Verification**: Confirm text updates, styling, and Undo/Redo.
+
+## Phase 33: Authentication Strategy (Deferred)
 
 **Goal:** Evaluate and implement a robust authentication strategy to support cloud persistence and user accounts.
 
@@ -302,7 +321,7 @@
 - [ ] **Implementation**: Implement the chosen authentication strategy.
 - [ ] **Cloud Persistence**: Enable saving user progress and levels to the cloud.
 
-## Phase 32: Feedback System
+## Phase 33: Feedback System
 
 **Goal:** Create a robust feedback loop that empowers users to report issues with full context.
 

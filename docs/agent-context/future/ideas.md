@@ -37,6 +37,14 @@
 
 ## Storage & Persistence
 
+- [ ] **Offline Sync & Conflict Resolution**: A robust system for syncing data between devices using QR codes, designed for the "Architect" persona.
+  - **Git-like Structure**: Store changes as deltas with provenance and cached snapshots.
+  - **Conflict Resolution**:
+    - **Granularity**: Define merge granularity to avoid "frankenstein levels".
+    - **UI**: Present conflicts clearly ("You made changes to Level X in both Device A and Device B. Which would you like to pick?").
+    - **Grouping**: Allow resolving groups of changes from the same provenance branch together, with the option to "break it apart".
+  - **Goal**: Enable offline "sync" without overwhelming users, while teaching basic version control concepts.
+
 - [ ] **OPFS for Level Storage**: Use the Origin Private File System (OPFS) to store user-created levels locally in the browser. This provides a more robust and performant storage solution than localStorage, especially for larger levels or assets.
 
 - [ ] **Community Contributions**: Allow Architects to submit Pull Requests to the main repository to add their levels to the built-in packs.

@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
-	import { Code, ArrowRight, Hammer, ScanLine } from 'lucide-svelte';
+	import { Code, ArrowRight, Hammer, ScanLine, RefreshCw } from 'lucide-svelte';
 	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
+	import SyncModal from '$lib/components/common/SyncModal.svelte';
+
+	let showSync = $state(false);
 
 	function handleStart() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
@@ -19,6 +22,10 @@
 		goto(`${base}/play`);
 	}
 </script>
+
+{#if showSync}
+	<SyncModal onClose={() => (showSync = false)} />
+{/if}
 
 <div class="landing-container">
 	<div class="top-bar">
@@ -42,10 +49,17 @@
 				<Hammer size={20} />
 			</button>
 
-			<button class="cta-button tertiary" onclick={handleScan}>
-				<span>Scan Level</span>
-				<ScanLine size={20} />
-			</button>
+			<div class="secondary-actions">
+				<button class="cta-button tertiary" onclick={handleScan}>
+					<span>Scan Level</span>
+					<ScanLine size={20} />
+				</button>
+
+				<button class="cta-button tertiary" onclick={() => (showSync = true)}>
+					<span>Sync Devices</span>
+					<RefreshCw size={20} />
+				</button>
+			</div>
 		</div>
 
 		<a href="mailto:feedback@wonderblocks.app?subject=Code Climber Feedback" class="feedback-link">
@@ -115,6 +129,12 @@
 		margin-top: var(--size-4);
 	}
 
+	.secondary-actions {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--size-3);
+	}
+
 	.cta-button {
 		border: none;
 		padding: var(--size-3) var(--size-6);
@@ -165,6 +185,8 @@
 		color: var(--text-2);
 		box-shadow: none;
 		border: 1px solid var(--surface-3);
+		padding: var(--size-3);
+		font-size: var(--font-size-1);
 	}
 
 	.cta-button.tertiary:hover {

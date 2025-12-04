@@ -548,7 +548,7 @@ Addressed deferred items from Phase 19 to refine the Level Builder experience. I
 **Date:** December 3, 2025
 
 **Summary:**
-Addressed friction points identified in the "Fresh Eyes Review II" and user feedback, focusing on mobile ergonomics, P2P sharing fallback, and code maintainability. Refactored the Undo/Redo logic into a generic `HistoryManager` class, optimized the Builder toolbar for mobile devices, and added a manual fallback for P2P sharing to support users with camera/scanning issues.
+Addressed friction points identified in the "Fresh Eyes Review II" and user feedback, focusing on mobile ergonomics, P2P sharing fallback, and code maintainability. Refactored the Undo/Redo logic into a generic `HistoryManager` class, optimized the Builder toolbar for mobile devices, and added a manual fallback for P2P sharing. Additionally, replaced the native number input in the Builder Tray with a custom keypad for better mobile usability and polished the visual style of the "Cover" block.
 
 **Key Deliverables:**
 
@@ -557,21 +557,53 @@ Addressed friction points identified in the "Fresh Eyes Review II" and user feed
   - Added comprehensive unit tests for the new class.
   - Integrated `HistoryManager` back into `BuilderModel`.
 - **Mobile Polish**:
+  - **Tray Keypad**: Replaced native number inputs with a custom, touch-friendly keypad for Loop blocks.
   - **Toolbar**: Hid the "Level Selector" on mobile screens (<600px) to reduce clutter.
   - **Browser Support**: Wrapped "Link to Disk" buttons in a feature check for `fileSystem.isSupported`.
 - **P2P Manual Fallback**:
   - **Show Code**: Added ability to reveal the raw connection string in the P2P modal.
   - **Enter Code**: Added manual input mode for pasting connection strings when scanning fails.
   - **UI**: Implemented clean, toggleable UI for manual code entry/display.
+- **Visual Polish**:
+  - **Glassmorphic Cover**: Verified and polished the "Cover" tile style with `backdrop-filter`.
 
-## Phase 30.5: Fresh Eyes Polish (Completed)
+## Phase 31: P2P Progress Sync (Completed)
 
-**Goal:** Address friction points identified in the "Fresh Eyes Review II" and user feedback, focusing on mobile ergonomics, P2P sharing fallback, and code maintainability.
+**Date:** December 3, 2025
 
-### Key Achievements
+**Summary:**
+Implemented a "Serverless Sync" feature allowing users to synchronize their progress (levels unlocked, stars earned) between devices without creating a cloud account. This leverages the existing WebRTC/QR P2P infrastructure to securely transfer and merge user progress data.
 
-- **HistoryManager Refactoring**: Extracted Undo/Redo logic from `BuilderModel` into a generic `HistoryManager<T>` class, improving code maintainability and testability.
-- **Mobile Polish**: Optimized the Builder toolbar for mobile devices by hiding the "Level Selector" on screens narrower than 600px.
-- **Browser Support**: Added graceful fallbacks for the File System Access API, ensuring users on unsupported browsers (like Firefox) don't see broken "Link to Disk" buttons.
-- **P2P Manual Fallback**: Implemented a manual code entry/display system for P2P sharing, providing a robust alternative when QR code scanning fails.
-- **Verification**: Added comprehensive unit tests for `HistoryManager` and verified UI changes manually.
+**Key Deliverables:**
+
+- **Sync Logic**:
+  - `SyncService`: Implemented logic to merge `UserProgress` objects, prioritizing best scores (Stars > Blocks > Timestamp).
+  - `SyncModal`: Created a dedicated modal wrapping `P2PModal` to handle the sync flow.
+- **UI Integration**:
+  - Added "Sync Devices" button to the Home screen.
+  - Verified flow via E2E tests.
+- **Testing**:
+  - Added unit tests for `SyncService` merge logic.
+  - Added E2E tests for `SyncModal` interaction.
+  - Updated visual regression snapshots.
+
+## Phase 32: Sync Optimization & Builder Polish Refinement (Completed)
+
+**Date:** December 3, 2025
+
+**Summary:**
+Optimized the synchronization logic to be more performant and verified the implementation of the Builder Polish phase. Specifically, the Vector Clock comparison logic was rewritten to be allocation-free, ensuring smoother performance during high-frequency updates. We also verified the "Use Test Level" text, Glassomorphic Cover styling, and Undo/Redo integration.
+
+**Key Deliverables:**
+
+- **Sync Optimization**:
+  - Refactored `compareVectorClocks` in `src/lib/services/sync.ts` to use an allocation-free O(N) algorithm.
+  - Verified correctness with unit tests.
+- **Builder Verification**:
+  - Confirmed "Use Test Level" button text matches requirements.
+  - Confirmed Glassomorphic styling for "Cover" tiles.
+  - Confirmed removal of redundant UI elements.
+  - Verified Undo/Redo state management logic.
+- **Code Quality**:
+  - Resolved `svelte/no-navigation-without-resolve` lint errors by using programmatic navigation.
+  - Fixed type safety issues and removed unused code across the codebase.

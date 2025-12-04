@@ -316,127 +316,127 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { LevelPackSchema, type LevelPack } from '$lib/game/schema';
 &nbsp;
 export interface PersistenceService {
-savePack(pack: LevelPack): Promise&lt;void&gt;;
-loadPack(id: string): Promise&lt;LevelPack | null&gt;;
-listPacks(): Promise&lt;
-{ id: string; name: string; description?: string; coverImage?: string; difficulty?: string }[]
-&gt;;
-deletePack(id: string): Promise&lt;void&gt;;
-createDefaultPack(): LevelPack;
+	savePack(pack: LevelPack): Promise&lt;void&gt;;
+	loadPack(id: string): Promise&lt;LevelPack | null&gt;;
+	listPacks(): Promise&lt;
+		{ id: string; name: string; description?: string; coverImage?: string; difficulty?: string }[]
+	&gt;;
+	deletePack(id: string): Promise&lt;void&gt;;
+	createDefaultPack(): LevelPack;
 }
 &nbsp;
 const ROOT_DIR = <span class="cstat-no" title="statement not covered" >'level-packs';</span>
 &nbsp;
 async function <span class="fstat-no" title="function not covered" >getRoot() {</span>
-const root = <span class="cstat-no" title="statement not covered" >await navigator.storage.getDirectory();</span>
-<span class="cstat-no" title="statement not covered" >return await root.getDirectoryHandle(ROOT_DIR, { create: true });</span>
+	const root = <span class="cstat-no" title="statement not covered" >await navigator.storage.getDirectory();</span>
+<span class="cstat-no" title="statement not covered" >	return await root.getDirectoryHandle(ROOT_DIR, { create: true });</span>
 }
 &nbsp;
 export class BrowserPersistenceService implements PersistenceService {
-async <span class="fstat-no" title="function not covered" >savePack(p</span>ack: LevelPack): Promise&lt;void&gt; {
-<span class="cstat-no" title="statement not covered" >try {</span>
-const root = <span class="cstat-no" title="statement not covered" >await getRoot();</span>
-const fileHandle = <span class="cstat-no" title="statement not covered" >await root.getFileHandle(`${pack.id}.json`, { create: true });</span>
-const writable = <span class="cstat-no" title="statement not covered" >await fileHandle.createWritable();</span>
-<span class="cstat-no" title="statement not covered" >await writable.write(JSON.stringify(pack, null, 2));</span>
-<span class="cstat-no" title="statement not covered" >await writable.close();</span>
-} catch (e) {
-<span class="cstat-no" title="statement not covered" >console.error('Failed to save pack:', e);</span>
-<span class="cstat-no" title="statement not covered" >throw e;</span>
-}
-}
+	async <span class="fstat-no" title="function not covered" >savePack(p</span>ack: LevelPack): Promise&lt;void&gt; {
+<span class="cstat-no" title="statement not covered" >		try {</span>
+			const root = <span class="cstat-no" title="statement not covered" >await getRoot();</span>
+			const fileHandle = <span class="cstat-no" title="statement not covered" >await root.getFileHandle(`${pack.id}.json`, { create: true });</span>
+			const writable = <span class="cstat-no" title="statement not covered" >await fileHandle.createWritable();</span>
+<span class="cstat-no" title="statement not covered" >			await writable.write(JSON.stringify(pack, null, 2));</span>
+<span class="cstat-no" title="statement not covered" >			await writable.close();</span>
+		} catch (e) {
+<span class="cstat-no" title="statement not covered" >			console.error('Failed to save pack:', e);</span>
+<span class="cstat-no" title="statement not covered" >			throw e;</span>
+		}
+	}
 &nbsp;
-async <span class="fstat-no" title="function not covered" >loadPack(i</span>d: string): Promise&lt;LevelPack | null&gt; {
-<span class="cstat-no" title="statement not covered" >try {</span>
-const root = <span class="cstat-no" title="statement not covered" >await getRoot();</span>
-const fileHandle = <span class="cstat-no" title="statement not covered" >await root.getFileHandle(`${id}.json`);</span>
-const file = <span class="cstat-no" title="statement not covered" >await fileHandle.getFile();</span>
-const text = <span class="cstat-no" title="statement not covered" >await file.text();</span>
-const json = <span class="cstat-no" title="statement not covered" >JSON.parse(text);</span>
-<span class="cstat-no" title="statement not covered" >return LevelPackSchema.parse(json);</span>
-} catch (e) {
-<span class="cstat-no" title="statement not covered" >console.error(`Failed to load pack ${id}:`, e);</span>
-<span class="cstat-no" title="statement not covered" >return null;</span>
-}
-}
+	async <span class="fstat-no" title="function not covered" >loadPack(i</span>d: string): Promise&lt;LevelPack | null&gt; {
+<span class="cstat-no" title="statement not covered" >		try {</span>
+			const root = <span class="cstat-no" title="statement not covered" >await getRoot();</span>
+			const fileHandle = <span class="cstat-no" title="statement not covered" >await root.getFileHandle(`${id}.json`);</span>
+			const file = <span class="cstat-no" title="statement not covered" >await fileHandle.getFile();</span>
+			const text = <span class="cstat-no" title="statement not covered" >await file.text();</span>
+			const json = <span class="cstat-no" title="statement not covered" >JSON.parse(text);</span>
+<span class="cstat-no" title="statement not covered" >			return LevelPackSchema.parse(json);</span>
+		} catch (e) {
+<span class="cstat-no" title="statement not covered" >			console.error(`Failed to load pack ${id}:`, e);</span>
+<span class="cstat-no" title="statement not covered" >			return null;</span>
+		}
+	}
 &nbsp;
-async <span class="fstat-no" title="function not covered" >listPacks(): Promise&lt;</span>
-{ id: string; name: string; description?: string; coverImage?: string; difficulty?: string }[]
-&gt; {
-<span class="cstat-no" title="statement not covered" >try {</span>
-const root = <span class="cstat-no" title="statement not covered" >await getRoot();</span>
-const packs: {
-id: string;
-name: string;
-description?: string;
-coverImage?: string;
-difficulty?: string;
-}[] = <span class="cstat-no" title="statement not covered" >[];</span>
+	async <span class="fstat-no" title="function not covered" >listPacks(): Promise&lt;</span>
+		{ id: string; name: string; description?: string; coverImage?: string; difficulty?: string }[]
+	&gt; {
+<span class="cstat-no" title="statement not covered" >		try {</span>
+			const root = <span class="cstat-no" title="statement not covered" >await getRoot();</span>
+			const packs: {
+				id: string;
+				name: string;
+				description?: string;
+				coverImage?: string;
+				difficulty?: string;
+			}[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
-// @ts-expect-error - FileSystemDirectoryHandle is async iterable in modern browsers
-<span class="cstat-no" title="statement not covered" >for await (const [name, handle] of root.entries()) {</span>
-<span class="cstat-no" title="statement not covered" >if (handle.kind === 'file' &amp;&amp; name.endsWith('.json')) {</span>
-<span class="cstat-no" title="statement not covered" >try {</span>
-const file = <span class="cstat-no" title="statement not covered" >await handle.getFile();</span>
-const text = <span class="cstat-no" title="statement not covered" >await file.text();</span>
-const json = <span class="cstat-no" title="statement not covered" >JSON.parse(text);</span>
-// Light validation just to get metadata
-<span class="cstat-no" title="statement not covered" >if (json.id &amp;&amp; json.name) {</span>
-<span class="cstat-no" title="statement not covered" >packs.push({</span>
-id: json.id,
-name: json.name,
-description: json.description,
-coverImage: json.coverImage,
-difficulty: json.difficulty
-});
-}
-} catch (e) {
-<span class="cstat-no" title="statement not covered" >console.warn(`Skipping invalid pack file ${name}`, e);</span>
-}
-}
-}
-<span class="cstat-no" title="statement not covered" >return packs;</span>
-} catch (e) {
-<span class="cstat-no" title="statement not covered" >console.error('Failed to list packs:', e);</span>
-<span class="cstat-no" title="statement not covered" >return [];</span>
-}
-}
+			// @ts-expect-error - FileSystemDirectoryHandle is async iterable in modern browsers
+<span class="cstat-no" title="statement not covered" >			for await (const [name, handle] of root.entries()) {</span>
+<span class="cstat-no" title="statement not covered" >				if (handle.kind === 'file' &amp;&amp; name.endsWith('.json')) {</span>
+<span class="cstat-no" title="statement not covered" >					try {</span>
+						const file = <span class="cstat-no" title="statement not covered" >await handle.getFile();</span>
+						const text = <span class="cstat-no" title="statement not covered" >await file.text();</span>
+						const json = <span class="cstat-no" title="statement not covered" >JSON.parse(text);</span>
+						// Light validation just to get metadata
+<span class="cstat-no" title="statement not covered" >						if (json.id &amp;&amp; json.name) {</span>
+<span class="cstat-no" title="statement not covered" >							packs.push({</span>
+								id: json.id,
+								name: json.name,
+								description: json.description,
+								coverImage: json.coverImage,
+								difficulty: json.difficulty
+							});
+						}
+					} catch (e) {
+<span class="cstat-no" title="statement not covered" >						console.warn(`Skipping invalid pack file ${name}`, e);</span>
+					}
+				}
+			}
+<span class="cstat-no" title="statement not covered" >			return packs;</span>
+		} catch (e) {
+<span class="cstat-no" title="statement not covered" >			console.error('Failed to list packs:', e);</span>
+<span class="cstat-no" title="statement not covered" >			return [];</span>
+		}
+	}
 &nbsp;
-async <span class="fstat-no" title="function not covered" >deletePack(i</span>d: string): Promise&lt;void&gt; {
-<span class="cstat-no" title="statement not covered" >try {</span>
-const root = <span class="cstat-no" title="statement not covered" >await getRoot();</span>
-<span class="cstat-no" title="statement not covered" >await root.removeEntry(`${id}.json`);</span>
-} catch (e) {
-<span class="cstat-no" title="statement not covered" >console.error(`Failed to delete pack ${id}:`, e);</span>
-<span class="cstat-no" title="statement not covered" >throw e;</span>
-}
-}
+	async <span class="fstat-no" title="function not covered" >deletePack(i</span>d: string): Promise&lt;void&gt; {
+<span class="cstat-no" title="statement not covered" >		try {</span>
+			const root = <span class="cstat-no" title="statement not covered" >await getRoot();</span>
+<span class="cstat-no" title="statement not covered" >			await root.removeEntry(`${id}.json`);</span>
+		} catch (e) {
+<span class="cstat-no" title="statement not covered" >			console.error(`Failed to delete pack ${id}:`, e);</span>
+<span class="cstat-no" title="statement not covered" >			throw e;</span>
+		}
+	}
 &nbsp;
-<span class="fstat-no" title="function not covered" >createDefaultPack(): LevelPack {</span>
-<span class="cstat-no" title="statement not covered" >return {</span>
-id: crypto.randomUUID(),
-name: 'My First Adventure',
-description: 'A collection of custom levels.',
-version: '1.0.0',
-difficulty: 'beginner',
-tags: [],
-levels: [],
-characters: [
-{ id: 'Zoey', name: 'Zoey', color: 'var(--pink-3)', avatar: 'Z' },
-{ id: 'Jonas', name: 'Jonas', color: 'var(--blue-3)', avatar: 'J' },
-{ id: 'Guide', name: 'Guide', color: 'var(--teal-3)', avatar: 'Bot' },
-{ id: 'System', name: 'System', color: 'var(--surface-3)', avatar: 'S' }
-],
-emotions: [
-{ id: 'neutral', name: 'Neutral', icon: '😐' },
-{ id: 'happy', name: 'Happy', icon: '😊' },
-{ id: 'concerned', name: 'Concerned', icon: '😟' },
-{ id: 'excited', name: 'Excited', icon: '🤩' },
-{ id: 'thinking', name: 'Thinking', icon: '🤔' },
-{ id: 'celebrating', name: 'Celebrating', icon: '🥳' }
-]
-};
-}
+<span class="fstat-no" title="function not covered" >	createDefaultPack(): LevelPack {</span>
+<span class="cstat-no" title="statement not covered" >		return {</span>
+			id: crypto.randomUUID(),
+			name: 'My First Adventure',
+			description: 'A collection of custom levels.',
+			version: '1.0.0',
+			difficulty: 'beginner',
+			tags: [],
+			levels: [],
+			characters: [
+				{ id: 'Zoey', name: 'Zoey', color: 'var(--pink-3)', avatar: 'Z' },
+				{ id: 'Jonas', name: 'Jonas', color: 'var(--blue-3)', avatar: 'J' },
+				{ id: 'Guide', name: 'Guide', color: 'var(--teal-3)', avatar: 'Bot' },
+				{ id: 'System', name: 'System', color: 'var(--surface-3)', avatar: 'S' }
+			],
+			emotions: [
+				{ id: 'neutral', name: 'Neutral', icon: '😐' },
+				{ id: 'happy', name: 'Happy', icon: '😊' },
+				{ id: 'concerned', name: 'Concerned', icon: '😟' },
+				{ id: 'excited', name: 'Excited', icon: '🤩' },
+				{ id: 'thinking', name: 'Thinking', icon: '🤔' },
+				{ id: 'celebrating', name: 'Celebrating', icon: '🥳' }
+			]
+		};
+	}
 }
 &nbsp;
 export const persistence = <span class="cstat-no" title="statement not covered" >new BrowserPersistenceService();</span>
@@ -449,7 +449,7 @@ export const persistence = <span class="cstat-no" title="statement not covered" 
 		<div class="footer quiet pad2 space-top1 center small">
 			Code coverage generated by
 			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-			at 2025-12-03T03:26:28.004Z
+			at 2025-12-04T00:54:39.725Z
 		</div>
 		<script src="../../../prettify.js"></script>
 		<script>

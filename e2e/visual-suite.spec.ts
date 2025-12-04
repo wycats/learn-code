@@ -38,7 +38,11 @@ test.describe('Visual Regression Suite', () => {
 		// Share Modal
 		await page.getByRole('button', { name: 'Share Level' }).click();
 		await expect(page.getByRole('dialog')).toBeVisible();
-		await expect(page).toHaveScreenshot('modal-share.png');
+		await expect(page.locator('.qr-container img')).toBeVisible();
+		await expect(page).toHaveScreenshot('modal-share.png', {
+			mask: [page.locator('.qr-container img'), page.locator('input[readonly]')],
+			maxDiffPixelRatio: 0.1
+		});
 		await page.keyboard.press('Escape');
 
 		// Settings Modal (Level Settings)

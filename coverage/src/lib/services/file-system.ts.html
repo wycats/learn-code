@@ -580,256 +580,256 @@ import { saveHandle, getHandle, removeHandle } from './handle-registry';
 &nbsp;
 // Types for the File System Access API
 export interface FileSystemHandle {
-kind: 'file' | 'directory';
-name: string;
-isSameEntry(other: FileSystemHandle): Promise&lt;boolean&gt;;
-queryPermission(descriptor?: {
-mode?: 'read' | 'readwrite';
-}): Promise&lt;'granted' | 'denied' | 'prompt'&gt;;
-requestPermission(descriptor?: {
-mode?: 'read' | 'readwrite';
-}): Promise&lt;'granted' | 'denied' | 'prompt'&gt;;
+	kind: 'file' | 'directory';
+	name: string;
+	isSameEntry(other: FileSystemHandle): Promise&lt;boolean&gt;;
+	queryPermission(descriptor?: {
+		mode?: 'read' | 'readwrite';
+	}): Promise&lt;'granted' | 'denied' | 'prompt'&gt;;
+	requestPermission(descriptor?: {
+		mode?: 'read' | 'readwrite';
+	}): Promise&lt;'granted' | 'denied' | 'prompt'&gt;;
 }
 &nbsp;
 export interface FileSystemFileHandle extends FileSystemHandle {
-kind: 'file';
-getFile(): Promise&lt;File&gt;;
-createWritable(options?: { keepExistingData?: boolean }): Promise&lt;FileSystemWritableFileStream&gt;;
+	kind: 'file';
+	getFile(): Promise&lt;File&gt;;
+	createWritable(options?: { keepExistingData?: boolean }): Promise&lt;FileSystemWritableFileStream&gt;;
 }
 &nbsp;
 export interface FileSystemDirectoryHandle extends FileSystemHandle {
-kind: 'directory';
-getDirectoryHandle(
-name: string,
-options?: { create?: boolean }
-): Promise&lt;FileSystemDirectoryHandle&gt;;
-getFileHandle(name: string, options?: { create?: boolean }): Promise&lt;FileSystemFileHandle&gt;;
-removeEntry(name: string, options?: { recursive?: boolean }): Promise&lt;void&gt;;
-resolve(possibleDescendant: FileSystemHandle): Promise&lt;string[] | null&gt;;
-values(): AsyncIterableIterator&lt;FileSystemHandle&gt;;
+	kind: 'directory';
+	getDirectoryHandle(
+		name: string,
+		options?: { create?: boolean }
+	): Promise&lt;FileSystemDirectoryHandle&gt;;
+	getFileHandle(name: string, options?: { create?: boolean }): Promise&lt;FileSystemFileHandle&gt;;
+	removeEntry(name: string, options?: { recursive?: boolean }): Promise&lt;void&gt;;
+	resolve(possibleDescendant: FileSystemHandle): Promise&lt;string[] | null&gt;;
+	values(): AsyncIterableIterator&lt;FileSystemHandle&gt;;
 }
 &nbsp;
 export interface FileSystemWritableFileStream extends WritableStream {
-write(data: string | BufferSource | Blob): Promise&lt;void&gt;;
-seek(position: number): Promise&lt;void&gt;;
-truncate(size: number): Promise&lt;void&gt;;
-close(): Promise&lt;void&gt;;
+	write(data: string | BufferSource | Blob): Promise&lt;void&gt;;
+	seek(position: number): Promise&lt;void&gt;;
+	truncate(size: number): Promise&lt;void&gt;;
+	close(): Promise&lt;void&gt;;
 }
 &nbsp;
 declare global {
-interface Window {
-showDirectoryPicker(options?: {
-id?: string;
-mode?: 'read' | 'readwrite';
-startIn?:
-| FileSystemHandle
-| 'desktop'
-| 'documents'
-| 'downloads'
-| 'music'
-| 'pictures'
-| 'videos';
-}): Promise&lt;FileSystemDirectoryHandle&gt;;
-showOpenFilePicker(options?: {
-multiple?: boolean;
-excludeAcceptAllOption?: boolean;
-types?: Array&lt;{
-description?: string;
-accept: Record&lt;string, string[]&gt;;
-}&gt;;
-}): Promise&lt;FileSystemFileHandle[]&gt;;
-showSaveFilePicker(options?: {
-suggestedName?: string;
-types?: Array&lt;{
-description?: string;
-accept: Record&lt;string, string[]&gt;;
-}&gt;;
-}): Promise&lt;FileSystemFileHandle&gt;;
-}
+	interface Window {
+		showDirectoryPicker(options?: {
+			id?: string;
+			mode?: 'read' | 'readwrite';
+			startIn?:
+				| FileSystemHandle
+				| 'desktop'
+				| 'documents'
+				| 'downloads'
+				| 'music'
+				| 'pictures'
+				| 'videos';
+		}): Promise&lt;FileSystemDirectoryHandle&gt;;
+		showOpenFilePicker(options?: {
+			multiple?: boolean;
+			excludeAcceptAllOption?: boolean;
+			types?: Array&lt;{
+				description?: string;
+				accept: Record&lt;string, string[]&gt;;
+			}&gt;;
+		}): Promise&lt;FileSystemFileHandle[]&gt;;
+		showSaveFilePicker(options?: {
+			suggestedName?: string;
+			types?: Array&lt;{
+				description?: string;
+				accept: Record&lt;string, string[]&gt;;
+			}&gt;;
+		}): Promise&lt;FileSystemFileHandle&gt;;
+	}
 }
 &nbsp;
 export interface FileSystemService {
-isSupported: boolean;
-openDirectory(): Promise&lt;FileSystemDirectoryHandle | null&gt;;
-savePackToDisk(pack: LevelPack, handle?: FileSystemDirectoryHandle): Promise&lt;void&gt;;
-loadPackFromDisk(folderHandle: FileSystemDirectoryHandle): Promise&lt;LevelPack&gt;;
-listPacksInDirectory(
-root: FileSystemDirectoryHandle
-): Promise&lt;Array&lt;{ handle: FileSystemDirectoryHandle; name: string }&gt;&gt;;
-isPackLinked(packId: string): Promise&lt;boolean&gt;;
-linkPackToDisk(packId: string): Promise&lt;FileSystemDirectoryHandle&gt;;
-syncPackToDisk(packId: string, pack: LevelPack): Promise&lt;void&gt;;
-loadLinkedPack(packId: string): Promise&lt;LevelPack | null&gt;;
-unlinkPack(packId: string): Promise&lt;void&gt;;
-verifyPermission(handle: FileSystemHandle, readWrite: boolean): Promise&lt;boolean&gt;;
+	isSupported: boolean;
+	openDirectory(): Promise&lt;FileSystemDirectoryHandle | null&gt;;
+	savePackToDisk(pack: LevelPack, handle?: FileSystemDirectoryHandle): Promise&lt;void&gt;;
+	loadPackFromDisk(folderHandle: FileSystemDirectoryHandle): Promise&lt;LevelPack&gt;;
+	listPacksInDirectory(
+		root: FileSystemDirectoryHandle
+	): Promise&lt;Array&lt;{ handle: FileSystemDirectoryHandle; name: string }&gt;&gt;;
+	isPackLinked(packId: string): Promise&lt;boolean&gt;;
+	linkPackToDisk(packId: string): Promise&lt;FileSystemDirectoryHandle&gt;;
+	syncPackToDisk(packId: string, pack: LevelPack): Promise&lt;void&gt;;
+	loadLinkedPack(packId: string): Promise&lt;LevelPack | null&gt;;
+	unlinkPack(packId: string): Promise&lt;void&gt;;
+	verifyPermission(handle: FileSystemHandle, readWrite: boolean): Promise&lt;boolean&gt;;
 }
 &nbsp;
 export class BrowserFileSystemService implements FileSystemService {
-private rootHandle: FileSystemDirectoryHandle | null = null;
+	private rootHandle: FileSystemDirectoryHandle | null = null;
 &nbsp;
-constructor() {}
+	constructor() {}
 &nbsp;
-get isSupported(): boolean {
-return typeof window !== 'undefined' &amp;&amp; 'showDirectoryPicker' in window;
-}
+	get isSupported(): boolean {
+		return typeof window !== 'undefined' &amp;&amp; 'showDirectoryPicker' in window;
+	}
 &nbsp;
-async openDirectory(): Promise&lt;FileSystemDirectoryHandle | null&gt; {
-<span class="missing-if-branch" title="if path not taken" >I</span>if (!this.isSupported) {
-<span class="cstat-no" title="statement not covered" >throw new Error('File System Access API is not supported in this browser.');</span>
-}
+	async openDirectory(): Promise&lt;FileSystemDirectoryHandle | null&gt; {
+		<span class="missing-if-branch" title="if path not taken" >I</span>if (!this.isSupported) {
+<span class="cstat-no" title="statement not covered" >			throw new Error('File System Access API is not supported in this browser.');</span>
+		}
 &nbsp;
-try {
-this.rootHandle = await window.showDirectoryPicker({
-id: 'learn-coding-levels',
-mode: 'readwrite'
-});
-return this.rootHandle;
-} catch (err) {
-<span class="missing-if-branch" title="else path not taken" >E</span>if ((err as Error).name === 'AbortError') {
-return null; // User cancelled
-}
-<span class="cstat-no" title="statement not covered" >throw err;</span>
-}
-}
+		try {
+			this.rootHandle = await window.showDirectoryPicker({
+				id: 'learn-coding-levels',
+				mode: 'readwrite'
+			});
+			return this.rootHandle;
+		} catch (err) {
+			<span class="missing-if-branch" title="else path not taken" >E</span>if ((err as Error).name === 'AbortError') {
+				return null; // User cancelled
+			}
+<span class="cstat-no" title="statement not covered" >			throw err;</span>
+		}
+	}
 &nbsp;
-async savePackToDisk(pack: LevelPack, handle?: FileSystemDirectoryHandle): Promise&lt;void&gt; {
-let root = handle || this.rootHandle;
-<span class="missing-if-branch" title="else path not taken" >E</span>if (!root) {
-// Prompt user to pick a location if we don't have one
-try {
-root = await window.showDirectoryPicker({
-id: 'learn-coding-levels',
-mode: 'readwrite'
-});
-this.rootHandle = root;
-} catch (err) {
-<span class="cstat-no" title="statement not covered" >if ((err as Error).name === 'AbortError') <span class="cstat-no" title="statement not covered" >return; // User cancelled</span></span>
-<span class="cstat-no" title="statement not covered" >throw err;</span>
-}
-}
+	async savePackToDisk(pack: LevelPack, handle?: FileSystemDirectoryHandle): Promise&lt;void&gt; {
+		let root = handle || this.rootHandle;
+		<span class="missing-if-branch" title="else path not taken" >E</span>if (!root) {
+			// Prompt user to pick a location if we don't have one
+			try {
+				root = await window.showDirectoryPicker({
+					id: 'learn-coding-levels',
+					mode: 'readwrite'
+				});
+				this.rootHandle = root;
+			} catch (err) {
+<span class="cstat-no" title="statement not covered" >				if ((err as Error).name === 'AbortError') <span class="cstat-no" title="statement not covered" >return; // User cancelled</span></span>
+<span class="cstat-no" title="statement not covered" >				throw err;</span>
+			}
+		}
 &nbsp;
-// Create a folder for the pack (sanitized name)
-const folderName = this.sanitizeFileName(pack.name);
-const packFolder = await root.getDirectoryHandle(folderName, { create: true });
+		// Create a folder for the pack (sanitized name)
+		const folderName = this.sanitizeFileName(pack.name);
+		const packFolder = await root.getDirectoryHandle(folderName, { create: true });
 &nbsp;
-// Save pack.json
-const packFile = await packFolder.getFileHandle('pack.json', { create: true });
-const writable = await packFile.createWritable();
-await writable.write(JSON.stringify(pack, null, 2));
-await writable.close();
-}
+		// Save pack.json
+		const packFile = await packFolder.getFileHandle('pack.json', { create: true });
+		const writable = await packFile.createWritable();
+		await writable.write(JSON.stringify(pack, null, 2));
+		await writable.close();
+	}
 &nbsp;
-async loadPackFromDisk(folderHandle: FileSystemDirectoryHandle): Promise&lt;LevelPack&gt; {
-// Look for pack.json
-try {
-const fileHandle = await folderHandle.getFileHandle('pack.json');
-const file = await fileHandle.getFile();
-const text = await file.text();
-const pack = JSON.parse(text) as LevelPack;
-return pack;
-} catch (err) {
-<span class="cstat-no" title="statement not covered" >throw new Error(`Failed to load pack from ${folderHandle.name}: ${(err as Error).message}`);</span>
-}
-}
+	async loadPackFromDisk(folderHandle: FileSystemDirectoryHandle): Promise&lt;LevelPack&gt; {
+		// Look for pack.json
+		try {
+			const fileHandle = await folderHandle.getFileHandle('pack.json');
+			const file = await fileHandle.getFile();
+			const text = await file.text();
+			const pack = JSON.parse(text) as LevelPack;
+			return pack;
+		} catch (err) {
+<span class="cstat-no" title="statement not covered" >			throw new Error(`Failed to load pack from ${folderHandle.name}: ${(err as Error).message}`);</span>
+		}
+	}
 &nbsp;
-// Helper to list all packs in the root directory
-async listPacksInDirectory(
-root: FileSystemDirectoryHandle
-): Promise&lt;Array&lt;{ handle: FileSystemDirectoryHandle; name: string }&gt;&gt; {
-const packs: Array&lt;{ handle: FileSystemDirectoryHandle; name: string }&gt; = [];
+	// Helper to list all packs in the root directory
+	async listPacksInDirectory(
+		root: FileSystemDirectoryHandle
+	): Promise&lt;Array&lt;{ handle: FileSystemDirectoryHandle; name: string }&gt;&gt; {
+		const packs: Array&lt;{ handle: FileSystemDirectoryHandle; name: string }&gt; = [];
 &nbsp;
-for await (const entry of root.values()) {
-if (entry.kind === 'directory') {
-// Check if it has a pack.json
-try {
-const dirHandle = entry as FileSystemDirectoryHandle;
-await dirHandle.getFileHandle('pack.json');
-packs.push({ handle: dirHandle, name: entry.name });
-} catch {
-// Not a pack folder, ignore
-}
-}
-}
+		for await (const entry of root.values()) {
+			if (entry.kind === 'directory') {
+				// Check if it has a pack.json
+				try {
+					const dirHandle = entry as FileSystemDirectoryHandle;
+					await dirHandle.getFileHandle('pack.json');
+					packs.push({ handle: dirHandle, name: entry.name });
+				} catch {
+					// Not a pack folder, ignore
+				}
+			}
+		}
 &nbsp;
-return packs;
-}
+		return packs;
+	}
 &nbsp;
-async <span class="fstat-no" title="function not covered" >isPackLinked(p</span>ackId: string): Promise&lt;boolean&gt; {
-const handle = <span class="cstat-no" title="statement not covered" >await getHandle(packId);</span>
-<span class="cstat-no" title="statement not covered" >return !!handle;</span>
-}
+	async <span class="fstat-no" title="function not covered" >isPackLinked(p</span>ackId: string): Promise&lt;boolean&gt; {
+		const handle = <span class="cstat-no" title="statement not covered" >await getHandle(packId);</span>
+<span class="cstat-no" title="statement not covered" >		return !!handle;</span>
+	}
 &nbsp;
-async linkPackToDisk(packId: string): Promise&lt;FileSystemDirectoryHandle&gt; {
-<span class="missing-if-branch" title="if path not taken" >I</span>if (!this.isSupported) {
-<span class="cstat-no" title="statement not covered" >throw new Error('File System Access API is not supported.');</span>
-}
+	async linkPackToDisk(packId: string): Promise&lt;FileSystemDirectoryHandle&gt; {
+		<span class="missing-if-branch" title="if path not taken" >I</span>if (!this.isSupported) {
+<span class="cstat-no" title="statement not covered" >			throw new Error('File System Access API is not supported.');</span>
+		}
 &nbsp;
-// Ask user to pick a directory. This should be the PACK directory.
-const handle = await window.showDirectoryPicker({
-id: 'learn-coding-levels',
-mode: 'readwrite'
-});
+		// Ask user to pick a directory. This should be the PACK directory.
+		const handle = await window.showDirectoryPicker({
+			id: 'learn-coding-levels',
+			mode: 'readwrite'
+		});
 &nbsp;
-// Save the handle
-await saveHandle(packId, handle);
-return handle;
-}
+		// Save the handle
+		await saveHandle(packId, handle);
+		return handle;
+	}
 &nbsp;
-async syncPackToDisk(packId: string, pack: LevelPack): Promise&lt;void&gt; {
-const handle = await getHandle(packId);
-if (!handle) {
-return; // Not linked
-}
+	async syncPackToDisk(packId: string, pack: LevelPack): Promise&lt;void&gt; {
+		const handle = await getHandle(packId);
+		if (!handle) {
+			return; // Not linked
+		}
 &nbsp;
-// Verify permission
-<span class="missing-if-branch" title="if path not taken" >I</span>if ((await this.verifyPermission(handle, true)) === false) {
-<span class="cstat-no" title="statement not covered" >throw new Error('Permission denied to access linked folder.');</span>
-}
+		// Verify permission
+		<span class="missing-if-branch" title="if path not taken" >I</span>if ((await this.verifyPermission(handle, true)) === false) {
+<span class="cstat-no" title="statement not covered" >			throw new Error('Permission denied to access linked folder.');</span>
+		}
 &nbsp;
-// Save pack.json directly in this folder
-const packFile = await handle.getFileHandle('pack.json', { create: true });
-const writable = await packFile.createWritable();
-await writable.write(JSON.stringify(pack, null, 2));
-await writable.close();
-}
+		// Save pack.json directly in this folder
+		const packFile = await handle.getFileHandle('pack.json', { create: true });
+		const writable = await packFile.createWritable();
+		await writable.write(JSON.stringify(pack, null, 2));
+		await writable.close();
+	}
 &nbsp;
-async loadLinkedPack(packId: string): Promise&lt;LevelPack | null&gt; {
-const handle = await getHandle(packId);
-<span class="missing-if-branch" title="if path not taken" >I</span>if (!handle) {
-<span class="cstat-no" title="statement not covered" >return null;</span>
-}
+	async loadLinkedPack(packId: string): Promise&lt;LevelPack | null&gt; {
+		const handle = await getHandle(packId);
+		<span class="missing-if-branch" title="if path not taken" >I</span>if (!handle) {
+<span class="cstat-no" title="statement not covered" >			return null;</span>
+		}
 &nbsp;
-// Verify permission
-<span class="missing-if-branch" title="if path not taken" >I</span>if ((await this.verifyPermission(handle, false)) === false) {
-<span class="cstat-no" title="statement not covered" >throw new Error('Permission denied to access linked folder.');</span>
-}
+		// Verify permission
+		<span class="missing-if-branch" title="if path not taken" >I</span>if ((await this.verifyPermission(handle, false)) === false) {
+<span class="cstat-no" title="statement not covered" >			throw new Error('Permission denied to access linked folder.');</span>
+		}
 &nbsp;
-return this.loadPackFromDisk(handle);
-}
+		return this.loadPackFromDisk(handle);
+	}
 &nbsp;
-async unlinkPack(packId: string): Promise&lt;void&gt; {
-await removeHandle(packId);
-}
+	async unlinkPack(packId: string): Promise&lt;void&gt; {
+		await removeHandle(packId);
+	}
 &nbsp;
-async verifyPermission(handle: FileSystemHandle, readWrite: boolean): Promise&lt;boolean&gt; {
-const options = { mode: readWrite ? 'readwrite' : 'read' } as const;
+	async verifyPermission(handle: FileSystemHandle, readWrite: boolean): Promise&lt;boolean&gt; {
+		const options = { mode: readWrite ? 'readwrite' : 'read' } as const;
 &nbsp;
-// Check if permission was already granted
-<span class="missing-if-branch" title="else path not taken" >E</span>if ((await handle.queryPermission(options)) === 'granted') {
-return true;
-}
+		// Check if permission was already granted
+		<span class="missing-if-branch" title="else path not taken" >E</span>if ((await handle.queryPermission(options)) === 'granted') {
+			return true;
+		}
 &nbsp;
-// Request permission
-<span class="cstat-no" title="statement not covered" >if ((await handle.requestPermission(options)) === 'granted') {</span>
-<span class="cstat-no" title="statement not covered" >return true;</span>
-}
+		// Request permission
+<span class="cstat-no" title="statement not covered" >		if ((await handle.requestPermission(options)) === 'granted') {</span>
+<span class="cstat-no" title="statement not covered" >			return true;</span>
+		}
 &nbsp;
-<span class="cstat-no" title="statement not covered" >return false;</span>
-}
+<span class="cstat-no" title="statement not covered" >		return false;</span>
+	}
 &nbsp;
-private sanitizeFileName(name: string): string {
-return name.replace(/[^a-z0-9\-_ ]/gi, '').trim();
-}
+	private sanitizeFileName(name: string): string {
+		return name.replace(/[^a-z0-9\-_ ]/gi, '').trim();
+	}
 }
 &nbsp;
 export const fileSystem = new BrowserFileSystemService();
@@ -842,7 +842,7 @@ export const fileSystem = new BrowserFileSystemService();
 		<div class="footer quiet pad2 space-top1 center small">
 			Code coverage generated by
 			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-			at 2025-12-03T03:26:28.004Z
+			at 2025-12-04T00:54:39.725Z
 		</div>
 		<script src="../../../prettify.js"></script>
 		<script>

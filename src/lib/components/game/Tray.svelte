@@ -13,7 +13,17 @@
 	import DropIndicator from './DropIndicator.svelte';
 	import type { Block, BlockType } from '$lib/game/types';
 	import type { GameModel } from '$lib/game/model.svelte';
-	import { Trash2, Move, ListChecks, Copy, Infinity as InfinityIcon, Brain } from 'lucide-svelte';
+	import {
+		Trash2,
+		Move,
+		ListChecks,
+		Copy,
+		Infinity as InfinityIcon,
+		Brain,
+		ChevronLeft,
+		Check,
+		Delete
+	} from 'lucide-svelte';
 	import { Icon } from 'lucide-svelte';
 	import { broom } from '@lucide/lab';
 	import { soundManager } from '$lib/game/sound';
@@ -114,6 +124,33 @@
 
 	// Trash State
 	let isTrashActive = $state(false);
+
+	// Keypad State
+	let showKeypad = $state(false);
+	let keypadValue = $state('');
+
+	function openKeypad() {
+		showKeypad = true;
+		keypadValue =
+			typeof primarySelectedBlock?.count === 'number' ? primarySelectedBlock.count.toString() : '';
+	}
+
+	function handleKeypadInput(digit: string) {
+		if (keypadValue.length >= 2) return; // Max 2 digits
+		keypadValue += digit;
+		updateLoopCount(parseInt(keypadValue));
+	}
+
+	function handleKeypadBackspace() {
+		keypadValue = keypadValue.slice(0, -1);
+		if (keypadValue !== '') {
+			updateLoopCount(parseInt(keypadValue));
+		}
+	}
+
+	function closeKeypad() {
+		showKeypad = false;
+	}
 
 	function findBlock(blocks: Block[], id: string): Block | null {
 		for (const block of blocks) {
@@ -704,62 +741,76 @@
 		<!-- Configuration Panel (Left of Toolbar) -->
 		{#if primarySelectedBlock?.type === 'loop'}
 			<div class="config-panel" transition:fly={{ x: -20, duration: 200 }}>
-				<div class="config-header">Repeat</div>
-				<div class="config-grid">
-					{#each [2, 3, 4, 5, 10] as count (count)}
-						<button
-							class="config-btn"
-							class:active={primarySelectedBlock.count === count}
-							class:highlighted={highlight?.targets?.includes(`config:loop:${count}`)}
-							onclick={() => updateLoopCount(count)}
-							data-value={count}
-						>
-							{count}x
-						</button>
-					{/each}
-					<div class="custom-input-wrapper">
-						<input
-							type="text"
-							inputmode="numeric"
-							class="config-input"
-							class:highlighted={highlight?.targets?.includes(`config:loop:custom`)}
-							value={typeof primarySelectedBlock.count === 'number'
-								? primarySelectedBlock.count
-								: ''}
-							placeholder="#"
-							oninput={(e) => {
-								const val = parseInt(e.currentTarget.value);
-								if (!isNaN(val) && val > 0) {
-									updateLoopCount(val);
-								}
-							}}
-							onclick={(e) => e.stopPropagation()}
-						/>
-					</div>
-					{#if hasVariables}
-						<button
-							class="config-btn variable"
-							class:active={typeof primarySelectedBlock.count === 'object'}
-							class:highlighted={highlight?.targets?.includes(`config:loop:variable`)}
-							onclick={() => updateLoopCount('variable')}
-							title="Use Held Item"
-							data-value="variable"
-						>
-							<Brain size={20} />
-						</button>
-					{/if}
-					{#if game.level.allowInfiniteLoop !== false}
-						<button
-							class="config-btn infinity"
-							class:active={primarySelectedBlock.count === undefined}
-							onclick={() => updateLoopCount(undefined)}
-							title="Repeat Forever"
-							data-value="infinity"
-						>
-							<InfinityIcon size={20} />
-						</button>
+				<div class="config-header">
+					{#if showKeypad}
+						<button class="back-btn" onclick={closeKeypad}><ChevronLeft size={16} /></button>
+						Custom
+					{:else}
+						Repeat
 					{/if}
 				</div>
+
+				{#if showKeypad}
+					<div class="keypad-display">{keypadValue || '0'}</div>
+					<div class="keypad-grid">
+						{#each ['1', '2', '3', '4', '5', '6', '7', '8', '9'] as digit (digit)}
+							<button class="keypad-btn" onclick={() => handleKeypadInput(digit)}>{digit}</button>
+						{/each}
+						<button class="keypad-btn action" onclick={handleKeypadBackspace}
+							><Delete size={16} /></button
+						>
+						<button class="keypad-btn" onclick={() => handleKeypadInput('0')}>0</button>
+						<button class="keypad-btn action confirm" onclick={closeKeypad}
+							><Check size={16} /></button
+						>
+					</div>
+				{:else}
+					<div class="config-grid">
+						{#each [2, 3, 4, 5, 10] as count (count)}
+							<button
+								class="config-btn"
+								class:active={primarySelectedBlock.count === count}
+								class:highlighted={highlight?.targets?.includes(`config:loop:${count}`)}
+								onclick={() => updateLoopCount(count)}
+								data-value={count}
+							>
+								{count}x
+							</button>
+						{/each}
+						<button
+							class="config-btn"
+							class:active={showKeypad}
+							class:highlighted={highlight?.targets?.includes(`config:loop:custom`)}
+							onclick={openKeypad}
+							title="Custom Number"
+						>
+							#
+						</button>
+						{#if hasVariables}
+							<button
+								class="config-btn variable"
+								class:active={typeof primarySelectedBlock.count === 'object'}
+								class:highlighted={highlight?.targets?.includes(`config:loop:variable`)}
+								onclick={() => updateLoopCount('variable')}
+								title="Use Held Item"
+								data-value="variable"
+							>
+								<Brain size={20} />
+							</button>
+						{/if}
+						{#if game.level.allowInfiniteLoop !== false}
+							<button
+								class="config-btn infinity"
+								class:active={primarySelectedBlock.count === undefined}
+								onclick={() => updateLoopCount(undefined)}
+								title="Repeat Forever"
+								data-value="infinity"
+							>
+								<InfinityIcon size={20} />
+							</button>
+						{/if}
+					</div>
+				{/if}
 			</div>
 		{:else if primarySelectedBlock?.type === 'call'}
 			<div class="config-panel" transition:fly={{ x: -20, duration: 200 }}>
@@ -1067,37 +1118,11 @@
 		transform: translateY(1px);
 	}
 
-	.config-btn.highlighted,
-	.config-input.highlighted {
+	.config-btn.highlighted {
 		outline: 3px solid var(--pink-5);
 		box-shadow: 0 0 15px var(--pink-5);
 		z-index: 10;
 		animation: pulse-highlight 1.5s infinite;
-	}
-
-	.custom-input-wrapper {
-		grid-column: span 1;
-		display: flex;
-	}
-
-	.config-input {
-		width: 100%;
-		height: 100%;
-		border: 1px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
-		border-radius: var(--radius-2);
-		text-align: center;
-		font-weight: bold;
-		font-size: var(--font-size-1);
-		color: var(--text-1);
-		background-color: light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1));
-		padding: 0;
-		transition: all 0.2s;
-	}
-
-	.config-input:focus {
-		background-color: light-dark(white, var(--surface-3));
-		outline: 2px solid var(--blue-5);
-		border-color: transparent;
 	}
 
 	.toolbar-container {
@@ -1468,5 +1493,77 @@
 		font-weight: bold;
 		font-size: var(--font-size-0);
 		color: var(--text-1);
+	}
+
+	.back-btn {
+		position: absolute;
+		left: var(--size-2);
+		top: 50%;
+		transform: translateY(-50%);
+		background: none;
+		border: none;
+		cursor: pointer;
+		color: var(--text-2);
+		padding: 4px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.back-btn:hover {
+		background-color: var(--surface-3);
+		color: var(--text-1);
+	}
+
+	.keypad-display {
+		font-size: var(--font-size-4);
+		font-weight: bold;
+		text-align: center;
+		padding: var(--size-2);
+		background-color: var(--surface-2);
+		border-radius: var(--radius-2);
+		margin-bottom: var(--size-2);
+		color: var(--text-1);
+	}
+
+	.keypad-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: var(--size-2);
+	}
+
+	.keypad-btn {
+		aspect-ratio: 1;
+		background-color: var(--surface-2);
+		border: 1px solid var(--surface-3);
+		border-radius: var(--radius-2);
+		font-size: var(--font-size-2);
+		font-weight: bold;
+		color: var(--text-1);
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.1s;
+	}
+
+	.keypad-btn:hover {
+		background-color: var(--surface-3);
+	}
+
+	.keypad-btn:active {
+		transform: scale(0.95);
+	}
+
+	.keypad-btn.action {
+		background-color: var(--surface-3);
+		color: var(--text-2);
+	}
+
+	.keypad-btn.confirm {
+		background-color: var(--green-2);
+		color: var(--green-7);
+		border-color: var(--green-5);
 	}
 </style>

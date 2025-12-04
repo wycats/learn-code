@@ -648,15 +648,7 @@
 <a name='L587'></a><a href='#L587'>587</a>
 <a name='L588'></a><a href='#L588'>588</a>
 <a name='L589'></a><a href='#L589'>589</a>
-<a name='L590'></a><a href='#L590'>590</a>
-<a name='L591'></a><a href='#L591'>591</a>
-<a name='L592'></a><a href='#L592'>592</a>
-<a name='L593'></a><a href='#L593'>593</a>
-<a name='L594'></a><a href='#L594'>594</a>
-<a name='L595'></a><a href='#L595'>595</a>
-<a name='L596'></a><a href='#L596'>596</a>
-<a name='L597'></a><a href='#L597'>597</a>
-<a name='L598'></a><a href='#L598'>598</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L590'></a><a href='#L590'>590</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -688,6 +680,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -851,6 +844,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -865,6 +859,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -964,17 +959,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1277,6 +1261,7 @@
 	import ShareModal from './ShareModal.svelte';
 	import { fade, slide } from 'svelte/transition';
 	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
+	import { fileSystem } from '$lib/services/file-system';
 &nbsp;
 	interface Props {
 		builder: BuilderModel;
@@ -1427,7 +1412,7 @@
 			&lt;button
 				class="action-btn"
 				onclick={() =&gt; builder.undo()}
-				disabled={<span class="cstat-no" title="statement not covered" >builder.history.length === 0}</span>
+				disabled={!<span class="cstat-no" title="statement not covered" >builder.canUndo}</span>
 				title="Undo"
 			&gt;
 				&lt;Undo size={<span class="cstat-no" title="statement not covered" >20} /&gt;</span>
@@ -1435,34 +1420,36 @@
 			&lt;button
 				class="action-btn"
 				onclick={() =&gt; builder.redo()}
-				disabled={<span class="cstat-no" title="statement not covered" >builder.future.length === 0}</span>
+				disabled={!<span class="cstat-no" title="statement not covered" >builder.canRedo}</span>
 				title="Redo"
 			&gt;
 				&lt;Redo size={<span class="cstat-no" title="statement not covered" >20} /&gt;</span>
 			&lt;/button&gt;
 &nbsp;
-			{#if builder.isLinked}
-				{#if builder.needsPermission}
-					&lt;button
-						class="action-btn warning"
-						onclick={handleReconnect}
-						title="Permission Needed - Click to Reconnect"
-					&gt;
-						&lt;Link size={<span class="cstat-no" title="statement not covered" >20} /&gt;</span>
-					&lt;/button&gt;
+			{#if fileSystem.isSupported}
+				{#if builder.isLinked}
+					{#if builder.needsPermission}
+						&lt;button
+							class="action-btn warning"
+							onclick={handleReconnect}
+							title="Permission Needed - Click to Reconnect"
+						&gt;
+							&lt;Link size={<span class="cstat-no" title="statement not covered" >20} /&gt;</span>
+						&lt;/button&gt;
+					{:else}
+						&lt;button
+							class="action-btn success"
+							onclick={handleLink}
+							title="Linked to Disk (Click to Change)"
+						&gt;
+							&lt;Link size={<span class="cstat-no" title="statement not covered" >20} /&gt;</span>
+						&lt;/button&gt;
+					{/if}
 				{:else}
-					&lt;button
-						class="action-btn success"
-						onclick={handleLink}
-						title="Linked to Disk (Click to Change)"
-					&gt;
+					&lt;button class="action-btn" onclick={handleLink} title="Link to Disk"&gt;
 						&lt;Link size={<span class="cstat-no" title="statement not covered" >20} /&gt;</span>
 					&lt;/button&gt;
 				{/if}
-			{:else}
-				&lt;button class="action-btn" onclick={handleLink} title="Link to Disk"&gt;
-					&lt;Link size={<span class="cstat-no" title="statement not covered" >20} /&gt;</span>
-				&lt;/button&gt;
 			{/if}
 &nbsp;
 			{#if statusMessage}
@@ -1700,24 +1687,7 @@
 		font-size: var(--font-size-1);
 	}
 &nbsp;
-	.active-tile-display {
-		display: flex;
-		align-items: center;
-		gap: var(--size-2);
-		padding: var(--size-1) var(--size-2);
-		background-color: var(--surface-1);
-		border: 1px solid var(--surface-3);
-		border-radius: var(--radius-2);
-		color: var(--text-1);
-	}
 &nbsp;
-	.tile-preview {
-		width: 24px;
-		height: 24px;
-		border-radius: var(--radius-1);
-		overflow: hidden;
-		box-shadow: var(--shadow-1);
-	}
 &nbsp;
 	.architect-section {
 		display: flex;
@@ -1749,6 +1719,12 @@
 &nbsp;
 	.level-select-wrapper {
 		position: relative;
+	}
+&nbsp;
+	@media (max-width: 600px) {
+		.level-select-wrapper {
+			display: none;
+		}
 	}
 &nbsp;
 	.level-trigger {
@@ -1859,7 +1835,7 @@
 		<div class="footer quiet pad2 space-top1 center small">
 			Code coverage generated by
 			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-			at 2025-12-03T03:26:28.004Z
+			at 2025-12-04T00:54:39.725Z
 		</div>
 		<script src="../../../../prettify.js"></script>
 		<script>
