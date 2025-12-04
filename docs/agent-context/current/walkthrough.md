@@ -1,40 +1,33 @@
-# Phase 32 Walkthrough: Sync Optimization & Builder Polish Refinement
+# Walkthrough - Phase 37: The Boat
 
-## Context
+## Overview
 
-This phase focused on two distinct areas: optimizing the synchronization logic for better performance and verifying the implementation of the "Builder Polish" requirements. The sync optimization was necessary to ensure smooth performance during high-frequency updates, while the builder verification ensured that the user's requests for visual and text updates were correctly implemented.
+In this phase, we implemented the "Boat" mechanic, allowing the character to traverse water tiles. This involved updates to the game schema, execution logic, and visual representation.
 
-## Key Changes
+## Changes
 
-### 1. Sync Optimization
+### Game Logic
 
-We refactored the `compareVectorClocks` function in `src/lib/services/sync.ts` to use an allocation-free O(N) algorithm. Previously, the implementation might have created intermediate objects or Sets, which could lead to garbage collection pressure. The new implementation iterates directly over the keys of the vector clocks, performing a single pass to determine the relationship (equal, concurrent, descendant, ancestor).
+- **Boarding**: Added the `board` block logic in `src/lib/game/mimic.ts`. When executed, if the character is on a tile with a boat, they "board" it, setting `game.vehicle`.
+- **Movement**: Updated `isValidMove` in `src/lib/game/mimic.ts` to allow movement onto `water` tiles if the character has a vehicle of type `boat`.
+- **Land Boat**: The logic naturally allows the character to move from water back to land while keeping the boat (as `game.vehicle` is not cleared), effectively carrying it.
 
-### 2. Builder Polish Verification
+### Visuals
 
-We conducted a code review and verification of the following items:
+- **Character**: Updated `src/lib/components/game/Character.svelte` to render a boat icon around the character when `game.vehicle` is a boat.
 
-- **"Use Test Level" Text**: Confirmed that the button in `BuilderGoalModal.svelte` correctly displays "Use Test Level" (instead of "Use current workspace").
-- **Glassomorphic Cover**: Verified that the `cover` tile in `Cell.svelte` uses `backdrop-filter: blur(12px)` and semi-transparent backgrounds to achieve the requested glassomorphic effect.
-- **Undo/Redo**: Verified that `BuilderModel` and `HistoryManager` correctly handle state snapshots using `pushState()` and `startInteraction()`/`endInteraction()` for drag operations.
-- **UI Cleanup**: Removed unused `active-tile-display` CSS from `BuilderToolbar.svelte`.
+### Builder
 
-## Decisions
+- **Tools**: Verified that the "Boat" item and "Board" block are available in the `BuilderTray`.
 
-- **Allocation-Free Sync**: We chose to optimize `compareVectorClocks` because it is a hot path in the synchronization logic, potentially called frequently during P2P sync or local updates.
-- **Verification over Re-implementation**: Since the Builder Polish items were largely already present (likely from a previous session or user edit), we focused on verification and cleanup rather than re-implementing features.
+### Testing
 
-### 3. Linting & Verification Fixes
+- **Unit Tests**: Added comprehensive tests in `src/lib/game/interpreter.test.ts` to verify:
+  - Boarding mechanics.
+  - Water traversal.
+  - "Land Boat" behavior.
+  - Failure states (moving to water without boat).
 
-During the phase verification process, we addressed several linting and type safety issues to ensure a clean codebase:
+## Verification
 
-- **Navigation Safety**: Replaced `<a>` tags with `<button>` elements using programmatic `goto()` navigation in `src/routes/auth/handshake/+page.svelte` and `src/routes/login/+page.svelte`. This resolves `svelte/no-navigation-without-resolve` errors by avoiding static analysis issues with dynamic or external-like URLs.
-- **Type Safety**: Replaced `any` types with proper interfaces (e.g., `GitHubEmail`) in `src/routes/login/github/callback/+server.ts`.
-- **Code Cleanup**: Removed unused variables, imports, and types across multiple files (`sync.ts`, `schema.ts`, `Tray.svelte`, etc.).
-- **Svelte Best Practices**:
-  - Added keyed `#each` blocks in `Tray.svelte` and `profiles/+page.svelte` to satisfy `svelte/require-each-key`.
-  - Refactored derived state initialization in `SyncModal.svelte` to avoid `svelte/prefer-writable-derived`.
-
-## Next Steps
-
-The project is now in a stable state with optimized sync logic and a polished Builder experience. The next logical step would be to proceed with the deferred Authentication Strategy or further content expansion.
+- Ran `pnpm test:unit` and confirmed all game logic tests passed.

@@ -13,7 +13,8 @@
 		Sun,
 		Triangle,
 		Cloud,
-		Key
+		Key,
+		Ship
 	} from 'lucide-svelte';
 	import type { CrossfadeParams, TransitionConfig } from 'svelte/transition';
 
@@ -111,7 +112,7 @@
 		</div>
 	{:else if type === 'cover'}
 		<div class="cover-marker">
-			<Cloud size={32} color="rgba(255,255,255,0.8)" />
+			<Cloud size={32} color="rgba(255,255,255,0.4)" />
 		</div>
 	{/if}
 
@@ -123,10 +124,15 @@
 		>
 			{#if lastItem?.type === 'key'}
 				<Key size={24} color="var(--amber-7)" fill="var(--amber-3)" />
+			{:else if lastItem?.type === 'boat'}
+				<Ship size={24} color="var(--blue-7)" fill="var(--blue-3)" />
 			{:else if lastItem?.type === 'number'}
 				<span class="number-item">{lastItem.value}</span>
 			{:else if lastItem?.type === 'color'}
 				<div class="color-item" style:background-color={lastItem.value}></div>
+			{:else if lastItem?.icon && lastItem.icon.toLowerCase() in AVATAR_ICONS}
+				{@const Icon = AVATAR_ICONS[lastItem.icon.toLowerCase() as keyof typeof AVATAR_ICONS]}
+				<Icon size={24} color="var(--text-1)" />
 			{/if}
 		</div>
 	{/if}
@@ -174,15 +180,15 @@
 
 	.cell[data-type='cover'] {
 		background: light-dark(
-			linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%),
-			linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.1) 100%)
+			linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 100%),
+			linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.05) 100%)
 		);
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		border: 1px solid light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1));
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+		border: 1px solid light-dark(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
 		box-shadow:
-			0 4px 6px rgba(0, 0, 0, 0.1),
-			inset 0 0 20px light-dark(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
+			0 4px 6px rgba(0, 0, 0, 0.05),
+			inset 0 0 20px light-dark(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.02));
 	}
 
 	.cell[data-type='wall'] {

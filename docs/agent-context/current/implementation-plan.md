@@ -1,23 +1,39 @@
-# Phase 31: Authentication & Child Safety
+# Implementation Plan - Phase 37: The Boat
 
-**Goal:** Implement a secure, COPPA-compliant authentication system that supports the "Netflix Model" (Parent-owned account, Child profiles) and solves the Family Link constraint via QR Handshake.
+## Goal
 
-## High-Level Outline
+Implement the "Boat" item and "Water" tile mechanics to allow the character to traverse water tiles.
 
-1.  **Database Schema**
-    - Define tables for Users (Parents), Profiles (Children), and Device Auth.
-    - Ensure cascade deletes work correctly (deleting parent deletes profiles).
+## Proposed Changes
 
-2.  **Authentication Infrastructure**
-    - Set up OAuth providers (Google, GitHub).
-    - Implement "Sudo Mode" middleware/checks.
-    - Implement QR Code generation and polling logic.
+### 1. Schema & Types
 
-3.  **User Interface**
-    - **Parent Gate**: A clear distinction between "Child Mode" and "Parent Mode".
-    - **Profile Picker**: The primary entry point for children.
-    - **Settings**: A protected area for managing profiles.
+- Ensure `ItemType` includes `'boat'`.
+- Ensure `ItemBehavior` includes `'vehicle'`.
+- Ensure `BlockType` includes `'board'`.
 
-4.  **Integration**
-    - Connect the Auth system to the existing Game/Builder state.
-    - Handle offline/online transitions gracefully.
+### 2. Game Logic (`src/lib/game/mimic.ts`)
+
+- Implement `board` block execution:
+  - Check if character is on a tile with a boat item.
+  - Set `game.vehicle` to the boat item.
+- Update `isValidMove`:
+  - Allow movement onto `water` tiles if `game.vehicle` is a boat.
+  - Allow movement onto `water` tiles if `game.heldItem` is a boat (legacy/magic support).
+
+### 3. Visuals (`src/lib/components/game/Character.svelte`)
+
+- Render the boat icon around the character when `game.vehicle` is set.
+
+### 4. Builder (`src/lib/components/builder/BuilderTray.svelte`)
+
+- Add "Boat" to the item tools.
+- Add "Board" to the block palette.
+
+### 5. Testing
+
+- Add unit tests to `src/lib/game/interpreter.test.ts` covering:
+  - Boarding a boat.
+  - Moving on water with a boat.
+  - Moving from water to land (keeping the boat).
+  - Failing to move on water without a boat.

@@ -1,13 +1,15 @@
 <script lang="ts">
 	import type { BuilderModel, BuilderTool } from '$lib/game/builder-model.svelte';
 	import type { BlockType, CellType } from '$lib/game/types';
-	import type { TileDefinition } from '$lib/game/schema';
+	import type { TileDefinition, ItemDefinition } from '$lib/game/schema';
 	import BlockComponent from '$lib/components/game/Block.svelte';
 	import Cell from '$lib/components/game/Cell.svelte';
 	import HintEditor from './HintEditor.svelte';
 	import TileEditorModal from './TileEditorModal.svelte';
 	import FunctionManager from './FunctionManager.svelte';
 	import { draggableVariable } from '$lib/actions/dnd';
+	import { AVATAR_ICONS } from '$lib/game/icons';
+	import { resolveItemDefinition } from '$lib/game/utils';
 
 	import {
 		Infinity as InfinityIcon,
@@ -19,7 +21,9 @@
 		Trash2,
 		FunctionSquare,
 		Globe,
-		MessageCircle
+		MessageCircle,
+		Ship,
+		Box
 	} from 'lucide-svelte';
 	import { fade, scale } from 'svelte/transition';
 
@@ -50,6 +54,7 @@
 		color?: string;
 		isCustom?: boolean;
 		tileDef?: TileDefinition;
+		itemDef?: ItemDefinition;
 		scope?: 'pack' | 'level';
 	};
 
@@ -63,6 +68,10 @@
 		{ id: 'dirt', value: 'dirt', label: 'Dirt' },
 		{ id: 'spikes', value: 'spikes', label: 'Spikes', color: 'var(--red-7)' },
 		{ id: 'cover', value: 'cover', label: 'Cover', color: 'var(--blue-3)' }
+	];
+
+	const standardItemTools: TerrainTool[] = [
+		{ id: 'boat', value: 'boat', label: 'Boat', type: 'item', icon: Ship }
 	];
 
 	let terrainTools = $derived.by(() => {
@@ -92,7 +101,40 @@
 			};
 		});
 
-		return [...standardTerrainTools, ...packTools, ...levelTools];
+		const packItems: TerrainTool[] = Object.values(builder.pack.customItems || {}).map((item) => {
+			return {
+				id: item.id,
+				value: item.id,
+				label: item.name,
+				type: 'item',
+				icon: AVATAR_ICONS[item.visuals.icon.toLowerCase() as keyof typeof AVATAR_ICONS] || Box,
+				isCustom: true,
+				itemDef: item,
+				scope: 'pack'
+			};
+		});
+
+		const levelItems: TerrainTool[] = Object.values(builder.level.customItems || {}).map((item) => {
+			return {
+				id: item.id,
+				value: item.id,
+				label: item.name,
+				type: 'item',
+				icon: AVATAR_ICONS[item.visuals.icon.toLowerCase() as keyof typeof AVATAR_ICONS] || Box,
+				isCustom: true,
+				itemDef: item,
+				scope: 'level'
+			};
+		});
+
+		return [
+			...standardTerrainTools,
+			...standardItemTools,
+			...packTools,
+			...levelTools,
+			...packItems,
+			...levelItems
+		];
 	});
 
 	function selectTool(tool: BuilderTool) {
@@ -144,11 +186,21 @@
 
 	const isFading = $derived(builder.game.previewHighlight?.fading);
 
+	const hasCollectibleItems = $derived.by(() => {
+		if (!builder.level.items) return false;
+		return Object.values(builder.level.items).some((item) => {
+			const def = resolveItemDefinition(builder.level, item.type, builder.pack);
+			if (def && def.behavior === 'vehicle') return false;
+			return true;
+		});
+	});
+
 	const blockTypes: { type: BlockType; label: string; comingSoon?: boolean }[] = [
 		{ type: 'move-forward', label: 'Move' },
 		{ type: 'turn-left', label: 'Left' },
 		{ type: 'turn-right', label: 'Right' },
 		{ type: 'pick-up', label: 'Pick Up' },
+		{ type: 'board', label: 'Board' },
 		{ type: 'loop', label: 'Loop' },
 		{ type: 'call', label: 'Call' }
 	];
@@ -318,7 +370,13 @@
 								style:--tool-color={tool.color}
 							>
 								<div class="cell-preview">
-									<Cell type={tool.value as CellType} customTile={tool.tileDef} />
+									{#if tool.type === 'item' && tool.icon}
+										<div class="item-preview">
+											<tool.icon size={32} />
+										</div>
+									{:else}
+										<Cell type={tool.value as CellType} customTile={tool.tileDef} />
+									{/if}
 								</div>
 								<span class="tool-label">{tool.label}</span>
 							</button>
@@ -353,14 +411,16 @@
 			</div>
 		{:else if activeTab === 'logic'}
 			<div class="backpack-section" transition:fade={{ duration: 200 }}>
-				<div class="variables-section">
-					<div class="variable-token" use:draggableVariable title="Drag to use held item">
-						<div class="token-icon">
-							<MessageCircle size={20} />
+				{#if hasCollectibleItems}
+					<div class="variables-section" transition:scale={{ duration: 200 }}>
+						<div class="variable-token" use:draggableVariable title="Drag to use held item">
+							<div class="token-icon">
+								<MessageCircle size={20} />
+							</div>
+							<span class="token-label">Held Item</span>
 						</div>
-						<span class="token-label">Held Item</span>
 					</div>
-				</div>
+				{/if}
 
 				<div class="block-list">
 					{#each blockTypes as { type, comingSoon } (type)}
@@ -634,6 +694,16 @@
 		border-radius: var(--radius-2);
 		overflow: hidden;
 		box-shadow: var(--shadow-1);
+	}
+
+	.item-preview {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: var(--surface-2);
+		color: var(--text-1);
 	}
 
 	.tool-btn:hover {

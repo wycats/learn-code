@@ -312,16 +312,92 @@
 - [x] **Sync Optimization**: Allocation-free Vector Clock comparison.
 - [x] **Builder Verification**: Confirm text updates, styling, and Undo/Redo.
 
-## Phase 33: Authentication Strategy (Deferred)
+## Phase 33: Authentication & Cloud Foundation (Completed)
 
-**Goal:** Evaluate and implement a robust authentication strategy to support cloud persistence and user accounts.
+**Goal:** Implement the custom authentication system and "Parent/Child" profile model to enable cloud persistence.
 
-- [ ] **Evaluate Neon Auth**: Investigate Neon Auth features and suitability for the project.
-- [ ] **Decision Record**: Document the decision between Neon Auth and Custom Auth.
-- [ ] **Implementation**: Implement the chosen authentication strategy.
-- [ ] **Cloud Persistence**: Enable saving user progress and levels to the cloud.
+- [x] **Database Schema**: Finalize User, Session, Profile, and DeviceAuth tables.
+- [x] **Auth Implementation**: GitHub/Google OAuth, Parent Gate, and QR Handshake.
+- [x] **UI Implementation**: Login Page, Profile Picker, and Parent Dashboard.
 
-## Phase 33: Feedback System
+## Phase 34: Cloud Sync & Progress Tracking (Completed)
+
+**Goal:** Enable seamless synchronization of game progress and user settings across devices using the authenticated profile system.
+
+- [x] **Database Schema**: Create `user_progress` table.
+- [x] **API Endpoints**: Create `/api/sync` for batch updates.
+- [x] **Client Sync Service**: Update `SyncService` to support cloud sync.
+- [x] **Conflict Resolution**: Implement "High Water Mark" logic.
+- [x] **UI Integration**: Add sync status indicators.
+
+## Phase 35: Fresh Eyes & Roadmap Review (Completed)
+
+**Goal:** Review the project's trajectory, clean up deferred work, and conduct a "Fresh Eyes" audit of the recent features to ensure quality and coherence.
+
+- [x] **Docs Cleanup**: Review and prune `ideas.md` and `deferred_work.md`.
+- [x] **Fresh Eyes Audit**: Conduct a design and UX review of the Auth and Sync flows.
+- [x] **Roadmap Update**: Refine the plan for the next 5 phases.
+
+## Phase 36: The Field Guide (Completed)
+
+**Goal:** Create an interactive, diegetic "Book" that serves as the game's manual, featuring multiple persona voices and interactive examples.
+
+- [x] **Data Structure**: Define the schema for Book Chapters, Pages, and Interactive Widgets.
+- [x] **UI Framework**: Build the "Book" component with page-turning animations and a responsive layout.
+- [x] **Content Authoring**: Write the initial chapters (Survival Basics, Automation) with the three-voice system (Guide, Zoey, Jonas).
+- [x] **Interactive Widgets**: Implement embedded "Playgrounds" and dynamic state reflection within the book pages.
+
+## Phase 37: Advanced Mechanics - The Boat
+
+**Goal:** Implement the "Boat" mechanic suggested by Zoey, allowing the character to traverse water tiles when holding the boat item.
+
+- [ ] **Schema Update**: Add 'boat' to ItemTypeSchema.
+- [ ] **Builder Support**: Add "Boat" item to the Builder Tray.
+- [ ] **Game Logic**: Update movement logic to allow entering water if holding a boat.
+- [ ] **Visuals**: Render character in boat when on water.
+- [ ] **Content**: Create "Row Your Boat" level.
+
+## Phase 38: The Terrain Architect
+
+**Goal:** Empower the Architect to create complex custom terrain with configurable properties directly in the Builder, enabling "Hybrid" tiles and new mechanics.
+
+- [ ] **Tile Editor Upgrade**: Add UI to configure `passableBy` (Item) and `onEnter` (Effect) properties for custom tiles.
+- [ ] **Visual Feedback**: Show icons/indicators on tiles in the Builder to represent their properties (e.g., a small boat icon for water, a skull for void).
+- [ ] **Void Visuals**: Implement the "shrink away" animation for the Void/Hazard death effect.
+- [ ] **Hybrid Terrain**: Verify and demo a "Magic Door" (Wall + PassableBy Key) tile.
+
+## Phase 39: Community & Sharing
+
+**Goal:** Empower Architects to share their creations with the world.
+
+- [ ] **Export to GitHub**: Allow users to export their packs to a GitHub repository (via OAuth).
+- [ ] **Public Library**: A simple read-only view of shared packs (curated or community).
+- [ ] **Import from URL**: Ability to load a pack from a raw JSON URL.
+
+## Phase 40: Advanced Mechanics - Survival Mode
+
+**Goal:** Deepen the gameplay with survival challenges.
+
+- [ ] **Lives System**: A survival mechanic where hazards reduce a life counter.
+- [ ] **New Hazards**: Fire, Moving Platforms, etc.
+
+## Phase 41: Accessibility
+
+**Goal:** Make the learning experience accessible to pre-literate and visually impaired users.
+
+- [ ] **Text-to-Speech**: Use Web Speech API to read dialogue and instructions.
+- [ ] **High Contrast Mode**: A specific theme for low-vision users.
+- [ ] **Screen Reader Optimization**: Audit ARIA labels and focus management.
+
+## Phase 42: The Kinetic Architect
+
+**Goal:** Bridge the gap between block-based coding and real-world syntax.
+
+- [ ] **Code View**: A read-only panel showing the generated JavaScript/TypeScript code for the current program.
+- [ ] **Syntax Highlighting**: Use Shiki or similar to highlight the code.
+- [ ] **Live Updates**: Code updates in real-time as blocks are dragged.
+
+## Phase 43: Feedback System
 
 **Goal:** Create a robust feedback loop that empowers users to report issues with full context.
 

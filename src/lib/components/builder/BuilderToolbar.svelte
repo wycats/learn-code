@@ -22,6 +22,7 @@
 	import ShareModal from './ShareModal.svelte';
 	import { fade, slide } from 'svelte/transition';
 	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
+	import DevConnectionStatus from '$lib/components/common/DevConnectionStatus.svelte';
 	import { fileSystem } from '$lib/services/file-system';
 
 	interface Props {
@@ -302,6 +303,7 @@
 	</div>
 
 	<div class="right-group">
+		<DevConnectionStatus />
 		<ThemeToggle />
 		<div class="separator"></div>
 		<button class="mode-btn primary" onclick={toggleMode}>

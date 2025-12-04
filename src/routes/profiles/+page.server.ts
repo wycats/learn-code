@@ -3,7 +3,7 @@ import type { PageServerLoad, Actions } from './$types';
 import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
-import { setActiveProfileCookie, isSudo } from '$lib/server/auth';
+import { setActiveProfileCookie } from '$lib/server/auth';
 
 export const load: PageServerLoad = async (event) => {
 	if (!event.locals.user) {
@@ -16,19 +16,38 @@ export const load: PageServerLoad = async (event) => {
 
 	return {
 		profiles,
-		isSudo: event.locals.session ? isSudo(event.locals.session) : false
+		user: event.locals.user
 	};
 };
 
 export const actions: Actions = {
-	create: async (event) => {
+	selectProfile: async (event) => {
+		if (!event.locals.user) return fail(401);
+		const formData = await event.request.formData();
+		const profileId = formData.get('profileId') as string;
+
+		// Verify ownership
+		const profile = await db.query.profile.findFirst({
+			where: eq(table.profile.id, profileId)
+		});
+
+		if (!profile || profile.userId !== event.locals.user.id) {
+			return fail(403, { error: 'Invalid profile' });
+		}
+
+		setActiveProfileCookie(event, profileId);
+		throw redirect(302, '/');
+	},
+	createProfile: async (event) => {
 		if (!event.locals.user) return fail(401);
 		const formData = await event.request.formData();
 		const nickname = formData.get('nickname') as string;
 		const avatar = formData.get('avatar') as string;
 		const color = formData.get('color') as string;
 
-		if (!nickname || !avatar || !color) return fail(400, { message: 'Missing fields' });
+		if (!nickname || !avatar || !color) {
+			return fail(400, { error: 'Missing fields' });
+		}
 
 		const id = crypto.randomUUID();
 		await db.insert(table.profile).values({
@@ -39,45 +58,7 @@ export const actions: Actions = {
 			color
 		});
 
-		return { success: true };
-	},
-	select: async (event) => {
-		const formData = await event.request.formData();
-		const profileId = formData.get('profileId') as string;
-
-		// Verify ownership
-		const profile = await db.query.profile.findFirst({
-			where: eq(table.profile.id, profileId)
-		});
-
-		if (!profile || profile.userId !== event.locals.user?.id) {
-			return fail(403);
-		}
-
-		setActiveProfileCookie(event, profileId);
+		setActiveProfileCookie(event, id);
 		throw redirect(302, '/');
-	},
-	delete: async (event) => {
-		if (!event.locals.user || !event.locals.session) return fail(401);
-
-		// Check Sudo Mode
-		if (!isSudo(event.locals.session)) {
-			return fail(403, { requireSudo: true });
-		}
-
-		const formData = await event.request.formData();
-		const profileId = formData.get('profileId') as string;
-
-		// Verify ownership
-		const profile = await db.query.profile.findFirst({
-			where: eq(table.profile.id, profileId)
-		});
-
-		if (!profile || profile.userId !== event.locals.user.id) {
-			return fail(403);
-		}
-
-		await db.delete(table.profile).where(eq(table.profile.id, profileId));
-		return { success: true };
 	}
 };

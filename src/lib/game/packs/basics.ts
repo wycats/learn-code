@@ -1,5 +1,15 @@
 import { LevelPackSchema } from '../schema';
-import { LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8 } from '../levels';
+import {
+	LEVEL_1,
+	LEVEL_2,
+	LEVEL_3,
+	LEVEL_4,
+	LEVEL_5,
+	LEVEL_6,
+	LEVEL_7,
+	LEVEL_8,
+	LEVEL_BOAT_1
+} from '../levels';
 
 export const BASICS_PACK = LevelPackSchema.parse({
 	id: 'basics',
@@ -8,5 +18,5 @@ export const BASICS_PACK = LevelPackSchema.parse({
 	coverImage: 'book',
 	difficulty: 'beginner',
 	tags: ['tutorial', 'loops', 'debugging'],
-	levels: [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8]
+	levels: [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8, LEVEL_BOAT_1]
 });

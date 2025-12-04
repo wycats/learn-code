@@ -18,11 +18,15 @@
 		StepForward,
 		StepBack,
 		RotateCw,
-		RefreshCcw
+		RefreshCcw,
+		BookOpen
 	} from 'lucide-svelte';
 	import { soundManager } from '$lib/game/sound';
 	import { fade } from 'svelte/transition';
 	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
+	import DevConnectionStatus from '$lib/components/common/DevConnectionStatus.svelte';
+	import { bookStore } from '$lib/game/book/store.svelte';
+	import BookModal from '$lib/components/game/book/BookModal.svelte';
 
 	interface Props {
 		game: GameModel;
@@ -192,10 +196,15 @@
 </script>
 
 <div class="game-layout">
+	<BookModal />
 	<header>
 		<Cluster justify="space-between" align="center">
 			<div class="left-controls">
 				{@render headerLeft?.()}
+
+				<button class="btn-icon" onclick={() => bookStore.open()} title="Field Guide">
+					<BookOpen size={20} />
+				</button>
 
 				{#if architectMode}
 					<div class="architect-badge">ARCHITECT</div>
@@ -268,6 +277,7 @@
 			</div>
 
 			<div class="right-controls">
+				<DevConnectionStatus />
 				<ThemeToggle />
 				{#if onExit}
 					<div class="separator"></div>

@@ -12,7 +12,12 @@
 	let { item, receive = () => () => ({ duration: 0 }) }: Props = $props();
 </script>
 
-<div class="thought-bubble" class:empty={!item} transition:scale={{ duration: 200, start: 0.5 }}>
+<div
+	class="thought-bubble"
+	class:empty={!item}
+	transition:scale={{ duration: 200, start: 0.5 }}
+	data-testid="thought-bubble"
+>
 	<div class="bubble-content">
 		{#if item}
 			<div

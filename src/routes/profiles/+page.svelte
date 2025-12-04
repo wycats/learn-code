@@ -1,206 +1,353 @@
 <script lang="ts">
+	/* eslint-disable svelte/no-navigation-without-resolve */
 	import { enhance } from '$app/forms';
-	import { Plus, Trash2, Settings } from 'lucide-svelte';
+	import { Plus } from 'lucide-svelte';
+	import type { PageData } from './$types';
 
-	let { data } = $props();
-
-	let showCreateDialog = $state(false);
-	let selectedAvatar = $state('robot');
-	let selectedColor = $state('blue');
-	let dialogRef: HTMLDialogElement;
-
-	const avatars = ['robot', 'cat', 'dog', 'alien', 'wizard'];
-	const colors = ['blue', 'red', 'green', 'yellow', 'purple'];
-
-	function onSudoRequired() {
-		// Redirect to login for re-auth
-		window.location.href = '/login/google?redirectTo=/profiles';
-	}
-
-	$effect(() => {
-		if (showCreateDialog) {
-			dialogRef?.showModal();
-		} else {
-			dialogRef?.close();
-		}
-	});
+	let { data } = $props<{ data: PageData }>();
+	let showAddForm = $state(false);
 </script>
 
-<div class="flex min-h-screen flex-col items-center bg-surface-1 p-4">
-	<header class="mb-8 flex w-full max-w-4xl items-center justify-between">
-		<h1 class="text-3xl font-bold">Who is playing?</h1>
-		<div class="flex gap-2">
-			{#if !data.isSudo}
-				<button
-					onclick={onSudoRequired}
-					class="inline-flex items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-				>
-					<Settings class="h-4 w-4" />
-					Parent Mode
-				</button>
-			{:else}
-				<div
-					class="flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-sm text-green-800"
-				>
-					<Settings class="h-4 w-4" />
-					Parent Mode Active
-				</div>
-			{/if}
-		</div>
-	</header>
+<div class="page-container">
+	<div class="content-wrapper">
+		<h1>Who is playing?</h1>
 
-	<div class="grid w-full max-w-4xl grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4">
-		{#each data.profiles as profile (profile.id)}
-			<div
-				class="group relative flex w-full flex-col items-center gap-4 rounded-xl border-2 border-transparent bg-surface-2 p-6 transition-all hover:scale-105 hover:border-primary hover:shadow-lg"
-			>
-				<form action="?/select" method="POST" use:enhance class="contents">
-					<input type="hidden" name="profileId" value={profile.id} />
-					<button
-						type="submit"
-						class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-						aria-label="Select {profile.nickname}"
-					></button>
-				</form>
-
-				<div
-					class="pointer-events-none relative h-24 w-24 overflow-hidden rounded-full bg-{profile.color}-100 p-2"
-				>
-					<!-- Placeholder for actual avatar component -->
-					<div class="flex h-full w-full items-center justify-center text-4xl">
-						{#if profile.avatar === 'robot'}🤖
-						{:else if profile.avatar === 'cat'}🐱
-						{:else if profile.avatar === 'dog'}🐶
-						{:else if profile.avatar === 'alien'}👽
-						{:else if profile.avatar === 'wizard'}🧙‍♂️
-						{:else}👤{/if}
-					</div>
-				</div>
-				<span class="pointer-events-none text-xl font-bold">{profile.nickname}</span>
-
-				{#if data.isSudo}
-					<div
-						class="absolute right-2 top-2 z-10 opacity-0 transition-opacity group-hover:opacity-100"
-					>
-						<form action="?/delete" method="POST" use:enhance>
-							<input type="hidden" name="profileId" value={profile.id} />
-							<button
-								class="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium text-destructive ring-offset-background transition-colors hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+		{#if !showAddForm}
+			<div class="profiles-grid">
+				{#each data.profiles as profile (profile.id)}
+					<form method="POST" action="?/selectProfile" use:enhance>
+						<input type="hidden" name="profileId" value={profile.id} />
+						<button type="submit" class="profile-card">
+							<div
+								class="avatar"
+								style="background-color: {profile.color}20; border-color: {profile.color}"
 							>
-								<Trash2 class="h-4 w-4" />
-							</button>
-						</form>
-					</div>
-				{/if}
-			</div>
-		{/each}
+								<span class="avatar-emoji">
+									{#if profile.avatar === 'robot'}🤖
+									{:else if profile.avatar === 'cat'}🐱
+									{:else if profile.avatar === 'dog'}🐶
+									{:else}👤{/if}
+								</span>
+							</div>
+							<span class="nickname">{profile.nickname}</span>
+						</button>
+					</form>
+				{/each}
 
-		<!-- Add Profile Button -->
-		<button
-			onclick={() => (showCreateDialog = true)}
-			class="flex h-full w-full flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-muted-foreground/20 bg-transparent p-6 transition-all hover:border-primary hover:bg-surface-2"
-		>
-			<div class="flex h-24 w-24 items-center justify-center rounded-full bg-surface-2">
-				<Plus class="h-10 w-10 text-muted-foreground" />
-			</div>
-			<span class="text-xl font-medium text-muted-foreground">Add Profile</span>
-		</button>
-
-		<dialog
-			bind:this={dialogRef}
-			class="w-full max-w-lg rounded-lg border bg-background p-6 shadow-lg backdrop:bg-black/50"
-			onclose={() => (showCreateDialog = false)}
-		>
-			<div class="flex flex-col space-y-1.5 text-center sm:text-left">
-				<h2 class="text-lg font-semibold leading-none tracking-tight">Create New Profile</h2>
-			</div>
-			<form
-				action="?/create"
-				method="POST"
-				use:enhance={() => {
-					return async ({ result }) => {
-						if (result.type === 'success') {
-							showCreateDialog = false;
-						}
-					};
-				}}
-			>
-				<div class="grid gap-4 py-4">
-					<div class="grid gap-2">
-						<label
-							for="nickname"
-							class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-							>Nickname</label
-						>
-						<input
-							id="nickname"
-							name="nickname"
-							placeholder="e.g. Zoey"
-							required
-							class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-						/>
+				<button onclick={() => (showAddForm = true)} class="profile-card add-profile">
+					<div class="avatar add-avatar">
+						<Plus size={48} />
 					</div>
-					<div class="grid gap-2">
-						<label
-							class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-							>Avatar</label
-						>
-						<div class="flex gap-2">
-							{#each avatars as avatar (avatar)}
-								<button
-									type="button"
-									class="flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all {selectedAvatar ===
-									avatar
-										? 'border-primary bg-primary/10'
-										: 'border-transparent hover:bg-surface-2'}"
-									onclick={() => (selectedAvatar = avatar)}
-								>
-									{#if avatar === 'robot'}🤖
-									{:else if avatar === 'cat'}🐱
-									{:else if avatar === 'dog'}🐶
-									{:else if avatar === 'alien'}👽
-									{:else if avatar === 'wizard'}🧙‍♂️
-									{/if}
-								</button>
+					<span class="nickname">Add Profile</span>
+				</button>
+			</div>
+
+			<div class="footer-actions">
+				<a href="/auth/handshake/scan" class="btn outline">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<rect width="5" height="5" x="3" y="3" rx="1" />
+						<rect width="5" height="5" x="16" y="3" rx="1" />
+						<rect width="5" height="5" x="3" y="16" rx="1" />
+						<path d="M21 16h-3a2 2 0 0 0-2 2v3" />
+						<path d="M21 21v.01" />
+						<path d="M12 7v3a2 2 0 0 1-2 2H7" />
+						<path d="M3 12h.01" />
+						<path d="M12 3h.01" />
+						<path d="M12 16v.01" />
+						<path d="M16 12h1" />
+						<path d="M21 12v.01" />
+						<path d="M12 21v-1" />
+					</svg>
+					Scan Device Code
+				</a>
+			</div>
+		{:else}
+			<div class="form-card">
+				<h2>New Profile</h2>
+				<form method="POST" action="?/createProfile" use:enhance>
+					<div class="form-group">
+						<label for="nickname">Nickname</label>
+						<input type="text" name="nickname" id="nickname" required placeholder="e.g. Zoey" />
+					</div>
+
+					<div class="form-group">
+						<label>Avatar</label>
+						<div class="radio-group">
+							{#each ['robot', 'cat', 'dog', 'person'] as avatar (avatar)}
+								<label class="radio-label">
+									<input type="radio" name="avatar" value={avatar} required />
+									<div class="radio-tile">
+										<span class="emoji">
+											{#if avatar === 'robot'}🤖
+											{:else if avatar === 'cat'}🐱
+											{:else if avatar === 'dog'}��
+											{:else}👤{/if}
+										</span>
+									</div>
+								</label>
 							{/each}
-							<input type="hidden" name="avatar" value={selectedAvatar} />
 						</div>
 					</div>
-					<div class="grid gap-2">
-						<label
-							class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-							>Color</label
-						>
-						<div class="flex gap-2">
-							{#each colors as color (color)}
-								<button
-									type="button"
-									class="h-8 w-8 rounded-full border-2 transition-all {selectedColor === color
-										? 'scale-110 border-black'
-										: 'border-transparent'}"
-									style="background-color: var(--{color}-5)"
-									onclick={() => (selectedColor = color)}
-								></button>
+
+					<div class="form-group">
+						<label>Color</label>
+						<div class="radio-group">
+							{#each ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'] as color (color)}
+								<label class="radio-label">
+									<input type="radio" name="color" value={color} required />
+									<div class="color-tile" style="background-color: {color}"></div>
+								</label>
 							{/each}
-							<input type="hidden" name="color" value={selectedColor} />
 						</div>
 					</div>
-				</div>
-				<div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
-					<button
-						type="button"
-						onclick={() => (showCreateDialog = false)}
-						class="mt-2 inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 sm:mt-0"
-					>
-						Cancel
-					</button>
-					<button
-						type="submit"
-						class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-						>Create Profile</button
-					>
-				</div>
-			</form>
-		</dialog>
+
+					<div class="form-actions">
+						<button type="button" class="btn secondary" onclick={() => (showAddForm = false)}>
+							Cancel
+						</button>
+						<button type="submit" class="btn primary">Create Profile</button>
+					</div>
+				</form>
+			</div>
+		{/if}
 	</div>
 </div>
+
+<style>
+	.page-container {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		background-color: var(--surface-1);
+		padding: var(--size-4);
+	}
+
+	.content-wrapper {
+		width: 100%;
+		max-width: 1024px;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-8);
+	}
+
+	h1 {
+		font-size: var(--font-size-7);
+		font-weight: 900;
+		margin: 0;
+	}
+
+	.profiles-grid {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--size-8);
+	}
+
+	.profile-card {
+		background: none;
+		border: none;
+		cursor: pointer;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--size-4);
+		transition: transform 0.2s var(--ease-3);
+	}
+
+	.profile-card:hover {
+		transform: scale(1.05);
+	}
+
+	.avatar {
+		width: var(--size-13);
+		height: var(--size-13);
+		border-radius: var(--radius-round);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 4px solid transparent;
+		background-color: var(--surface-2);
+		box-shadow: var(--shadow-3);
+		transition: border-color 0.2s;
+	}
+
+	.profile-card:hover .avatar {
+		border-color: var(--brand);
+	}
+
+	.avatar-emoji {
+		font-size: var(--font-size-8);
+	}
+
+	.nickname {
+		font-size: var(--font-size-4);
+		font-weight: 600;
+		color: var(--text-1);
+	}
+
+	.add-profile .nickname {
+		color: var(--text-3);
+	}
+
+	.add-avatar {
+		border: 4px dashed var(--surface-3);
+		background-color: var(--surface-2);
+		color: var(--text-3);
+	}
+
+	.add-profile:hover .add-avatar {
+		border-color: var(--brand);
+		background-color: var(--surface-3);
+	}
+
+	/* Form Styles */
+	.form-card {
+		background-color: var(--surface-2);
+		padding: var(--size-6);
+		border-radius: var(--radius-3);
+		box-shadow: var(--shadow-2);
+		max-width: 480px;
+		margin: 0 auto;
+		text-align: left;
+		width: 100%;
+	}
+
+	h2 {
+		margin-bottom: var(--size-4);
+		font-size: var(--font-size-5);
+	}
+
+	.form-group {
+		margin-bottom: var(--size-4);
+	}
+
+	label {
+		display: block;
+		font-size: var(--font-size-1);
+		font-weight: 600;
+		margin-bottom: var(--size-2);
+	}
+
+	input[type='text'] {
+		width: 100%;
+		padding: var(--size-2) var(--size-3);
+		border-radius: var(--radius-2);
+		border: 1px solid var(--surface-3);
+		background-color: var(--surface-1);
+		color: var(--text-1);
+		font-size: var(--font-size-2);
+	}
+
+	.radio-group {
+		display: flex;
+		gap: var(--size-3);
+	}
+
+	.radio-label {
+		cursor: pointer;
+	}
+
+	.radio-label input {
+		position: absolute;
+		opacity: 0;
+		width: 0;
+		height: 0;
+	}
+
+	.radio-tile {
+		width: var(--size-9);
+		height: var(--size-9);
+		border-radius: var(--radius-round);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 2px solid transparent;
+		background-color: var(--surface-1);
+	}
+
+	.radio-label input:checked + .radio-tile {
+		border-color: var(--brand);
+		background-color: var(--brand-surface);
+	}
+
+	.emoji {
+		font-size: var(--font-size-5);
+	}
+
+	.color-tile {
+		width: var(--size-7);
+		height: var(--size-7);
+		border-radius: var(--radius-round);
+		border: 2px solid transparent;
+	}
+
+	.radio-label input:checked + .color-tile {
+		border-color: var(--text-1);
+		transform: scale(1.1);
+	}
+
+	.form-actions {
+		display: flex;
+		gap: var(--size-3);
+		margin-top: var(--size-6);
+	}
+
+	.btn {
+		flex: 1;
+		padding: var(--size-2) var(--size-4);
+		border-radius: var(--radius-2);
+		font-weight: 600;
+		cursor: pointer;
+		border: none;
+		font-size: var(--font-size-2);
+	}
+
+	.btn.primary {
+		background-color: var(--brand);
+		color: white;
+	}
+
+	.btn.secondary {
+		background-color: var(--surface-3);
+		color: var(--text-1);
+	}
+
+	.footer-actions {
+		margin-top: var(--size-8);
+		display: flex;
+		justify-content: center;
+	}
+
+	.btn.outline {
+		background-color: transparent;
+		border: 1px solid var(--surface-3);
+		color: var(--text-2);
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		text-decoration: none;
+		padding: var(--size-2) var(--size-4);
+		border-radius: var(--radius-2);
+		font-weight: 600;
+		transition: all 0.2s;
+	}
+
+	.btn.outline:hover {
+		border-color: var(--text-2);
+		color: var(--text-1);
+		background-color: var(--surface-2);
+	}
+</style>

@@ -13,6 +13,7 @@
 	import DropIndicator from './DropIndicator.svelte';
 	import type { Block, BlockType } from '$lib/game/types';
 	import type { GameModel } from '$lib/game/model.svelte';
+	import { resolveItemDefinition } from '$lib/game/utils';
 	import {
 		Trash2,
 		Move,
@@ -51,10 +52,16 @@
 		return items;
 	});
 
-	const hasVariables = $derived(
-		'pick-up' in game.level.availableBlocks ||
-			(game.level.items && Object.keys(game.level.items).length > 0)
-	);
+	const hasVariables = $derived.by(() => {
+		if ('pick-up' in game.level.availableBlocks) return true;
+		if (!game.level.items) return false;
+
+		return Object.values(game.level.items).some((item) => {
+			const def = resolveItemDefinition(game.level, item.type, undefined);
+			if (def && def.behavior === 'vehicle') return false;
+			return true;
+		});
+	});
 
 	// Helper to count blocks by type across the entire solution (program + functions)
 	function countBlocksByType(

@@ -490,3 +490,44 @@
 
 - We bypass the static analysis limitation while maintaining correct navigation behavior.
 - We explicitly handle the navigation intent in code, which is safer for complex auth flows.
+
+## Phase 33: Authentication & Cloud Foundation
+
+### 53. Parent/Child Profile Model
+
+**Decision:** Implement a hierarchical "Parent Account -> Child Profiles" model.
+**Context:** Our target audience (children) cannot legally or practically own email accounts/OAuth credentials. Parents need to manage access.
+**Consequence:**
+
+- The `User` table represents the Parent (authenticated via OAuth).
+- The `Profile` table represents the Child (nickname, avatar, progress).
+- All game progress is linked to a `Profile`, not the `User`.
+
+### 54. Device Authorization via QR Code
+
+**Decision:** Use a "QR Handshake" flow to authorize child devices without sharing parent credentials.
+**Context:** Parents don't want to type their Google password on a child's tablet. They want a quick, secure way to "log in" the child.
+**Consequence:**
+
+- We implemented a `DeviceAuth` table to track temporary handshake tokens.
+- The child device receives a long-lived session token linked to the _Parent User_ but scoped to the _Child Profile_ (conceptually, though currently it's a full user session).
+
+## Phase 34: Cloud Sync & Progress Tracking
+
+### 55. High Water Mark Sync Strategy
+
+**Decision:** Use a "High Water Mark" strategy for merging progress (Best Score Wins).
+**Context:** In a game, "progress" is generally monotonic (you unlock a level, you get more stars). If a user plays offline on two devices, we want to merge the _best_ achievements from both, rather than overwriting with the "latest" timestamp (which might be a worse run).
+**Consequence:**
+
+- We do not need complex CRDTs for this specific data type.
+- The merge logic is deterministic and user-friendly (no progress loss).
+
+### 56. Optimistic UI Updates
+
+**Decision:** Update the UI immediately upon level completion, regardless of network status.
+**Context:** The game must feel responsive. Waiting for a server round-trip to show the "Level Complete" screen is unacceptable.
+**Consequence:**
+
+- The `CloudSyncService` updates local state first, then queues the background sync.
+- We accept a small risk of temporary inconsistency (e.g., if the server rejects the update), but for a single-player game, this is a worthy trade-off.

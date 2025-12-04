@@ -357,7 +357,7 @@ Addressed remaining usability issues in the Builder and improved the Function cr
   - Added visual cues (red border/text) for invalid states.
 - **Builder Polish**:
   - **Glassomorphism**: Added a frosted glass effect to the "Cover" tile.
-  - **Undo/Redo**: Implemented a full state history stack for the Level Builder using `$state.snapshot`.
+  - **Undo/Redo**: Implemented a full state history stack for the Level Builder using `.snapshot`.
   - **Loop Config**: Added a custom input field for loop counts.
   - **UI Cleanup**: Removed redundant tile dropdown and updated button text.
 
@@ -532,7 +532,7 @@ Addressed deferred items from Phase 19 to refine the Level Builder experience. I
 **Key Deliverables:**
 
 - **Undo/Redo System**:
-  - Implemented history stack in `BuilderModel` using `$state.snapshot`.
+  - Implemented history stack in `BuilderModel` using `.snapshot`.
   - Integrated `pushState()` calls across all builder actions (Terrain, Logic, Settings, Functions).
 - **Visual Polish**:
   - **Glassomorphism**: Verified "Cover" block style.
@@ -607,3 +607,95 @@ Optimized the synchronization logic to be more performant and verified the imple
 - **Code Quality**:
   - Resolved `svelte/no-navigation-without-resolve` lint errors by using programmatic navigation.
   - Fixed type safety issues and removed unused code across the codebase.
+
+## Phase 33: Authentication & Cloud Foundation (Completed)
+
+**Date:** December 3, 2025
+
+**Summary:**
+Laid the groundwork for cloud persistence by implementing a custom authentication system and a "Parent/Child" profile model. This system allows a single parent account (authenticated via GitHub or Google) to manage multiple child profiles, each with their own progress and settings. We also implemented a secure "Device Authorization" flow using QR codes to log in child devices without sharing parent credentials.
+
+**Key Deliverables:**
+
+- **Database Schema**:
+  - Defined `User`, `Session`, `Profile`, and `DeviceAuth` tables in Drizzle/Postgres.
+- **Authentication**:
+  - Implemented OAuth 2.0 flows for GitHub and Google using `arctic`.
+  - Implemented session management using `@oslojs/crypto` and cookies.
+- **Profile System**:
+  - Created "Parent Dashboard" for managing child profiles (Avatar, Nickname, Color).
+  - Implemented "Profile Switcher" for easy context switching.
+- **Device Authorization**:
+  - Implemented "QR Handshake" flow: Parent scans QR on child device -> Approves -> Child device gets a long-lived session token.
+- **UI Implementation**:
+  - Login Page, Profile Picker, Settings Page, and Handshake UI.
+
+## Phase 34: Cloud Sync & Progress Tracking (Completed)
+
+**Date:** December 3, 2025
+
+**Summary:**
+Enabled seamless synchronization of game progress across devices using the authenticated profile system. Implemented a "High Water Mark" sync strategy that ensures the best result (highest stars, unlocked status) is always preserved, preventing progress loss. The system uses optimistic UI updates for a responsive experience, with background synchronization handling the server communication.
+
+**Key Deliverables:**
+
+- **Database Schema**:
+  - Added `user_progress` table to store progress per profile and level.
+- **API Endpoints**:
+  - `POST /api/sync`: Batch update endpoint that merges local changes with server state.
+  - `GET /api/sync`: Endpoint to fetch full progress state.
+- **Client Service**:
+  - `CloudSyncService`: Handles push/pull operations, offline queueing (stubbed), and merge logic.
+  - `SyncStatus`: Reactive store and UI component to indicate sync state (Idle, Syncing, Error).
+- **UI Integration**:
+  - Added `SyncStatus` indicator to the Library and Layout.
+  - Integrated automatic sync on app load and level completion.
+- **Verification**:
+  - Comprehensive unit tests for the merge logic and service interaction.
+
+## Phase 35: Fresh Eyes Review & Roadmap Update (Completed)
+
+**Date:** December 3, 2025
+
+**Summary:**
+Conducted a comprehensive "Fresh Eyes" review of the project, focusing on the newly implemented Authentication and Sync features. This review led to immediate usability improvements, including a new "Scan Device Code" page for parents, manual code entry fallbacks for devices without cameras, and a cleaner Sync Status indicator. Additionally, the project roadmap was significantly extended to Phase 40, outlining future work on Community features, Advanced Mechanics, and Accessibility.
+
+**Key Deliverables:**
+
+- **Auth Polish**:
+  - **Scan Page**: Created `/auth/handshake/scan` for parents to scan child device codes.
+  - **Manual Entry**: Added manual code display on child devices and entry form on parent devices as a fallback.
+  - **Navigation**: Added "Scan Device Code" button to the Parent Dashboard.
+- **UI Polish**:
+  - **Sync Status**: Updated `SyncStatus` component to be invisible when idle, reducing visual noise.
+- **Roadmap Update**:
+  - Extended `plan-outline.md` to Phase 40.
+  - Defined future phases for Community, Advanced Mechanics, and Accessibility.
+- **Documentation**:
+  - Updated `ideas.md` and `deferred_work.md` based on the review.
+
+## Phase 36: The Field Guide (Completed)
+
+**Date:** December 3, 2025
+
+**Summary:**
+Implemented "The Field Guide", an in-game interactive manual designed to teach game mechanics without overwhelming the user with text. The guide uses a "multi-voice" approach (The Guide, Zoey, Jonas) to add personality and context. It features a responsive modal layout using the native `<dialog>` element for robust top-layer management and includes interactive "Mini Playgrounds" embedded directly in the book pages.
+
+**Key Deliverables:**
+
+- **Core Infrastructure**:
+  - `BookSchema`: Zod schema for structured content (Chapters, Pages, Blocks).
+  - `BookStore`: Svelte 5 Runes-based state management for navigation and visibility.
+- **UI Components**:
+  - `BookModal`: Responsive modal container using `<dialog>` and `::backdrop`.
+  - `BookPage`: Renderer for content blocks with voice-specific styling.
+  - `MiniPlayground`: Embedded 3x3 game instances for interactive examples.
+- **Content**:
+  - Chapter 1: "Survival Basics" (Movement, Goals, Hazards).
+- **Polish**:
+  - Implemented native `<dialog>` support to resolve z-index stacking issues.
+  - Added "Field Guide" trigger to the Game header.
+- **Bug Fixes (Post-Release)**:
+  - **Modal Transparency**: Fixed transparent background issue by styling `<dialog>` and `::backdrop`.
+  - **Playground Integration**: Fixed prop mismatch (`initialCode` -> `snippet`) and goal detection logic in `MiniPlayground`.
+  - **Markdown Support**: Implemented lightweight Markdown rendering for text blocks.

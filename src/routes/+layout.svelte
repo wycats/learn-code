@@ -9,6 +9,7 @@
 	import ToastContainer from '$lib/components/common/ToastContainer.svelte';
 	import OfflineIndicator from '$lib/components/common/OfflineIndicator.svelte';
 	import { swManager } from '$lib/services/sw-manager';
+	import { CloudSyncService } from '$lib/services/cloud-sync';
 
 	// Ensure SW manager is initialized
 	$effect(() => {
@@ -16,6 +17,7 @@
 		// though the import side-effect might be enough.
 		// The singleton pattern in the file handles init.
 		console.log('SW Manager active', swManager);
+		CloudSyncService.pull();
 	});
 
 	let { children } = $props();

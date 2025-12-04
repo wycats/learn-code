@@ -3,7 +3,23 @@ import { z } from 'zod';
 export const DirectionSchema = z.enum(['N', 'E', 'S', 'W']);
 export type Direction = z.infer<typeof DirectionSchema>;
 
-export const ItemTypeSchema = z.enum(['key', 'number', 'color']);
+export const ItemBehaviorSchema = z.enum(['collectible', 'vehicle', 'value']);
+export type ItemBehavior = z.infer<typeof ItemBehaviorSchema>;
+
+export const ItemDefinitionSchema = z.object({
+	id: z.string(),
+	name: z.string(),
+	behavior: ItemBehaviorSchema,
+	visuals: z.object({
+		icon: z.string(),
+		color: z.string()
+	})
+});
+export type ItemDefinition = z.infer<typeof ItemDefinitionSchema>;
+
+// Built-in items are just pre-defined ItemDefinitions conceptually
+export const BuiltInItemTypeSchema = z.enum(['key', 'number', 'color', 'boat']);
+export const ItemTypeSchema = z.string(); // Allows custom item IDs
 export type ItemType = z.infer<typeof ItemTypeSchema>;
 
 export const HeldItemSchema = z.object({
@@ -25,7 +41,8 @@ export const BlockTypeSchema = z.enum([
 	'turn-right',
 	'loop',
 	'call',
-	'pick-up'
+	'pick-up',
+	'board'
 ]);
 export type BlockType = z.infer<typeof BlockTypeSchema>;
 
@@ -65,6 +82,8 @@ export const TileDefinitionSchema = z.object({
 	id: z.string(),
 	name: z.string(),
 	type: TileTypeSchema,
+	passableBy: ItemTypeSchema.optional(),
+	onEnter: z.enum(['kill', 'slide', 'none']).optional(),
 	visuals: z.object({
 		color: z.string(),
 		pattern: z.string().optional(),
@@ -84,7 +103,8 @@ export const BuiltInCellTypeSchema = z.enum([
 	'forest',
 	'dirt',
 	'spikes',
-	'cover'
+	'cover',
+	'void'
 ]);
 export const CellTypeSchema = z.string();
 export type CellType = z.infer<typeof CellTypeSchema>;
@@ -228,6 +248,7 @@ export const LevelDefinitionSchema = z.object({
 	ambientSoundId: z.string().optional(),
 	initialProgram: z.array(BlockSchema).optional(),
 	customTiles: z.record(z.string(), TileDefinitionSchema).optional(),
+	customItems: z.record(z.string(), ItemDefinitionSchema).optional(),
 	functions: z.record(z.string(), z.array(BlockSchema)).optional(),
 	solutionPar: z.number().optional(),
 	allowInfiniteLoop: z.boolean().optional(),
@@ -256,6 +277,7 @@ export const LevelPackSchema = z.object({
 	characters: z.array(CharacterSchema).optional(),
 	emotions: z.array(EmotionSchema).optional(),
 	customTiles: z.record(z.string(), TileDefinitionSchema).optional(),
+	customItems: z.record(z.string(), ItemDefinitionSchema).optional(),
 	// User-created pack metadata
 	isCustom: z.boolean().optional(),
 	author: z.string().optional(),

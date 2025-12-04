@@ -4,6 +4,7 @@
 	import Cell from './Cell.svelte';
 	import Character from './Character.svelte';
 	import ThoughtBubble from './ThoughtBubble.svelte';
+	import { resolveItemDefinition } from '$lib/game/utils';
 	import { RotateCw } from 'lucide-svelte';
 	import { fade, crossfade } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
@@ -156,6 +157,15 @@
 		}
 		return undefined;
 	});
+
+	const hasCollectibleItems = $derived.by(() => {
+		if (!game.level.items) return false;
+		return Object.values(game.level.items).some((item) => {
+			const def = resolveItemDefinition(game.level, item.type);
+			if (def && def.behavior === 'vehicle') return false;
+			return true;
+		});
+	});
 </script>
 
 <div
@@ -209,7 +219,9 @@
 		tabindex="0"
 	>
 		<Character direction={game.characterOrientation} {game} />
-		<ThoughtBubble item={game.heldItem} {receive} />
+		{#if hasCollectibleItems || game.heldItem}
+			<ThoughtBubble item={game.heldItem} {receive} />
+		{/if}
 
 		{#if isBuilder && (selectedActor === 'start' || isHoveringCharacter)}
 			<button

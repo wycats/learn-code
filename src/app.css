@@ -1,3 +1,6 @@
+/* Define layer order explicitly to ensure theme overrides reset */
+@layer reset, theme, base, layout, components, utilities;
+
 @import 'open-props/style' layer(reset);
 @import 'open-props/normalize' layer(reset);
 

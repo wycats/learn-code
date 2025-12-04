@@ -14,6 +14,7 @@ export class GameModel {
 	readonly executionState = new SvelteMap<string, 'success' | 'failure' | 'running'>();
 	readonly loopProgress = new SvelteMap<string, number>();
 	heldItem = $state<HeldItem | null>(null);
+	vehicle = $state<HeldItem | null>(null); // The vehicle the character is currently riding
 	readonly collectedItems = new SvelteSet<string>(); // "x,y" coordinates of collected items
 
 	// Level State
@@ -101,6 +102,7 @@ export class GameModel {
 		this.lastEvent = null; // Clear last event (e.g. blocked/fail)
 		this.resetExecutionState();
 		this.heldItem = null;
+		this.vehicle = null;
 		this.collectedItems.clear();
 		this.hintManager.reset();
 		// We don't clear program on reset, usually just execution state

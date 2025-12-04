@@ -16,7 +16,8 @@
 		XCircle,
 		Wand2,
 		Grab,
-		Brain
+		Brain,
+		Ship
 	} from 'lucide-svelte';
 
 	interface Props {
@@ -204,6 +205,8 @@
 				<Repeat size={24} />
 			{:else if block.type === 'call'}
 				<Wand2 size={24} />
+			{:else if block.type === 'board'}
+				<Ship size={24} />
 			{/if}
 		</div>
 		<span class="label">
@@ -215,6 +218,8 @@
 				Right
 			{:else if block.type === 'pick-up'}
 				Pick Up
+			{:else if block.type === 'board'}
+				Board
 			{:else if block.type === 'loop'}
 				Repeat
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -383,6 +388,12 @@
 		background-color: var(--pink-2);
 		color: var(--pink-9);
 		border-color: var(--pink-3);
+	}
+
+	.block[data-type='board'] {
+		background-color: var(--cyan-2);
+		color: var(--cyan-9);
+		border-color: var(--cyan-3);
 	}
 
 	.block[data-type='loop']:not(:has(.children)) {

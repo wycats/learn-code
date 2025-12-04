@@ -3,6 +3,7 @@ import { HistoryManager } from './history.svelte';
 import type {
 	LevelDefinition,
 	CellType,
+	ItemType,
 	GridPosition,
 	LevelPack,
 	Block,
@@ -15,6 +16,7 @@ import { SYSTEM_CHARACTERS, SYSTEM_EMOTIONS } from './constants';
 
 export type BuilderTool =
 	| { type: 'terrain'; value: CellType }
+	| { type: 'item'; value: ItemType }
 	| { type: 'erase' }
 	| { type: 'grid' };
 
@@ -516,6 +518,12 @@ export class BuilderModel {
 			...(levelSnapshot.customTiles || {})
 		};
 
+		const packItems = $state.snapshot(this.pack.customItems || {});
+		levelSnapshot.customItems = {
+			...packItems,
+			...(levelSnapshot.customItems || {})
+		};
+
 		// Merge pack characters (Level overrides Pack by ID)
 		const charMap: Record<string, Character> = {};
 		SYSTEM_CHARACTERS.forEach((c) => (charMap[c.id] = c));
@@ -870,8 +878,34 @@ export class BuilderModel {
 			} else {
 				this.level.layout[key] = this.activeTool.value;
 			}
+		} else if (this.activeTool.type === 'item') {
+			if (!this.level.items) this.level.items = {};
+
+			let icon = this.activeTool.value;
+			// Try to find definition
+			const def =
+				this.level.customItems?.[this.activeTool.value] ||
+				this.pack.customItems?.[this.activeTool.value];
+			if (def) {
+				icon = def.visuals.icon;
+			} else {
+				// Built-ins
+				if (this.activeTool.value === 'boat') icon = 'Ship';
+				if (this.activeTool.value === 'key') icon = 'Key';
+				if (this.activeTool.value === 'number') icon = 'Hash';
+				if (this.activeTool.value === 'color') icon = 'Palette';
+			}
+
+			this.level.items[key] = {
+				type: this.activeTool.value,
+				value: true,
+				icon: icon
+			};
 		} else if (this.activeTool.type === 'erase') {
 			delete this.level.layout[key];
+			if (this.level.items) {
+				delete this.level.items[key];
+			}
 		}
 
 		// Trigger reactivity by re-assigning or using deep reactivity

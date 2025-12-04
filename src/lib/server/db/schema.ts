@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, pgEnum, integer, primaryKey } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('users', {
 	id: text('id').primaryKey(),
@@ -53,8 +53,25 @@ export const feedback = pgTable('feedback', {
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow()
 });
 
+export const userProgress = pgTable(
+	'user_progress',
+	{
+		profileId: text('profile_id')
+			.notNull()
+			.references(() => profile.id, { onDelete: 'cascade' }),
+		levelId: text('level_id').notNull(),
+		status: text('status').notNull().default('locked'), // 'locked', 'unlocked', 'completed'
+		stars: integer('stars').notNull().default(0),
+		updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow()
+	},
+	(t) => ({
+		pk: primaryKey({ columns: [t.profileId, t.levelId] })
+	})
+);
+
 export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;
 export type Profile = typeof profile.$inferSelect;
 export type DeviceAuth = typeof deviceAuth.$inferSelect;
 export type Feedback = typeof feedback.$inferSelect;
+export type UserProgress = typeof userProgress.$inferSelect;

@@ -493,5 +493,94 @@ describe('StackInterpreter', () => {
 			const loopFrame = interpreter.stack[interpreter.stack.length - 1];
 			expect(loopFrame.loopMax).toBe(2);
 		});
+
+		describe('Boat Mechanics', () => {
+			it('should fail to move into water without a boat', () => {
+				game.level.layout['1,0'] = 'water';
+				game.addBlock({ id: '1', type: 'move-forward' });
+
+				interpreter.start();
+				interpreter.step(); // Highlight
+				const result = interpreter.step(); // Execute
+
+				expect(result).toBe(false);
+				expect(game.lastEvent?.type).toBe('blocked');
+			});
+
+			it('should fail to pick up a boat', () => {
+				game.level.items = { '0,0': { type: 'boat', value: true, icon: 'Ship' } };
+				game.addBlock({ id: '1', type: 'pick-up' });
+
+				interpreter.start();
+				interpreter.step(); // Highlight
+				const result = interpreter.step(); // Execute
+
+				expect(result).toBe(false);
+				expect(game.lastEvent?.type).toBe('fail');
+			});
+
+			it('should successfully board a boat', () => {
+				game.level.items = { '0,0': { type: 'boat', value: true, icon: 'Ship' } };
+				game.addBlock({ id: '1', type: 'board' });
+
+				interpreter.start();
+				interpreter.step(); // Highlight
+				const result = interpreter.step(); // Execute
+
+				expect(result).toBe(true);
+				expect(game.vehicle?.type).toBe('boat');
+				expect(game.collectedItems.has('0,0')).toBe(true);
+			});
+
+			it('should move into water after boarding boat', () => {
+				game.level.layout['1,0'] = 'water';
+				game.level.items = { '0,0': { type: 'boat', value: true, icon: 'Ship' } };
+
+				game.addBlock({ id: '1', type: 'board' });
+				game.addBlock({ id: '2', type: 'move-forward' });
+
+				interpreter.start();
+
+				// Board
+				interpreter.step();
+				interpreter.step();
+
+				// Move Forward
+				interpreter.step(); // Highlight
+				const result = interpreter.step(); // Execute
+
+				expect(result).toBe(true);
+				expect(game.characterPosition).toEqual({ x: 1, y: 0 });
+			});
+
+			it('should keep the boat when moving to land (Land Boat)', () => {
+				game.level.goal = { x: 0, y: 2 }; // Move goal out of the way
+				game.level.layout['1,0'] = 'water';
+				game.level.layout['2,0'] = 'grass';
+				game.level.items = { '0,0': { type: 'boat', value: true, icon: 'Ship' } };
+
+				game.addBlock({ id: '1', type: 'board' });
+				game.addBlock({ id: '2', type: 'move-forward' });
+				game.addBlock({ id: '3', type: 'move-forward' });
+
+				interpreter.start();
+
+				// Board
+				interpreter.step();
+				interpreter.step();
+
+				// Move to Water
+				interpreter.step();
+				interpreter.step();
+
+				// Move to Land
+				interpreter.step();
+				const result = interpreter.step();
+
+				expect(result).toBe(true);
+				expect(game.characterPosition).toEqual({ x: 2, y: 0 });
+				expect(game.vehicle?.type).toBe('boat');
+			});
+		});
 	});
 });

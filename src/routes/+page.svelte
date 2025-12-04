@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
-	import { Code, ArrowRight, Hammer, ScanLine, RefreshCw } from 'lucide-svelte';
+	import { Code, ArrowRight, Hammer, ScanLine, RefreshCw, LogIn, User } from 'lucide-svelte';
 	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
 	import SyncModal from '$lib/components/common/SyncModal.svelte';
+	import DevConnectionStatus from '$lib/components/common/DevConnectionStatus.svelte';
+	import type { PageData } from './$types';
 
+	let { data } = $props<{ data: PageData }>();
 	let showSync = $state(false);
 
 	function handleStart() {
@@ -21,6 +24,16 @@
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto(`${base}/play`);
 	}
+
+	function handleLogin() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		goto(`${base}/login`);
+	}
+
+	function handleProfile() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		goto(`${base}/profiles`);
+	}
 </script>
 
 {#if showSync}
@@ -29,6 +42,7 @@
 
 <div class="landing-container">
 	<div class="top-bar">
+		<DevConnectionStatus />
 		<ThemeToggle />
 	</div>
 	<div class="hero">
@@ -39,7 +53,19 @@
 		<p class="tagline">Master the logic of code, one block at a time.</p>
 
 		<div class="actions">
-			<button class="cta-button primary" onclick={handleStart}>
+			{#if !data.user}
+				<button class="cta-button primary" onclick={handleLogin}>
+					<span>Login</span>
+					<LogIn size={20} />
+				</button>
+			{:else}
+				<button class="cta-button secondary" onclick={handleProfile}>
+					<span>Switch Profile ({data.profile?.nickname})</span>
+					<User size={20} />
+				</button>
+			{/if}
+
+			<button class="cta-button {data.user ? 'primary' : 'secondary'}" onclick={handleStart}>
 				<span>Start Coding</span>
 				<ArrowRight size={20} />
 			</button>
@@ -83,6 +109,9 @@
 		top: var(--size-3);
 		right: var(--size-3);
 		z-index: 10;
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
 	}
 
 	.hero {

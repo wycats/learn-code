@@ -13,6 +13,7 @@
 	import { toast } from '$lib/stores/toast.svelte';
 	import P2PModal from '$lib/components/builder/P2PModal.svelte';
 	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
+	import SyncStatus from '$lib/components/common/SyncStatus.svelte';
 
 	let progress = $state(ProgressService.load());
 	let isFileSystemSupported = fileSystem.isSupported;
@@ -88,11 +89,22 @@
 		}
 	}
 
-	onMount(async () => {
-		// Refresh progress when returning to the page
-		progress = ProgressService.load();
-		// Load custom packs from IndexedDB
-		customPacks = await CampaignService.loadAll();
+	onMount(() => {
+		const init = async () => {
+			// Refresh progress when returning to the page
+			progress = ProgressService.load();
+			// Load custom packs from IndexedDB
+			customPacks = await CampaignService.loadAll();
+		};
+		init();
+
+		const handleUpdate = () => {
+			progress = ProgressService.load();
+		};
+		window.addEventListener('wonderblocks-progress-updated', handleUpdate);
+		return () => {
+			window.removeEventListener('wonderblocks-progress-updated', handleUpdate);
+		};
 	});
 </script>
 
@@ -102,6 +114,7 @@
 			<h1>Code Climber</h1>
 		</div>
 		<div class="actions">
+			<SyncStatus />
 			<ThemeToggle />
 			{#if isFileSystemSupported}
 				<button class="action-btn" onclick={handleOpenLocalFolder}>

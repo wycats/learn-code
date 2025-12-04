@@ -16,7 +16,7 @@
 
 ## Improvements Suggested by the Kids
 
-- [ ] **Boat**: A boat that allows the character to cross water tiles. (Suggested by Zoey)
+- [x] **Boat**: A boat that allows the character to cross water tiles. (Suggested by Zoey)
 - [ ] **Custom Core Blocks**: Allow advanced users (like Jonas leveling up) to define their own core blocks. This would be a "ZPD" (Zone of Proximal Development) feature, bridging the gap between using blocks and understanding their implementation.
 - [ ] **Text-to-Speech (TTS)**: Use the Web Speech API to read dialogue and instructions aloud. This supports pre-literate users and adds immersion.
 
@@ -59,3 +59,9 @@
   - **Heuristic**: Inputs can be widened (contravariant), outputs can be narrowed (covariant).
   - **Implementation**: Likely involves converting Zod to JSON Schema and performing a semantic diff, or building a custom Zod walker.
   - **Value**: Useful for framework authors and library maintainers to prevent accidental breaking changes in their public API contracts.
+
+## Field Guide Improvements
+
+- [ ] **Context-Aware Manual**: The Field Guide should be customized for the level the user is on, showing relevant chapters or highlighting concepts used in the current level.
+- [ ] **Architect Control**: Give the Architect control over the Field Guide content for their levels.
+- [ ] **"Just-in-Time" vs. "Library"**: Avoid the "unread dot" fatigue. Instead of a manual that accumulates unread content, integrate the information directly into the user flow (e.g., context-sensitive help) or structure it as a reference library that doesn't demand to be "read" linearly.
