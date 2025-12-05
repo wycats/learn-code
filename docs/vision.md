@@ -19,6 +19,12 @@ The experience is framed as a dialogue between two modes of thinking, personifie
 
 The user plays as **The Apprentice**, learning from both Jonas and Zoey to master the "Thinking Magic" and reshape the world.
 
+## The Name: A Hidden Lesson
+
+The name **Kibi** is a nod to the **Kibibyte** (KiB), a unit of digital information equal to 1024 bytes. While "Kilobyte" is often used loosely to mean 1000 bytes, the Kibibyte is the precise, binary-based power of two ($2^{10}$).
+
+This reflects our philosophy: **Precision matters.** In coding, details count. We chose a name that has a hidden layer of meaning, waiting for the curious Apprentice to discover it. It serves as a jumping-off point to explore binary numbers, powers of two, and the history of computing.
+
 ## The Product: A Living Toy
 
 Kibi is built to feel like a high-quality digital toy.
