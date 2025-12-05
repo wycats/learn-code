@@ -365,16 +365,16 @@
 - [ ] **Visuals**: Render character in boat when on water.
 - [ ] **Content**: Create "Row Your Boat" level.
 
-## Phase 38: The Terrain Architect
+## Phase 38: The Terrain Architect (Completed)
 
 **Goal:** Empower the Architect to create complex custom terrain with configurable properties directly in the Builder, enabling "Hybrid" tiles and new mechanics.
 
-- [ ] **Tile Editor Upgrade**: Add UI to configure `passableBy` (Item) and `onEnter` (Effect) properties for custom tiles.
-- [ ] **Direct Value Manipulation**: Implement "Dial" interaction for numeric properties (drag up/down to change values) (Axiom 13).
-- [ ] **Visual Feedback**: Show icons/indicators on tiles in the Builder to represent their properties (e.g., a small boat icon for water, a skull for void).
-- [ ] **Void Visuals**: Implement the "shrink away" animation for the Void/Hazard death effect.
-- [ ] **Hybrid Terrain**: Verify and demo a "Magic Door" (Wall + PassableBy Key) tile.
-- [ ] **Stage Props**: Add decorative "Prop" tiles (trees, rocks) that have no logic but enhance the "Story" (Axiom 1).
+- [x] **Tile Editor Upgrade**: Add UI to configure `passableBy` (Item) and `onEnter` (Effect) properties for custom tiles.
+- [x] **Direct Value Manipulation**: Implement "Dial" interaction for numeric properties (drag up/down to change values) (Axiom 13).
+- [x] **Visual Feedback**: Show icons/indicators on tiles in the Builder to represent their properties (e.g., a small boat icon for water, a skull for void).
+- [x] **Void Visuals**: Implement the "shrink away" animation for the Void/Hazard death effect.
+- [x] **Hybrid Terrain**: Verify and demo a "Magic Door" (Wall + PassableBy Key) tile.
+- [x] **Stage Props**: Add decorative "Prop" tiles (trees, rocks) that have no logic but enhance the "Story" (Axiom 1).
 
 ## Phase 39: Community & Sharing
 

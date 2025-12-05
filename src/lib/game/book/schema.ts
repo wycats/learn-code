@@ -37,11 +37,24 @@ const ComponentBlock = z.object({
 	props: z.record(z.string(), z.any()).optional()
 });
 
+const VoiceBlock = z.object({
+	type: z.literal('voice'),
+	speaker: z.string(),
+	content: z.string()
+});
+
+const CodeBlock = z.object({
+	type: z.literal('code'),
+	content: z.string()
+});
+
 export const BookContentBlockSchema = z.union([
 	TextBlock,
 	ImageBlock,
 	PlaygroundBlock,
-	ComponentBlock
+	ComponentBlock,
+	VoiceBlock,
+	CodeBlock
 ]);
 
 export const BookPageSchema = z.object({

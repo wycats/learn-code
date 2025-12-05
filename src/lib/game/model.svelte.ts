@@ -21,7 +21,11 @@ export class GameModel {
 	level: LevelDefinition;
 	characterPosition = $state<{ x: number; y: number }>({ x: 0, y: 0 });
 	characterOrientation = $state<Direction>('E');
-	lastEvent = $state<{ type: 'blocked' | 'win' | 'fail'; timestamp: number } | null>(null);
+	lastEvent = $state<{
+		type: 'blocked' | 'win' | 'fail';
+		reason?: string;
+		timestamp: number;
+	} | null>(null);
 	storyIndex = $state(0);
 
 	// History State

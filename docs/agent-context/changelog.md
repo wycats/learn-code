@@ -699,3 +699,26 @@ Implemented "The Field Guide", an in-game interactive manual designed to teach g
   - **Modal Transparency**: Fixed transparent background issue by styling `<dialog>` and `::backdrop`.
   - **Playground Integration**: Fixed prop mismatch (`initialCode` -> `snippet`) and goal detection logic in `MiniPlayground`.
   - **Markdown Support**: Implemented lightweight Markdown rendering for text blocks.
+
+## Phase 38: The Terrain Architect (Completed)
+
+**Date:** December 4, 2025
+
+**Summary:**
+Empowered the Architect to create complex custom terrain with configurable properties directly in the Builder. Introduced "Hybrid" tiles (e.g., Magic Doors, Traps) and implemented the "Direct Value Manipulation" pattern via a new `DialInput` component. This phase also added visual overlays to the Builder to communicate hidden tile properties and implemented a new "falling" animation for Void deaths. Crucially, we established a rigorous "Exhaustive Schema Test" to ensure backward compatibility as the data model evolves.
+
+**Key Deliverables:**
+
+- **Tile Editor Upgrade**:
+  - Updated `TileEditorModal` to support `passableBy` (Key/Boat) and `onEnter` (Effect) properties.
+  - Added visual overlays (Key, Ship, Skull, Snowflake icons) to `Cell` component for these properties.
+- **The Dial**:
+  - Created `DialInput.svelte` for kinetic value manipulation.
+  - Integrated the Dial into the Loop Block configuration in `Tray.svelte`.
+- **Void Visuals**:
+  - Implemented "falling" animation (scale down + rotate + fade) for Void deaths.
+  - Differentiated between "Hazard" (shake) and "Void" (fall) death reasons in game logic.
+- **Verification & Quality**:
+  - Created `src/lib/game/schema.exhaustive.test.ts` to validate the full breadth of the Level Schema.
+  - Fixed syntax errors and linting issues in `MiniPlayground.svelte` and other components.
+  - Verified backward compatibility for legacy levels.

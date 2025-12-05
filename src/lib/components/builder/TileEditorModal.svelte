@@ -12,7 +12,9 @@
 		Ban,
 		Smile,
 		Globe,
-		Map
+		Map,
+		Key,
+		Ship
 	} from 'lucide-svelte';
 	import Cell from '$lib/components/game/Cell.svelte';
 
@@ -29,6 +31,8 @@
 
 	let name = $state(tile?.name || 'New Tile');
 	let type = $state<TileType>(tile?.type || 'floor');
+	let passableBy = $state(tile?.passableBy || 'none');
+	let onEnter = $state(tile?.onEnter || 'none');
 	let color = $state(tile?.visuals.color || 'var(--surface-2)');
 	let pattern = $state(tile?.visuals.pattern || '');
 	let decal = $state(tile?.visuals.decal || '');
@@ -66,6 +70,18 @@
 		{ value: 'water', label: 'Water', icon: Waves, description: 'Requires swimming' }
 	];
 
+	const PASSABILITY_OPTIONS = [
+		{ value: 'none', label: 'Default', icon: Ban },
+		{ value: 'key', label: 'Key', icon: Key },
+		{ value: 'boat', label: 'Boat', icon: Ship }
+	];
+
+	const EFFECT_OPTIONS = [
+		{ value: 'none', label: 'None', icon: Ban },
+		{ value: 'kill', label: 'Kill', icon: Skull },
+		{ value: 'slide', label: 'Slide', icon: Snowflake }
+	];
+
 	const DECALS = Object.keys(AVATAR_ICONS);
 
 	function handleSave() {
@@ -73,6 +89,8 @@
 			id: tile?.id || crypto.randomUUID(),
 			name,
 			type,
+			passableBy: passableBy === 'none' ? undefined : passableBy,
+			onEnter: onEnter === 'none' ? undefined : (onEnter as 'kill' | 'slide'),
 			visuals: {
 				color,
 				pattern: pattern || undefined,
@@ -225,7 +243,7 @@
 
 		<!-- Middle Section: Behavior -->
 		<div class="section">
-			<div class="section-header">Behavior</div>
+			<div class="section-header">Type</div>
 			<div class="behavior-grid">
 				{#each TYPES as t (t.value)}
 					<button
@@ -241,6 +259,46 @@
 						</div>
 					</button>
 				{/each}
+			</div>
+		</div>
+
+		<!-- Properties Section -->
+		<div class="section">
+			<div class="section-header">Properties</div>
+			<div class="properties-row">
+				<div class="property-group">
+					<div class="property-label">Passable By</div>
+					<div class="property-options">
+						{#each PASSABILITY_OPTIONS as p (p.value)}
+							<button
+								class="property-btn"
+								class:active={passableBy === p.value}
+								onclick={() => (passableBy = p.value)}
+								title={p.label}
+							>
+								<p.icon size={16} />
+								<span>{p.label}</span>
+							</button>
+						{/each}
+					</div>
+				</div>
+
+				<div class="property-group">
+					<div class="property-label">On Enter</div>
+					<div class="property-options">
+						{#each EFFECT_OPTIONS as e (e.value)}
+							<button
+								class="property-btn"
+								class:active={onEnter === e.value}
+								onclick={() => (onEnter = e.value as 'kill' | 'slide' | 'none')}
+								title={e.label}
+							>
+								<e.icon size={16} />
+								<span>{e.label}</span>
+							</button>
+						{/each}
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -543,6 +601,58 @@
 		font-weight: 700;
 		font-size: var(--font-size-0);
 		color: var(--text-1);
+	}
+
+	/* Properties */
+	.properties-row {
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-3);
+	}
+
+	.property-group {
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-2);
+	}
+
+	.property-label {
+		font-size: var(--font-size-00);
+		font-weight: 600;
+		color: var(--text-2);
+		text-transform: uppercase;
+	}
+
+	.property-options {
+		display: flex;
+		gap: var(--size-2);
+		flex-wrap: wrap;
+	}
+
+	.property-btn {
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		padding: var(--size-2) var(--size-3);
+		background-color: var(--surface-2);
+		border: 1px solid transparent;
+		border-radius: var(--radius-2);
+		cursor: pointer;
+		color: var(--text-2);
+		font-size: var(--font-size-0);
+		font-weight: 600;
+		transition: all 0.2s;
+	}
+
+	.property-btn:hover {
+		background-color: var(--surface-3);
+		color: var(--text-1);
+	}
+
+	.property-btn.active {
+		background-color: var(--brand-light);
+		color: var(--brand);
+		border-color: var(--brand);
 	}
 
 	/* Popovers */

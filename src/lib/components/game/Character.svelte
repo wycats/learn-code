@@ -17,6 +17,7 @@
 	const hasBoat = $derived(game?.vehicle?.type === 'boat');
 
 	let isBlocked = $state(false);
+	let isFalling = $state(false);
 
 	$effect(() => {
 		if (game?.lastEvent?.type === 'blocked') {
@@ -24,10 +25,20 @@
 			const timer = setTimeout(() => (isBlocked = false), 300);
 			return () => clearTimeout(timer);
 		}
+		if (game?.lastEvent?.type === 'fail' && game.lastEvent.reason === 'void') {
+			isFalling = true;
+			const timer = setTimeout(() => (isFalling = false), 1000);
+			return () => clearTimeout(timer);
+		}
 	});
 </script>
 
-<div class="character" class:blocked={isBlocked} style:--rotation="{rotation}deg">
+<div
+	class="character"
+	class:blocked={isBlocked}
+	class:falling={isFalling}
+	style:--rotation="{rotation}deg"
+>
 	{#if hasBoat}
 		<div class="boat-container">
 			<Ship size={48} color="var(--blue-7)" fill="var(--blue-3)" />
@@ -52,6 +63,14 @@
 
 	.character.blocked {
 		animation: shake 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+	}
+
+	.character.falling {
+		transition:
+			transform 0.5s ease-in,
+			opacity 0.5s ease-in;
+		transform: rotate(var(--rotation)) scale(0);
+		opacity: 0;
 	}
 
 	.avatar {

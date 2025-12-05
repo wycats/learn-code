@@ -7,7 +7,6 @@
 
 	let {
 		snippet,
-		levelId,
 		caption
 	}: {
 		snippet?: {
@@ -17,7 +16,6 @@
 			startOrientation?: 'N' | 'E' | 'S' | 'W';
 			availableBlocks?: BlockType[];
 		};
-		levelId?: string;
 		caption?: string;
 	} = $props();
 
@@ -67,12 +65,7 @@
 		} as LevelDefinition;
 	});
 
-	let game = $state(new GameModel(levelDef));
-
-	// Re-init game when levelDef changes
-	$effect(() => {
-		game = new GameModel(levelDef);
-	});
+	let game = $derived(new GameModel(levelDef));
 
 	async function run() {
 		if (game.status === 'running') return;
@@ -109,7 +102,7 @@
 
 	// Simple block adding (click to add)
 	function addBlock(type: string) {
-		game.addBlock({ id: crypto.randomUUID(), type: type as any });
+		game.addBlock({ id: crypto.randomUUID(), type: type as BlockType });
 	}
 </script>
 
@@ -122,7 +115,7 @@
 	<!-- Controls & Program -->
 	<div class="controls-container">
 		<div class="block-palette">
-			{#each Object.keys(game.level.availableBlocks) as type}
+			{#each Object.keys(game.level.availableBlocks) as type (type)}
 				<button class="palette-btn" onclick={() => addBlock(type)}>
 					<Plus size={12} />
 					{type}
@@ -131,10 +124,8 @@
 		</div>
 
 		<div class="program-area">
-			{#each game.program as block}
-				<div class="program-block">
-					{block.type}
-				</div>
+			{#each game.program as block (block.id)}
+				<div class="program-block">{block.type}</div>
 			{/each}
 			{#if game.program.length === 0}
 				<div class="empty-msg">Click blocks to add...</div>

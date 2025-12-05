@@ -11,20 +11,11 @@
 	} from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 	import BlockComponent from './Block.svelte';
 	import DropIndicator from './DropIndicator.svelte';
+	import DialInput from '$lib/components/builder/DialInput.svelte';
 	import type { Block, BlockType } from '$lib/game/types';
 	import type { GameModel } from '$lib/game/model.svelte';
 	import { resolveItemDefinition } from '$lib/game/utils';
-	import {
-		Trash2,
-		Move,
-		ListChecks,
-		Copy,
-		Infinity as InfinityIcon,
-		Brain,
-		ChevronLeft,
-		Check,
-		Delete
-	} from 'lucide-svelte';
+	import { Trash2, Move, ListChecks, Copy, Infinity as InfinityIcon, Brain } from 'lucide-svelte';
 	import { Icon } from 'lucide-svelte';
 	import { broom } from '@lucide/lab';
 	import { soundManager } from '$lib/game/sound';
@@ -131,33 +122,6 @@
 
 	// Trash State
 	let isTrashActive = $state(false);
-
-	// Keypad State
-	let showKeypad = $state(false);
-	let keypadValue = $state('');
-
-	function openKeypad() {
-		showKeypad = true;
-		keypadValue =
-			typeof primarySelectedBlock?.count === 'number' ? primarySelectedBlock.count.toString() : '';
-	}
-
-	function handleKeypadInput(digit: string) {
-		if (keypadValue.length >= 2) return; // Max 2 digits
-		keypadValue += digit;
-		updateLoopCount(parseInt(keypadValue));
-	}
-
-	function handleKeypadBackspace() {
-		keypadValue = keypadValue.slice(0, -1);
-		if (keypadValue !== '') {
-			updateLoopCount(parseInt(keypadValue));
-		}
-	}
-
-	function closeKeypad() {
-		showKeypad = false;
-	}
 
 	function findBlock(blocks: Block[], id: string): Block | null {
 		for (const block of blocks) {
@@ -748,51 +712,22 @@
 		<!-- Configuration Panel (Left of Toolbar) -->
 		{#if primarySelectedBlock?.type === 'loop'}
 			<div class="config-panel" transition:fly={{ x: -20, duration: 200 }}>
-				<div class="config-header">
-					{#if showKeypad}
-						<button class="back-btn" onclick={closeKeypad}><ChevronLeft size={16} /></button>
-						Custom
-					{:else}
-						Repeat
-					{/if}
-				</div>
+				<div class="config-header">Repeat</div>
 
-				{#if showKeypad}
-					<div class="keypad-display">{keypadValue || '0'}</div>
-					<div class="keypad-grid">
-						{#each ['1', '2', '3', '4', '5', '6', '7', '8', '9'] as digit (digit)}
-							<button class="keypad-btn" onclick={() => handleKeypadInput(digit)}>{digit}</button>
-						{/each}
-						<button class="keypad-btn action" onclick={handleKeypadBackspace}
-							><Delete size={16} /></button
-						>
-						<button class="keypad-btn" onclick={() => handleKeypadInput('0')}>0</button>
-						<button class="keypad-btn action confirm" onclick={closeKeypad}
-							><Check size={16} /></button
-						>
+				<div class="config-content">
+					<div class="dial-wrapper">
+						<DialInput
+							value={typeof primarySelectedBlock.count === 'number'
+								? primarySelectedBlock.count
+								: 2}
+							min={1}
+							max={99}
+							label="Times"
+							onChange={(val) => updateLoopCount(val)}
+						/>
 					</div>
-				{:else}
-					<div class="config-grid">
-						{#each [2, 3, 4, 5, 10] as count (count)}
-							<button
-								class="config-btn"
-								class:active={primarySelectedBlock.count === count}
-								class:highlighted={highlight?.targets?.includes(`config:loop:${count}`)}
-								onclick={() => updateLoopCount(count)}
-								data-value={count}
-							>
-								{count}x
-							</button>
-						{/each}
-						<button
-							class="config-btn"
-							class:active={showKeypad}
-							class:highlighted={highlight?.targets?.includes(`config:loop:custom`)}
-							onclick={openKeypad}
-							title="Custom Number"
-						>
-							#
-						</button>
+
+					<div class="special-options">
 						{#if hasVariables}
 							<button
 								class="config-btn variable"
@@ -817,7 +752,7 @@
 							</button>
 						{/if}
 					</div>
-				{/if}
+				</div>
 			</div>
 		{:else if primarySelectedBlock?.type === 'call'}
 			<div class="config-panel" transition:fly={{ x: -20, duration: 200 }}>
@@ -1037,12 +972,6 @@
 		text-align: center;
 		padding-bottom: var(--size-1);
 		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-	}
-
-	.config-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: var(--size-2);
 	}
 
 	.config-list {
@@ -1502,75 +1431,23 @@
 		color: var(--text-1);
 	}
 
-	.back-btn {
-		position: absolute;
-		left: var(--size-2);
-		top: 50%;
-		transform: translateY(-50%);
-		background: none;
-		border: none;
-		cursor: pointer;
-		color: var(--text-2);
-		padding: 4px;
-		border-radius: 50%;
+	.config-content {
 		display: flex;
+		flex-direction: column;
+		gap: var(--size-3);
 		align-items: center;
+	}
+
+	.dial-wrapper {
+		width: 100%;
+		display: flex;
 		justify-content: center;
 	}
 
-	.back-btn:hover {
-		background-color: var(--surface-3);
-		color: var(--text-1);
-	}
-
-	.keypad-display {
-		font-size: var(--font-size-4);
-		font-weight: bold;
-		text-align: center;
-		padding: var(--size-2);
-		background-color: var(--surface-2);
-		border-radius: var(--radius-2);
-		margin-bottom: var(--size-2);
-		color: var(--text-1);
-	}
-
-	.keypad-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+	.special-options {
+		display: flex;
 		gap: var(--size-2);
-	}
-
-	.keypad-btn {
-		aspect-ratio: 1;
-		background-color: var(--surface-2);
-		border: 1px solid var(--surface-3);
-		border-radius: var(--radius-2);
-		font-size: var(--font-size-2);
-		font-weight: bold;
-		color: var(--text-1);
-		cursor: pointer;
-		display: flex;
-		align-items: center;
+		width: 100%;
 		justify-content: center;
-		transition: all 0.1s;
-	}
-
-	.keypad-btn:hover {
-		background-color: var(--surface-3);
-	}
-
-	.keypad-btn:active {
-		transform: scale(0.95);
-	}
-
-	.keypad-btn.action {
-		background-color: var(--surface-3);
-		color: var(--text-2);
-	}
-
-	.keypad-btn.confirm {
-		background-color: var(--green-2);
-		color: var(--green-7);
-		border-color: var(--green-5);
 	}
 </style>

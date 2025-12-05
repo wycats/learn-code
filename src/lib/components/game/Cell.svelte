@@ -14,7 +14,8 @@
 		Triangle,
 		Cloud,
 		Key,
-		Ship
+		Ship,
+		Skull
 	} from 'lucide-svelte';
 	import type { CrossfadeParams, TransitionConfig } from 'svelte/transition';
 
@@ -72,6 +73,27 @@
 			{@const Icon = AVATAR_ICONS[customTile.visuals.decal as keyof typeof AVATAR_ICONS]}
 			<div class="marker">
 				<Icon size={24} color="rgba(0,0,0,0.5)" />
+			</div>
+		{/if}
+
+		<!-- Property Overlays -->
+		{#if customTile.passableBy === 'key'}
+			<div class="property-overlay top-right" title="Requires Key">
+				<Key size={14} color="var(--amber-7)" fill="var(--amber-3)" />
+			</div>
+		{:else if customTile.passableBy === 'boat'}
+			<div class="property-overlay top-right" title="Requires Boat">
+				<Ship size={14} color="var(--blue-7)" fill="var(--blue-3)" />
+			</div>
+		{/if}
+
+		{#if customTile.onEnter === 'kill'}
+			<div class="property-overlay bottom-right" title="Hazard">
+				<Skull size={14} color="var(--red-7)" fill="var(--red-3)" />
+			</div>
+		{:else if customTile.onEnter === 'slide'}
+			<div class="property-overlay bottom-right" title="Slippery">
+				<Snowflake size={14} color="var(--blue-5)" />
 			</div>
 		{/if}
 	{:else if type === 'goal'}
@@ -221,6 +243,27 @@
 		right: 4px;
 		transform: scale(0.7);
 		z-index: 20;
+	}
+
+	.property-overlay {
+		position: absolute;
+		z-index: 4;
+		background-color: rgba(255, 255, 255, 0.8);
+		border-radius: 50%;
+		padding: 2px;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+		display: grid;
+		place-items: center;
+	}
+
+	.property-overlay.top-right {
+		top: 2px;
+		right: 2px;
+	}
+
+	.property-overlay.bottom-right {
+		bottom: 2px;
+		right: 2px;
 	}
 
 	.number-item {

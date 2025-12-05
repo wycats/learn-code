@@ -372,7 +372,15 @@ export class StackInterpreter {
 					if (tile.onEnter === 'kill') {
 						this.game.characterPosition = nextPos;
 						soundManager.play('fail');
-						this.game.lastEvent = { type: 'fail', timestamp: Date.now() };
+
+						// Determine reason for specific animations
+						const rawTileId =
+							this.game.level.layout[`${nextPos.x},${nextPos.y}`] ||
+							this.game.level.defaultTerrain ||
+							'grass';
+						const reason = rawTileId === 'void' ? 'void' : 'hazard';
+
+						this.game.lastEvent = { type: 'fail', reason, timestamp: Date.now() };
 						this.game.recordFailure();
 						return false;
 					}

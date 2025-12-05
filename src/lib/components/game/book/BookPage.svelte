@@ -1,16 +1,16 @@
 <script lang="ts">
-	import type { Page } from '$lib/game/book/schema';
+	import type { BookPage } from '$lib/game/book/schema';
 	import MiniPlayground from './MiniPlayground.svelte';
 	import Markdown from '$lib/components/ui/Markdown.svelte';
 
-	let { page }: { page: Page } = $props();
+	let { page }: { page: BookPage } = $props();
 </script>
 
 <div class="book-page">
 	<h2 class="page-title">{page.title}</h2>
 
 	<div class="content">
-		{#each page.content as block}
+		{#each page.content as block, i (i)}
 			{#if block.type === 'text'}
 				<p class="text-block"><Markdown content={block.content} /></p>
 			{:else if block.type === 'voice'}

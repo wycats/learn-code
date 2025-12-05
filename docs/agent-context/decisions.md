@@ -531,3 +531,32 @@
 
 - The `CloudSyncService` updates local state first, then queues the background sync.
 - We accept a small risk of temporary inconsistency (e.g., if the server rejects the update), but for a single-player game, this is a worthy trade-off.
+
+## Phase 38: The Terrain Architect
+
+### 57. Terrain Registry
+
+**Decision:** Centralize terrain behavior definitions in a `TerrainRegistry` rather than hardcoding checks in the interpreter.
+**Context:** As we add more terrain types (Ice, Mud, Magic Doors), `if/else` chains in the movement logic become unmanageable.
+**Consequence:**
+
+- `TerrainRegistry` defines `passableBy`, `speed`, and `onEnter` properties for each terrain type.
+- The `StackInterpreter` queries this registry to determine movement validity.
+
+### 58. Kinetic Dial Input
+
+**Decision:** Use a "Dial" interaction (drag up/down) for numeric properties instead of a standard input or slider.
+**Context:** Standard inputs are hard to hit on touch screens. Sliders take up too much horizontal space. A "Dial" allows for precise adjustment with a large touch target and aligns with the "Tactile" axiom.
+**Consequence:**
+
+- Implemented `DialInput.svelte`.
+- Used for rotation and other numeric properties in the Builder.
+
+### 59. Schema Backward Compatibility Strategy
+
+**Decision:** Default missing `terrain` maps to an empty object and infer terrain from the legacy `layout` property where possible.
+**Context:** We introduced a new `terrain` layer to the `LevelDefinition`. Existing levels don't have this. We must ensure they still load and play correctly.
+**Consequence:**
+
+- `LevelSchema` uses `z.preprocess` or default values to handle missing fields.
+- We added `schema.exhaustive.test.ts` to strictly validate that all features (new and old) serialize correctly.
