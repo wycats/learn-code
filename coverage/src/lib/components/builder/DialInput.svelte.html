@@ -25,13 +25,13 @@
 					<div class="fl pad1y space-right2">
 						<span class="strong">0% </span>
 						<span class="quiet">Statements</span>
-						<span class="fraction">0/27</span>
+						<span class="fraction">0/34</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
 						<span class="strong">0% </span>
 						<span class="quiet">Branches</span>
-						<span class="fraction">0/13</span>
+						<span class="fraction">0/10</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
@@ -43,7 +43,7 @@
 					<div class="fl pad1y space-right2">
 						<span class="strong">0% </span>
 						<span class="quiet">Lines</span>
-						<span class="fraction">0/24</span>
+						<span class="fraction">0/29</span>
 					</div>
 				</div>
 				<p class="quiet">
@@ -198,11 +198,7 @@
 <a name='L137'></a><a href='#L137'>137</a>
 <a name='L138'></a><a href='#L138'>138</a>
 <a name='L139'></a><a href='#L139'>139</a>
-<a name='L140'></a><a href='#L140'>140</a>
-<a name='L141'></a><a href='#L141'>141</a>
-<a name='L142'></a><a href='#L142'>142</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L140'></a><a href='#L140'>140</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -254,19 +250,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -341,9 +332,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="fstat-no" title="function not covered" >&lt;script lang="ts"&gt;</span>
-	import { onMount } from 'svelte';
-&nbsp;
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="fstat-no" title="function not covered" >&lt;s</span>cript lang="ts"&gt;
 	interface Props {
 		value: number;
 		min?: number;
@@ -353,9 +347,9 @@
 		onChange: (newValue: number) =&gt; void;
 	}
 &nbsp;
-	let { value, min = <span class="branch-0 cbranch-no" title="branch not covered" >0,</span> max = <span class="branch-0 cbranch-no" title="branch not covered" >100,</span> step = <span class="branch-0 cbranch-no" title="branch not covered" >1,</span> label, onChange<span class="cstat-no" title="statement not covered" > }: Props = $props();</span>
+	let { value, min<span class="cstat-no" title="statement not covered" > = 0, m</span>ax<span class="cstat-no" title="statement not covered" > = 100, s</span>tep<span class="cstat-no" title="statement not covered" > = 1, label, onChange }: Props = $props();</span>
 &nbsp;
-	let isDragging = $state(<span class="cstat-no" title="statement not covered" >false)</span>;
+	let isDragging<span class="cstat-no" title="statement not covered" > = $state(false);</span>
 	let startY = <span class="cstat-no" title="statement not covered" >0;</span>
 	let startValue = <span class="cstat-no" title="statement not covered" >0;</span>
 	let sensitivity = <span class="cstat-no" title="statement not covered" >5;</span> // Pixels per step
@@ -381,7 +375,7 @@
 		if (<span class="cstat-no" title="statement not covered" >max !== undefined) <span class="cstat-no" title="statement not covered" >newValue = Math.min(max, newValue);</span></span>
 &nbsp;
 		if (<span class="cstat-no" title="statement not covered" >newValue !== value) {</span>
-<span class="cstat-no" title="statement not covered" >			onChange(newValue);</span>
+			onChange(<span class="cstat-no" title="statement not covered" >newValue);</span>
 		}
 	}
 &nbsp;
@@ -395,20 +389,20 @@
 &lt;div
 	class="dial-container"
 	class:dragging={<span class="cstat-no" title="statement not covered" >isDragging}</span>
-	onpointerdown={handlePointerDown}
-	onpointermove={handlePointerMove}
-	onpointerup={handlePointerUp}
-	onpointercancel={handlePointerUp}
+	onpointerdown={<span class="cstat-no" title="statement not covered" >handlePointerDown}</span>
+	onpointermove={<span class="cstat-no" title="statement not covered" >handlePointerMove}</span>
+	onpointerup={<span class="cstat-no" title="statement not covered" >handlePointerUp}</span>
+	onpointercancel={<span class="cstat-no" title="statement not covered" >handlePointerUp}</span>
 	role="slider"
 	aria-valuenow={value}
-	aria-valuemin={min}
-	aria-valuemax={max}
-	aria-label={label || 'Value Dial'}
+	aria-valuemin={<span class="cstat-no" title="statement not covered" >min}</span>
+	aria-valuemax={<span class="cstat-no" title="statement not covered" >max}</span>
+	aria-label={label || <span class="cstat-no" title="statement not covered" >'Value Dial'}</span>
 	tabindex="0"
 &gt;
-	&lt;div class="value"&gt;{<span class="cstat-no" title="statement not covered" >value}&lt;/div&gt;</span>
+	&lt;div class="value"&gt;{value}&lt;/div&gt;
 	{#if label}
-		&lt;div class="label"&gt;{<span class="cstat-no" title="statement not covered" >label}&lt;/div&gt;</span>
+		&lt;div class="label"&gt;{label}&lt;/div&gt;
 	{/if}
 	&lt;div class="indicator"&gt;
 		&lt;div class="arrow up"&gt;▲&lt;/div&gt;
@@ -491,7 +485,7 @@
 		<div class="footer quiet pad2 space-top1 center small">
 			Code coverage generated by
 			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-			at 2025-12-05T03:28:07.773Z
+			at 2025-12-05T04:21:13.020Z
 		</div>
 		<script src="../../../../prettify.js"></script>
 		<script>

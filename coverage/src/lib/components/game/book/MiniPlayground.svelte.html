@@ -338,17 +338,7 @@
 <a name='L277'></a><a href='#L277'>277</a>
 <a name='L278'></a><a href='#L278'>278</a>
 <a name='L279'></a><a href='#L279'>279</a>
-<a name='L280'></a><a href='#L280'>280</a>
-<a name='L281'></a><a href='#L281'>281</a>
-<a name='L282'></a><a href='#L282'>282</a>
-<a name='L283'></a><a href='#L283'>283</a>
-<a name='L284'></a><a href='#L284'>284</a>
-<a name='L285'></a><a href='#L285'>285</a>
-<a name='L286'></a><a href='#L286'>286</a>
-<a name='L287'></a><a href='#L287'>287</a>
-<a name='L288'></a><a href='#L288'>288</a>
-<a name='L289'></a><a href='#L289'>289</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L280'></a><a href='#L280'>280</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -358,7 +348,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -419,11 +408,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -481,9 +465,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -644,7 +626,6 @@
 &nbsp;
 	let {
 		snippet,
-		levelId,
 <span class="cstat-no" title="statement not covered" >		caption</span>
 	}: {
 		snippet?: {
@@ -654,7 +635,6 @@
 			startOrientation?: 'N' | 'E' | 'S' | 'W';
 			availableBlocks?: BlockType[];
 		};
-		levelId?: string;
 		caption?: string;
 	} = $props();
 &nbsp;
@@ -704,12 +684,7 @@
 		} as LevelDefinition;
 	});
 &nbsp;
-	let game<span class="cstat-no" title="statement not covered" > = $state(new GameModel(levelDef));</span>
-&nbsp;
-	// Re-init game when levelDef changes
-	$effect(() =&gt; {
-		game = new GameModel(levelDef);
-	});
+	let game<span class="cstat-no" title="statement not covered" > = $derived(new GameModel(levelDef));</span>
 &nbsp;
 	async function <span class="fstat-no" title="function not covered" >run(</span>) {
 		if (<span class="cstat-no" title="statement not covered" >game.status === 'running'<span class="cstat-no" title="statement not covered" >) return;</span></span>
@@ -746,7 +721,7 @@
 &nbsp;
 	// Simple block adding (click to add)
 	function <span class="fstat-no" title="function not covered" >addBlock(</span>type: string) {
-<span class="cstat-no" title="statement not covered" >		game.addBlock({ id: crypto.randomUUID(), type: type as any });</span>
+<span class="cstat-no" title="statement not covered" >		game.addBlock({ id: crypto.randomUUID(), type: type as BlockType });</span>
 	}
 &lt;/script&gt;
 &nbsp;
@@ -759,7 +734,7 @@
 	&lt;!-- Controls &amp; Program --&gt;
 	&lt;div class="controls-container"&gt;
 		&lt;div class="block-palette"&gt;
-			{#each <span class="cstat-no" title="statement not covered" >Object.keys(game.level.availableBlocks) as t</span>ype<span class="cstat-no" title="statement not covered" >}</span>
+			{#each <span class="cstat-no" title="statement not covered" >Object.keys(game.level.availableBlocks) as t</span>ype<span class="cstat-no" title="statement not covered" > (type)}</span>
 				&lt;button class="palette-btn" onclick={() =&gt; addBlock(type)}&gt;
 					&lt;Plus size={<span class="cstat-no" title="statement not covered" >12} /&gt;</span>
 					{<span class="cstat-no" title="statement not covered" >type}</span>
@@ -768,10 +743,8 @@
 		&lt;/div&gt;
 &nbsp;
 		&lt;div class="program-area"&gt;
-			{#each <span class="cstat-no" title="statement not covered" >game.program as b</span>lock<span class="cstat-no" title="statement not covered" >}</span>
-				&lt;div class="program-block"&gt;
-					{<span class="cstat-no" title="statement not covered" >block.type}</span>
-				&lt;/div&gt;
+			{#each <span class="cstat-no" title="statement not covered" >game.program as b</span>lock<span class="cstat-no" title="statement not covered" > (block.id)}</span>
+				&lt;div class="program-block"&gt;{<span class="cstat-no" title="statement not covered" >block.type}&lt;/div&gt;</span>
 			{/each}
 			{#if game.program.length === 0}
 				&lt;div class="empty-msg"&gt;Click blocks to add...&lt;/div&gt;
@@ -932,7 +905,7 @@
 		<div class="footer quiet pad2 space-top1 center small">
 			Code coverage generated by
 			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-			at 2025-12-05T03:28:07.773Z
+			at 2025-12-05T04:21:13.020Z
 		</div>
 		<script src="../../../../../prettify.js"></script>
 		<script>

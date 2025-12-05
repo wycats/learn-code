@@ -82,7 +82,7 @@
 		<div class="scanner-wrapper">
 			<QRScanner onScan={handleScan} onError={(e) => console.warn(e)} />
 		</div>
-		<p class="hint">Point your camera at a Wonderblocks QR code</p>
+		<p class="hint">Point your camera at a Kibi QR code</p>
 	</div>
 {:else if error}
 	<div class="error-container">

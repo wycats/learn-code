@@ -2,7 +2,7 @@
 
 ## Philosophy: Super Mario Maker for Code
 
-The Level Builder is not a separate administrative tool; it is a core part of the _Wonderblocks_ experience. It should feel like an extension of the game itself—tactile, playful, and immediate.
+The Level Builder is not a separate administrative tool; it is a core part of the _Kibi_ experience. It should feel like an extension of the game itself—tactile, playful, and immediate.
 
 **Core Tenets:**
 

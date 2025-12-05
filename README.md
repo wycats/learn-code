@@ -1,38 +1,46 @@
-# sv
+# Kibi: The Thinking Magic Engine
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+**Kibi** is a "Thinking Magic" engine designed to teach computational thinking to pre-readers (ages 3-6) through a tactile, diegetic interface. It is not just a coding game; it is a **digital playground** where the rules of logic are as tangible as the blocks in a toy chest.
 
-## Creating a project
+## The Vision
 
-If you're seeing this, you've probably already done this step. Congrats!
+We believe that coding is the closest thing we have to real magic. It is the ability to speak a language that the world (the computer) understands and obeys. In Kibi, we strip away the syntax and the screens full of text to reveal the _structure_ of that magic.
 
-```sh
-# create a new project in the current directory
-npx sv create
+See [docs/vision.md](docs/vision.md) for the full vision.
 
-# create a new project in my-app
-npx sv create my-app
+## The Narrative: The Kibi Chronicles
+
+The experience is framed as a dialogue between two modes of thinking, personified by our protagonists:
+
+- **Zoey (The Explorer)**: She represents the **Runtime**. She is eager, active, and lives in the moment. She wants to _do_. She runs the code.
+- **Jonas (The Architect)**: He represents the **Editor**. He is thoughtful, structural, and sees the big picture. He wants to _build_. He writes the code.
+
+## Development
+
+### Prerequisites
+
+- Node.js 24+
+- pnpm
+
+### Setup
+
+```bash
+pnpm install
 ```
 
-## Developing
+### Running the Dev Server
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```bash
+pnpm dev
 ```
 
-## Building
+### Testing
 
-To create a production version of your app:
-
-```sh
-npm run build
+```bash
+pnpm test
 ```
 
-You can preview the production build with `npm run preview`.
+## Documentation
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- [Design Axioms](docs/design/core/axioms.md)
+- [Project Plan](docs/agent-context/plan-outline.md)

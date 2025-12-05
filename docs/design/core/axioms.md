@@ -9,6 +9,7 @@ These axioms guide every design decision in the project. When in doubt, refer to
 - [**5. Failure is Information**](axioms/failure-is-information.md): Errors are clues, not punishments.
 - [**13. The Two Minds (Stop & Go)**](axioms/stop-and-go.md): Balancing action and planning.
 - [**14. The Kinetic Bridge**](axioms/kinetic-bridge.md): Connecting physical play to digital logic.
+- [**15. Strictly Typed Reality**](axioms/strict-reality.md): The physics of the world are the types of the code.
 
 ## Interaction Design
 
@@ -24,3 +25,4 @@ These axioms guide every design decision in the project. When in doubt, refer to
 - [**9. Zero Backend, Local First**](axioms/local-first.md): The user owns their data.
 - [**10. Schema Stability**](axioms/schema-stability.md): No breaking changes.
 - [**11. Native Modality & Layering**](axioms/native-modality.md): Respect the browser platform.
+- [**16. Tooling Parity (Dogfooding)**](axioms/tooling-parity.md): If it's good enough for the user, it's good enough for us.

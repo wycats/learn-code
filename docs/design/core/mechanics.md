@@ -2,7 +2,7 @@
 
 ## Core Philosophy: The "Stop & Go" Engine
 
-The application is built around two distinct modes of interaction, mirroring the _Wonderblocks_ pedagogy. This separation is the primary mechanic that distinguishes it from other coding games.
+The application is built around two distinct modes of interaction, mirroring the _Kibi_ pedagogy. This separation is the primary mechanic that distinguishes it from other coding games.
 
 **Interaction Note**: The entire experience is designed **Touch-First**. Every action must be performable with a single finger on a tablet. Keyboard and mouse are supported as enhancements (e.g., hotkeys, precision clicking) but are never required.
 

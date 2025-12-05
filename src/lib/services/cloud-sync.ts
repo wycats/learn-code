@@ -107,7 +107,7 @@ export class CloudSyncService {
 			// Ideally we'd have a reactive store.
 			// For now, we can dispatch a window event or similar.
 			if (typeof window !== 'undefined') {
-				window.dispatchEvent(new CustomEvent('wonderblocks-progress-updated'));
+				window.dispatchEvent(new CustomEvent('kibi-progress-updated'));
 			}
 		}
 	}

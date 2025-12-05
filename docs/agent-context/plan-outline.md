@@ -1,4 +1,4 @@
-# Project Plan Outline: Wonderblocks Learning Tool
+# Project Plan Outline: Kibi Learning Tool
 
 ## Epoch 1: Foundation & MVP
 

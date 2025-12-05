@@ -88,7 +88,7 @@
 			</div>
 		</div>
 
-		<a href="mailto:feedback@wonderblocks.app?subject=Code Climber Feedback" class="feedback-link">
+		<a href="mailto:feedback@kibi.app?subject=Kibi Feedback" class="feedback-link">
 			Send Feedback
 		</a>
 	</div>

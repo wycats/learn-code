@@ -7,7 +7,7 @@ This directory contains design documents, philosophy, and analysis for the proje
 The immutable laws and guiding principles of the project.
 
 - [The Constitution (Axioms)](core/axioms.md): The immutable laws guiding our design decisions.
-- [Wonderblocks Pedagogy](core/wonderblocks.md): The core educational philosophy and framework.
+- [Pedagogy (Kibi)](core/kibi-pedagogy.md): The core educational philosophy and framework.
 - [Personas](core/personas.md): The target audience (Learners and Facilitators).
 - [Builder Philosophy](core/builder-philosophy.md): The guiding principles for the Level Builder tools.
 - [Terminology](core/terminology.md): Standardized naming conventions.

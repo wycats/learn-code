@@ -23,9 +23,9 @@
 				</h1>
 				<div class="clearfix">
 					<div class="fl pad1y space-right2">
-						<span class="strong">0% </span>
+						<span class="strong">100% </span>
 						<span class="quiet">Statements</span>
-						<span class="fraction">0/10</span>
+						<span class="fraction">10/10</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
@@ -35,15 +35,15 @@
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">0% </span>
+						<span class="strong">100% </span>
 						<span class="quiet">Functions</span>
-						<span class="fraction">0/7</span>
+						<span class="fraction">7/7</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">0% </span>
+						<span class="strong">100% </span>
 						<span class="quiet">Lines</span>
-						<span class="fraction">0/10</span>
+						<span class="fraction">10/10</span>
 					</div>
 				</div>
 				<p class="quiet">
@@ -57,7 +57,7 @@
 					</div>
 				</template>
 			</div>
-			<div class="status-line low"></div>
+			<div class="status-line high"></div>
 			<pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -107,84 +107,84 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">65x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">35x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">58x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { SvelteMap } from 'svelte/reactivity';
 import type { InteractionNode, ComponentInterface } from './types';
 &nbsp;
 export class InteractionRegistry {
 	// Logical Index: Map of ID -&gt; Node Data
 	// Populated by GameModel (or other data sources)
-	private nodes = <span class="cstat-no" title="statement not covered" >new SvelteMap&lt;string, InteractionNode&gt;();</span>
+	private nodes = new SvelteMap&lt;string, InteractionNode&gt;();
 &nbsp;
 	// Visual Registry: Map of ID -&gt; Component API
 	// Populated by UI Components via use:interactionTarget
-	private components = <span class="cstat-no" title="statement not covered" >new Map&lt;string, ComponentInterface&gt;();</span>
+	private components = new Map&lt;string, ComponentInterface&gt;();
 &nbsp;
-<span class="fstat-no" title="function not covered" >	registerNode(n</span>ode: InteractionNode) {
-<span class="cstat-no" title="statement not covered" >		this.nodes.set(node.id, node);</span>
+	registerNode(node: InteractionNode) {
+		this.nodes.set(node.id, node);
 	}
 &nbsp;
-<span class="fstat-no" title="function not covered" >	unregisterNode(i</span>d: string) {
-<span class="cstat-no" title="statement not covered" >		this.nodes.delete(id);</span>
+	unregisterNode(id: string) {
+		this.nodes.delete(id);
 	}
 &nbsp;
-<span class="fstat-no" title="function not covered" >	getNode(i</span>d: string): InteractionNode | undefined {
-<span class="cstat-no" title="statement not covered" >		return this.nodes.get(id);</span>
+	getNode(id: string): InteractionNode | undefined {
+		return this.nodes.get(id);
 	}
 &nbsp;
-<span class="fstat-no" title="function not covered" >	getAllNodes(): InteractionNode[] {</span>
-<span class="cstat-no" title="statement not covered" >		return Array.from(this.nodes.values());</span>
+	getAllNodes(): InteractionNode[] {
+		return Array.from(this.nodes.values());
 	}
 &nbsp;
-<span class="fstat-no" title="function not covered" >	registerComponent(i</span>d: string, api: ComponentInterface) {
-<span class="cstat-no" title="statement not covered" >		this.components.set(id, api);</span>
+	registerComponent(id: string, api: ComponentInterface) {
+		this.components.set(id, api);
 	}
 &nbsp;
-<span class="fstat-no" title="function not covered" >	unregisterComponent(i</span>d: string) {
-<span class="cstat-no" title="statement not covered" >		this.components.delete(id);</span>
+	unregisterComponent(id: string) {
+		this.components.delete(id);
 	}
 &nbsp;
-<span class="fstat-no" title="function not covered" >	getComponent(i</span>d: string): ComponentInterface | undefined {
-<span class="cstat-no" title="statement not covered" >		return this.components.get(id);</span>
+	getComponent(id: string): ComponentInterface | undefined {
+		return this.components.get(id);
 	}
 }
 &nbsp;
-export const registry = <span class="cstat-no" title="statement not covered" >new InteractionRegistry();</span>
+export const registry = new InteractionRegistry();
 &nbsp;</pre></td></tr></table></pre>
 
 			<div class="push"></div>
@@ -194,7 +194,7 @@ export const registry = <span class="cstat-no" title="statement not covered" >ne
 		<div class="footer quiet pad2 space-top1 center small">
 			Code coverage generated by
 			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-			at 2025-12-05T03:28:07.773Z
+			at 2025-12-05T04:21:13.020Z
 		</div>
 		<script src="../../../prettify.js"></script>
 		<script>

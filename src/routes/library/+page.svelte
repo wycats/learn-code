@@ -101,9 +101,9 @@
 		const handleUpdate = () => {
 			progress = ProgressService.load();
 		};
-		window.addEventListener('wonderblocks-progress-updated', handleUpdate);
+		window.addEventListener('kibi-progress-updated', handleUpdate);
 		return () => {
-			window.removeEventListener('wonderblocks-progress-updated', handleUpdate);
+			window.removeEventListener('kibi-progress-updated', handleUpdate);
 		};
 	});
 </script>
