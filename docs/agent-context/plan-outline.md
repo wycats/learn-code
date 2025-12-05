@@ -370,6 +370,7 @@
 **Goal:** Empower the Architect to create complex custom terrain with configurable properties directly in the Builder, enabling "Hybrid" tiles and new mechanics.
 
 - [ ] **Tile Editor Upgrade**: Add UI to configure `passableBy` (Item) and `onEnter` (Effect) properties for custom tiles.
+- [ ] **Direct Value Manipulation**: Implement "Dial" interaction for numeric properties (drag up/down to change values) (Axiom 13).
 - [ ] **Visual Feedback**: Show icons/indicators on tiles in the Builder to represent their properties (e.g., a small boat icon for water, a skull for void).
 - [ ] **Void Visuals**: Implement the "shrink away" animation for the Void/Hazard death effect.
 - [ ] **Hybrid Terrain**: Verify and demo a "Magic Door" (Wall + PassableBy Key) tile.
@@ -399,13 +400,13 @@
 - [ ] **High Contrast Mode**: A specific theme for low-vision users.
 - [ ] **Screen Reader Optimization**: Audit ARIA labels and focus management.
 
-## Phase 42: The Kinetic Architect
+## Phase 42: The Kinetic Bridge
 
-**Goal:** Bridge the gap between block-based coding and real-world syntax.
+**Goal:** Implement the "Kinetic Language" interaction patterns to make the interface feel physical and responsive, bridging the gap between intent and action.
 
-- [ ] **Code View**: A read-only panel showing the generated JavaScript/TypeScript code for the current program.
-- [ ] **Syntax Highlighting**: Use Shiki or similar to highlight the code.
-- [ ] **Live Updates**: Code updates in real-time as blocks are dragged.
+- [ ] **Snap-to-Intent**: Implement "Magnetic" drop targets that snap the preview ghost to the slot before release (Axiom 14).
+- [ ] **Kinetic Deletion**: Allow "flinging" blocks away to delete them with a satisfying animation (Axiom 14).
+- [ ] **The Lens**: Implement a long-press "Debug Lens" to inspect runtime state of blocks (Axiom 6).
 - [ ] **Ghost Replay**: Visualize the "Staff Ghost" solution for verification (Axiom 4).
 
 ## Phase 43: Feedback System
@@ -435,3 +436,18 @@
 - [ ] **PXT / MakeCode Integration**: Investigate using Microsoft's PXT as the underlying engine.
 - [ ] **Zod Schema Diff**: Implement "Spec-ulation" rules for Zod schemas to prevent breaking changes.
 - [ ] **Variables & Scoping**: Refine the variable system with lexical scoping and "box" metaphor.
+
+## Phase 46: The Syntax Bridge
+
+**Goal:** Bridge the gap between block-based coding and real-world text-based syntax.
+
+- [ ] **Code View**: A read-only panel showing the generated JavaScript/TypeScript code for the current program.
+- [ ] **Syntax Highlighting**: Use Shiki or similar to highlight the code.
+- [ ] **Live Updates**: Code updates in real-time as blocks are dragged.
+
+## Phase 47: Advanced Builder Interactions
+
+**Goal:** Implement advanced "Power User" features for the Builder to support complex projects.
+
+- [ ] **Semantic Zoom**: Pinch-to-zoom on the program list to collapse details (Axiom 11).
+- [ ] **The Drafting Table**: A "Scratchpad" area for assembling inert code chunks (Axiom 13).
