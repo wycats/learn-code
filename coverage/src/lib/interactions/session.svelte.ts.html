@@ -23,27 +23,27 @@
 				</h1>
 				<div class="clearfix">
 					<div class="fl pad1y space-right2">
-						<span class="strong">56.52% </span>
+						<span class="strong">0% </span>
 						<span class="quiet">Statements</span>
-						<span class="fraction">13/23</span>
+						<span class="fraction">0/19</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">45.45% </span>
+						<span class="strong">0% </span>
 						<span class="quiet">Branches</span>
-						<span class="fraction">5/11</span>
+						<span class="fraction">0/11</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">66.66% </span>
+						<span class="strong">0% </span>
 						<span class="quiet">Functions</span>
-						<span class="fraction">4/6</span>
+						<span class="fraction">0/5</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">73.33% </span>
+						<span class="strong">0% </span>
 						<span class="quiet">Lines</span>
-						<span class="fraction">11/15</span>
+						<span class="fraction">0/15</span>
 					</div>
 				</div>
 				<p class="quiet">
@@ -57,7 +57,7 @@
 					</div>
 				</template>
 			</div>
-			<div class="status-line medium"></div>
+			<div class="status-line low"></div>
 			<pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -100,29 +100,29 @@
 <a name='L39'></a><a href='#L39'>39</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -138,29 +138,29 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import type { InteractionNode, InteractionMode } from './types';
 &nbsp;
 export class InteractionSession {
-	state = $state&lt;'active' | 'committed' | 'cancelled'&gt;(<span class="cstat-no" title="statement not covered" >'active');</span>
-	candidates = $state&lt;InteractionNode[]&gt;([]);
-	activeTargetId = $state&lt;string | null&gt;(<span class="cstat-no" title="statement not covered" >null);</span>
-	activeEdge = $state&lt;'top' | 'bottom' | 'left' | 'right' | null&gt;(<span class="cstat-no" title="statement not covered" >null);</span>
+	state = $state&lt;'active' | 'committed' | 'cancelled'&gt;(<span class="cstat-no" title="statement not covered" >'active')</span>;
+<span class="cstat-no" title="statement not covered" >	candidates = $state&lt;InteractionNode[]&gt;([]);</span>
+	activeTargetId = $state&lt;string | null&gt;(<span class="cstat-no" title="statement not covered" >null)</span>;
+	activeEdge = $state&lt;'top' | 'bottom' | 'left' | 'right' | null&gt;(<span class="cstat-no" title="statement not covered" >null)</span>;
 	sourceId: string;
 	mode: InteractionMode;
 &nbsp;
-	constructor(sourceId: string, mode: InteractionMode, candidates: InteractionNode[]) {
-		this.sourceId = sourceId;
-		this.mode = mode;
-		this.candidates = candidates;
+<span class="fstat-no" title="function not covered" >	constructor(s</span>ourceId: string, mode: InteractionMode, candidates: InteractionNode[]) {
+<span class="cstat-no" title="statement not covered" >		this.sourceId = sourceId;</span>
+<span class="cstat-no" title="statement not covered" >		this.mode = mode;</span>
+<span class="cstat-no" title="statement not covered" >		this.candidates = candidates;</span>
 	}
 &nbsp;
-	hover(targetId: string | null, edge: 'top' | 'bottom' | 'left' | 'right' | null = null) {
-		if (<span class="missing-if-branch" title="if path not taken" >I</span>this.state !== <span class="cstat-no" title="statement not covered" >'active') return;</span>
+<span class="fstat-no" title="function not covered" >	hover(t</span>argetId: string | null, edge: 'top' | 'bottom' | 'left' | 'right' | null = <span class="branch-0 cbranch-no" title="branch not covered" >null) {</span>
+		if (<span class="cstat-no" title="statement not covered" >this.state !== <span class="cstat-no" title="statement not covered" >'active') return;</span></span>
 &nbsp;
 		// Verify target is a valid candidate
-		if (<span class="missing-if-branch" title="if path not taken" >I</span>targetId &amp;&amp; !this.candidates.find((c) =&gt; c.id === targetId)) {
+		if (<span class="cstat-no" title="statement not covered" >targetId &amp;&amp; !this.candidates.<span class="fstat-no" title="function not covered" >find((c</span>) =&gt; <span class="cstat-no" title="statement not covered" >c.id === targetId)</span>) {</span>
 			return;
 		}
 &nbsp;
-		this.activeTargetId = targetId;
-		this.activeEdge = edge;
+<span class="cstat-no" title="statement not covered" >		this.activeTargetId = targetId;</span>
+<span class="cstat-no" title="statement not covered" >		this.activeEdge = edge;</span>
 	}
 &nbsp;
 <span class="fstat-no" title="function not covered" >	commit() {</span>
@@ -182,7 +182,7 @@ export class InteractionSession {
 		<div class="footer quiet pad2 space-top1 center small">
 			Code coverage generated by
 			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-			at 2025-12-05T04:21:13.020Z
+			at 2025-12-05T04:36:12.592Z
 		</div>
 		<script src="../../../prettify.js"></script>
 		<script>

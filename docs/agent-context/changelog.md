@@ -722,3 +722,25 @@ Empowered the Architect to create complex custom terrain with configurable prope
   - Created `src/lib/game/schema.exhaustive.test.ts` to validate the full breadth of the Level Schema.
   - Fixed syntax errors and linting issues in `MiniPlayground.svelte` and other components.
   - Verified backward compatibility for legacy levels.
+
+## Phase 36.5: Project Renaming (Wonderblocks to Kibi) (Completed)
+
+**Date:** December 4, 2025
+
+**Summary:**
+Renamed the project from "Wonderblocks" to "Kibi" to establish a unique identity and avoid trademark conflicts. This involved a comprehensive find-and-replace operation across the codebase, documentation, and configuration files. The narrative was updated to "The Kibi Chronicles", and the core pedagogy document was renamed to `kibi-pedagogy.md`.
+
+**Key Deliverables:**
+
+- **Project Identity**:
+  - Renamed `package.json` name to `kibi`.
+  - Updated `manifest.json` short_name and name.
+  - Updated `README.md` with the new vision and name.
+- **Documentation**:
+  - Created `docs/vision.md` outlining the "Thinking Magic" philosophy.
+  - Renamed `docs/design/core/wonderblocks.md` to `docs/design/core/kibi-pedagogy.md`.
+  - Updated `docs/design/index.md` and `docs/agent-context/changelog.md` references.
+- **Codebase**:
+  - Renamed internal constants and event names (e.g., `wonderblocks_progress` -> `kibi_progress`).
+  - Updated UI text in `src/routes/+page.svelte` and other components.
+  - Verified all tests pass, including fixing a mock data issue in `src/routes/page.svelte.spec.ts`.

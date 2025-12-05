@@ -376,6 +376,14 @@
 - [x] **Hybrid Terrain**: Verify and demo a "Magic Door" (Wall + PassableBy Key) tile.
 - [x] **Stage Props**: Add decorative "Prop" tiles (trees, rocks) that have no logic but enhance the "Story" (Axiom 1).
 
+## Phase 38.5: Project Renaming (Completed)
+
+**Goal:** Rename the project from "Wonderblocks" to "Kibi" to establish a unique identity.
+
+- [x] **Rebranding**: Update package.json, manifest, and README.
+- [x] **Code Refactor**: Rename internal constants, events, and storage keys.
+- [x] **Documentation**: Update vision, pedagogy, and design docs.
+
 ## Phase 39: Community & Sharing
 
 **Goal:** Empower Architects to share their creations with the world.
