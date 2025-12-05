@@ -23,15 +23,15 @@
 				</h1>
 				<div class="clearfix">
 					<div class="fl pad1y space-right2">
-						<span class="strong">93.33% </span>
+						<span class="strong">80% </span>
 						<span class="quiet">Statements</span>
-						<span class="fraction">42/45</span>
+						<span class="fraction">36/45</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">73.07% </span>
+						<span class="strong">42.3% </span>
 						<span class="quiet">Branches</span>
-						<span class="fraction">19/26</span>
+						<span class="fraction">11/26</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
@@ -41,9 +41,9 @@
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">93.33% </span>
+						<span class="strong">80% </span>
 						<span class="quiet">Lines</span>
-						<span class="fraction">42/45</span>
+						<span class="fraction">36/45</span>
 					</div>
 				</div>
 				<p class="quiet">
@@ -485,18 +485,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">56x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">56x</span>
-<span class="cline-any cline-yes">56x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">56x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -538,18 +538,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">36x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">36x</span>
-<span class="cline-any cline-yes">36x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">36x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -582,16 +582,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">32x</span>
-<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">57x</span>
-<span class="cline-any cline-yes">57x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -776,11 +776,11 @@ export const StorySegmentSchema = z.preprocess(
 		<span class="missing-if-branch" title="else path not taken" >E</span>if (typeof val === 'object' &amp;&amp; val !== null) {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const v = val as any;
-			if (v.highlight &amp;&amp; !v.targets) {
-				<span class="missing-if-branch" title="if path not taken" >I</span>if (typeof v.highlight === 'string') {
+			<span class="missing-if-branch" title="if path not taken" >I</span>if (v.highlight &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >!v.targets) {</span>
+<span class="cstat-no" title="statement not covered" >				if (typeof v.highlight === 'string') {</span>
 <span class="cstat-no" title="statement not covered" >					v.targets = [v.highlight];</span>
-				<span class="missing-if-branch" title="else path not taken" >E</span>} else if (v.highlight.target) {
-					v.targets = [v.highlight.target];
+<span class="cstat-no" title="statement not covered" >				} else if (v.highlight.target) {</span>
+<span class="cstat-no" title="statement not covered" >					v.targets = [v.highlight.target];</span>
 				}
 			}
 		}
@@ -829,10 +829,10 @@ export const HintSchema = z.preprocess(
 		<span class="missing-if-branch" title="else path not taken" >E</span>if (typeof val === 'object' &amp;&amp; val !== null) {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const v = val as any;
-			if (v.highlight &amp;&amp; !v.targets) {
-				if (typeof v.highlight === 'string') {
-					v.targets = [v.highlight];
-<span class="cstat-no" title="statement not covered" >				<span class="missing-if-branch" title="else path not taken" >E</span>} else if (v.highlight.target) {</span>
+			<span class="missing-if-branch" title="if path not taken" >I</span>if (v.highlight &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >!v.targets) {</span>
+<span class="cstat-no" title="statement not covered" >				if (typeof v.highlight === 'string') {</span>
+<span class="cstat-no" title="statement not covered" >					v.targets = [v.highlight];</span>
+<span class="cstat-no" title="statement not covered" >				} else if (v.highlight.target) {</span>
 <span class="cstat-no" title="statement not covered" >					v.targets = [v.highlight.target];</span>
 				}
 			}
@@ -870,7 +870,7 @@ export const LevelDefinitionSchema = z.object({
 			z.record(z.string(), z.union([z.number(), z.literal('unlimited')]))
 		])
 		.transform((val) =&gt; {
-			if (Array.isArray(val)) {
+			<span class="missing-if-branch" title="else path not taken" >E</span>if (Array.isArray(val)) {
 				return val.reduce(
 					(acc, type) =&gt; {
 						acc[type] = 'unlimited';
@@ -879,7 +879,7 @@ export const LevelDefinitionSchema = z.object({
 					{} as Record&lt;string, number | 'unlimited'&gt;
 				);
 			}
-			return val;
+<span class="cstat-no" title="statement not covered" >			return val;</span>
 		}),
 	maxBlocks: z.number().optional(),
 	ambientSoundId: z.string().optional(),
@@ -932,7 +932,7 @@ export type LevelPack = z.infer&lt;typeof LevelPackSchema&gt;;
 		<div class="footer quiet pad2 space-top1 center small">
 			Code coverage generated by
 			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-			at 2025-12-05T04:36:12.592Z
+			at 2025-12-05T05:03:44.763Z
 		</div>
 		<script src="../../../prettify.js"></script>
 		<script>

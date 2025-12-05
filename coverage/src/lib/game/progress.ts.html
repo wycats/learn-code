@@ -23,9 +23,9 @@
 				</h1>
 				<div class="clearfix">
 					<div class="fl pad1y space-right2">
-						<span class="strong">10.52% </span>
+						<span class="strong">0% </span>
 						<span class="quiet">Statements</span>
-						<span class="fraction">4/38</span>
+						<span class="fraction">0/38</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
@@ -35,15 +35,15 @@
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">100% </span>
+						<span class="strong">0% </span>
 						<span class="quiet">Functions</span>
-						<span class="fraction">4/4</span>
+						<span class="fraction">0/4</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">12.5% </span>
+						<span class="strong">0% </span>
 						<span class="quiet">Lines</span>
-						<span class="fraction">4/32</span>
+						<span class="fraction">0/32</span>
 					</div>
 				</div>
 				<p class="quiet">
@@ -152,7 +152,7 @@
 <a name='L91'></a><a href='#L91'>91</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -160,18 +160,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -242,7 +242,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { z } from 'zod';
 import { getPack } from './packs';
 &nbsp;
-export const LevelResultSchema = z.object({
+export const LevelResultSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
 	completed: z.boolean(),
 	stars: z.number().min(0).max(3),
 	blockCount: z.number().optional(),
@@ -250,21 +250,21 @@ export const LevelResultSchema = z.object({
 });
 export type LevelResult = z.infer&lt;typeof LevelResultSchema&gt;;
 &nbsp;
-export const PackProgressSchema = z.object({
+export const PackProgressSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
 	levels: z.record(z.string(), LevelResultSchema),
 	unlocked: z.boolean().default(false)
 });
 export type PackProgress = z.infer&lt;typeof PackProgressSchema&gt;;
 &nbsp;
-export const UserProgressSchema = z.object({
+export const UserProgressSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
 	packs: z.record(z.string(), PackProgressSchema)
 });
 export type UserProgress = z.infer&lt;typeof UserProgressSchema&gt;;
 &nbsp;
-const STORAGE_KEY = 'kibi_progress';
+const STORAGE_KEY = <span class="cstat-no" title="statement not covered" >'kibi_progress';</span>
 &nbsp;
 export class ProgressService {
-	static load(): UserProgress {
+	static <span class="fstat-no" title="function not covered" >load(): UserProgress {</span>
 <span class="cstat-no" title="statement not covered" >		if (typeof localStorage === 'undefined') <span class="cstat-no" title="statement not covered" >return { packs: {} };</span></span>
 &nbsp;
 		const stored = <span class="cstat-no" title="statement not covered" >localStorage.getItem(STORAGE_KEY);</span>
@@ -278,12 +278,12 @@ export class ProgressService {
 		}
 	}
 &nbsp;
-	static save(progress: UserProgress) {
+	static <span class="fstat-no" title="function not covered" >save(p</span>rogress: UserProgress) {
 <span class="cstat-no" title="statement not covered" >		if (typeof localStorage === 'undefined') <span class="cstat-no" title="statement not covered" >return;</span></span>
 <span class="cstat-no" title="statement not covered" >		localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));</span>
 	}
 &nbsp;
-	static completeLevel(packId: string, levelId: string, stars: number, blockCount?: number) {
+	static <span class="fstat-no" title="function not covered" >completeLevel(p</span>ackId: string, levelId: string, stars: number, blockCount?: number) {
 		const progress = <span class="cstat-no" title="statement not covered" >this.load();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >		if (!progress.packs[packId]) {</span>
@@ -316,10 +316,10 @@ export class ProgressService {
 <span class="cstat-no" title="statement not covered" >		this.save(progress);</span>
 	}
 &nbsp;
-	static isLevelUnlocked(progress: UserProgress, packId: string, levelIndex: number): boolean {
+	static <span class="fstat-no" title="function not covered" >isLevelUnlocked(p</span>rogress: UserProgress, packId: string, levelIndex: number): boolean {
 <span class="cstat-no" title="statement not covered" >		if (levelIndex === 0) <span class="cstat-no" title="statement not covered" >return true;</span></span>
 &nbsp;
-		const pack = <span class="cstat-no" title="statement not covered" >getPack(packId);</span>
+		const <span class="cstat-no" title="statement not covered" >pack = getPack(packId);</span>
 <span class="cstat-no" title="statement not covered" >		if (!pack) <span class="cstat-no" title="statement not covered" >return false;</span></span>
 &nbsp;
 		const prevLevel = <span class="cstat-no" title="statement not covered" >pack.levels[levelIndex - 1];</span>
@@ -338,7 +338,7 @@ export class ProgressService {
 		<div class="footer quiet pad2 space-top1 center small">
 			Code coverage generated by
 			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-			at 2025-12-05T04:36:12.592Z
+			at 2025-12-05T05:03:44.763Z
 		</div>
 		<script src="../../../prettify.js"></script>
 		<script>

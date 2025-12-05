@@ -19,6 +19,15 @@ The experience is framed as a dialogue between two modes of thinking, personifie
 
 The user plays as **The Apprentice**, learning from both Jonas and Zoey to master the "Thinking Magic" and reshape the world.
 
+### Real-World Inspiration
+
+Jonas and Zoey are not just characters; they are the real-world beta testers of Kibi. As the creator's children, their personalities and play styles directly shape the design:
+
+- **Jonas** is the structural thinker who loves to build, organize, and understand _how_ things work.
+- **Zoey** is the kinetic learner who loves to explore, press buttons, and see _what happens_.
+
+When we prioritize features, we ask: "Does this help Jonas build?" or "Does this let Zoey explore?" Their feedback—like Zoey's request for boats—drives the roadmap.
+
 ## The Name: A Hidden Lesson
 
 The name **Kibi** is a nod to the **Kibibyte** (KiB), a unit of digital information equal to 1024 bytes. While "Kilobyte" is often used loosely to mean 1000 bytes, the Kibibyte is the precise, binary-based power of two ($2^{10}$).

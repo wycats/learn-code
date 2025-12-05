@@ -355,15 +355,15 @@
 
 ## Epoch 4: Advanced Mechanics & Community
 
-## Phase 37: Advanced Mechanics - The Boat
+## Phase 37: The Lost Fleet
 
-**Goal:** Implement the "Boat" mechanic suggested by Zoey, allowing the character to traverse water tiles when holding the boat item.
+**Goal:** Polish and expose the existing "Boat" mechanic (which is already implemented but hidden) by creating a dedicated "Vehicles" pack and ensuring it is accessible to players.
 
-- [ ] **Schema Update**: Add 'boat' to ItemTypeSchema.
-- [ ] **Builder Support**: Add "Boat" item to the Builder Tray.
-- [ ] **Game Logic**: Update movement logic to allow entering water if holding a boat.
-- [ ] **Visuals**: Render character in boat when on water.
-- [ ] **Content**: Create "Row Your Boat" level.
+- [ ] **Pack Creation**: Create a new `VEHICLES_PACK` (or similar) to house boat-themed levels.
+- [ ] **Level Migration**: Move `LEVEL_BOAT_1` from the Basics pack to the new pack.
+- [ ] **Content Expansion**: Create 1-2 additional simple levels to teach the boat mechanic incrementally.
+- [ ] **UI Integration**: Ensure the new pack is visible in the Library and correctly unlocked.
+- [ ] **Visual Polish**: Verify the "Board" block and boat visuals are up to standard.
 
 ## Phase 38: The Terrain Architect (Completed)
 

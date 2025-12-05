@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<title>Code coverage report for src/lib/game/packs/index.ts</title>
+		<title>Code coverage report for src/lib/game/packs/vehicles.ts</title>
 		<meta charset="utf-8" />
 		<link rel="stylesheet" href="../../../../prettify.css" />
 		<link rel="stylesheet" href="../../../../base.css" />
@@ -19,13 +19,13 @@
 			<div class="pad1">
 				<h1>
 					<a href="../../../../index.html">All files</a> /
-					<a href="index.html">src/lib/game/packs</a> index.ts
+					<a href="index.html">src/lib/game/packs</a> vehicles.ts
 				</h1>
 				<div class="clearfix">
 					<div class="fl pad1y space-right2">
 						<span class="strong">0% </span>
 						<span class="quiet">Statements</span>
-						<span class="fraction">0/3</span>
+						<span class="fraction">0/1</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
@@ -35,15 +35,15 @@
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">0% </span>
+						<span class="strong">100% </span>
 						<span class="quiet">Functions</span>
-						<span class="fraction">0/2</span>
+						<span class="fraction">0/0</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
 						<span class="strong">0% </span>
 						<span class="quiet">Lines</span>
-						<span class="fraction">0/2</span>
+						<span class="fraction">0/1</span>
 					</div>
 				</div>
 				<p class="quiet">
@@ -70,28 +70,31 @@
 <a name='L9'></a><a href='#L9'>9</a>
 <a name='L10'></a><a href='#L10'>10</a>
 <a name='L11'></a><a href='#L11'>11</a>
-<a name='L12'></a><a href='#L12'>12</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { BASICS_PACK } from './basics';
-import { GAUNTLET_PACK } from './gauntlet';
-import { HARD_PACK } from './hard';
-import { VARIABLES_PACK } from './variables';
-import { VEHICLES_PACK } from './vehicles';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { LevelPackSchema } from '../schema';
+import { LEVEL_BOAT_INTRO, LEVEL_BOAT_ISLAND, LEVEL_BOAT_1 } from '../levels';
 &nbsp;
-export const PACKS = <span class="cstat-no" title="statement not covered" >[BASICS_PACK, GAUNTLET_PACK, HARD_PACK, VARIABLES_PACK, VEHICLES_PACK];</span>
-&nbsp;
-export function <span class="fstat-no" title="function not covered" >getPack(i</span>d: string) {
-<span class="cstat-no" title="statement not covered" >	return PACKS.find(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; <span class="cstat-no" title="statement not covered" >p.id === id)</span>;</span>
-}
+export const VEHICLES_PACK = <span class="cstat-no" title="statement not covered" >LevelPackSchema.parse({</span>
+	id: 'vehicles',
+	name: 'The Lost Fleet',
+	description: 'Master the art of sailing and explore the high seas.',
+	coverImage: 'ship',
+	difficulty: 'intermediate',
+	tags: ['vehicles', 'exploration', 'water'],
+	levels: [LEVEL_BOAT_INTRO, LEVEL_BOAT_ISLAND, LEVEL_BOAT_1]
+});
 &nbsp;</pre></td></tr></table></pre>
 
 			<div class="push"></div>
