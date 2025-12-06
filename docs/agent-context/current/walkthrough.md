@@ -1,47 +1,33 @@
-# Phase 21: P2P Sharing Walkthrough
+# Phase 41: Release & Deployment Walkthrough
 
 ## Overview
 
-In this phase, we implemented a peer-to-peer sharing system that allows Architects to share their creations directly with Explorers without relying on a centralized server. This aligns with our "Offline First" and "Local Ownership" axioms.
+This phase focused on preparing the application for release, including a comprehensive visual regression suite, a new "In-App Changelog" feature, and critical bug fixes.
 
-## Key Features
+## Key Changes
 
-### 1. Magic QR Codes (Single Level Sharing)
+### 1. In-App Changelog
 
-For sharing individual levels, we implemented a compressed URL scheme.
+- **Data Source**: Created `scripts/generate-changelog.ts` to parse `docs/agent-context/changelog.md` and generate `src/lib/data/changelog.ts`.
+- **UI**: Implemented `src/routes/changelog/+page.svelte` to display the changelog.
+- **Markdown Support**: Enhanced `src/lib/components/ui/Markdown.svelte` to correctly style injected HTML from markdown (e.g., bold text).
+- **Integration**: Added a link to the changelog in the Settings page.
 
-- **Mechanism**: The level JSON is minified, compressed (using `lz-string`), and encoded into a URL hash.
-- **QR Code**: This URL is then converted into a QR code using `qrcode`.
-- **Experience**: The receiver scans the QR code, and the app instantly loads the level from the URL hash. No network request required (other than loading the app itself).
+### 2. Branding & UI
 
-### 2. WebRTC Handshake (Pack Sharing)
+- **Rename**: Replaced remaining "Code Climber" references with "Kibi" in `src/routes/+page.svelte`, `src/routes/library/+page.svelte`, and E2E tests.
+- **Settings**: Added a Settings gear icon to the Home page top bar for easier access to configuration and the changelog.
 
-For larger payloads like full Level Packs, we implemented a WebRTC data channel.
+### 3. Bug Fixes
 
-- **Signaling**: Instead of a signaling server, we use QR codes to exchange the SDP Offer and Answer.
-  1. **Sender** creates an Offer -> QR Code.
-  2. **Receiver** scans Offer -> Generates Answer -> QR Code.
-  3. **Sender** scans Answer -> Connection Established.
-- **Data Transfer**: Once connected, the pack data is serialized and sent over the WebRTC DataChannel.
-- **Experience**: A "magic handshake" that feels like beaming data between devices.
+- **Duplicate Keys**: Fixed a crash caused by identical version strings for "Phase X" and "Phase X Polish" by renaming polish phases to "Phase X.5".
+- **Markdown Rendering**: Fixed an issue where markdown syntax (like `**bold**`) was being stripped or not rendered correctly in the changelog.
 
-### 3. UI Integration
+### 4. Future Planning
 
-- **Builder Toolbar**: Added a "Share" button (Share2 icon) to the main toolbar.
-- **Share Modal**: Provides options for "Link/QR" (Single Level) and "P2P Transfer" (Pack).
-- **P2P Wizard**: A step-by-step modal (`P2PModal`) guiding users through the scan-scan-connect process.
+- **Error Reporting**: Researched and selected **Highlight.io** for error reporting in the next phase (Phase 42).
 
-## Technical Decisions
+## Verification
 
-- **Library Choice**: Used `simple-peer` (via a lightweight wrapper `P2PConnection`) to abstract WebRTC complexity.
-- **Compression**: `lz-string` was chosen for its efficiency in compressing JSON for URL safety.
-- **Offline Support**: The entire flow works offline (once the app is loaded), leveraging the Service Worker for asset caching.
-
-## Challenges & Solutions
-
-- **QR Code Density**: Large levels created QR codes that were too dense to scan easily.
-  - _Solution_: We implemented `lz-string` compression to significantly reduce the payload size. For very large levels/packs, we force the WebRTC flow.
-- **Visual Regressions**: The new toolbar button caused layout shifts in the visual tests.
-  - _Solution_: We updated the visual snapshots to reflect the new UI state.
-- **Accessibility**: The new modals had some focus/tabindex issues.
-  - _Solution_: We audited and fixed the ARIA roles and tabindex attributes in `ShareModal` and `P2PModal`.
+- **Tests**: Ran `pnpm test` and `pnpm check`, ensuring all tests pass.
+- **Visuals**: Verified the changelog UI and markdown rendering.

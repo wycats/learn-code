@@ -79,7 +79,8 @@
 		</div>
 		{#if !hasAdvanceCondition}
 			<button class="next-btn" onclick={onNext}>
-				Next <ArrowRight size={16} />
+				<span class="btn-label">Next</span>
+				<ArrowRight size={16} />
 			</button>
 		{/if}
 	</div>
@@ -93,6 +94,23 @@
 		align-items: center;
 		justify-content: center;
 		padding: var(--size-2) var(--size-4);
+	}
+
+	@media (max-width: 600px) {
+		.instruction-bar {
+			padding: var(--size-2);
+		}
+		.instruction-content {
+			gap: var(--size-2);
+		}
+		.btn-label {
+			display: none;
+		}
+		.next-btn {
+			padding: 0;
+			width: var(--touch-target-min);
+			justify-content: center;
+		}
 	}
 
 	.instruction-content {
@@ -119,7 +137,7 @@
 		font-size: var(--font-size-3);
 		font-weight: bold;
 		color: var(--text-2);
-		border: 2px solid white;
+		border: 2px solid light-dark(white, var(--surface-3));
 		box-shadow: var(--shadow-2);
 		position: relative;
 		line-height: 1;
@@ -138,7 +156,7 @@
 		overflow: hidden;
 		border: 1px solid var(--surface-3);
 		max-width: 300px;
-		background-color: white;
+		background-color: light-dark(white, var(--surface-2));
 	}
 
 	.media-container img {
@@ -166,12 +184,14 @@
 		background-color: var(--brand);
 		color: white;
 		border: none;
-		padding: var(--size-2) var(--size-4);
+		padding: 0 var(--size-4);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-round);
 		font-weight: bold;
 		cursor: pointer;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: var(--size-2);
 		font-size: var(--font-size-1);
 		transition: transform 0.1s;
@@ -198,7 +218,7 @@
 		right: -2px;
 		width: 20px;
 		height: 20px;
-		background-color: white;
+		background-color: light-dark(white, var(--surface-3));
 		border-radius: 50%;
 		display: flex;
 		align-items: center;

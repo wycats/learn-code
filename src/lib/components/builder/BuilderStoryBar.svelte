@@ -794,7 +794,6 @@
 		position: relative;
 		width: 100%;
 		height: 100%;
-		z-index: 50;
 		display: grid;
 		grid-template-areas: 'stack';
 	}
@@ -811,7 +810,6 @@
 		border-bottom: 1px solid var(--surface-3);
 		gap: var(--size-2);
 		position: relative;
-		z-index: 60; /* Above popover */
 		anchor-name: --story-bar;
 	}
 
@@ -897,6 +895,7 @@
 		cursor: pointer;
 		text-align: left;
 		transition: all 0.2s;
+		min-height: var(--touch-target-min);
 	}
 
 	.timeline-item:hover {
@@ -973,7 +972,9 @@
 		border: none;
 		color: var(--text-2);
 		cursor: pointer;
-		padding: var(--size-2);
+		padding: 0;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		border-radius: var(--radius-round);
 		display: grid;
 		place-items: center;
@@ -993,12 +994,30 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-4);
-		width: 100%;
+		flex: 1;
+		min-width: 0; /* Allow shrinking */
 		max-width: 800px;
 		background-color: var(--surface-2); /* Highlight that it's editable */
 		padding: var(--size-2);
 		border-radius: var(--radius-3);
 		border: 1px dashed var(--surface-3);
+	}
+
+	@media (max-width: 600px) {
+		.instruction-bar-editor {
+			padding: var(--size-2);
+			gap: var(--size-1);
+		}
+
+		.instruction-content {
+			gap: var(--size-2);
+			padding: var(--size-1);
+		}
+
+		.editor-controls .nav-btn {
+			width: 32px;
+			height: 32px;
+		}
 	}
 
 	.character-portrait {
@@ -1060,15 +1079,15 @@
 	.selection-item {
 		background: none;
 		border: none;
-		padding: var(--size-1);
+		padding: 0;
 		border-radius: var(--radius-round);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		transition: background-color 0.1s;
-		width: 40px;
-		height: 40px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 	}
 
 	.selection-item:hover {
@@ -1103,7 +1122,9 @@
 	.edit-btn {
 		background: none;
 		border: none;
-		padding: var(--size-1);
+		padding: 0;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		border-radius: var(--radius-round);
 		cursor: pointer;
 		color: var(--text-3);
@@ -1140,10 +1161,10 @@
 
 	.emotion-badge {
 		position: absolute;
-		bottom: -2px;
-		right: -2px;
-		width: 20px;
-		height: 20px;
+		bottom: -8px;
+		right: -8px;
+		width: 28px;
+		height: 28px;
 		background-color: white;
 		border-radius: 50%;
 		display: flex;
@@ -1154,6 +1175,15 @@
 		border: 1px solid var(--surface-2);
 		cursor: pointer;
 		padding: 0;
+		z-index: 2;
+	}
+
+	.emotion-badge::after {
+		content: '';
+		position: absolute;
+		inset: -10px;
+		cursor: pointer;
+		border-radius: 50%;
 	}
 
 	/* Remove old character specific styles as we use dynamic colors now */
@@ -1214,8 +1244,8 @@
 		border: 2px solid var(--brand);
 		border-radius: var(--radius-2);
 		color: var(--brand);
-		width: 36px;
-		height: 36px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		position: relative;
 		cursor: pointer;
 		font-weight: bold;
@@ -1256,8 +1286,8 @@
 		border: 2px solid var(--brand);
 		border-radius: var(--radius-2);
 		color: var(--brand);
-		width: 36px;
-		height: 36px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		cursor: pointer;
 		animation: pulse-confirm 2s infinite;
 	}
@@ -1282,12 +1312,12 @@
 	.action-btn {
 		background: none;
 		border: none;
-		padding: var(--size-1);
+		padding: 0;
 		border-radius: var(--radius-1);
 		cursor: pointer;
 		color: var(--text-3);
-		width: 32px;
-		height: 32px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		display: grid;
 		place-items: center;
 	}
@@ -1314,14 +1344,14 @@
 		justify-content: center;
 		gap: 4px;
 		background-color: var(--brand-surface);
-		padding: var(--size-1);
+		padding: 0;
 		border-radius: var(--radius-1);
 		font-size: var(--font-size-00);
 		color: var(--brand);
 		border: 1px solid var(--brand);
 		cursor: pointer;
-		width: 32px;
-		height: 32px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		position: relative;
 	}
 
@@ -1346,20 +1376,28 @@
 		background-color: var(--surface-1);
 		border-radius: 50%;
 		border: 1px solid var(--surface-3);
-		width: 14px;
-		height: 14px;
+		width: 24px;
+		height: 24px;
 		justify-content: center;
 		z-index: 10;
 	}
 
+	.badge-corner-btn::after {
+		content: '';
+		position: absolute;
+		inset: -6px;
+		cursor: pointer;
+		border-radius: 50%;
+	}
+
 	.badge-corner-btn.clear {
-		top: -4px;
-		right: -4px;
+		top: -8px;
+		right: -8px;
 	}
 
 	.badge-corner-btn.edit {
-		bottom: -4px;
-		right: -4px;
+		bottom: -8px;
+		right: -8px;
 	}
 
 	.badge-corner-btn:hover {
@@ -1393,7 +1431,8 @@
 		align-items: center;
 		justify-content: center;
 		gap: var(--size-2);
-		padding: var(--size-2);
+		padding: 0 var(--size-2);
+		min-height: var(--touch-target-min);
 		background: none;
 		border: 1px dashed var(--surface-3);
 		border-radius: var(--radius-2);
@@ -1423,7 +1462,8 @@
 	.btn-primary {
 		background-color: var(--brand);
 		color: white;
-		padding: var(--size-2) var(--size-4);
+		padding: 0 var(--size-4);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-round);
 		font-weight: bold;
 		border: none;

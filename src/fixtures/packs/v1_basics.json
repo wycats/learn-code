@@ -1,0 +1,662 @@
+{
+	"id": "basics",
+	"name": "The Basics",
+	"description": "Learn the fundamentals of movement, loops, and debugging.",
+	"coverImage": "book",
+	"difficulty": "beginner",
+	"tags": ["tutorial", "loops", "debugging"],
+	"version": "1.0.0",
+	"levels": [
+		{
+			"id": "level-1",
+			"name": "Cross the River",
+			"description": "Jonas built a bridge. Can you cross it?",
+			"gridSize": {
+				"width": 5,
+				"height": 5
+			},
+			"start": {
+				"x": 0,
+				"y": 2
+			},
+			"startOrientation": "E",
+			"goal": {
+				"x": 4,
+				"y": 2
+			},
+			"layout": {
+				"1,0": "water",
+				"1,1": "water",
+				"1,2": "grass",
+				"1,3": "water",
+				"1,4": "water",
+				"3,0": "wall",
+				"3,1": "wall",
+				"3,3": "wall",
+				"3,4": "wall"
+			},
+			"availableBlocks": {
+				"move-forward": "unlimited",
+				"turn-left": "unlimited",
+				"turn-right": "unlimited"
+			},
+			"solutionPar": 5,
+			"intro": [
+				{
+					"id": "intro-1",
+					"speaker": "Zoey",
+					"text": "Hi! I'm Zoey. I need to get to the other side.",
+					"emotion": "happy"
+				},
+				{
+					"id": "intro-2",
+					"speaker": "Guide",
+					"text": "Greetings. I am the Guide. The Architect, Jonas, has constructed this path.",
+					"emotion": "neutral"
+				},
+				{
+					"id": "intro-3",
+					"speaker": "Zoey",
+					"text": "Nice bridge, Jonas! Let's go.",
+					"emotion": "happy"
+				},
+				{
+					"id": "intro-4",
+					"speaker": "Guide",
+					"text": "Drag or click the 'Step' block to help Zoey cross.",
+					"emotion": "thinking",
+					"targets": ["block:move-forward"]
+				}
+			],
+			"hints": [
+				{
+					"id": "hint-idle-1",
+					"text": "Drag or click the 'Step' block from the tray to the workspace.",
+					"trigger": {
+						"type": "idle",
+						"value": 15
+					},
+					"targets": ["ui:tray"]
+				},
+				{
+					"id": "hint-attempts-1",
+					"text": "You need to move 4 steps forward. Try adding more blocks.",
+					"trigger": {
+						"type": "attempts",
+						"value": 2
+					}
+				}
+			]
+		},
+		{
+			"id": "level-2",
+			"name": "The Long Walk",
+			"description": "Jonas made this hallway really long. Don't get tired!",
+			"gridSize": {
+				"width": 6,
+				"height": 3
+			},
+			"start": {
+				"x": 0,
+				"y": 1
+			},
+			"startOrientation": "E",
+			"goal": {
+				"x": 5,
+				"y": 1
+			},
+			"layout": {
+				"0,0": "wall",
+				"1,0": "wall",
+				"2,0": "wall",
+				"3,0": "wall",
+				"4,0": "wall",
+				"5,0": "wall",
+				"0,2": "wall",
+				"1,2": "wall",
+				"2,2": "wall",
+				"3,2": "wall",
+				"4,2": "wall",
+				"5,2": "wall"
+			},
+			"availableBlocks": {
+				"move-forward": "unlimited",
+				"loop": "unlimited"
+			},
+			"solutionPar": 2,
+			"intro": [
+				{
+					"id": "l2-intro-1",
+					"speaker": "Zoey",
+					"text": "Whoa, Jonas made this hallway super long!",
+					"emotion": "concerned"
+				},
+				{
+					"id": "l2-intro-2",
+					"speaker": "Guide",
+					"text": "The Architect values efficiency. Repeating commands manually is inefficient.",
+					"emotion": "neutral"
+				},
+				{
+					"id": "l2-intro-3",
+					"speaker": "Guide",
+					"text": "Use the 'Repeat' block to perform an action multiple times.",
+					"emotion": "thinking",
+					"targets": ["block:loop"]
+				}
+			],
+			"hints": [
+				{
+					"id": "l2-hint-idle",
+					"text": "Drag or click the 'Repeat' block, then put 'Step' INSIDE it.",
+					"trigger": {
+						"type": "idle",
+						"value": 20
+					},
+					"targets": ["block:loop"]
+				},
+				{
+					"id": "l2-hint-attempts",
+					"text": "You need to move 5 times. Set the repeat count to 5.",
+					"trigger": {
+						"type": "attempts",
+						"value": 2
+					}
+				}
+			]
+		},
+		{
+			"id": "level-3",
+			"name": "Square Dance",
+			"description": "Jonas loves patterns. Can you spot this one?",
+			"gridSize": {
+				"width": 5,
+				"height": 5
+			},
+			"start": {
+				"x": 1,
+				"y": 1
+			},
+			"startOrientation": "E",
+			"goal": {
+				"x": 1,
+				"y": 2
+			},
+			"layout": {
+				"2,2": "wall"
+			},
+			"availableBlocks": {
+				"move-forward": "unlimited",
+				"turn-right": "unlimited",
+				"loop": "unlimited"
+			},
+			"solutionPar": 4,
+			"intro": [
+				{
+					"speaker": "Zoey",
+					"text": "We need to go around that rock.",
+					"emotion": "neutral"
+				},
+				{
+					"speaker": "Jonas",
+					"text": "I designed this to be a perfect square! Move, Move, Turn...",
+					"emotion": "excited"
+				}
+			],
+			"hints": [
+				{
+					"id": "l3-hint-idle",
+					"text": "Try moving forward twice, then turning right.",
+					"trigger": {
+						"type": "idle",
+						"value": 20
+					},
+					"targets": ["block:move-forward"]
+				},
+				{
+					"id": "l3-hint-loop",
+					"text": "You can use a Loop to repeat the side of the square 4 times.",
+					"trigger": {
+						"type": "attempts",
+						"value": 2
+					}
+				}
+			]
+		},
+		{
+			"id": "level-4",
+			"name": "The Bug",
+			"description": "Jonas left some broken code. Can you fix it?",
+			"gridSize": {
+				"width": 5,
+				"height": 5
+			},
+			"start": {
+				"x": 0,
+				"y": 4
+			},
+			"startOrientation": "E",
+			"goal": {
+				"x": 4,
+				"y": 0
+			},
+			"layout": {
+				"0,0": "wall",
+				"1,0": "wall",
+				"2,0": "wall",
+				"3,0": "wall",
+				"0,1": "wall",
+				"1,1": "wall",
+				"2,1": "wall",
+				"3,1": "wall",
+				"0,2": "wall",
+				"1,2": "wall",
+				"0,3": "wall",
+				"1,3": "wall",
+				"3,3": "wall",
+				"4,3": "wall"
+			},
+			"availableBlocks": {
+				"move-forward": "unlimited",
+				"turn-left": "unlimited",
+				"turn-right": "unlimited"
+			},
+			"initialProgram": [
+				{
+					"id": "b1",
+					"type": "move-forward"
+				},
+				{
+					"id": "b2",
+					"type": "move-forward"
+				},
+				{
+					"id": "b3",
+					"type": "turn-left"
+				},
+				{
+					"id": "b4",
+					"type": "move-forward"
+				},
+				{
+					"id": "b5",
+					"type": "move-forward"
+				},
+				{
+					"id": "b6",
+					"type": "turn-left"
+				},
+				{
+					"id": "b7",
+					"type": "move-forward"
+				},
+				{
+					"id": "b8",
+					"type": "move-forward"
+				},
+				{
+					"id": "b9",
+					"type": "turn-left"
+				},
+				{
+					"id": "b10",
+					"type": "move-forward"
+				},
+				{
+					"id": "b11",
+					"type": "move-forward"
+				}
+			],
+			"solutionPar": 11,
+			"intro": [
+				{
+					"speaker": "Zoey",
+					"text": "Jonas, your code is broken! I keep hitting a wall.",
+					"emotion": "concerned"
+				},
+				{
+					"speaker": "Jonas",
+					"text": "It's not broken, it's... a test! That's a 'bug'. Can you fix it?",
+					"emotion": "neutral"
+				},
+				{
+					"speaker": "Guide",
+					"text": "Find the wrong block and fix it!",
+					"emotion": "neutral"
+				}
+			],
+			"hints": [
+				{
+					"id": "hint-debug-1",
+					"text": "Use the 'Step' button (next to Play) to run the code one block at a time.",
+					"trigger": {
+						"type": "idle",
+						"value": 20
+					},
+					"targets": ["ui:step-btn"]
+				},
+				{
+					"id": "hint-debug-2",
+					"text": "Look closely at the third turn. Is it turning the right way?",
+					"trigger": {
+						"type": "attempts",
+						"value": 2
+					}
+				}
+			]
+		},
+		{
+			"id": "level-5",
+			"name": "Stairway to the Stars",
+			"description": "Jonas only gave us 6 blocks! Can you solve it?",
+			"gridSize": {
+				"width": 5,
+				"height": 5
+			},
+			"start": {
+				"x": 0,
+				"y": 4
+			},
+			"startOrientation": "N",
+			"goal": {
+				"x": 4,
+				"y": 0
+			},
+			"layout": {
+				"0,0": "wall",
+				"1,0": "wall",
+				"2,0": "wall",
+				"0,1": "wall",
+				"1,1": "wall",
+				"4,1": "wall",
+				"0,2": "wall",
+				"3,2": "wall",
+				"4,2": "wall",
+				"2,3": "wall",
+				"3,3": "wall",
+				"4,3": "wall",
+				"1,4": "wall",
+				"2,4": "wall",
+				"3,4": "wall",
+				"4,4": "wall"
+			},
+			"availableBlocks": {
+				"move-forward": "unlimited",
+				"turn-left": "unlimited",
+				"turn-right": "unlimited",
+				"loop": "unlimited"
+			},
+			"maxBlocks": 6,
+			"solutionPar": 5,
+			"intro": [
+				{
+					"speaker": "Zoey",
+					"text": "It looks like a staircase! Up, Right, Up, Right...",
+					"emotion": "happy"
+				},
+				{
+					"speaker": "Jonas",
+					"text": "I'm limiting your blocks to 6. You HAVE to use a loop!",
+					"emotion": "excited"
+				}
+			],
+			"hints": [
+				{
+					"id": "l5-hint-idle",
+					"text": "The pattern is: Move, Turn Left, Move, Turn Right.",
+					"trigger": {
+						"type": "idle",
+						"value": 20
+					}
+				},
+				{
+					"id": "l5-hint-limit",
+					"text": "You ran out of blocks! Put the pattern inside a Loop.",
+					"trigger": {
+						"type": "attempts",
+						"value": 2
+					}
+				}
+			]
+		},
+		{
+			"id": "level-6",
+			"name": "The Big Zig Zag",
+			"description": "Bigger steps, same pattern. Jonas is testing your memory.",
+			"gridSize": {
+				"width": 5,
+				"height": 5
+			},
+			"start": {
+				"x": 0,
+				"y": 4
+			},
+			"startOrientation": "E",
+			"goal": {
+				"x": 4,
+				"y": 0
+			},
+			"layout": {
+				"3,4": "wall",
+				"4,4": "wall",
+				"0,3": "wall",
+				"1,3": "wall",
+				"3,3": "wall",
+				"4,3": "wall",
+				"0,2": "wall",
+				"1,2": "wall",
+				"0,1": "wall",
+				"1,1": "wall",
+				"2,1": "wall",
+				"3,1": "wall",
+				"0,0": "wall",
+				"1,0": "wall",
+				"2,0": "wall",
+				"3,0": "wall"
+			},
+			"availableBlocks": {
+				"move-forward": "unlimited",
+				"turn-left": "unlimited",
+				"turn-right": "unlimited",
+				"loop": "unlimited"
+			},
+			"maxBlocks": 8,
+			"solutionPar": 7,
+			"intro": [
+				{
+					"speaker": "Zoey",
+					"text": "This looks like the stairs, but bigger steps!",
+					"emotion": "neutral"
+				},
+				{
+					"speaker": "Jonas",
+					"text": "I made the steps bigger. Can you adapt your code?",
+					"emotion": "excited"
+				}
+			],
+			"hints": [
+				{
+					"id": "l6-hint-idle",
+					"text": "It's like the stairs, but you need to move TWICE before turning.",
+					"trigger": {
+						"type": "idle",
+						"value": 20
+					}
+				},
+				{
+					"id": "l6-hint-loop",
+					"text": "Use a Loop to repeat the big step pattern.",
+					"trigger": {
+						"type": "attempts",
+						"value": 2
+					}
+				}
+			]
+		},
+		{
+			"id": "level-7",
+			"name": "The Magic Spell",
+			"description": "Jonas found a magic spell. It's called a Function!",
+			"gridSize": {
+				"width": 8,
+				"height": 8
+			},
+			"start": {
+				"x": 1,
+				"y": 1
+			},
+			"startOrientation": "E",
+			"goal": {
+				"x": 6,
+				"y": 6
+			},
+			"layout": {
+				"1,1": "grass",
+				"2,1": "grass",
+				"3,1": "grass",
+				"3,2": "grass",
+				"3,3": "grass",
+				"4,3": "grass",
+				"5,3": "grass",
+				"5,4": "grass",
+				"5,5": "grass",
+				"6,5": "grass",
+				"6,6": "goal"
+			},
+			"availableBlocks": {
+				"move-forward": "unlimited",
+				"turn-left": "unlimited",
+				"turn-right": "unlimited",
+				"call": "unlimited"
+			},
+			"maxBlocks": 10,
+			"functions": {
+				"Jump": []
+			},
+			"solutionPar": 6,
+			"intro": [
+				{
+					"speaker": "Zoey",
+					"text": "Look at this old book! It says 'Spell of Leaping'.",
+					"emotion": "excited"
+				},
+				{
+					"speaker": "Jonas",
+					"text": "I wrote that! It's a Function. It lets you name a group of blocks.",
+					"emotion": "happy"
+				},
+				{
+					"speaker": "System",
+					"text": "Define the 'Jump' function to move 2 steps, then call it to cross the gaps.",
+					"targets": ["ui:function-tab"]
+				}
+			],
+			"hints": [
+				{
+					"id": "l7-hint-idle",
+					"text": "Click the 'Jump' tab in the tray to define what 'Jump' does.",
+					"trigger": {
+						"type": "idle",
+						"value": 20
+					},
+					"targets": ["ui:function-tab"]
+				},
+				{
+					"id": "l7-hint-call",
+					"text": "You defined the function, but you need to use the 'Call Jump' block in your Main program!",
+					"trigger": {
+						"type": "analysis",
+						"pattern": "missing-call:Jump"
+					},
+					"targets": ["block:call"]
+				}
+			]
+		},
+		{
+			"id": "level-8",
+			"name": "Pattern Recognition",
+			"description": "A giant staircase. Jonas says you can solve it with one spell.",
+			"gridSize": {
+				"width": 10,
+				"height": 10
+			},
+			"start": {
+				"x": 1,
+				"y": 8
+			},
+			"startOrientation": "N",
+			"goal": {
+				"x": 8,
+				"y": 1
+			},
+			"layout": {
+				"1,8": "grass",
+				"1,7": "grass",
+				"1,6": "grass",
+				"2,6": "grass",
+				"3,6": "grass",
+				"3,5": "grass",
+				"3,4": "grass",
+				"4,4": "grass",
+				"5,4": "grass",
+				"5,3": "grass",
+				"5,2": "grass",
+				"6,2": "grass",
+				"7,2": "grass",
+				"7,1": "grass",
+				"8,1": "goal"
+			},
+			"availableBlocks": {
+				"move-forward": "unlimited",
+				"turn-right": "unlimited",
+				"call": "unlimited"
+			},
+			"maxBlocks": 8,
+			"functions": {
+				"Stairs": []
+			},
+			"solutionPar": 5,
+			"intro": [
+				{
+					"speaker": "Jonas",
+					"text": "I built this giant staircase. Can you climb it?",
+					"emotion": "neutral"
+				},
+				{
+					"speaker": "Zoey",
+					"text": "It repeats the same pattern over and over: Up two, Right two.",
+					"emotion": "concerned"
+				},
+				{
+					"speaker": "Jonas",
+					"text": "Exactly! Use a Function to capture the pattern.",
+					"emotion": "happy"
+				},
+				{
+					"speaker": "System",
+					"text": "Create a 'Stairs' function for the pattern, then call it multiple times.",
+					"targets": ["ui:function-tab"]
+				}
+			],
+			"hints": [
+				{
+					"id": "l8-hint-idle",
+					"text": "Define the 'Stairs' function to go Up 2, Turn Right, Move 2, Turn Left (Wait, you only have Turn Right! Use 3 Turn Rights to turn Left).",
+					"trigger": {
+						"type": "idle",
+						"value": 25
+					},
+					"targets": ["ui:function-tab"]
+				},
+				{
+					"id": "l8-hint-call",
+					"text": "Now call 'Stairs' multiple times in your Main program to climb to the top.",
+					"trigger": {
+						"type": "attempts",
+						"value": 2
+					}
+				}
+			]
+		}
+	]
+}

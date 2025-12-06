@@ -393,12 +393,182 @@
 
 ## Phase 20: Function UX & Builder Polish
 
-### 45. Snapshot-Based Undo/Redo for Builder
+### 46. Smart Theme Cycle
 
-**Decision:** Implement Undo/Redo in the Level Builder by taking full snapshots of the `LevelDefinition` using `$state.snapshot`.
-**Context:** The Builder state is complex (grid, actors, story, settings). Implementing the Command Pattern for every possible action (paint, move, resize, edit text) would be error-prone and tedious.
+**Decision:** Implement a "Smart Cycle" for the theme toggle (System -> Dark -> Light) instead of a simple binary toggle or a dropdown.
+**Context:** Users often want to quickly check how the app looks in a specific mode. A binary toggle that respects system preference by default can be confusing if the user doesn't know their system setting. A dropdown is too heavy.
 **Consequence:**
 
-- We trade memory usage for simplicity and robustness.
-- Since levels are relatively small JSON objects, the memory overhead is negligible.
-- We can easily restore any past state without worrying about "inverse operations".
+- The toggle button cycles through three states.
+- We prioritize immediate visual feedback (forcing Dark/Light) over returning to "System" (which is the default state but might not change the visual appearance).
+
+## Phase 28: Test Coverage & Quality Assurance
+
+### 47. Dependency Injection for Services
+
+**Decision:** Refactor `FileSystemService` and `PersistenceService` to use Dependency Injection (DI) via constructor arguments in models.
+**Context:** Previously, these services were imported directly as singletons or global objects. This made unit testing `BuilderModel` and `GameModel` difficult because we couldn't easily mock the file system or local storage.
+**Consequence:**
+
+- `BuilderModel` now accepts `persistenceService` and `fileSystemService` in its constructor.
+- We created `InMemoryFileSystemService` and `InMemoryPersistenceService` implementations for fast, isolated unit tests.
+- The production code uses default parameter values to inject the real services, maintaining ease of use.
+
+### 48. Strict Linting Enforcement
+
+**Decision:** Enable and enforce strict ESLint rules, specifically `no-explicit-any` and `no-unused-vars`.
+**Context:** The codebase had accumulated "lazy" typing (`any`) and unused variables, which are potential sources of bugs and make refactoring harder.
+**Consequence:**
+
+- We spent time fixing or explicitly suppressing (with justification) all lint errors.
+- `zod` schemas now use `z.preprocess` with safe casting instead of raw `any` casts where necessary.
+- Test files use `_` prefix for unused mock arguments to signal intent.
+
+### 49. Mocking Strategy for Browser APIs
+
+**Decision:** Use `vi.stubGlobal` and custom mock classes for browser APIs like `AudioContext` and `FileSystemHandle`.
+**Context:** `jsdom` (our test environment) does not implement these modern APIs. We needed a way to test logic that depends on them without mocking the entire universe.
+**Consequence:**
+
+- We created reusable mock implementations in test files.
+- We aligned these mocks with the TypeScript interfaces to ensure type safety in tests.
+
+## Phase 30: Builder Polish & Undo/Redo
+
+### 50. Undo/Redo via State Snapshots
+
+**Decision:** Implement Undo/Redo by capturing full state snapshots using `$state.snapshot` rather than the Command Pattern.
+**Context:** The `BuilderModel` state is complex and deeply nested (grid, actors, logic, settings). Implementing a Command Pattern (reversible actions) for every possible mutation would be error-prone and verbose. Svelte 5's `$state.snapshot` allows us to cheaply serialize the reactive state.
+**Consequence:**
+
+- We store a stack of state objects.
+- "Undo" simply replaces the current state with a previous snapshot.
+- This approach is memory-intensive but acceptable for the scale of data we are handling (small JSON levels).
+
+## Phase 30.5: Fresh Eyes Polish
+
+### Generic HistoryManager
+
+- **Context**: The Undo/Redo logic in `BuilderModel` was becoming complex and tightly coupled.
+- **Decision**: Extract the logic into a generic `HistoryManager<T>` class.
+- **Rationale**: This separates concerns, makes the history logic reusable (potentially for the Game loop later), and simplifies unit testing.
+
+### P2P Manual Fallback
+
+- **Context**: QR code scanning is convenient but fragile (lighting, camera quality).
+- **Decision**: Add a manual "Copy/Paste Code" option as a fallback.
+- **Rationale**: Ensures that P2P sharing is accessible even when hardware or environmental conditions prevent scanning. We chose a simple text-based exchange (base64 encoded JSON) as it is universal.
+
+## Phase 31: Authentication Strategy
+
+### Custom Auth vs. Neon Auth
+
+- **Context**: We need to implement user accounts to support cloud persistence. We evaluated Neon Auth (via Stack Auth) vs. a custom solution (using Oslo/Arctic).
+- **Decision**: Use **Custom Authentication** (based on the existing scaffolding in `src/lib/server/auth.ts`).
+- **Rationale**:
+  1.  **Control**: We want full control over the `user` schema and not rely on a read-only sync table.
+  2.  **Educational Value**: Implementing auth demonstrates core web concepts (sessions, cookies, OAuth).
+  3.  **Simplicity**: For our needs, a simple session-based auth with GitHub OAuth is sufficient. We avoid introducing a third-party identity provider dependency (Stack Auth) that might have its own pricing/limitations.
+  4.  **Offline-First**: We need to carefully manage the merge between local (offline) data and cloud data. Owning the auth flow gives us more hooks to handle this "post-login sync" gracefully.
+
+## Phase 32: Sync Optimization & Builder Polish
+
+### 51. Allocation-Free Vector Clocks
+
+**Decision:** Optimize `compareVectorClocks` to be allocation-free (O(N) single pass) instead of using `Set` operations.
+**Context:** Vector clock comparison is a hot path in the synchronization logic, potentially called thousands of times during a sync operation. The previous implementation created multiple intermediate `Set` and array objects.
+**Consequence:**
+
+- Reduced garbage collection pressure during sync.
+- Slightly more verbose code, but significantly more performant for high-frequency calls.
+
+### 52. Programmatic Navigation for Safety
+
+**Decision:** Use `goto()` with `onclick` handlers instead of `<a>` tags for internal navigation in Auth flows.
+**Context:** The `svelte/no-navigation-without-resolve` lint rule flags `<a>` tags with dynamic or external-looking URLs (even if they are internal routes like `/login/google`).
+**Consequence:**
+
+- We bypass the static analysis limitation while maintaining correct navigation behavior.
+- We explicitly handle the navigation intent in code, which is safer for complex auth flows.
+
+## Phase 33: Authentication & Cloud Foundation
+
+### 53. Parent/Child Profile Model
+
+**Decision:** Implement a hierarchical "Parent Account -> Child Profiles" model.
+**Context:** Our target audience (children) cannot legally or practically own email accounts/OAuth credentials. Parents need to manage access.
+**Consequence:**
+
+- The `User` table represents the Parent (authenticated via OAuth).
+- The `Profile` table represents the Child (nickname, avatar, progress).
+- All game progress is linked to a `Profile`, not the `User`.
+
+### 54. Device Authorization via QR Code
+
+**Decision:** Use a "QR Handshake" flow to authorize child devices without sharing parent credentials.
+**Context:** Parents don't want to type their Google password on a child's tablet. They want a quick, secure way to "log in" the child.
+**Consequence:**
+
+- We implemented a `DeviceAuth` table to track temporary handshake tokens.
+- The child device receives a long-lived session token linked to the _Parent User_ but scoped to the _Child Profile_ (conceptually, though currently it's a full user session).
+
+## Phase 34: Cloud Sync & Progress Tracking
+
+### 55. High Water Mark Sync Strategy
+
+**Decision:** Use a "High Water Mark" strategy for merging progress (Best Score Wins).
+**Context:** In a game, "progress" is generally monotonic (you unlock a level, you get more stars). If a user plays offline on two devices, we want to merge the _best_ achievements from both, rather than overwriting with the "latest" timestamp (which might be a worse run).
+**Consequence:**
+
+- We do not need complex CRDTs for this specific data type.
+- The merge logic is deterministic and user-friendly (no progress loss).
+
+### 56. Optimistic UI Updates
+
+**Decision:** Update the UI immediately upon level completion, regardless of network status.
+**Context:** The game must feel responsive. Waiting for a server round-trip to show the "Level Complete" screen is unacceptable.
+**Consequence:**
+
+- The `CloudSyncService` updates local state first, then queues the background sync.
+- We accept a small risk of temporary inconsistency (e.g., if the server rejects the update), but for a single-player game, this is a worthy trade-off.
+
+## Phase 38: The Terrain Architect
+
+### 57. Terrain Registry
+
+**Decision:** Centralize terrain behavior definitions in a `TerrainRegistry` rather than hardcoding checks in the interpreter.
+**Context:** As we add more terrain types (Ice, Mud, Magic Doors), `if/else` chains in the movement logic become unmanageable.
+**Consequence:**
+
+- `TerrainRegistry` defines `passableBy`, `speed`, and `onEnter` properties for each terrain type.
+- The `StackInterpreter` queries this registry to determine movement validity.
+
+### 58. Kinetic Dial Input
+
+**Decision:** Use a "Dial" interaction (drag up/down) for numeric properties instead of a standard input or slider.
+**Context:** Standard inputs are hard to hit on touch screens. Sliders take up too much horizontal space. A "Dial" allows for precise adjustment with a large touch target and aligns with the "Tactile" axiom.
+**Consequence:**
+
+- Implemented `DialInput.svelte`.
+- Used for rotation and other numeric properties in the Builder.
+
+### 59. Schema Backward Compatibility Strategy
+
+**Decision:** Default missing `terrain` maps to an empty object and infer terrain from the legacy `layout` property where possible.
+**Context:** We introduced a new `terrain` layer to the `LevelDefinition`. Existing levels don't have this. We must ensure they still load and play correctly.
+**Consequence:**
+
+- `LevelSchema` uses `z.preprocess` or default values to handle missing fields.
+- We added `schema.exhaustive.test.ts` to strictly validate that all features (new and old) serialize correctly.
+
+## Phase 39: Community & Sharing
+
+### 60. GitHub as the Backend (Real Tools)
+
+**Decision:** Use GitHub (via OAuth and API) as the primary backend for community sharing, rather than a custom database.
+**Context:** We want to teach "Real World" coding skills. Building a walled garden for sharing levels hides the reality of how software is built.
+**Consequence:**
+
+- Users own their data in their own repositories.
+- We introduce concepts like "Forking" and "Pull Requests" as game mechanics.
+- We align with Axiom 3 (Creation is Social) and Axiom 16 (Tooling Parity).

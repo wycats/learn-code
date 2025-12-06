@@ -609,7 +609,8 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
-		padding: var(--size-1) var(--size-2);
+		min-height: var(--touch-target-min);
+		padding: 0 var(--size-2);
 		background-color: var(--surface-2);
 		border-radius: var(--radius-round);
 		border: 1px solid transparent;
@@ -691,8 +692,8 @@
 		position: absolute;
 		top: -4px;
 		right: -4px;
-		width: 16px;
-		height: 16px;
+		width: 24px;
+		height: 24px;
 		border-radius: 50%;
 		border: 2px solid white;
 		cursor: pointer;
@@ -705,6 +706,13 @@
 		z-index: 2;
 	}
 
+	.icon-trigger::after {
+		content: '';
+		position: absolute;
+		inset: -10px;
+		border-radius: 50%;
+	}
+
 	.icon-trigger:hover {
 		background-color: white;
 		color: var(--brand);
@@ -715,13 +723,20 @@
 		position: absolute;
 		bottom: -4px;
 		right: -4px;
-		width: 16px;
-		height: 16px;
+		width: 24px;
+		height: 24px;
 		border-radius: 50%;
 		border: 2px solid white;
 		cursor: pointer;
 		padding: 0;
 		box-shadow: var(--shadow-1);
+	}
+
+	.color-trigger::after {
+		content: '';
+		position: absolute;
+		inset: -10px;
+		border-radius: 50%;
 	}
 
 	.color-popover {
@@ -787,8 +802,8 @@
 	}
 
 	.icon-option {
-		width: 40px;
-		height: 40px;
+		width: 44px;
+		height: 44px;
 		border-radius: var(--radius-2);
 		border: 1px solid var(--surface-3);
 		background: var(--surface-1);
@@ -899,7 +914,12 @@
 		border: none;
 		cursor: pointer;
 		color: var(--text-2);
-		padding: var(--size-1);
+		min-width: var(--touch-target-min);
+		min-height: var(--touch-target-min);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
 		border-radius: var(--radius-round);
 	}
 
@@ -918,7 +938,10 @@
 	.tab-btn {
 		background: none;
 		border: none;
-		padding: var(--size-3) 0;
+		min-height: var(--touch-target-min);
+		display: flex;
+		align-items: center;
+		padding: 0;
 		cursor: pointer;
 		color: var(--text-2);
 		font-weight: 500;
@@ -961,8 +984,8 @@
 	}
 
 	.color-swatch {
-		width: 24px;
-		height: 24px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		border-radius: var(--radius-round);
 		border: 2px solid transparent;
 		cursor: pointer;
@@ -979,7 +1002,12 @@
 		border: none;
 		color: var(--text-3);
 		cursor: pointer;
-		padding: var(--size-2);
+		min-width: var(--touch-target-min);
+		min-height: var(--touch-target-min);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
 		border-radius: var(--radius-1);
 	}
 
@@ -993,7 +1021,8 @@
 		align-items: center;
 		justify-content: center;
 		gap: var(--size-2);
-		padding: var(--size-2);
+		min-height: var(--touch-target-min);
+		padding: 0 var(--size-2);
 		background: none;
 		border: 1px dashed var(--surface-3);
 		border-radius: var(--radius-2);
@@ -1031,7 +1060,12 @@
 		border: none;
 		color: var(--text-3);
 		cursor: pointer;
-		padding: var(--size-2);
+		min-width: var(--touch-target-min);
+		min-height: var(--touch-target-min);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
 		border-radius: var(--radius-1);
 	}
 

@@ -1,0 +1,77 @@
+{
+	"id": "level-2",
+	"name": "The Long Walk",
+	"description": "Jonas made this hallway really long. Don't get tired!",
+	"gridSize": {
+		"width": 6,
+		"height": 3
+	},
+	"start": {
+		"x": 0,
+		"y": 1
+	},
+	"startOrientation": "E",
+	"goal": {
+		"x": 5,
+		"y": 1
+	},
+	"layout": {
+		"0,0": "wall",
+		"1,0": "wall",
+		"2,0": "wall",
+		"3,0": "wall",
+		"4,0": "wall",
+		"5,0": "wall",
+		"0,2": "wall",
+		"1,2": "wall",
+		"2,2": "wall",
+		"3,2": "wall",
+		"4,2": "wall",
+		"5,2": "wall"
+	},
+	"availableBlocks": {
+		"move-forward": "unlimited",
+		"loop": "unlimited"
+	},
+	"solutionPar": 2,
+	"intro": [
+		{
+			"id": "l2-intro-1",
+			"speaker": "Zoey",
+			"text": "Whoa, Jonas made this hallway super long!",
+			"emotion": "concerned"
+		},
+		{
+			"id": "l2-intro-2",
+			"speaker": "Guide",
+			"text": "The Architect values efficiency. Repeating commands manually is inefficient.",
+			"emotion": "neutral"
+		},
+		{
+			"id": "l2-intro-3",
+			"speaker": "Guide",
+			"text": "Use the 'Repeat' block to perform an action multiple times.",
+			"emotion": "thinking",
+			"targets": ["block:loop"]
+		}
+	],
+	"hints": [
+		{
+			"id": "l2-hint-idle",
+			"text": "Drag or click the 'Repeat' block, then put 'Step' INSIDE it.",
+			"trigger": {
+				"type": "idle",
+				"value": 20
+			},
+			"targets": ["block:loop"]
+		},
+		{
+			"id": "l2-hint-attempts",
+			"text": "You need to move 5 times. Set the repeat count to 5.",
+			"trigger": {
+				"type": "attempts",
+				"value": 2
+			}
+		}
+	]
+}

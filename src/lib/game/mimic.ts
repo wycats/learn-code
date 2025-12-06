@@ -1,19 +1,52 @@
 import type { GameModel } from './model.svelte';
-import type { Block, Direction, GridPosition } from './types';
+import type { Block, Direction, GridPosition, VariableRef } from './types';
 import { soundManager } from './sound';
+import { resolveItemDefinition } from './utils';
 
 const DIRECTIONS: Direction[] = ['N', 'E', 'S', 'W'];
 
-function getTileType(game: GameModel, x: number, y: number): string {
+function resolveValue(
+	game: GameModel,
+	value: number | VariableRef | undefined
+): number | undefined {
+	if (value === undefined) return undefined;
+	if (typeof value === 'number') return value;
+	if (value.type === 'variable' && value.variableId === 'heldItem') {
+		if (game.heldItem) {
+			const def = resolveItemDefinition(game.level, game.heldItem.type);
+			if (def && def.behavior === 'value') {
+				return game.heldItem.value;
+			}
+		}
+		return 0;
+	}
+	return 0;
+}
+
+function resolveTile(game: GameModel, x: number, y: number) {
 	const key = `${x},${y}`;
 	const typeId = game.level.layout[key] || game.level.defaultTerrain || 'grass';
 
 	// Check if it's a custom tile
 	if (game.level.customTiles && game.level.customTiles[typeId]) {
-		return game.level.customTiles[typeId].type; // 'wall', 'floor', 'hazard', 'ice'
+		const custom = game.level.customTiles[typeId];
+		return {
+			type: custom.type,
+			passableBy: custom.passableBy,
+			onEnter: custom.onEnter
+		};
 	}
 
-	return typeId;
+	// Built-in defaults
+	if (typeId === 'water') return { type: 'water', passableBy: 'boat' };
+	if (typeId === 'void') return { type: 'hazard', onEnter: 'kill' };
+	if (typeId === 'spikes') return { type: 'hazard', onEnter: 'damage' };
+	if (typeId === 'fire') return { type: 'hazard', onEnter: 'damage' };
+	if (typeId === 'hazard') return { type: 'hazard', onEnter: 'kill' };
+	if (typeId === 'ice') return { type: 'ice', onEnter: 'slide' };
+	if (typeId === 'wall') return { type: 'wall' };
+
+	return { type: 'floor' };
 }
 
 function getNextPosition(pos: GridPosition, dir: Direction): GridPosition {
@@ -50,9 +83,23 @@ function isValidMove(pos: GridPosition, game: GameModel): boolean {
 	}
 
 	// Check walls
-	const type = getTileType(game, pos.x, pos.y);
-	if (type === 'wall') {
+	const tile = resolveTile(game, pos.x, pos.y);
+	if (tile.type === 'wall') {
+		// Check if it's passable by held item
+		if (tile.passableBy && game.heldItem?.type === tile.passableBy) {
+			return true;
+		}
 		return false;
+	}
+
+	if (tile.type === 'water') {
+		// Check if it's passable by held item (boat)
+		// We use the generic passableBy if set, or default to boat for water
+		const requiredItem = tile.passableBy || 'boat';
+		// Check if we are riding the required vehicle
+		if (game.vehicle?.type === requiredItem) return true;
+		// Fallback: Check if we are holding the item (legacy support or magic items)
+		return game.heldItem?.type === requiredItem;
 	}
 
 	return true;
@@ -206,7 +253,7 @@ export class StackInterpreter {
 				}
 
 				// Enter loop
-				const count = block.count ?? Infinity;
+				const count = resolveValue(this.game, block.count) ?? Infinity;
 				this.stack.push({
 					blocks: block.children || [],
 					index: 0,
@@ -302,12 +349,14 @@ export class StackInterpreter {
 	}
 
 	stepBack(): boolean {
-		if (this.history.length <= 1) return false;
+		if (this.history.length === 0) return false;
 
-		this.history.pop(); // Remove current state
-		const previous = this.history[this.history.length - 1];
-		this.restoreSnapshot(previous);
-		return true;
+		const previous = this.history.pop(); // Remove and get current state
+		if (previous) {
+			this.restoreSnapshot(previous);
+			return true;
+		}
+		return false;
 	}
 
 	executeBlockAction(block: Block): boolean {
@@ -319,17 +368,40 @@ export class StackInterpreter {
 				);
 				if (isValidMove(nextPos, this.game)) {
 					// Check for Hazard or Ice
-					const tileType = getTileType(this.game, nextPos.x, nextPos.y);
+					const tile = resolveTile(this.game, nextPos.x, nextPos.y);
 
-					if (tileType === 'hazard' || tileType === 'spikes') {
+					if (tile.onEnter === 'kill') {
 						this.game.characterPosition = nextPos;
 						soundManager.play('fail');
-						this.game.lastEvent = { type: 'fail', timestamp: Date.now() };
+
+						// Determine reason for specific animations
+						const rawTileId =
+							this.game.level.layout[`${nextPos.x},${nextPos.y}`] ||
+							this.game.level.defaultTerrain ||
+							'grass';
+						const reason = rawTileId === 'void' ? 'void' : 'hazard';
+
+						this.game.lastEvent = { type: 'fail', reason, timestamp: Date.now() };
 						this.game.recordFailure();
 						return false;
 					}
 
-					if (tileType === 'ice') {
+					if (tile.onEnter === 'damage') {
+						this.game.characterPosition = nextPos;
+						this.game.lives--;
+						soundManager.play('hurt');
+
+						if (this.game.lives <= 0) {
+							this.game.lastEvent = { type: 'fail', reason: 'hazard', timestamp: Date.now() };
+							this.game.recordFailure();
+							soundManager.play('fail');
+							return false;
+						}
+						// Continue execution if lives > 0
+						return true;
+					}
+
+					if (tile.onEnter === 'slide') {
 						// Slide logic
 						let currentSlidePos = nextPos;
 						// Limit slide to prevent infinite loops (though unlikely with bounds)
@@ -338,15 +410,15 @@ export class StackInterpreter {
 							if (isValidMove(slideNext, this.game)) {
 								currentSlidePos = slideNext;
 								// Check if we slid into a hazard
-								const slideType = getTileType(this.game, currentSlidePos.x, currentSlidePos.y);
-								if (slideType === 'hazard' || slideType === 'spikes') {
+								const slideTile = resolveTile(this.game, currentSlidePos.x, currentSlidePos.y);
+								if (slideTile.onEnter === 'kill') {
 									this.game.characterPosition = currentSlidePos;
 									soundManager.play('fail');
 									this.game.lastEvent = { type: 'fail', timestamp: Date.now() };
 									this.game.recordFailure();
 									return false;
 								}
-								if (slideType !== 'ice') {
+								if (slideTile.onEnter !== 'slide') {
 									// Stopped sliding
 									break;
 								}
@@ -380,6 +452,63 @@ export class StackInterpreter {
 				this.game.characterOrientation = rotate(this.game.characterOrientation, 'right');
 				soundManager.play('turn');
 				return true;
+			case 'pick-up': {
+				const pos = this.game.characterPosition;
+				const key = `${pos.x},${pos.y}`;
+
+				if (this.game.collectedItems.has(key)) {
+					soundManager.play('fail');
+					this.game.lastEvent = { type: 'fail', timestamp: Date.now() };
+					this.game.recordFailure();
+					return false;
+				}
+
+				const item = this.game.level.items?.[key];
+				if (item) {
+					const def = resolveItemDefinition(this.game.level, item.type);
+					// Special handling for vehicles
+					if (def && def.behavior === 'vehicle') {
+						// Legacy support: If using pick-up on a boat, treat it as boarding
+						// But ideally we want them to use the 'board' block
+						// For now, let's allow it but maybe warn?
+						// Or just disallow it to force the new block?
+						// Let's disallow it to enforce the new concept.
+						soundManager.play('fail');
+						this.game.lastEvent = { type: 'fail', timestamp: Date.now() };
+						this.game.recordFailure();
+						return false;
+					}
+
+					this.game.heldItem = item;
+					this.game.collectedItems.add(key);
+					soundManager.play('step'); // TODO: Add pickup sound
+					return true;
+				}
+
+				soundManager.play('fail');
+				this.game.lastEvent = { type: 'fail', timestamp: Date.now() };
+				this.game.recordFailure();
+				return false;
+			}
+			case 'board': {
+				const pos = this.game.characterPosition;
+				const key = `${pos.x},${pos.y}`;
+
+				const item = this.game.level.items?.[key];
+				const def = item ? resolveItemDefinition(this.game.level, item.type) : undefined;
+
+				if (item && def && def.behavior === 'vehicle') {
+					this.game.vehicle = item;
+					this.game.collectedItems.add(key);
+					soundManager.play('step'); // TODO: Add board sound
+					return true;
+				}
+
+				soundManager.play('fail');
+				this.game.lastEvent = { type: 'fail', timestamp: Date.now() };
+				this.game.recordFailure();
+				return false;
+			}
 		}
 		return true;
 	}

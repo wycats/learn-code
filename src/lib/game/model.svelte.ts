@@ -1,4 +1,4 @@
-import type { LevelDefinition, GameStatus, Block, Direction } from './types';
+import type { LevelDefinition, GameStatus, Block, Direction, HeldItem } from './types';
 import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 import { HintManager } from './hints.svelte';
 
@@ -13,12 +13,21 @@ export class GameModel {
 	activeBlockId = $state<string | null>(null);
 	readonly executionState = new SvelteMap<string, 'success' | 'failure' | 'running'>();
 	readonly loopProgress = new SvelteMap<string, number>();
+	heldItem = $state<HeldItem | null>(null);
+	vehicle = $state<HeldItem | null>(null); // The vehicle the character is currently riding
+	readonly collectedItems = new SvelteSet<string>(); // "x,y" coordinates of collected items
 
 	// Level State
 	level: LevelDefinition;
 	characterPosition = $state<{ x: number; y: number }>({ x: 0, y: 0 });
 	characterOrientation = $state<Direction>('E');
-	lastEvent = $state<{ type: 'blocked' | 'win' | 'fail'; timestamp: number } | null>(null);
+	lives = $state(1);
+	maxLives = $state(1);
+	lastEvent = $state<{
+		type: 'blocked' | 'win' | 'fail';
+		reason?: string;
+		timestamp: number;
+	} | null>(null);
 	storyIndex = $state(0);
 
 	// History State
@@ -68,6 +77,7 @@ export class GameModel {
 
 	constructor(level: LevelDefinition) {
 		this.level = level;
+		this.maxLives = level.startingLives ?? 1;
 		this.hintManager = new HintManager(this);
 		// Load initial program if defined
 		if (this.level.initialProgram) {
@@ -95,9 +105,13 @@ export class GameModel {
 		this.status = 'planning';
 		this.characterPosition = { ...this.level.start };
 		this.characterOrientation = this.level.startOrientation;
+		this.lives = this.maxLives;
 		this.activeBlockId = null;
 		this.lastEvent = null; // Clear last event (e.g. blocked/fail)
 		this.resetExecutionState();
+		this.heldItem = null;
+		this.vehicle = null;
+		this.collectedItems.clear();
 		this.hintManager.reset();
 		// We don't clear program on reset, usually just execution state
 		// But if it's a "hard" reset, maybe? For now, let's keep program.

@@ -1,0 +1,122 @@
+{
+	"id": "level-4",
+	"name": "The Bug",
+	"description": "Jonas left some broken code. Can you fix it?",
+	"gridSize": {
+		"width": 5,
+		"height": 5
+	},
+	"start": {
+		"x": 0,
+		"y": 4
+	},
+	"startOrientation": "E",
+	"goal": {
+		"x": 4,
+		"y": 0
+	},
+	"layout": {
+		"0,0": "wall",
+		"1,0": "wall",
+		"2,0": "wall",
+		"3,0": "wall",
+		"0,1": "wall",
+		"1,1": "wall",
+		"2,1": "wall",
+		"3,1": "wall",
+		"0,2": "wall",
+		"1,2": "wall",
+		"0,3": "wall",
+		"1,3": "wall",
+		"3,3": "wall",
+		"4,3": "wall"
+	},
+	"availableBlocks": {
+		"move-forward": "unlimited",
+		"turn-left": "unlimited",
+		"turn-right": "unlimited"
+	},
+	"initialProgram": [
+		{
+			"id": "b1",
+			"type": "move-forward"
+		},
+		{
+			"id": "b2",
+			"type": "move-forward"
+		},
+		{
+			"id": "b3",
+			"type": "turn-left"
+		},
+		{
+			"id": "b4",
+			"type": "move-forward"
+		},
+		{
+			"id": "b5",
+			"type": "move-forward"
+		},
+		{
+			"id": "b6",
+			"type": "turn-left"
+		},
+		{
+			"id": "b7",
+			"type": "move-forward"
+		},
+		{
+			"id": "b8",
+			"type": "move-forward"
+		},
+		{
+			"id": "b9",
+			"type": "turn-left"
+		},
+		{
+			"id": "b10",
+			"type": "move-forward"
+		},
+		{
+			"id": "b11",
+			"type": "move-forward"
+		}
+	],
+	"solutionPar": 11,
+	"intro": [
+		{
+			"speaker": "Zoey",
+			"text": "Jonas, your code is broken! I keep hitting a wall.",
+			"emotion": "concerned"
+		},
+		{
+			"speaker": "Jonas",
+			"text": "It's not broken, it's... a test! That's a 'bug'. Can you fix it?",
+			"emotion": "neutral"
+		},
+		{
+			"speaker": "Guide",
+			"text": "Find the wrong block and fix it!",
+			"emotion": "neutral"
+		}
+	],
+	"hints": [
+		{
+			"id": "hint-debug-1",
+			"text": "Use the 'Step' button (next to Play) to run the code one block at a time.",
+			"trigger": {
+				"type": "idle",
+				"value": 20
+			},
+			"targets": ["ui:step-btn"]
+		},
+		{
+			"id": "hint-debug-2",
+			"text": "Look closely at the third turn. Is it turning the right way?",
+			"trigger": {
+				"type": "attempts",
+				"value": 2
+			}
+		}
+	]
+}

@@ -1,19 +1,22 @@
 import { GameModel } from './model.svelte';
+import { HistoryManager } from './history.svelte';
 import type {
 	LevelDefinition,
 	CellType,
+	ItemType,
 	GridPosition,
 	LevelPack,
 	Block,
 	Character,
 	Emotion
 } from './types';
-import { createDefaultPack, savePack, loadPack, listPacks } from './persistence';
-import { fileSystem } from '$lib/services/file-system';
+import { persistence, createDefaultPack, type PersistenceService } from './persistence';
+import { fileSystem, type FileSystemService } from '$lib/services/file-system';
 import { SYSTEM_CHARACTERS, SYSTEM_EMOTIONS } from './constants';
 
 export type BuilderTool =
 	| { type: 'terrain'; value: CellType }
+	| { type: 'item'; value: ItemType }
 	| { type: 'erase' }
 	| { type: 'grid' };
 
@@ -35,6 +38,8 @@ export class BuilderModel {
 		// Absolute fallback
 		return {
 			id: 'fallback',
+			versionId: 'fallback-version',
+			vectorClock: {},
 			name: 'Fallback Level',
 			gridSize: { width: 5, height: 5 },
 			start: { x: 0, y: 0 },
@@ -79,54 +84,81 @@ export class BuilderModel {
 	currentProgram = $state<Block[]>([]);
 
 	// Undo/Redo History
-	history = $state<LevelDefinition[]>([]);
-	future = $state<LevelDefinition[]>([]);
-	isInteracting = false;
+	historyManager = new HistoryManager<LevelDefinition>();
+
+	get canUndo() {
+		return this.historyManager.canUndo;
+	}
+
+	get canRedo() {
+		return this.historyManager.canRedo;
+	}
 
 	pushState() {
-		// Deep clone the current level
-		this.history.push($state.snapshot(this.level));
-		if (this.history.length > 50) this.history.shift();
-		this.future = []; // Clear redo stack on new action
+		this.historyManager.pushState($state.snapshot(this.level));
+	}
+
+	markModified() {
+		const now = Date.now();
+
+		// Provenance Logic (Vector Clock)
+		if (!this.level.vectorClock) {
+			this.level.vectorClock = {};
+		}
+
+		// Get persistent actor ID
+		let actorId = 'unknown-actor';
+		if (typeof localStorage !== 'undefined') {
+			let stored = localStorage.getItem('device_actor_id');
+			if (!stored) {
+				stored = crypto.randomUUID();
+				localStorage.setItem('device_actor_id', stored);
+			}
+			actorId = stored;
+		}
+
+		// Increment clock
+		const current = this.level.vectorClock[actorId] || 0;
+		this.level.vectorClock[actorId] = current + 1;
+
+		// Generate a new version ID for this state (fast equality check)
+		this.level.versionId = crypto.randomUUID();
+
+		// Keep pack updated for sorting/metadata
+		this.pack.updated = now;
+		this.syncGame();
 	}
 
 	undo() {
-		if (this.history.length === 0) return;
-		const prev = this.history.pop();
+		const prev = this.historyManager.undo($state.snapshot(this.level));
 		if (prev) {
-			this.future.push($state.snapshot(this.level));
 			// Replace current level in pack
 			const index = this.pack.levels.findIndex((l) => l.id === this.activeLevelId);
 			if (index !== -1) {
 				this.pack.levels[index] = prev;
-				this.syncGame();
+				this.markModified();
 			}
 		}
 	}
 
 	redo() {
-		if (this.future.length === 0) return;
-		const next = this.future.pop();
+		const next = this.historyManager.redo($state.snapshot(this.level));
 		if (next) {
-			this.history.push($state.snapshot(this.level));
 			// Replace current level in pack
 			const index = this.pack.levels.findIndex((l) => l.id === this.activeLevelId);
 			if (index !== -1) {
 				this.pack.levels[index] = next;
-				this.syncGame();
+				this.markModified();
 			}
 		}
 	}
 
 	startInteraction() {
-		if (!this.isInteracting) {
-			this.pushState();
-			this.isInteracting = true;
-		}
+		this.historyManager.startInteraction($state.snapshot(this.level));
 	}
 
 	endInteraction() {
-		this.isInteracting = false;
+		this.historyManager.endInteraction();
 	}
 
 	get targetSelectionMode() {
@@ -169,13 +201,18 @@ export class BuilderModel {
 		})
 	);
 
-	constructor() {
+	constructor(
+		private persistenceService: PersistenceService = persistence,
+		private fileSystemService: FileSystemService = fileSystem
+	) {
 		// Initialize with the first level of the default pack if available,
 		// otherwise keep the default new level.
 		if (this.pack.levels.length === 0) {
 			// Ensure the default level is in the pack
 			const defaultLevel: LevelDefinition = {
 				id: crypto.randomUUID(),
+				versionId: crypto.randomUUID(),
+				vectorClock: {},
 				name: 'New Level',
 				gridSize: { width: 5, height: 5 },
 				start: { x: 0, y: 0 },
@@ -251,7 +288,7 @@ export class BuilderModel {
 		}
 
 		// Fallback: Load the first available pack
-		const packs = await listPacks();
+		const packs = await this.persistenceService.listPacks();
 		if (packs.length > 0) {
 			await this.load(packs[0].id);
 		}
@@ -260,11 +297,11 @@ export class BuilderModel {
 
 	async linkToDisk() {
 		try {
-			await fileSystem.linkPackToDisk(this.pack.id);
+			await this.fileSystemService.linkPackToDisk(this.pack.id);
 			this.isLinked = true;
 			this.needsPermission = false;
 			// After linking, we should probably save the current state to disk immediately
-			await fileSystem.syncPackToDisk(this.pack.id, $state.snapshot(this.pack));
+			await this.fileSystemService.syncPackToDisk(this.pack.id, $state.snapshot(this.pack));
 		} catch (err) {
 			console.error('Failed to link pack:', err);
 			throw err;
@@ -274,14 +311,15 @@ export class BuilderModel {
 	debouncedSave(packData: LevelPack) {
 		if (this.saveTimeout) clearTimeout(this.saveTimeout);
 		this.saveTimeout = setTimeout(() => {
-			savePack(packData)
+			this.persistenceService
+				.savePack(packData)
 				.then(async () => {
 					if (typeof localStorage !== 'undefined') {
 						localStorage.setItem('lastActivePackId', packData.id);
 					}
 					// Sync to disk
 					try {
-						await fileSystem.syncPackToDisk(packData.id, packData);
+						await this.fileSystemService.syncPackToDisk(packData.id, packData);
 					} catch (err) {
 						console.warn('Failed to sync to disk:', err);
 					}
@@ -294,11 +332,11 @@ export class BuilderModel {
 		// Manual save (immediate)
 		if (this.saveTimeout) clearTimeout(this.saveTimeout);
 		const packData = $state.snapshot(this.pack);
-		await savePack(packData);
+		await this.persistenceService.savePack(packData);
 
 		// Try to sync to disk if linked
 		try {
-			await fileSystem.syncPackToDisk(packData.id, packData);
+			await this.fileSystemService.syncPackToDisk(packData.id, packData);
 		} catch (err) {
 			console.warn('Failed to sync to disk:', err);
 			throw err;
@@ -311,14 +349,14 @@ export class BuilderModel {
 
 	async load(packId: string) {
 		// Check if linked
-		this.isLinked = await fileSystem.isPackLinked(packId);
+		this.isLinked = await this.fileSystemService.isPackLinked(packId);
 		this.needsPermission = false;
 
 		// Try to load from disk first if linked
 		let loaded: LevelPack | null = null;
 		if (this.isLinked) {
 			try {
-				loaded = await fileSystem.loadLinkedPack(packId);
+				loaded = await this.fileSystemService.loadLinkedPack(packId);
 			} catch (err) {
 				console.warn('Failed to load linked pack from disk (likely permission):', err);
 				this.needsPermission = true;
@@ -326,7 +364,7 @@ export class BuilderModel {
 		}
 
 		if (!loaded) {
-			loaded = await loadPack(packId);
+			loaded = await this.persistenceService.loadPack(packId);
 		}
 
 		if (loaded) {
@@ -347,6 +385,10 @@ export class BuilderModel {
 			level.outro?.forEach((s) => {
 				if (!s.id) s.id = crypto.randomUUID();
 			});
+
+			// Ensure provenance fields exist
+			if (!level.versionId) level.versionId = crypto.randomUUID();
+			if (!level.vectorClock) level.vectorClock = {};
 		});
 
 		this.pack = pack;
@@ -354,6 +396,8 @@ export class BuilderModel {
 			// Create a default level if pack is empty
 			const defaultLevel: LevelDefinition = {
 				id: crypto.randomUUID(),
+				versionId: crypto.randomUUID(),
+				vectorClock: {},
 				name: 'New Level',
 				gridSize: { width: 5, height: 5 },
 				start: { x: 0, y: 0 },
@@ -382,7 +426,7 @@ export class BuilderModel {
 	async reconnectDisk() {
 		if (!this.isLinked) return;
 		// This will trigger permission prompt (must be called from user gesture)
-		const loaded = await fileSystem.loadLinkedPack(this.pack.id);
+		const loaded = await this.fileSystemService.loadLinkedPack(this.pack.id);
 		if (loaded) {
 			this.pack = loaded;
 			this.needsPermission = false;
@@ -393,6 +437,8 @@ export class BuilderModel {
 	createNewLevel() {
 		const newLevel: LevelDefinition = {
 			id: crypto.randomUUID(),
+			versionId: crypto.randomUUID(),
+			vectorClock: {},
 			name: `Level ${this.pack.levels.length + 1}`,
 			gridSize: { width: 5, height: 5 },
 			start: { x: 0, y: 0 },
@@ -472,6 +518,12 @@ export class BuilderModel {
 			...(levelSnapshot.customTiles || {})
 		};
 
+		const packItems = $state.snapshot(this.pack.customItems || {});
+		levelSnapshot.customItems = {
+			...packItems,
+			...(levelSnapshot.customItems || {})
+		};
+
 		// Merge pack characters (Level overrides Pack by ID)
 		const charMap: Record<string, Character> = {};
 		SYSTEM_CHARACTERS.forEach((c) => (charMap[c.id] = c));
@@ -501,7 +553,7 @@ export class BuilderModel {
 		const dirs = ['N', 'E', 'S', 'W'] as const;
 		const currentIdx = dirs.indexOf(this.level.startOrientation);
 		this.level.startOrientation = dirs[(currentIdx + 1) % 4];
-		this.syncGame();
+		this.markModified();
 	}
 
 	// Function Management
@@ -511,14 +563,16 @@ export class BuilderModel {
 		}
 		if (this.level.functions[name]) return; // Already exists
 
+		this.pushState();
 		this.level.functions[name] = [];
-		this.syncGame();
+		this.markModified();
 	}
 
 	deleteFunction(name: string) {
 		if (!this.level.functions) return;
+		this.pushState();
 		delete this.level.functions[name];
-		this.syncGame();
+		this.markModified();
 	}
 
 	editFunction(name: string) {
@@ -607,7 +661,7 @@ export class BuilderModel {
 		if (newWidth !== this.level.gridSize.width || newHeight !== this.level.gridSize.height) {
 			this.pushState();
 			this.level.gridSize = { width: newWidth, height: newHeight };
-			this.syncGame();
+			this.markModified();
 		}
 	}
 
@@ -641,7 +695,7 @@ export class BuilderModel {
 			this.level.start.x++;
 			this.level.goal.x++;
 		}
-		this.syncGame();
+		this.markModified();
 	}
 
 	addRow(side: 'top' | 'bottom') {
@@ -674,7 +728,7 @@ export class BuilderModel {
 			this.level.start.y++;
 			this.level.goal.y++;
 		}
-		this.syncGame();
+		this.markModified();
 	}
 
 	removeColumn(index: number) {
@@ -718,7 +772,7 @@ export class BuilderModel {
 		else if (this.level.goal.x > index) this.level.goal.x--;
 
 		this.level.gridSize.width--;
-		this.syncGame();
+		this.markModified();
 	}
 
 	removeRow(index: number) {
@@ -762,7 +816,7 @@ export class BuilderModel {
 		else if (this.level.goal.y > index) this.level.goal.y--;
 
 		this.level.gridSize.height--;
-		this.syncGame();
+		this.markModified();
 	}
 
 	handleCellClick(pos: GridPosition) {
@@ -795,7 +849,7 @@ export class BuilderModel {
 				this.level.goal = { ...pos };
 			}
 			// Don't deselect here, let the UI handle drop
-			this.syncGame();
+			this.markModified();
 			return;
 		}
 
@@ -824,8 +878,34 @@ export class BuilderModel {
 			} else {
 				this.level.layout[key] = this.activeTool.value;
 			}
+		} else if (this.activeTool.type === 'item') {
+			if (!this.level.items) this.level.items = {};
+
+			let icon = this.activeTool.value;
+			// Try to find definition
+			const def =
+				this.level.customItems?.[this.activeTool.value] ||
+				this.pack.customItems?.[this.activeTool.value];
+			if (def) {
+				icon = def.visuals.icon;
+			} else {
+				// Built-ins
+				if (this.activeTool.value === 'boat') icon = 'Ship';
+				if (this.activeTool.value === 'key') icon = 'Key';
+				if (this.activeTool.value === 'number') icon = 'Hash';
+				if (this.activeTool.value === 'color') icon = 'Palette';
+			}
+
+			this.level.items[key] = {
+				type: this.activeTool.value,
+				value: true,
+				icon: icon
+			};
 		} else if (this.activeTool.type === 'erase') {
 			delete this.level.layout[key];
+			if (this.level.items) {
+				delete this.level.items[key];
+			}
 		}
 
 		// Trigger reactivity by re-assigning or using deep reactivity
@@ -835,6 +915,6 @@ export class BuilderModel {
 
 		// For now, let's just re-sync the whole game model to be safe and simple.
 		// Optimization: Update the specific part of GameModel.
-		this.syncGame();
+		this.markModified();
 	}
 }

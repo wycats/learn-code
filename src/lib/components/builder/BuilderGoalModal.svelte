@@ -11,7 +11,6 @@
 		ChevronDown
 	} from 'lucide-svelte';
 	import { Stack } from '$lib';
-	import { slide } from 'svelte/transition';
 	import IconPicker from './IconPicker.svelte';
 
 	interface Props {
@@ -20,12 +19,17 @@
 	}
 
 	let { builder, onClose }: Props = $props();
-	let showBiomePicker = $state(false);
+	let dialog: HTMLDialogElement;
 	let snapshotStatus = $state<'idle' | 'saved'>('idle');
 
 	// Local state for constraints toggles
 	let parEnabled = $state(!!builder.level.solutionPar);
 	let maxBlocksEnabled = $state(!!builder.level.maxBlocks);
+	let livesEnabled = $state(!!builder.level.startingLives && builder.level.startingLives > 1);
+
+	$effect(() => {
+		dialog?.showModal();
+	});
 
 	// Sync local state to model
 	$effect(() => {
@@ -39,6 +43,12 @@
 			builder.level.maxBlocks = undefined;
 		} else if (!builder.level.maxBlocks) {
 			builder.level.maxBlocks = 20; // Default
+		}
+
+		if (!livesEnabled) {
+			builder.level.startingLives = 1;
+		} else if (builder.level.startingLives === 1) {
+			builder.level.startingLives = 3; // Default for survival
 		}
 	});
 
@@ -77,7 +87,9 @@
 	function selectBiome(value: string) {
 		builder.level.defaultTerrain = value;
 		builder.syncGame();
-		showBiomePicker = false;
+		// Popover closes automatically when clicking outside or we can close it manually if needed,
+		// but for native popover, clicking a button inside doesn't auto-close unless it's a submit/reset or we call hidePopover.
+		// We'll handle it in the markup.
 	}
 
 	function toggleDifficulty() {
@@ -97,15 +109,22 @@
 			snapshotStatus = 'idle';
 		}, 2000);
 	}
+
+	function handleBackdropClick(e: MouseEvent) {
+		if (e.target === dialog) {
+			onClose();
+		}
+	}
 </script>
 
-<div class="overlay goal">
-	<div class="modal">
+<dialog bind:this={dialog} class="goal-modal" onclose={onClose} onclick={handleBackdropClick}>
+	<div class="modal-content">
 		<Stack gap="var(--size-4)" align="center">
 			<div class="icon-wrapper">
 				<IconPicker
 					value={builder.level.icon}
 					onChange={(icon) => {
+						builder.pushState();
 						builder.level.icon = icon;
 						builder.syncGame();
 					}}
@@ -115,12 +134,22 @@
 				<input
 					type="text"
 					class="title-input"
-					bind:value={builder.level.name}
+					value={builder.level.name}
+					onchange={(e) => {
+						builder.pushState();
+						builder.level.name = e.currentTarget.value;
+						builder.syncGame();
+					}}
 					placeholder="Level Name"
 				/>
 				<textarea
 					class="description-input"
-					bind:value={builder.level.description}
+					value={builder.level.description}
+					onchange={(e) => {
+						builder.pushState();
+						builder.level.description = e.currentTarget.value;
+						builder.syncGame();
+					}}
 					placeholder="Enter a short description or instruction for the level..."
 					rows="2"
 				></textarea>
@@ -128,7 +157,13 @@
 				<div class="settings-grid">
 					<div class="setting-item">
 						<div class="picker-wrapper">
-							<button class="difficulty-badge" onclick={toggleDifficulty}>
+							<button
+								class="difficulty-badge"
+								onclick={() => {
+									builder.pushState();
+									toggleDifficulty();
+								}}
+							>
 								{builder.level.difficulty || 'beginner'}
 							</button>
 						</div>
@@ -138,7 +173,7 @@
 						<div class="picker-wrapper">
 							<button
 								class="biome-trigger"
-								onclick={() => (showBiomePicker = !showBiomePicker)}
+								popovertarget="biome-popover"
 								style:--biome-color={currentBiome.color}
 							>
 								<currentBiome.icon size={16} />
@@ -148,33 +183,49 @@
 								</span>
 							</button>
 
-							{#if showBiomePicker}
-								<div class="popover" transition:slide={{ duration: 200 }}>
-									{#each BIOME_OPTIONS as option (option.value)}
-										<button
-											class="option"
-											class:selected={option.value === builder.level.defaultTerrain}
-											onclick={() => selectBiome(option.value)}
-											style:--option-color={option.color}
-										>
-											<option.icon size={16} />
-											<span>{option.label}</span>
-										</button>
-									{/each}
-								</div>
-							{/if}
+							<div id="biome-popover" popover="auto" class="popover">
+								{#each BIOME_OPTIONS as option (option.value)}
+									<button
+										class="option"
+										class:selected={option.value === builder.level.defaultTerrain}
+										onclick={(e) => {
+											builder.pushState();
+											selectBiome(option.value);
+											// eslint-disable-next-line @typescript-eslint/no-explicit-any
+											(e.currentTarget.closest('[popover]') as any)?.hidePopover();
+										}}
+										style:--option-color={option.color}
+									>
+										<option.icon size={16} />
+										<span>{option.label}</span>
+									</button>
+								{/each}
+							</div>
 						</div>
 					</div>
 
 					<div class="constraints">
 						<div class="constraint-line">
-							<input type="checkbox" bind:checked={parEnabled} id="par-toggle" />
+							<input
+								type="checkbox"
+								checked={parEnabled}
+								onchange={(e) => {
+									builder.pushState();
+									parEnabled = e.currentTarget.checked;
+								}}
+								id="par-toggle"
+							/>
 							<label for="par-toggle" class:disabled={!parEnabled}>
 								Solve in
 								<div class="inline-edit" class:disabled={!parEnabled}>
 									<input
 										type="number"
-										bind:value={builder.level.solutionPar}
+										value={builder.level.solutionPar}
+										onchange={(e) => {
+											builder.pushState();
+											builder.level.solutionPar = parseInt(e.currentTarget.value);
+											builder.syncGame();
+										}}
 										min="1"
 										max="99"
 										disabled={!parEnabled}
@@ -186,13 +237,26 @@
 						</div>
 
 						<div class="constraint-line">
-							<input type="checkbox" bind:checked={maxBlocksEnabled} id="max-toggle" />
+							<input
+								type="checkbox"
+								checked={maxBlocksEnabled}
+								onchange={(e) => {
+									builder.pushState();
+									maxBlocksEnabled = e.currentTarget.checked;
+								}}
+								id="max-toggle"
+							/>
 							<label for="max-toggle" class:disabled={!maxBlocksEnabled}>
 								Max
 								<div class="inline-edit" class:disabled={!maxBlocksEnabled}>
 									<input
 										type="number"
-										bind:value={builder.level.maxBlocks}
+										value={builder.level.maxBlocks}
+										onchange={(e) => {
+											builder.pushState();
+											builder.level.maxBlocks = parseInt(e.currentTarget.value);
+											builder.syncGame();
+										}}
 										min={parEnabled ? builder.level.solutionPar : 1}
 										max="50"
 										disabled={!maxBlocksEnabled}
@@ -202,6 +266,37 @@
 								blocks allowed
 							</label>
 						</div>
+
+						<div class="constraint-line">
+							<input
+								type="checkbox"
+								checked={livesEnabled}
+								onchange={(e) => {
+									builder.pushState();
+									livesEnabled = e.currentTarget.checked;
+								}}
+								id="lives-toggle"
+							/>
+							<label for="lives-toggle" class:disabled={!livesEnabled}>
+								Start with
+								<div class="inline-edit" class:disabled={!livesEnabled}>
+									<input
+										type="number"
+										value={builder.level.startingLives}
+										onchange={(e) => {
+											builder.pushState();
+											builder.level.startingLives = parseInt(e.currentTarget.value);
+											builder.syncGame();
+										}}
+										min="1"
+										max="10"
+										disabled={!livesEnabled}
+										title="Starting Lives"
+									/>
+								</div>
+								lives
+							</label>
+						</div>
 					</div>
 				</div>
 
@@ -209,7 +304,7 @@
 					<div class="starting-code-section">
 						<button class="btn-secondary" onclick={handleSnapshot}>
 							<Camera size={20} />
-							{snapshotStatus === 'saved' ? 'Saved!' : 'Set as Start'}
+							{snapshotStatus === 'saved' ? 'Saved!' : 'Use Test Level'}
 						</button>
 					</div>
 				</div>
@@ -219,33 +314,29 @@
 			</button>
 		</Stack>
 	</div>
-</div>
+</dialog>
 
 <style>
-	.overlay {
-		position: absolute;
-		inset: 0;
-		background-color: rgba(255, 255, 255, 0.5);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		color: white;
-		border-radius: var(--radius-3);
-		backdrop-filter: blur(8px);
-		animation: fade-in 0.3s ease;
-		z-index: 50;
-	}
-
-	.modal {
+	.goal-modal {
 		background-color: var(--surface-1);
 		color: var(--text-1);
-		padding: var(--size-6);
+		padding: 0;
 		border-radius: var(--radius-3);
 		box-shadow: var(--shadow-4);
 		text-align: center;
-		min-width: 350px;
+		min-width: min(350px, 90vw);
 		max-width: 90%;
+		border: none;
+		overflow: visible;
+	}
+
+	.goal-modal::backdrop {
+		background-color: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(8px);
+	}
+
+	.modal-content {
+		padding: var(--size-6);
 	}
 
 	.icon-wrapper {
@@ -268,7 +359,11 @@
 		font-size: var(--font-size-0);
 		font-weight: 700;
 		text-transform: uppercase;
-		padding: 4px 12px;
+		padding: 0 12px;
+		min-height: var(--touch-target-min);
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		border-radius: var(--radius-pill);
 		background-color: white;
 		color: var(--text-1);
@@ -352,6 +447,7 @@
 		align-items: center;
 		gap: var(--size-2);
 		font-size: var(--font-size-1);
+		min-height: var(--touch-target-min);
 	}
 
 	.constraint-line label {
@@ -359,6 +455,7 @@
 		align-items: center;
 		gap: var(--size-2);
 		cursor: pointer;
+		width: 100%;
 	}
 
 	.constraint-line label.disabled {
@@ -371,10 +468,11 @@
 		align-items: center;
 		gap: var(--size-1);
 		background-color: var(--surface-2);
-		padding: 2px var(--size-2);
+		padding: 0 var(--size-2);
 		border-radius: var(--radius-1);
 		border: 1px solid transparent;
 		transition: all 0.2s;
+		min-height: var(--touch-target-min);
 	}
 
 	.inline-edit.disabled {
@@ -415,7 +513,8 @@
 		gap: var(--size-2);
 		background-color: var(--surface-2);
 		border: 1px solid var(--surface-3);
-		padding: var(--size-1) var(--size-2);
+		padding: 0 var(--size-2);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-2);
 		cursor: pointer;
 		color: var(--text-1);
@@ -459,7 +558,8 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
-		padding: var(--size-2);
+		padding: 0 var(--size-2);
+		min-height: var(--touch-target-min);
 		border: none;
 		background: none;
 		cursor: pointer;
@@ -510,7 +610,8 @@
 	.btn-primary {
 		background-color: var(--indigo-5);
 		color: white;
-		padding: var(--size-3) var(--size-6);
+		padding: 0 var(--size-6);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-round);
 		font-weight: bold;
 		font-size: var(--font-size-2);
@@ -518,6 +619,7 @@
 		cursor: pointer;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: var(--size-2);
 		transition: transform 0.1s;
 	}
@@ -533,7 +635,8 @@
 	.btn-secondary {
 		background-color: var(--surface-2);
 		color: var(--text-1);
-		padding: var(--size-2) var(--size-4);
+		padding: 0 var(--size-4);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-round);
 		font-weight: bold;
 		font-size: var(--font-size-1);
@@ -541,6 +644,7 @@
 		cursor: pointer;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: var(--size-2);
 		transition: all 0.1s;
 	}

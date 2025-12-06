@@ -20,7 +20,7 @@ export const UserProgressSchema = z.object({
 });
 export type UserProgress = z.infer<typeof UserProgressSchema>;
 
-const STORAGE_KEY = 'wonderblocks_progress';
+const STORAGE_KEY = 'kibi_progress';
 
 export class ProgressService {
 	static load(): UserProgress {

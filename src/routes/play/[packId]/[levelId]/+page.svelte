@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { getPack } from '$lib/game/packs';
 	import { ProgressService } from '$lib/game/progress';
+	import { CloudSyncService } from '$lib/services/cloud-sync';
 	import { GameModel } from '$lib/game/model.svelte';
 	import type { Character, Emotion } from '$lib/game/types';
 	import Game from '$lib/components/game/Game.svelte';
@@ -67,6 +68,14 @@
 		if (game && game.status === 'won') {
 			const stars = calculateStars();
 			ProgressService.completeLevel(packId, levelId, stars);
+			CloudSyncService.push([
+				{
+					levelId,
+					status: 'completed',
+					stars,
+					updatedAt: new Date().toISOString()
+				}
+			]);
 		}
 	});
 

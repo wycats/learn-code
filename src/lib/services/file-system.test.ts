@@ -1,12 +1,9 @@
+// @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-	FileSystemService,
-	type FileSystemDirectoryHandle,
-	type FileSystemFileHandle,
-	type FileSystemWritableFileStream
-} from './file-system';
+import { BrowserFileSystemService } from './file-system';
 import * as handleRegistry from './handle-registry';
 import type { LevelPack } from '$lib/game/types';
+import type { FileSystemDirectoryHandle } from './file-system';
 
 // Mock handle-registry
 vi.mock('./handle-registry', () => ({
@@ -15,118 +12,249 @@ vi.mock('./handle-registry', () => ({
 	removeHandle: vi.fn()
 }));
 
+// Mock File System Access API classes
+class MockFileSystemHandle {
+	constructor(
+		public name: string,
+		public kind: 'file' | 'directory'
+	) {}
+
+	async isSameEntry(other: MockFileSystemHandle) {
+		return this === other;
+	}
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async queryPermission(_descriptor?: { mode?: 'read' | 'readwrite' }) {
+		return 'granted' as const;
+	}
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async requestPermission(_descriptor?: { mode?: 'read' | 'readwrite' }) {
+		return 'granted' as const;
+	}
+}
+
+class MockFileSystemFileHandle extends MockFileSystemHandle {
+	public content: string = '';
+
+	constructor(name: string, content: string = '') {
+		super(name, 'file');
+		this.content = content;
+	}
+
+	async getFile() {
+		return {
+			text: async () => this.content
+		} as File;
+	}
+
+	async createWritable() {
+		const writable = {
+			content: '',
+			write: async (data: string) => {
+				writable.content += data;
+			},
+			close: async () => {},
+			seek: async () => {},
+			truncate: async () => {}
+		};
+
+		// When closed, update the file content
+		const originalClose = writable.close.bind(writable);
+		writable.close = async () => {
+			await originalClose();
+			this.content = writable.content;
+		};
+		return writable;
+	}
+}
+
+class MockFileSystemDirectoryHandle extends MockFileSystemHandle {
+	public entries: Map<string, MockFileSystemDirectoryHandle | MockFileSystemFileHandle> = new Map();
+
+	constructor(name: string) {
+		super(name, 'directory');
+	}
+
+	async getDirectoryHandle(name: string, options?: { create?: boolean }) {
+		if (this.entries.has(name)) {
+			const entry = this.entries.get(name);
+			if (entry?.kind === 'directory') return entry as MockFileSystemDirectoryHandle;
+			throw new Error('Type mismatch');
+		}
+		if (options?.create) {
+			const newDir = new MockFileSystemDirectoryHandle(name);
+			this.entries.set(name, newDir);
+			return newDir;
+		}
+		throw new Error('NotFoundError');
+	}
+
+	async getFileHandle(name: string, options?: { create?: boolean }) {
+		if (this.entries.has(name)) {
+			const entry = this.entries.get(name);
+			if (entry?.kind === 'file') return entry as MockFileSystemFileHandle;
+			throw new Error('Type mismatch');
+		}
+		if (options?.create) {
+			const newFile = new MockFileSystemFileHandle(name);
+			this.entries.set(name, newFile);
+			return newFile;
+		}
+		throw new Error('NotFoundError');
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async removeEntry(name: string, _options?: { recursive?: boolean }) {
+		this.entries.delete(name);
+	}
+
+	async *values() {
+		for (const entry of this.entries.values()) {
+			yield entry;
+		}
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async resolve(_possibleDescendant: MockFileSystemHandle) {
+		return [];
+	}
+}
+
 describe('FileSystemService', () => {
-	let service: FileSystemService;
-	let mockRootHandle: FileSystemDirectoryHandle;
-	let mockFileHandle: FileSystemFileHandle;
-	let mockWritable: FileSystemWritableFileStream;
+	let fileSystem: BrowserFileSystemService;
+	let mockRoot: MockFileSystemDirectoryHandle;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
-		service = new FileSystemService();
 
-		// Mock File System Access API objects
-		mockWritable = {
-			write: vi.fn(),
-			close: vi.fn(),
-			seek: vi.fn(),
-			truncate: vi.fn(),
-			locked: false,
-			abort: vi.fn(),
-			getWriter: vi.fn()
-		} as unknown as FileSystemWritableFileStream;
-
-		mockFileHandle = {
-			kind: 'file',
-			name: 'pack.json',
-			getFile: vi.fn().mockResolvedValue(new File(['{"id":"test"}'], 'pack.json')),
-			createWritable: vi.fn().mockResolvedValue(mockWritable),
-			isSameEntry: vi.fn().mockResolvedValue(false),
-			queryPermission: vi.fn().mockResolvedValue('granted'),
-			requestPermission: vi.fn().mockResolvedValue('granted')
-		} as unknown as FileSystemFileHandle;
-
-		mockRootHandle = {
-			kind: 'directory',
-			name: 'test-folder',
-			getDirectoryHandle: vi.fn(), // Will be mocked dynamically if needed
-			getFileHandle: vi.fn().mockResolvedValue(mockFileHandle),
-			removeEntry: vi.fn(),
-			resolve: vi.fn(),
-			values: vi.fn(),
-			isSameEntry: vi.fn().mockResolvedValue(false),
-			queryPermission: vi.fn().mockResolvedValue('granted'),
-			requestPermission: vi.fn().mockResolvedValue('granted')
-		} as unknown as FileSystemDirectoryHandle;
+		mockRoot = new MockFileSystemDirectoryHandle('root');
 
 		// Mock window.showDirectoryPicker
 		vi.stubGlobal('window', {
-			showDirectoryPicker: vi.fn().mockResolvedValue(mockRootHandle),
+			showDirectoryPicker: vi.fn().mockResolvedValue(mockRoot),
 			showSaveFilePicker: vi.fn()
 		});
+
+		fileSystem = new BrowserFileSystemService();
+	});
+
+	it('should check if supported', () => {
+		expect(fileSystem.isSupported).toBe(true);
+	});
+
+	it('should open directory', async () => {
+		const handle = await fileSystem.openDirectory();
+		expect(window.showDirectoryPicker).toHaveBeenCalled();
+		expect(handle).toBe(mockRoot);
+	});
+
+	it('should handle user cancellation in openDirectory', async () => {
+		const abortError = new Error('User cancelled');
+		abortError.name = 'AbortError';
+		window.showDirectoryPicker = vi.fn().mockRejectedValue(abortError);
+
+		const handle = await fileSystem.openDirectory();
+		expect(handle).toBeNull();
+	});
+
+	it('should save pack to disk', async () => {
+		const pack = { id: 'p1', name: 'My Pack', levels: [] } as unknown as LevelPack;
+
+		// First call will prompt for directory
+		await fileSystem.savePackToDisk(pack);
+
+		expect(window.showDirectoryPicker).toHaveBeenCalled();
+
+		// Check if folder and file were created
+		const packFolder = await mockRoot.getDirectoryHandle('My Pack');
+		expect(packFolder).toBeDefined();
+
+		const packFile = await packFolder.getFileHandle('pack.json');
+		expect(packFile).toBeDefined();
+		expect(packFile.content).toContain('"name": "My Pack"');
+	});
+
+	it('should load pack from disk', async () => {
+		const packData = { id: 'p1', name: 'Loaded Pack', levels: [] };
+		const packFolder = await mockRoot.getDirectoryHandle('Loaded Pack', { create: true });
+		const packFile = await packFolder.getFileHandle('pack.json', { create: true });
+		packFile.content = JSON.stringify(packData);
+
+		const loadedPack = await fileSystem.loadPackFromDisk(
+			packFolder as unknown as FileSystemDirectoryHandle
+		);
+		expect(loadedPack).toEqual(packData);
+	});
+
+	it('should list packs in directory', async () => {
+		// Create a valid pack folder
+		const pack1 = await mockRoot.getDirectoryHandle('Pack 1', { create: true });
+		await pack1.getFileHandle('pack.json', { create: true });
+
+		// Create another valid pack folder
+		const pack2 = await mockRoot.getDirectoryHandle('Pack 2', { create: true });
+		await pack2.getFileHandle('pack.json', { create: true });
+
+		// Create a non-pack folder
+		await mockRoot.getDirectoryHandle('Not a Pack', { create: true });
+
+		// Create a file in root
+		await mockRoot.getFileHandle('somefile.txt', { create: true });
+
+		const packs = await fileSystem.listPacksInDirectory(
+			mockRoot as unknown as FileSystemDirectoryHandle
+		);
+		expect(packs).toHaveLength(2);
+		expect(packs.map((p) => p.name)).toContain('Pack 1');
+		expect(packs.map((p) => p.name)).toContain('Pack 2');
 	});
 
 	it('should link pack to disk', async () => {
-		const packId = 'pack-123';
-
-		await service.linkPackToDisk(packId);
+		const packId = 'p1';
+		const handle = await fileSystem.linkPackToDisk(packId);
 
 		expect(window.showDirectoryPicker).toHaveBeenCalled();
-		expect(handleRegistry.saveHandle).toHaveBeenCalledWith(packId, mockRootHandle);
+		expect(handleRegistry.saveHandle).toHaveBeenCalledWith(packId, mockRoot);
+		expect(handle).toBe(mockRoot);
 	});
 
-	it('should sync pack to disk', async () => {
-		const packId = 'pack-123';
-		const packData = { id: packId, name: 'Test Pack', levels: [] } as unknown as LevelPack;
+	it('should sync pack to disk (linked)', async () => {
+		const packId = 'p1';
+		const pack = { id: packId, name: 'Synced Pack', levels: [] } as unknown as LevelPack;
 
-		// Mock getHandle to return our mock handle
-		vi.mocked(handleRegistry.getHandle).mockResolvedValue(mockRootHandle);
+		// Mock getHandle to return our mock root
+		vi.mocked(handleRegistry.getHandle).mockResolvedValue(
+			mockRoot as unknown as FileSystemDirectoryHandle
+		);
 
-		await service.syncPackToDisk(packId, packData);
+		await fileSystem.syncPackToDisk(packId, pack);
 
-		expect(handleRegistry.getHandle).toHaveBeenCalledWith(packId);
-		expect(mockRootHandle.getFileHandle).toHaveBeenCalledWith('pack.json', { create: true });
-		expect(mockFileHandle.createWritable).toHaveBeenCalled();
-		expect(mockWritable.write).toHaveBeenCalledWith(JSON.stringify(packData, null, 2));
-		expect(mockWritable.close).toHaveBeenCalled();
+		const packFile = await mockRoot.getFileHandle('pack.json');
+		expect(packFile.content).toContain('"name": "Synced Pack"');
 	});
 
-	it('should load linked pack from disk', async () => {
-		const packId = 'pack-123';
-
-		// Mock getHandle to return our mock handle
-		vi.mocked(handleRegistry.getHandle).mockResolvedValue(mockRootHandle);
-
-		const result = await service.loadLinkedPack(packId);
-
-		expect(handleRegistry.getHandle).toHaveBeenCalledWith(packId);
-		expect(mockRootHandle.getFileHandle).toHaveBeenCalledWith('pack.json');
-		expect(mockFileHandle.getFile).toHaveBeenCalled();
-		expect(result).toEqual({ id: 'test' });
-	});
-
-	it('should handle permission denial during sync', async () => {
-		const packId = 'pack-123';
-		const packData = { id: packId, name: 'Test Pack', levels: [] } as unknown as LevelPack;
-
-		// Mock permission denied
-		const deniedHandle = {
-			...mockRootHandle,
-			queryPermission: vi.fn().mockResolvedValue('denied'),
-			requestPermission: vi.fn().mockResolvedValue('denied')
-		} as unknown as FileSystemDirectoryHandle;
-		vi.mocked(handleRegistry.getHandle).mockResolvedValue(deniedHandle);
-
-		await expect(service.syncPackToDisk(packId, packData)).rejects.toThrow('Permission denied');
-	});
-
-	it('should handle missing handle (not linked)', async () => {
-		const packId = 'pack-123';
+	it('should not sync if not linked', async () => {
 		vi.mocked(handleRegistry.getHandle).mockResolvedValue(undefined);
+		await fileSystem.syncPackToDisk('p1', {} as unknown as LevelPack);
+		expect(handleRegistry.getHandle).toHaveBeenCalledWith('p1');
+	});
 
-		await service.syncPackToDisk(packId, {} as unknown as LevelPack);
+	it('should load linked pack', async () => {
+		const packId = 'p1';
+		const packData = { id: packId, name: 'Linked Pack', levels: [] };
 
-		// Should just return without error
-		expect(mockRootHandle.getFileHandle).not.toHaveBeenCalled();
+		const packFile = await mockRoot.getFileHandle('pack.json', { create: true });
+		packFile.content = JSON.stringify(packData);
+
+		vi.mocked(handleRegistry.getHandle).mockResolvedValue(
+			mockRoot as unknown as FileSystemDirectoryHandle
+		);
+
+		const loadedPack = await fileSystem.loadLinkedPack(packId);
+		expect(loadedPack).toEqual(packData);
+	});
+
+	it('should unlink pack', async () => {
+		await fileSystem.unlinkPack('p1');
+		expect(handleRegistry.removeHandle).toHaveBeenCalledWith('p1');
 	});
 });

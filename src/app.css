@@ -1,3 +1,6 @@
+/* Define layer order explicitly to ensure theme overrides reset */
+@layer reset, theme, base, layout, components, utilities;
+
 @import 'open-props/style' layer(reset);
 @import 'open-props/normalize' layer(reset);
 
@@ -23,24 +26,39 @@
 		--brand-light: light-dark(var(--indigo-5), var(--indigo-3));
 		--brand-dark: light-dark(var(--indigo-8), var(--indigo-5));
 		--brand-dim: light-dark(var(--indigo-1), var(--indigo-9));
+		--brand-surface: light-dark(var(--indigo-0), var(--indigo-9));
 		--accent: light-dark(var(--pink-6), var(--pink-4));
 
-		--color-action: var(--green-5);
-		--color-movement: var(--blue-5);
-		--color-logic: var(--violet-5);
-		--color-loop: var(--orange-5);
+		/* Functional Colors - Adjusted for Dark Mode (Lighter/Brighter on Dark) */
+		--color-action: light-dark(var(--green-6), var(--green-4));
+		--color-movement: light-dark(var(--blue-6), var(--blue-4));
+		--color-logic: light-dark(var(--violet-6), var(--violet-4));
+		--color-loop: light-dark(var(--orange-6), var(--orange-4));
 
 		/* Status Colors */
-		--success: var(--green-6);
-		--warning: var(--yellow-6);
-		--error: var(--red-6);
-		--info: var(--blue-6);
+		--success: light-dark(var(--green-6), var(--green-4));
+		--warning: light-dark(var(--yellow-6), var(--yellow-4));
+		--error: light-dark(var(--red-6), var(--red-4));
+		--info: light-dark(var(--blue-6), var(--blue-4));
+
+		/* Fonts */
+		--font-sans: 'Inter Variable', sans-serif;
+		--font-heading: 'Outfit Variable', sans-serif;
+		--font-mono: 'JetBrains Mono Variable', monospace;
 
 		/* Touch Interaction */
 		--touch-target-min: 44px;
 
 		/* Shadows */
 		--shadow-soft: var(--shadow-3);
+	}
+
+	:root[data-theme='light'] {
+		color-scheme: light;
+	}
+
+	:root[data-theme='dark'] {
+		color-scheme: dark;
 	}
 }
 
@@ -64,6 +82,15 @@
 		min-height: var(--touch-target-min);
 		display: grid;
 		place-content: center;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		font-family: var(--font-heading);
 	}
 }
 

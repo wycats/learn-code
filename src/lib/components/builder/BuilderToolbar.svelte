@@ -21,6 +21,9 @@
 	import PackManagerModal from './PackManagerModal.svelte';
 	import ShareModal from './ShareModal.svelte';
 	import { fade, slide } from 'svelte/transition';
+	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
+	import DevConnectionStatus from '$lib/components/common/DevConnectionStatus.svelte';
+	import { fileSystem } from '$lib/services/file-system';
 
 	interface Props {
 		builder: BuilderModel;
@@ -171,7 +174,7 @@
 			<button
 				class="action-btn"
 				onclick={() => builder.undo()}
-				disabled={builder.history.length === 0}
+				disabled={!builder.canUndo}
 				title="Undo"
 			>
 				<Undo size={20} />
@@ -179,34 +182,36 @@
 			<button
 				class="action-btn"
 				onclick={() => builder.redo()}
-				disabled={builder.future.length === 0}
+				disabled={!builder.canRedo}
 				title="Redo"
 			>
 				<Redo size={20} />
 			</button>
 
-			{#if builder.isLinked}
-				{#if builder.needsPermission}
-					<button
-						class="action-btn warning"
-						onclick={handleReconnect}
-						title="Permission Needed - Click to Reconnect"
-					>
-						<Link size={20} />
-					</button>
+			{#if fileSystem.isSupported}
+				{#if builder.isLinked}
+					{#if builder.needsPermission}
+						<button
+							class="action-btn warning"
+							onclick={handleReconnect}
+							title="Permission Needed - Click to Reconnect"
+						>
+							<Link size={20} />
+						</button>
+					{:else}
+						<button
+							class="action-btn success"
+							onclick={handleLink}
+							title="Linked to Disk (Click to Change)"
+						>
+							<Link size={20} />
+						</button>
+					{/if}
 				{:else}
-					<button
-						class="action-btn success"
-						onclick={handleLink}
-						title="Linked to Disk (Click to Change)"
-					>
+					<button class="action-btn" onclick={handleLink} title="Link to Disk">
 						<Link size={20} />
 					</button>
 				{/if}
-			{:else}
-				<button class="action-btn" onclick={handleLink} title="Link to Disk">
-					<Link size={20} />
-				</button>
 			{/if}
 
 			{#if statusMessage}
@@ -298,6 +303,9 @@
 	</div>
 
 	<div class="right-group">
+		<DevConnectionStatus />
+		<ThemeToggle />
+		<div class="separator"></div>
 		<button class="mode-btn primary" onclick={toggleMode}>
 			{#if builder.mode === 'edit' || builder.mode === 'story'}
 				<Play size={20} /> Play Level
@@ -318,9 +326,16 @@
 		align-items: center;
 		position: relative;
 		z-index: 100;
+		overflow-x: auto;
+		scrollbar-width: none;
 	}
 
-	.left-group {
+	.toolbar::-webkit-scrollbar {
+		display: none;
+	}
+
+	.left-group,
+	.right-group {
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
@@ -336,7 +351,9 @@
 		border: none;
 		color: var(--text-2);
 		cursor: pointer;
-		padding: var(--size-2);
+		padding: 0;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		border-radius: var(--radius-2);
 		transition: background-color 0.2s;
 		display: flex;
@@ -383,7 +400,8 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
-		padding: var(--size-2) var(--size-4);
+		padding: 0 var(--size-4);
+		min-height: var(--touch-target-min);
 		background-color: var(--blue-6);
 		color: white;
 		border: none;
@@ -407,7 +425,8 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
-		padding: var(--size-1) var(--size-2);
+		padding: 0 var(--size-2);
+		min-height: var(--touch-target-min);
 		background: none;
 		border: 1px solid transparent;
 		border-radius: var(--radius-2);
@@ -429,25 +448,6 @@
 	.tool-label {
 		font-weight: 500;
 		font-size: var(--font-size-1);
-	}
-
-	.active-tile-display {
-		display: flex;
-		align-items: center;
-		gap: var(--size-2);
-		padding: var(--size-1) var(--size-2);
-		background-color: var(--surface-1);
-		border: 1px solid var(--surface-3);
-		border-radius: var(--radius-2);
-		color: var(--text-1);
-	}
-
-	.tile-preview {
-		width: 24px;
-		height: 24px;
-		border-radius: var(--radius-1);
-		overflow: hidden;
-		box-shadow: var(--shadow-1);
 	}
 
 	.architect-section {
@@ -482,6 +482,12 @@
 		position: relative;
 	}
 
+	@media (max-width: 600px) {
+		.level-select-wrapper {
+			display: none;
+		}
+	}
+
 	.level-trigger {
 		display: flex;
 		align-items: center;
@@ -489,7 +495,8 @@
 		background-color: var(--surface-1);
 		border: 1px solid var(--surface-3);
 		color: var(--text-1);
-		padding: var(--size-2) var(--size-3);
+		padding: 0 var(--size-3);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-2);
 		font-size: var(--font-size-1);
 		cursor: pointer;
@@ -532,7 +539,10 @@
 		text-align: left;
 		background: none;
 		border: none;
-		padding: var(--size-2);
+		padding: 0 var(--size-2);
+		min-height: var(--touch-target-min);
+		display: flex;
+		align-items: center;
 		cursor: pointer;
 		color: var(--text-2);
 		border-radius: var(--radius-1);

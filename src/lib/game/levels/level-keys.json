@@ -1,0 +1,43 @@
+{
+	"id": "level-keys-1",
+	"name": "The Number Key",
+	"description": "Pick up the number to unlock the loop!",
+	"gridSize": {
+		"width": 5,
+		"height": 5
+	},
+	"start": {
+		"x": 0,
+		"y": 2
+	},
+	"startOrientation": "E",
+	"goal": {
+		"x": 4,
+		"y": 2
+	},
+	"layout": {
+		"0,2": "grass",
+		"1,2": "grass",
+		"2,2": "grass",
+		"3,2": "grass",
+		"4,2": "goal"
+	},
+	"items": {
+		"1,2": {
+			"type": "number",
+			"value": 3,
+			"icon": "3"
+		}
+	},
+	"availableBlocks": ["move-forward", "pick-up", "loop"],
+	"intro": [
+		{
+			"speaker": "Guide",
+			"text": "I've found a Thought Bubble! It contains a number. If you pick it up, you can hold it in your mind."
+		},
+		{
+			"speaker": "Guide",
+			"text": "Once you're holding it, drag the thought from your tray into the Loop block to tell it how many times to repeat!"
+		}
+	]
+}
