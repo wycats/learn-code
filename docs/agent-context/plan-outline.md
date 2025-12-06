@@ -408,7 +408,14 @@
 - [x] **Pull Request**: Submit and merge the changes to the main branch.
 - [x] **Deployment Verification**: Confirm Vercel picks up the changes and deploys successfully.
 
-## Phase 42: Accessibility
+## Phase 42: Jonas' Feedback
+
+**Goal:** Address feedback from Jonas regarding the "Game" experience, specifically focusing on the "Run" button behavior and visual clarity.
+
+- [ ] **Run Button Logic**: Update the "Run" button to restart the level if the character is already at the goal or in a failure state.
+- [ ] **Visual Clarity**: Improve the visual distinction between "Edit" and "Run" modes.
+
+## Phase 43: Accessibility
 
 **Goal:** Implement the "Kinetic Language" interaction patterns to make the interface feel physical and responsive, bridging the gap between intent and action.
 
@@ -417,7 +424,7 @@
 - [ ] **The Lens**: Implement a long-press "Debug Lens" to inspect runtime state of blocks (Axiom 6).
 - [ ] **Ghost Replay**: Visualize the "Staff Ghost" solution for verification (Axiom 4).
 
-## Phase 43: Feedback System
+## Phase 44: Feedback System
 
 **Goal:** Create a robust feedback loop that empowers users to report issues with full context.
 
@@ -426,7 +433,7 @@
 - [ ] **Offline Queue**: Ensure feedback is queued and sent when online (already partially implemented).
 - [ ] **Admin Dashboard**: Simple view to triage feedback (optional/later).
 
-## Phase 44: The Master Teacher
+## Phase 45: The Master Teacher
 
 **Goal:** Empower the Architect with advanced tools to control the learning experience and provide context-aware guidance.
 
@@ -437,7 +444,7 @@
   - [ ] **Context-Aware Manual**: Customize the Field Guide for the current level.
   - [ ] **Architect Control**: Give the Architect control over the Field Guide content for their levels.
 
-## Phase 45: Engine Upgrade
+## Phase 46: Engine Upgrade
 
 **Goal:** Modernize the underlying execution engine to support advanced features and better performance.
 
@@ -445,7 +452,7 @@
 - [ ] **Zod Schema Diff**: Implement "Spec-ulation" rules for Zod schemas to prevent breaking changes.
 - [ ] **Variables & Scoping**: Refine the variable system with lexical scoping and "box" metaphor.
 
-## Phase 46: The Syntax Bridge
+## Phase 47: The Syntax Bridge
 
 **Goal:** Bridge the gap between block-based coding and real-world text-based syntax.
 
@@ -453,7 +460,7 @@
 - [ ] **Syntax Highlighting**: Use Shiki or similar to highlight the code.
 - [ ] **Live Updates**: Code updates in real-time as blocks are dragged.
 
-## Phase 47: Advanced Builder Interactions
+## Phase 48: Advanced Builder Interactions
 
 **Goal:** Implement advanced "Power User" features for the Builder to support complex projects.
 

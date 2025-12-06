@@ -804,3 +804,8 @@ Refined the "Sync Status" indicator to reduce visual noise for non-logged-in use
   - Changed tooltip text from "error" to "offline" for better clarity.
 - **Changelog Access**:
   - Added a "Settings" button to the Library page header, linking to the Changelog.
+- **Guest Access**:
+  - Fixed redirect issue for guests accessing Settings and Changelog.
+  - Added "Sign In" button for guests on Settings page.
+- **Changelog Formatting**:
+  - Implemented indentation for nested lists in the Changelog UI.
