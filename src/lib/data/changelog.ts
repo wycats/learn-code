@@ -12,11 +12,30 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: 'Phase 41',
+		date: 'December 9, 2025',
+		title: 'Release & Deployment',
+		summary:
+			'Prepared the application for release with a new "In-App Changelog" feature, critical bug fixes, and a comprehensive visual regression suite. This phase also included research for future error reporting tools.',
+		features: [
+			'**In-App Changelog**:',
+			'**Automated Generation**: Script to parse `docs/agent-context/changelog.md` into structured data.',
+			'**UI**: New `/changelog` page linked from Settings.',
+			'**Markdown Support**: Enhanced rendering for bold text and other markdown features.',
+			'**Bug Fixes**:',
+			'**Duplicate Keys**: Fixed a crash caused by identical version strings for "Phase X" and "Phase X Polish".',
+			'**Markdown Rendering**: Fixed an issue where markdown syntax was being stripped.',
+			'**Future Planning**:',
+			'**Error Reporting**: Selected Highlight.io for Phase 42.'
+		],
+		type: 'major'
+	},
+	{
 		version: 'Phase 40',
 		date: 'December 9, 2025',
 		title: 'Lives & Survival Mechanics',
 		summary:
-			'Implemented core survival gameplay features including a Lives System, Health & Damage mechanics, and Game Over/Win states. Added support for configuring hazards in the Tile Editor and integrated sound effects for damage. Additionally, introduced an "In-App Changelog" feature that is automatically generated from this documentation, ensuring transparency and easy access to the project\'s history.',
+			'Implemented core survival gameplay features including a Lives System, Health & Damage mechanics, and Game Over/Win states. Added support for configuring hazards in the Tile Editor and integrated sound effects for damage.',
 		features: [
 			'**Survival Mechanics**:',
 			'**Lives System**: Players have limited lives (hearts).',
@@ -24,9 +43,6 @@ export const CHANGELOG: ChangelogEntry[] = [
 			'**Game Over / Win States**: Proper handling of level completion and failure.',
 			'**Tile Editor Updates**: Support for configuring hazards and their effects.',
 			"**Sound Effects**: Added 'hurt' sound and integrated audio feedback.",
-			'**In-App Changelog**:',
-			'**Automated Generation**: Script to parse `docs/agent-context/changelog.md` into structured data.',
-			'**UI**: New `/changelog` page linked from Settings.',
 			'**Quality Assurance**:',
 			'**Linting**: Resolved unused variables and `svelte-check` warnings.',
 			'**Type Safety**: Fixed TypeScript errors in `TileEditorModal` and tests.',
