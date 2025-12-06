@@ -111,7 +111,7 @@
 <div class="library-container">
 	<header class="library-header">
 		<div class="logo">
-			<h1>Code Climber</h1>
+			<h1>Kibi</h1>
 		</div>
 		<div class="actions">
 			<SyncStatus />

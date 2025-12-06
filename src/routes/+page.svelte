@@ -1,7 +1,16 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
-	import { Code, ArrowRight, Hammer, ScanLine, RefreshCw, LogIn, User } from 'lucide-svelte';
+	import {
+		Code,
+		ArrowRight,
+		Hammer,
+		ScanLine,
+		RefreshCw,
+		LogIn,
+		User,
+		Settings
+	} from 'lucide-svelte';
 	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
 	import SyncModal from '$lib/components/common/SyncModal.svelte';
 	import DevConnectionStatus from '$lib/components/common/DevConnectionStatus.svelte';
@@ -34,6 +43,11 @@
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto(`${base}/profiles`);
 	}
+
+	function handleSettings() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		goto(`${base}/settings`);
+	}
 </script>
 
 {#if showSync}
@@ -44,12 +58,15 @@
 	<div class="top-bar">
 		<DevConnectionStatus />
 		<ThemeToggle />
+		<button class="icon-btn" onclick={handleSettings} aria-label="Settings">
+			<Settings size={20} />
+		</button>
 	</div>
 	<div class="hero">
 		<div class="logo-icon">
 			<Code size={64} strokeWidth={2} />
 		</div>
-		<h1>Code Climber</h1>
+		<h1>Kibi</h1>
 		<p class="tagline">Master the logic of code, one block at a time.</p>
 
 		<div class="actions">
@@ -234,5 +251,25 @@
 	.feedback-link:hover {
 		opacity: 1;
 		text-decoration: underline;
+	}
+
+	.icon-btn {
+		background: none;
+		border: none;
+		color: var(--text-2);
+		cursor: pointer;
+		padding: var(--size-2);
+		border-radius: var(--radius-round);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition:
+			background-color 0.2s,
+			color 0.2s;
+	}
+
+	.icon-btn:hover {
+		background-color: var(--surface-2);
+		color: var(--text-1);
 	}
 </style>

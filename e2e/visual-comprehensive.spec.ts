@@ -42,7 +42,7 @@ test.describe('Comprehensive Visual Regression', () => {
 
 	test('Library Screen', async ({ page }) => {
 		await page.goto('/library');
-		await expect(page.getByText('Code Climber')).toBeVisible();
+		await expect(page.getByText('Kibi')).toBeVisible();
 
 		await setTheme(page, 'light');
 		await argosScreenshot(page, 'library-light');

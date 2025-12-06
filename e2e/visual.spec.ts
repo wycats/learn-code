@@ -71,7 +71,7 @@ test.describe('Visual Regression', () => {
 
 	test('Library Screen', async ({ page }) => {
 		await page.goto('/library');
-		await expect(page.locator('h1')).toContainText('Code Climber');
+		await expect(page.locator('h1')).toContainText('Kibi');
 		await setTheme(page, 'light');
 		await argosScreenshot(page, 'library-screen-light');
 	});
