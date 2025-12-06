@@ -17,6 +17,7 @@ import levelKeys1Data from './levels/level-keys.json';
 import levelBoat1Data from './levels/level-boat-1.json';
 import levelBoatIntroData from './levels/level-boat-intro.json';
 import levelBoatIslandData from './levels/level-boat-island.json';
+import levelSurvival1Data from './levels/level-survival-1.json';
 
 export const LEVEL_1 = LevelDefinitionSchema.parse(level1Data);
 export const LEVEL_2 = LevelDefinitionSchema.parse(level2Data);
@@ -36,6 +37,7 @@ export const LEVEL_KEYS_1 = LevelDefinitionSchema.parse(levelKeys1Data);
 export const LEVEL_BOAT_1 = LevelDefinitionSchema.parse(levelBoat1Data);
 export const LEVEL_BOAT_INTRO = LevelDefinitionSchema.parse(levelBoatIntroData);
 export const LEVEL_BOAT_ISLAND = LevelDefinitionSchema.parse(levelBoatIslandData);
+export const LEVEL_SURVIVAL_1 = LevelDefinitionSchema.parse(levelSurvival1Data);
 
 export const LEVELS = [
 	LEVEL_1,
@@ -55,5 +57,6 @@ export const LEVELS = [
 	LEVEL_KEYS_1,
 	LEVEL_BOAT_1,
 	LEVEL_BOAT_INTRO,
-	LEVEL_BOAT_ISLAND
+	LEVEL_BOAT_ISLAND,
+	LEVEL_SURVIVAL_1
 ];

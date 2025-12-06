@@ -52,6 +52,11 @@
   - **Workflow**: Since levels are just JSON files, the barrier to entry is low. We can provide a guide or a simplified UI to help generate the PR.
   - **Considerations**: Not all parents will want their kids to have GitHub accounts. We should support submitting proposals via other means (e.g., feedback form) but encourage the "real" workflow for those who are ready.
 
+- [ ] **Self-Hosted Auth Sidecar**: A simplified, open-source server that handles the "Backend for Frontend" (BFF) OAuth piece.
+  - **Problem**: GitHub OAuth requires a Client Secret, which cannot be stored in a client-side app (even a PWA). This creates a dependency on the hosted Kibi server for the "Connect to GitHub" feature.
+  - **Solution**: A small Docker container that runs just the auth endpoints (`/login/github`, `/callback`, `/refresh`) and exposes them to the local Kibi instance.
+  - **Goal**: Enable full self-hosting of the "Engineer Mode" features without relying on our infrastructure.
+
 ## Tooling & Infrastructure
 
 - [ ] **Zod Schema Diff / Compatibility Checker**: A library or tool that implements "Spec-ulation" rules (Rich Hickey) for Zod schemas. (Planned Phase 45)
@@ -65,4 +70,12 @@
 - [ ] **The Origin of Kibi**: Add a "Secret Chapter" or easter egg in the Field Guide that explains the "Kibibyte" origin story. This should be a jumping-off point for explaining binary numbers and powers of two to curious kids.
 - [ ] **Context-Aware Manual**: The Field Guide should be customized for the level the user is on, showing relevant chapters or highlighting concepts used in the current level. (Planned Phase 44)
 - [ ] **Architect Control**: Give the Architect control over the Field Guide content for their levels. (Planned Phase 44)
-- [ ] **"Just-in-Time" vs. "Library"**: Avoid the "unread dot" fatigue. Instead of a manual that accumulates unread content, integrate the information directly into the user flow (e.g., context-sensitive help) or structure it as a reference library that doesn't demand to be "read" linearly.
+- [ ] - [ ] **"Just-in-Time" vs. "Library"**: Avoid the "unread dot" fatigue. Instead of a manual that accumulates unread content, integrate the information directly into the user flow (e.g., context-sensitive help) or structure it as a reference library that doesn't demand to be "read" linearly.
+- [ ] **Custom Field Guide Entries**: Allow Architects to write their own Field Guide entries for their custom packs.
+  - **Rationale**: Just as we provide documentation for built-in blocks, users creating complex levels or mechanics should be able to explain them to players.
+  - **Implementation**: Add a `guide` section to the Pack JSON schema.
+  - **Pedagogy**: Teaches the importance of documentation alongside code.
+
+```
+
+```

@@ -384,31 +384,31 @@
 - [x] **Code Refactor**: Rename internal constants, events, and storage keys.
 - [x] **Documentation**: Update vision, pedagogy, and design docs.
 
-## Phase 39: Community & Sharing
+## Phase 39: Community & Sharing (Completed)
 
 **Goal:** Empower Architects to share their creations with the world.
 
-- [ ] **Export to GitHub**: Allow users to export their packs to a GitHub repository (via OAuth).
-- [ ] **Public Library**: A simple read-only view of shared packs (curated or community).
-- [ ] **Import from URL**: Ability to load a pack from a raw JSON URL.
-- [ ] **Remixing**: Allow users to "Fork" a shared level to modify it (Axiom 3).
+- [x] **Export to GitHub**: Allow users to export their packs to a GitHub repository (via OAuth).
+- [x] **Public Library**: A simple read-only view of shared packs (curated or community).
+- [x] **Import from URL**: Ability to load a pack from a raw JSON URL.
+- [x] **Remixing**: Allow users to "Fork" a shared level to modify it (Axiom 3).
 
-## Phase 40: Advanced Mechanics - Survival Mode
+## Phase 40: Advanced Mechanics - Survival Mode (Completed)
 
 **Goal:** Deepen the gameplay with survival challenges.
 
-- [ ] **Lives System**: A survival mechanic where hazards reduce a life counter.
-- [ ] **New Hazards**: Fire, Moving Platforms, etc.
+- [x] **Lives System**: A survival mechanic where hazards reduce a life counter.
+- [x] **New Hazards**: Fire, Moving Platforms, etc.
 
-## Phase 41: Accessibility
+## Phase 41: Release & Deployment (Active)
 
-**Goal:** Make the learning experience accessible to pre-literate and visually impaired users.
+**Goal:** Wrap up Phase 40 changes, submit a PR, and deploy to Vercel.
 
-- [ ] **Text-to-Speech**: Use Web Speech API to read dialogue and instructions.
-- [ ] **High Contrast Mode**: A specific theme for low-vision users.
-- [ ] **Screen Reader Optimization**: Audit ARIA labels and focus management.
+- [ ] **Pre-flight Checks**: Run full test suite and build verification.
+- [ ] **Pull Request**: Submit and merge the changes to the main branch.
+- [ ] **Deployment Verification**: Confirm Vercel picks up the changes and deploys successfully.
 
-## Phase 42: The Kinetic Bridge
+## Phase 42: Accessibility
 
 **Goal:** Implement the "Kinetic Language" interaction patterns to make the interface feel physical and responsive, bridging the gap between intent and action.
 

@@ -11,6 +11,7 @@ The app should be fully functional offline. We do not rent the user's creativity
 - **Persistence**: Use `OPFS` (Origin Private File System) or `localStorage` for robust local saving.
 - **No Login Wall**: Core gameplay and creation must work without an account.
 - **Sync is Optional**: Cloud sync is a convenience feature, not a requirement.
+- **User-Controlled Cloud**: If data leaves the device, it should ideally go to a place the user controls (e.g., their own GitHub repo).
 - **Distributed Ownership**: There is no "Master" device. Every device is a peer.
 
 ## Anti-Pattern

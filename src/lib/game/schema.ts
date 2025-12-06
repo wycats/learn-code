@@ -83,7 +83,7 @@ export const TileDefinitionSchema = z.object({
 	name: z.string(),
 	type: TileTypeSchema,
 	passableBy: ItemTypeSchema.optional(),
-	onEnter: z.enum(['kill', 'slide', 'none']).optional(),
+	onEnter: z.enum(['kill', 'slide', 'damage', 'none']).optional(),
 	visuals: z.object({
 		color: z.string(),
 		pattern: z.string().optional(),
@@ -103,6 +103,7 @@ export const BuiltInCellTypeSchema = z.enum([
 	'forest',
 	'dirt',
 	'spikes',
+	'fire',
 	'cover',
 	'void'
 ]);
@@ -252,6 +253,7 @@ export const LevelDefinitionSchema = z.object({
 	functions: z.record(z.string(), z.array(BlockSchema)).optional(),
 	solutionPar: z.number().optional(),
 	allowInfiniteLoop: z.boolean().optional(),
+	startingLives: z.number().default(1).optional(),
 	difficulty: z.enum(['beginner', 'intermediate', 'advanced', 'expert']).optional(),
 	icon: z.string().optional(),
 	intro: z.array(StorySegmentSchema).optional(),

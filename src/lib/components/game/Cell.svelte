@@ -15,7 +15,8 @@
 		Cloud,
 		Key,
 		Ship,
-		Skull
+		Skull,
+		Flame
 	} from 'lucide-svelte';
 	import type { CrossfadeParams, TransitionConfig } from 'svelte/transition';
 
@@ -132,6 +133,10 @@
 		<div class="marker">
 			<Triangle size={24} color="var(--red-7)" fill="var(--red-7)" />
 		</div>
+	{:else if type === 'fire'}
+		<div class="marker fire-anim">
+			<Flame size={24} color="var(--orange-6)" fill="var(--orange-5)" />
+		</div>
 	{:else if type === 'cover'}
 		<div class="cover-marker">
 			<Cloud size={32} color="rgba(255,255,255,0.4)" />
@@ -198,6 +203,10 @@
 
 	.cell[data-type='spikes'] {
 		background-color: var(--red-2);
+	}
+
+	.cell[data-type='fire'] {
+		background-color: var(--orange-2);
 	}
 
 	.cell[data-type='cover'] {
@@ -298,5 +307,20 @@
 		transition:
 			outline-color 2s ease-out,
 			box-shadow 2s ease-out;
+	}
+
+	.fire-anim {
+		animation: flicker 1.5s infinite alternate;
+	}
+
+	@keyframes flicker {
+		0% {
+			transform: scale(1);
+			opacity: 0.8;
+		}
+		100% {
+			transform: scale(1.1);
+			opacity: 1;
+		}
 	}
 </style>

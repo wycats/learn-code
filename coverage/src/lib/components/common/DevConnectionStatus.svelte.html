@@ -23,27 +23,27 @@
 				</h1>
 				<div class="clearfix">
 					<div class="fl pad1y space-right2">
-						<span class="strong">0% </span>
+						<span class="strong">61.53% </span>
 						<span class="quiet">Statements</span>
-						<span class="fraction">0/3</span>
+						<span class="fraction">8/13</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">0% </span>
+						<span class="strong">62.5% </span>
 						<span class="quiet">Branches</span>
-						<span class="fraction">0/2</span>
+						<span class="fraction">5/8</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">0% </span>
+						<span class="strong">40% </span>
 						<span class="quiet">Functions</span>
-						<span class="fraction">0/1</span>
+						<span class="fraction">2/5</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">0% </span>
+						<span class="strong">72.72% </span>
 						<span class="quiet">Lines</span>
-						<span class="fraction">0/3</span>
+						<span class="fraction">8/11</span>
 					</div>
 				</div>
 				<p class="quiet">
@@ -57,7 +57,7 @@
 					</div>
 				</template>
 			</div>
-			<div class="status-line low"></div>
+			<div class="status-line medium"></div>
 			<pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -116,32 +116,27 @@
 <a name='L55'></a><a href='#L55'>55</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -167,30 +162,35 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="fstat-no" title="function not covered" >&lt;script lang="ts"&gt;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&lt;script lang="ts"&gt;
 	import { WifiOff } from 'lucide-svelte';
 &nbsp;
-	let isConnected = $state(<span class="cstat-no" title="statement not covered" >true)</span>;
-	let isDev = <span class="cstat-no" title="statement not covered" >import.meta.env.DEV;</span>
+	let isConnected = $state(true);
+	let isDev = import.meta.env.DEV;
 &nbsp;
 	$effect(() =&gt; {
-		if (!isDev) return;
+		if (!<span class="missing-if-branch" title="if path not taken" >I</span>isDev<span class="cstat-no" title="statement not covered" >) return;</span>
 &nbsp;
-		if (import.meta.hot) {
-			import.meta.hot.on('vite:ws:disconnect', () =&gt; {
-				isConnected = false;
+		if (<span class="missing-if-branch" title="else path not taken" >E</span>import.meta.hot) {
+			import.meta.hot.on('vite:ws:disconnect'<span class="fstat-no" title="function not covered" >, () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >				isConnected = false;</span>
 			});
 &nbsp;
-			import.meta.hot.on('vite:ws:connect', () =&gt; {
-				isConnected = true;
+			import.meta.hot.on('vite:ws:connect'<span class="fstat-no" title="function not covered" >, () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >				isConnected = true;</span>
 			});
 		}
 	});
 &lt;/script&gt;
 &nbsp;
-{#if isDev &amp;&amp; !isConnected}
+{#if <span class="missing-if-branch" title="if path not taken" >I</span>isDev &amp;&amp; !isConnected<span class="cstat-no" title="statement not covered" >}</span>
 	&lt;div class="dev-status" title="Dev Server Disconnected"&gt;
-		&lt;WifiOff size={<span class="cstat-no" title="statement not covered" >16} /&gt;</span>
+		&lt;WifiOff size={<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >16}</span> /&gt;</span>
 		&lt;span class="label"&gt;Dev Server Offline&lt;/span&gt;
 	&lt;/div&gt;
 {/if}
@@ -230,7 +230,7 @@
 		<div class="footer quiet pad2 space-top1 center small">
 			Code coverage generated by
 			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-			at 2025-12-05T05:03:44.763Z
+			at 2025-12-06T18:43:40.070Z
 		</div>
 		<script src="../../../../prettify.js"></script>
 		<script>

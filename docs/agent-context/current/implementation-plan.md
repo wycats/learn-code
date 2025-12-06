@@ -1,25 +1,30 @@
-# Phase 37: The Lost Fleet
+# Phase 41: Release & Deployment Implementation Plan
 
-**Goal:** Expose the hidden "Boat" mechanic to the user by creating a dedicated Level Pack and polishing the experience.
+## Goal
 
-## High-Level Outline
+Ship the "Lives & Survival" features (Phase 40) to production by merging the current work into the main branch and triggering a Vercel deployment.
 
-1.  **Pack Infrastructure**
-    - Create `src/lib/game/packs/vehicles.ts`.
-    - Define `VEHICLES_PACK` with a "Ship" or "Water" theme.
-    - Export it in `src/lib/game/packs/index.ts`.
+## Context
 
-2.  **Level Migration & Creation**
-    - **Migrate**: Remove `LEVEL_BOAT_1` from `BASICS_PACK` and add it to `VEHICLES_PACK`.
-    - **New Level 1**: "Set Sail" - A very simple intro where the boat is right in front of you.
-    - **New Level 2**: "Island Hopping" - Using the boat to cross multiple small bodies of water.
-    - **Existing Level**: "Row Your Boat" (becomes Level 3).
+- **Current State**: Phase 40 is implemented and committed locally.
+- **Target**: Vercel (Production).
+- **Process**: Standard GitHub Flow (Push -> PR -> Merge -> Deploy).
 
-3.  **Visual & Audio Polish**
-    - **Icons**: Ensure the "Vehicles" pack has a distinct icon (e.g., `Ship` from Lucide).
-    - **Sound**: Verify the "Board" action has a sound effect (or add one).
+## Steps
 
-4.  **Verification**
-    - Verify the pack appears in the Library.
-    - Verify the levels unlock correctly.
-    - Verify the "Board" block works as expected.
+1.  **Verification**: Ensure the codebase is stable and ready for release.
+    - Run unit tests (`vitest`).
+    - Run E2E tests (`playwright`).
+    - Type check (`svelte-check`).
+2.  **Release**:
+    - Push the branch.
+    - Open a PR with a clear description of the new features.
+    - Merge the PR.
+3.  **Validation**:
+    - Check Vercel dashboard for build status.
+    - Smoke test the production URL.
+
+## Risks
+
+- E2E tests might be flaky.
+- Vercel build might differ from local build (env vars, etc.).

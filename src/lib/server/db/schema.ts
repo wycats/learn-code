@@ -27,7 +27,8 @@ export const session = pgTable('sessions', {
 		.notNull()
 		.references(() => user.id, { onDelete: 'cascade' }),
 	expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
-	sudoExpiresAt: timestamp('sudo_expires_at', { withTimezone: true, mode: 'date' })
+	sudoExpiresAt: timestamp('sudo_expires_at', { withTimezone: true, mode: 'date' }),
+	githubAccessToken: text('github_access_token') // Encrypted at rest
 });
 
 export const deviceAuthStatusEnum = pgEnum('device_auth_status', [

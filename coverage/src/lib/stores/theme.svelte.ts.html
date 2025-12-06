@@ -23,27 +23,27 @@
 				</h1>
 				<div class="clearfix">
 					<div class="fl pad1y space-right2">
-						<span class="strong">0% </span>
+						<span class="strong">40.9% </span>
 						<span class="quiet">Statements</span>
-						<span class="fraction">0/22</span>
+						<span class="fraction">9/22</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">0% </span>
+						<span class="strong">22.72% </span>
 						<span class="quiet">Branches</span>
-						<span class="fraction">0/22</span>
+						<span class="fraction">5/22</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">0% </span>
+						<span class="strong">50% </span>
 						<span class="quiet">Functions</span>
-						<span class="fraction">0/4</span>
+						<span class="fraction">2/4</span>
 					</div>
 
 					<div class="fl pad1y space-right2">
-						<span class="strong">0% </span>
+						<span class="strong">40.9% </span>
 						<span class="quiet">Lines</span>
-						<span class="fraction">0/22</span>
+						<span class="fraction">9/22</span>
 					</div>
 				</div>
 				<p class="quiet">
@@ -114,42 +114,31 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -159,20 +148,31 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { browser } from '$app/environment';
 &nbsp;
 type Theme = 'light' | 'dark' | 'system';
 &nbsp;
 class ThemeStore {
-	current = $state&lt;Theme&gt;(<span class="cstat-no" title="statement not covered" >'system')</span>;
+	current = $state&lt;Theme&gt;('system');
 &nbsp;
-<span class="fstat-no" title="function not covered" >	constructor() {</span>
-		if (<span class="cstat-no" title="statement not covered" >browser) {</span>
-			const stored = <span class="cstat-no" title="statement not covered" >localStorage.getItem('theme') as Theme;</span>
-			if (<span class="cstat-no" title="statement not covered" >stored &amp;&amp; ['light', 'dark', 'system'].includes(stored)) {</span>
+	constructor() {
+		if (<span class="missing-if-branch" title="else path not taken" >E</span>browser) {
+			const stored = localStorage.getItem('theme') as Theme;
+			if (<span class="branch-1 cbranch-no" title="branch not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>stored &amp;&amp; ['light', 'dark', 'system'].includes(stored)) {</span>
 <span class="cstat-no" title="statement not covered" >				this.current = stored;</span>
 			}
-<span class="cstat-no" title="statement not covered" >			this.apply();</span>
+			this.apply();
 		}
 	}
 &nbsp;
@@ -196,19 +196,19 @@ class ThemeStore {
 		}
 	}
 &nbsp;
-<span class="fstat-no" title="function not covered" >	apply() {</span>
-		if (!<span class="cstat-no" title="statement not covered" >browser) return;</span>
-		const root = <span class="cstat-no" title="statement not covered" >document.documentElement;</span>
+	apply() {
+		if (!<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>browser) return;</span>
+		const root = document.documentElement;
 &nbsp;
-		if (<span class="cstat-no" title="statement not covered" >this.current === 'system') {</span>
-<span class="cstat-no" title="statement not covered" >			root.removeAttribute('data-theme');</span>
-		} else {
+		if (this.current === 'system') {
+			root.removeAttribute('data-theme');
+		} else <span class="missing-if-branch" title="else path not taken" >E</span>{
 <span class="cstat-no" title="statement not covered" >			root.setAttribute('data-theme', this.current);</span>
 		}
 	}
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >theme = new ThemeStore();</span>
+export const theme = new ThemeStore();
 &nbsp;</pre></td></tr></table></pre>
 
 			<div class="push"></div>
@@ -218,7 +218,7 @@ export const <span class="cstat-no" title="statement not covered" >theme = new T
 		<div class="footer quiet pad2 space-top1 center small">
 			Code coverage generated by
 			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-			at 2025-12-05T05:03:44.763Z
+			at 2025-12-06T18:43:40.070Z
 		</div>
 		<script src="../../../prettify.js"></script>
 		<script>

@@ -10,6 +10,7 @@ import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
+import validator from 'validator';
 
 export const GET: RequestHandler = async (event) => {
 	const { url, cookies, locals } = event;
@@ -47,21 +48,41 @@ export const GET: RequestHandler = async (event) => {
 			where: eq(table.user.googleId, googleUser.sub)
 		});
 
+		const normalizedEmail = validator.normalizeEmail(googleUser.email) || googleUser.email;
+
 		if (existingUser) {
 			const sessionToken = generateSessionToken();
-			const session = await createSession(sessionToken, existingUser.id);
+			const session = await createSession(sessionToken, existingUser.id, null);
 			setSessionTokenCookie(event, sessionToken, session.expiresAt);
 		} else {
-			const userId = crypto.randomUUID();
-			await db.insert(table.user).values({
-				id: userId,
-				googleId: googleUser.sub,
-				email: googleUser.email,
-				name: googleUser.name
+			// Check if user exists with the same email
+			const existingEmailUser = await db.query.user.findFirst({
+				where: eq(table.user.email, normalizedEmail)
 			});
-			const sessionToken = generateSessionToken();
-			const session = await createSession(sessionToken, userId);
-			setSessionTokenCookie(event, sessionToken, session.expiresAt);
+
+			if (existingEmailUser) {
+				// Link Google account to existing user
+				await db
+					.update(table.user)
+					.set({ googleId: googleUser.sub })
+					.where(eq(table.user.id, existingEmailUser.id));
+
+				const sessionToken = generateSessionToken();
+				const session = await createSession(sessionToken, existingEmailUser.id, null);
+				setSessionTokenCookie(event, sessionToken, session.expiresAt);
+			} else {
+				// Create new user
+				const userId = crypto.randomUUID();
+				await db.insert(table.user).values({
+					id: userId,
+					googleId: googleUser.sub,
+					email: normalizedEmail,
+					name: googleUser.name
+				});
+				const sessionToken = generateSessionToken();
+				const session = await createSession(sessionToken, userId, null);
+				setSessionTokenCookie(event, sessionToken, session.expiresAt);
+			}
 		}
 
 		cookies.delete('auth_redirect_to', { path: '/' });

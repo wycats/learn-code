@@ -10,6 +10,8 @@ import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
+import validator from 'validator';
+import { encryptToken } from '$lib/server/crypto';
 
 interface GitHubEmail {
 	email: string;
@@ -40,10 +42,23 @@ export const GET: RequestHandler = async (event) => {
 		});
 		const githubUser = await githubUserResponse.json();
 
-		// Check for existing session (Sudo Mode)
+		// Encrypt the access token if it exists
+		const accessToken = tokens.accessToken();
+		const encryptedAccessToken = accessToken ? encryptToken(accessToken) : null;
+
+		// Check for existing session (Sudo Mode & Scope Upgrade)
 		if (locals.user && locals.session) {
 			if (locals.user.githubId === String(githubUser.id)) {
 				await enableSudo(locals.session.id);
+
+				// Update the session with the new token (which might have more scopes)
+				if (encryptedAccessToken) {
+					await db
+						.update(table.session)
+						.set({ githubAccessToken: encryptedAccessToken })
+						.where(eq(table.session.id, locals.session.id));
+				}
+
 				cookies.delete('auth_redirect_to', { path: '/' });
 				return redirect(302, redirectTo);
 			}
@@ -54,12 +69,14 @@ export const GET: RequestHandler = async (event) => {
 		if (!email) {
 			const emailsResponse = await fetch('https://api.github.com/user/emails', {
 				headers: {
-					Authorization: `Bearer ${tokens.accessToken}`
+					Authorization: `Bearer ${tokens.accessToken()}`
 				}
 			});
 			const emails: GitHubEmail[] = await emailsResponse.json();
 			email = emails.find((e) => e.primary)?.email || emails[0].email;
 		}
+
+		const normalizedEmail = validator.normalizeEmail(email) || email;
 
 		const existingUser = await db.query.user.findFirst({
 			where: eq(table.user.githubId, String(githubUser.id))
@@ -67,19 +84,41 @@ export const GET: RequestHandler = async (event) => {
 
 		if (existingUser) {
 			const sessionToken = generateSessionToken();
-			const session = await createSession(sessionToken, existingUser.id);
+			const session = await createSession(sessionToken, existingUser.id, encryptedAccessToken);
 			setSessionTokenCookie(event, sessionToken, session.expiresAt);
 		} else {
-			const userId = crypto.randomUUID();
-			await db.insert(table.user).values({
-				id: userId,
-				githubId: String(githubUser.id),
-				email: email,
-				name: githubUser.name || githubUser.login
+			// Check if user exists with the same email
+			const existingEmailUser = await db.query.user.findFirst({
+				where: eq(table.user.email, normalizedEmail)
 			});
-			const sessionToken = generateSessionToken();
-			const session = await createSession(sessionToken, userId);
-			setSessionTokenCookie(event, sessionToken, session.expiresAt);
+
+			if (existingEmailUser) {
+				// Link GitHub account to existing user
+				await db
+					.update(table.user)
+					.set({ githubId: String(githubUser.id) })
+					.where(eq(table.user.id, existingEmailUser.id));
+
+				const sessionToken = generateSessionToken();
+				const session = await createSession(
+					sessionToken,
+					existingEmailUser.id,
+					encryptedAccessToken
+				);
+				setSessionTokenCookie(event, sessionToken, session.expiresAt);
+			} else {
+				// Create new user
+				const userId = crypto.randomUUID();
+				await db.insert(table.user).values({
+					id: userId,
+					githubId: String(githubUser.id),
+					email: normalizedEmail,
+					name: githubUser.name || githubUser.login
+				});
+				const sessionToken = generateSessionToken();
+				const session = await createSession(sessionToken, userId, encryptedAccessToken);
+				setSessionTokenCookie(event, sessionToken, session.expiresAt);
+			}
 		}
 
 		cookies.delete('auth_redirect_to', { path: '/' });

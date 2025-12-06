@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	import { persistence, createDefaultPack } from '$lib/game/persistence';
 	import { fileSystem } from '$lib/services/file-system';
 	import { localPacksStore } from '$lib/game/local-packs.svelte';
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
-	import { X, Trash2, FolderOpen, Plus, Pencil, Check } from 'lucide-svelte';
+	import { X, Trash2, FolderOpen, Plus, Pencil, Check, Github, Loader2 } from 'lucide-svelte';
 
 	interface Props {
 		builder: BuilderModel;
@@ -19,6 +20,7 @@
 	let editName = $state('');
 	let editDesc = $state('');
 	let errorMessage = $state<string | null>(null);
+	let syncingPackId = $state<string | null>(null);
 	let isFileSystemSupported = fileSystem.isSupported;
 
 	onMount(async () => {
@@ -120,6 +122,35 @@
 		await builder.save();
 
 		onClose();
+	}
+
+	async function syncPack(packMeta: { id: string; name: string }) {
+		syncingPackId = packMeta.id;
+		errorMessage = null;
+		try {
+			const fullPack = await persistence.loadPack(packMeta.id);
+			if (!fullPack) throw new Error('Pack not found');
+
+			const response = await fetch('/api/github/sync', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(fullPack)
+			});
+
+			if (!response.ok) {
+				throw new Error('Sync failed');
+			}
+
+			const result = await response.json();
+			window.open(result.repoUrl, '_blank');
+		} catch (e) {
+			console.error(e);
+			errorMessage = 'Failed to sync to GitHub.';
+		} finally {
+			syncingPackId = null;
+		}
 	}
 
 	async function handleOpenLocalFolder() {
@@ -236,6 +267,24 @@
 								<FolderOpen size={20} />
 							</button>
 						{/if}
+
+						{#if $page.data.session?.githubAccessToken}
+							<button
+								class="btn-icon"
+								onclick={() => syncPack(pack)}
+								title="Sync to GitHub"
+								disabled={syncingPackId === pack.id}
+							>
+								{#if syncingPackId === pack.id}
+									<div class="spin-wrapper">
+										<Loader2 size={20} />
+									</div>
+								{:else}
+									<Github size={20} />
+								{/if}
+							</button>
+						{/if}
+
 						<button class="btn-icon" onclick={() => startEdit(pack)} title="Edit Details">
 							<Pencil size={20} />
 						</button>
@@ -259,11 +308,31 @@
 	</div>
 
 	<div class="modal-footer">
-		{#if isFileSystemSupported}
-			<button class="btn-secondary" onclick={handleOpenLocalFolder}>
-				<FolderOpen size={18} /> Open Local Folder
-			</button>
-		{/if}
+		<div class="left-actions">
+			{#if isFileSystemSupported}
+				<button class="btn-secondary" onclick={handleOpenLocalFolder}>
+					<FolderOpen size={18} /> Open Local Folder
+				</button>
+			{/if}
+
+			{#if $page.data.session?.githubAccessToken}
+				<div class="connected-badge" title="Connected to GitHub">
+					<div class="icon-stack">
+						<Github size={18} />
+						<div class="check-badge">
+							<Check size={10} strokeWidth={4} />
+						</div>
+					</div>
+					<span>Connected</span>
+				</div>
+			{:else if $page.data.user}
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+				<a href="/login/github/connect" class="btn-secondary github-connect">
+					<Github size={18} /> Connect GitHub
+				</a>
+			{/if}
+		</div>
+
 		<button class="btn-primary" onclick={createNew}>
 			<Plus size={18} /> New Pack
 		</button>
@@ -486,5 +555,69 @@
 	.edit-input.desc {
 		font-size: var(--font-size-1);
 		color: var(--text-2);
+	}
+
+	.left-actions {
+		display: flex;
+		gap: var(--size-2);
+		align-items: center;
+	}
+
+	.btn-secondary {
+		text-decoration: none;
+	}
+
+	.github-connect {
+		color: var(--text-1);
+	}
+
+	.connected-badge {
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		color: var(--green-7);
+		font-weight: bold;
+		font-size: var(--font-size-1);
+		padding: 0 var(--size-2);
+	}
+
+	.icon-stack {
+		position: relative;
+		width: 24px;
+		height: 24px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.spin-wrapper {
+		animation: spin 1s linear infinite;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	@keyframes spin {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.check-badge {
+		position: absolute;
+		bottom: -2px;
+		right: -2px;
+		background-color: var(--green-5);
+		color: white;
+		border-radius: 50%;
+		width: 14px;
+		height: 14px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 2px solid var(--surface-1);
 	}
 </style>

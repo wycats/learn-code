@@ -560,3 +560,15 @@
 
 - `LevelSchema` uses `z.preprocess` or default values to handle missing fields.
 - We added `schema.exhaustive.test.ts` to strictly validate that all features (new and old) serialize correctly.
+
+## Phase 39: Community & Sharing
+
+### 60. GitHub as the Backend (Real Tools)
+
+**Decision:** Use GitHub (via OAuth and API) as the primary backend for community sharing, rather than a custom database.
+**Context:** We want to teach "Real World" coding skills. Building a walled garden for sharing levels hides the reality of how software is built.
+**Consequence:**
+
+- Users own their data in their own repositories.
+- We introduce concepts like "Forking" and "Pull Requests" as game mechanics.
+- We align with Axiom 3 (Creation is Social) and Axiom 16 (Tooling Parity).

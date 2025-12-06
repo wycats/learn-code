@@ -27,6 +27,7 @@
 	import DevConnectionStatus from '$lib/components/common/DevConnectionStatus.svelte';
 	import { bookStore } from '$lib/game/book/store.svelte';
 	import BookModal from '$lib/components/game/book/BookModal.svelte';
+	import HealthDisplay from '$lib/components/game/HealthDisplay.svelte';
 
 	interface Props {
 		game: GameModel;
@@ -222,6 +223,11 @@
 				<button class="btn-icon" onclick={() => (game.status = 'goal')} title="Level Info">
 					<Info size={20} />
 				</button>
+
+				{#if game.maxLives > 1}
+					<div class="separator"></div>
+					<HealthDisplay lives={game.lives} maxLives={game.maxLives} />
+				{/if}
 			</div>
 
 			<div class="controls">

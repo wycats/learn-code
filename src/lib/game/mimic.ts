@@ -40,7 +40,8 @@ function resolveTile(game: GameModel, x: number, y: number) {
 	// Built-in defaults
 	if (typeId === 'water') return { type: 'water', passableBy: 'boat' };
 	if (typeId === 'void') return { type: 'hazard', onEnter: 'kill' };
-	if (typeId === 'spikes') return { type: 'hazard', onEnter: 'kill' };
+	if (typeId === 'spikes') return { type: 'hazard', onEnter: 'damage' };
+	if (typeId === 'fire') return { type: 'hazard', onEnter: 'damage' };
 	if (typeId === 'hazard') return { type: 'hazard', onEnter: 'kill' };
 	if (typeId === 'ice') return { type: 'ice', onEnter: 'slide' };
 	if (typeId === 'wall') return { type: 'wall' };
@@ -383,6 +384,21 @@ export class StackInterpreter {
 						this.game.lastEvent = { type: 'fail', reason, timestamp: Date.now() };
 						this.game.recordFailure();
 						return false;
+					}
+
+					if (tile.onEnter === 'damage') {
+						this.game.characterPosition = nextPos;
+						this.game.lives--;
+						soundManager.play('hurt');
+
+						if (this.game.lives <= 0) {
+							this.game.lastEvent = { type: 'fail', reason: 'hazard', timestamp: Date.now() };
+							this.game.recordFailure();
+							soundManager.play('fail');
+							return false;
+						}
+						// Continue execution if lives > 0
+						return true;
 					}
 
 					if (tile.onEnter === 'slide') {

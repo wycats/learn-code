@@ -21,6 +21,8 @@ export class GameModel {
 	level: LevelDefinition;
 	characterPosition = $state<{ x: number; y: number }>({ x: 0, y: 0 });
 	characterOrientation = $state<Direction>('E');
+	lives = $state(1);
+	maxLives = $state(1);
 	lastEvent = $state<{
 		type: 'blocked' | 'win' | 'fail';
 		reason?: string;
@@ -75,6 +77,7 @@ export class GameModel {
 
 	constructor(level: LevelDefinition) {
 		this.level = level;
+		this.maxLives = level.startingLives ?? 1;
 		this.hintManager = new HintManager(this);
 		// Load initial program if defined
 		if (this.level.initialProgram) {
@@ -102,6 +105,7 @@ export class GameModel {
 		this.status = 'planning';
 		this.characterPosition = { ...this.level.start };
 		this.characterOrientation = this.level.startOrientation;
+		this.lives = this.maxLives;
 		this.activeBlockId = null;
 		this.lastEvent = null; // Clear last event (e.g. blocked/fail)
 		this.resetExecutionState();

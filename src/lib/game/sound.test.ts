@@ -108,7 +108,7 @@ describe('SoundManager', () => {
 	});
 
 	it('should play different sound types', () => {
-		const types = ['turn', 'fail', 'click', 'pickup', 'drop', 'delete', 'sweep'] as const;
+		const types = ['turn', 'fail', 'click', 'pickup', 'drop', 'delete', 'sweep', 'hurt'] as const;
 
 		types.forEach((type) => {
 			soundManager.play(type);

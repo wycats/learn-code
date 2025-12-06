@@ -25,6 +25,7 @@
 	// Local state for constraints toggles
 	let parEnabled = $state(!!builder.level.solutionPar);
 	let maxBlocksEnabled = $state(!!builder.level.maxBlocks);
+	let livesEnabled = $state(!!builder.level.startingLives && builder.level.startingLives > 1);
 
 	$effect(() => {
 		dialog?.showModal();
@@ -42,6 +43,12 @@
 			builder.level.maxBlocks = undefined;
 		} else if (!builder.level.maxBlocks) {
 			builder.level.maxBlocks = 20; // Default
+		}
+
+		if (!livesEnabled) {
+			builder.level.startingLives = 1;
+		} else if (builder.level.startingLives === 1) {
+			builder.level.startingLives = 3; // Default for survival
 		}
 	});
 
@@ -257,6 +264,37 @@
 									/>
 								</div>
 								blocks allowed
+							</label>
+						</div>
+
+						<div class="constraint-line">
+							<input
+								type="checkbox"
+								checked={livesEnabled}
+								onchange={(e) => {
+									builder.pushState();
+									livesEnabled = e.currentTarget.checked;
+								}}
+								id="lives-toggle"
+							/>
+							<label for="lives-toggle" class:disabled={!livesEnabled}>
+								Start with
+								<div class="inline-edit" class:disabled={!livesEnabled}>
+									<input
+										type="number"
+										value={builder.level.startingLives}
+										onchange={(e) => {
+											builder.pushState();
+											builder.level.startingLives = parseInt(e.currentTarget.value);
+											builder.syncGame();
+										}}
+										min="1"
+										max="10"
+										disabled={!livesEnabled}
+										title="Starting Lives"
+									/>
+								</div>
+								lives
 							</label>
 						</div>
 					</div>

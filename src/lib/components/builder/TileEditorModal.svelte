@@ -14,7 +14,9 @@
 		Globe,
 		Map,
 		Key,
-		Ship
+		Ship,
+		Triangle,
+		Flame
 	} from 'lucide-svelte';
 	import Cell from '$lib/components/game/Cell.svelte';
 
@@ -67,7 +69,9 @@
 		{ value: 'wall', label: 'Wall', icon: BrickWall, description: 'Blocks movement' },
 		{ value: 'hazard', label: 'Hazard', icon: Skull, description: 'Fatal to touch' },
 		{ value: 'ice', label: 'Ice', icon: Snowflake, description: 'Causes sliding' },
-		{ value: 'water', label: 'Water', icon: Waves, description: 'Requires swimming' }
+		{ value: 'water', label: 'Water', icon: Waves, description: 'Requires swimming' },
+		{ value: 'spikes', label: 'Spikes', icon: Triangle, description: 'Damage on enter' },
+		{ value: 'fire', label: 'Fire', icon: Flame, description: 'Damage on enter' }
 	];
 
 	const PASSABILITY_OPTIONS = [
@@ -79,7 +83,8 @@
 	const EFFECT_OPTIONS = [
 		{ value: 'none', label: 'None', icon: Ban },
 		{ value: 'kill', label: 'Kill', icon: Skull },
-		{ value: 'slide', label: 'Slide', icon: Snowflake }
+		{ value: 'slide', label: 'Slide', icon: Snowflake },
+		{ value: 'damage', label: 'Damage', icon: Flame }
 	];
 
 	const DECALS = Object.keys(AVATAR_ICONS);
@@ -90,7 +95,7 @@
 			name,
 			type,
 			passableBy: passableBy === 'none' ? undefined : passableBy,
-			onEnter: onEnter === 'none' ? undefined : (onEnter as 'kill' | 'slide'),
+			onEnter: onEnter === 'none' ? undefined : (onEnter as 'kill' | 'slide' | 'damage'),
 			visuals: {
 				color,
 				pattern: pattern || undefined,

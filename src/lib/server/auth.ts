@@ -28,13 +28,18 @@ export function generateSessionToken() {
 	return token;
 }
 
-export async function createSession(token: string, userId: string) {
+export async function createSession(
+	token: string,
+	userId: string,
+	githubAccessToken?: string | null
+) {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const session: table.Session = {
 		id: sessionId,
 		userId,
 		expiresAt: new Date(Date.now() + DAY_IN_MS * 30),
-		sudoExpiresAt: new Date(Date.now() + 1000 * 60 * 10) // 10 minutes
+		sudoExpiresAt: new Date(Date.now() + 1000 * 60 * 10), // 10 minutes
+		githubAccessToken: githubAccessToken ?? null
 	};
 	await db.insert(table.session).values(session);
 	return session;
