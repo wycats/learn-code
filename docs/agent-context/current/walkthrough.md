@@ -1,48 +1,35 @@
-# Phase 41: Release & Deployment Walkthrough
+# Walkthrough - Sync Status & Library Polish
 
 ## Overview
 
-This phase focused on preparing the application for release, including a comprehensive visual regression suite, a new "In-App Changelog" feature, and critical bug fixes.
+This session focused on refining the "Sync Status" indicator and improving access to the Changelog via the Library page. The goal was to reduce visual noise for non-logged-in users and provide a clearer path to app updates.
 
-## Key Changes
+## Changes
 
-### 1. In-App Changelog
+### 1. Sync Status Visibility
 
-- **Data Source**: Created `scripts/generate-changelog.ts` to parse `docs/agent-context/changelog.md` and generate `src/lib/data/changelog.ts`.
-- **UI**: Implemented `src/routes/changelog/+page.svelte` to display the changelog.
-- **Markdown Support**: Enhanced `src/lib/components/ui/Markdown.svelte` to correctly style injected HTML from markdown (e.g., bold text).
-- **Integration**: Added a link to the changelog in the Settings page.
+- **Problem**: The sync status indicator (cloud icon) was visible to all users, showing an "error" state for guests who hadn't logged in. This was confusing and alarming.
+- **Solution**:
+  - Updated `src/routes/library/+page.svelte` to conditionally render the `<SyncStatus />` component only when `data.user` is present.
+  - Updated `src/routes/+layout.svelte` to only trigger `CloudSyncService.pull()` if a user is authenticated.
+  - Updated `src/routes/play/[packId]/[levelId]/+page.svelte` to only trigger `CloudSyncService.push()` on level completion if a user is authenticated.
 
-### 2. Branding & UI
+### 2. Sync Status Alignment & Terminology
 
-- **Rename**: Replaced remaining "Code Climber" references with "Kibi" in `src/routes/+page.svelte`, `src/routes/library/+page.svelte`, and E2E tests.
-- **Settings**: Added a Settings gear icon to the Home page top bar for easier access to configuration and the changelog.
+- **Problem**: The sync status icon was not vertically centered in the header, and the tooltip "error" was too alarming for network issues.
+- **Solution**:
+  - Added `align-items: center` to the `.actions` container in `src/routes/library/+page.svelte`.
+  - Updated `src/lib/components/common/SyncStatus.svelte` to display "offline" instead of "error" in the tooltip when the sync state is `error`.
 
-### 3. Bug Fixes
+### 3. Changelog Access
 
-- **Duplicate Keys**: Fixed a crash caused by identical version strings for "Phase X" and "Phase X Polish" by renaming polish phases to "Phase X.5".
-- **Markdown Rendering**: Fixed an issue where markdown syntax (like `**bold**`) was being stripped or not rendered correctly in the changelog.
-
-### 4. Future Planning
-
-- **Error Reporting**: Researched and selected **Highlight.io** for error reporting in the next phase (Phase 42).
+- **Problem**: The user requested a better way to access the Changelog.
+- **Solution**:
+  - Added a "Settings" button (gear icon) to the `src/routes/library/+page.svelte` header.
+  - This button links to `/settings`, where the Changelog is already accessible.
 
 ## Verification
 
-- **Tests**: Ran `pnpm test` and `pnpm check`, ensuring all tests pass.
-- **Visuals**: Verified the changelog UI and markdown rendering.
-
-## How to Try It Out
-
-1.  **Changelog**:
-    - Navigate to the **Settings** page (via the gear icon on the Home page or the menu).
-    - Click on the **Changelog** link.
-    - Verify that the changelog is displayed correctly, with proper formatting (bold text, lists, etc.).
-2.  **Branding**:
-    - Go to the **Home** page.
-    - Verify that the title says "Kibi" and not "Code Climber".
-    - Go to the **Library** page.
-    - Verify that the title says "Kibi Library".
-3.  **Settings Access**:
-    - On the **Home** page, look for the **Settings** gear icon in the top bar.
-    - Click it to ensure it navigates to the Settings page.
+- **Manual Check**: Verified that the sync status is hidden for guests and visible for logged-in users.
+- **Tests**: Ran `pnpm test:unit` to ensure no regressions in sync logic or component rendering.
+- **Linting**: Fixed a `no-explicit-any` lint error in `src/routes/+layout.svelte` to pass the pre-commit hook.
