@@ -243,7 +243,7 @@ Expanded the "endgame" content with a challenging "Gauntlet" pack and deepened t
 - **Feedback Mechanism**:
   - Added a `mailto` link to the Home Screen for user feedback.
 
-## Phase 16 Polish: Bug Fixes & UI Unification (Completed)
+## Phase 16.5: Bug Fixes & UI Unification (Completed)
 
 **Date:** November 30, 2025
 
@@ -307,7 +307,7 @@ Established a robust "Design Review" workflow using automated visual regression 
   - Pushed database schema to production.
   - Verified live deployment at `https://learn-coding-q0z9g8l76-yehuda-katzs-projects.vercel.app`.
 
-## Phase 18 Polish: Backward Compatibility & CI Optimization (Completed)
+## Phase 18.5: Backward Compatibility & CI Optimization (Completed)
 
 **Date:** November 30, 2025
 
@@ -744,3 +744,26 @@ Renamed the project from "Wonderblocks" to "Kibi" to establish a unique identity
   - Renamed internal constants and event names (e.g., `wonderblocks_progress` -> `kibi_progress`).
   - Updated UI text in `src/routes/+page.svelte` and other components.
   - Verified all tests pass, including fixing a mock data issue in `src/routes/page.svelte.spec.ts`.
+
+## Phase 40: Lives & Survival Mechanics (Completed)
+
+**Date:** December 9, 2025
+
+**Summary:**
+Implemented core survival gameplay features including a Lives System, Health & Damage mechanics, and Game Over/Win states. Added support for configuring hazards in the Tile Editor and integrated sound effects for damage. Additionally, introduced an "In-App Changelog" feature that is automatically generated from this documentation, ensuring transparency and easy access to the project's history.
+
+**Key Deliverables:**
+
+- **Survival Mechanics**:
+  - **Lives System**: Players have limited lives (hearts).
+  - **Health & Damage**: Hazards like Spikes and Fire deal damage.
+  - **Game Over / Win States**: Proper handling of level completion and failure.
+- **Tile Editor Updates**: Support for configuring hazards and their effects.
+- **Sound Effects**: Added 'hurt' sound and integrated audio feedback.
+- **In-App Changelog**:
+  - **Automated Generation**: Script to parse `docs/agent-context/changelog.md` into structured data.
+  - **UI**: New `/changelog` page linked from Settings.
+- **Quality Assurance**:
+  - **Linting**: Resolved unused variables and `svelte-check` warnings.
+  - **Type Safety**: Fixed TypeScript errors in `TileEditorModal` and tests.
+  - **Test Coverage**: Improved unit test coverage for sound system.

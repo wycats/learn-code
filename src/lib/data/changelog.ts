@@ -12,6 +12,29 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: 'Phase 40',
+		date: 'December 9, 2025',
+		title: 'Lives & Survival Mechanics',
+		summary:
+			'Implemented core survival gameplay features including a Lives System, Health & Damage mechanics, and Game Over/Win states. Added support for configuring hazards in the Tile Editor and integrated sound effects for damage. Additionally, introduced an "In-App Changelog" feature that is automatically generated from this documentation, ensuring transparency and easy access to the project\'s history.',
+		features: [
+			'**Survival Mechanics**:',
+			'**Lives System**: Players have limited lives (hearts).',
+			'**Health & Damage**: Hazards like Spikes and Fire deal damage.',
+			'**Game Over / Win States**: Proper handling of level completion and failure.',
+			'**Tile Editor Updates**: Support for configuring hazards and their effects.',
+			"**Sound Effects**: Added 'hurt' sound and integrated audio feedback.",
+			'**In-App Changelog**:',
+			'**Automated Generation**: Script to parse docs/agent-context/changelog.md into structured data.',
+			'**UI**: New /changelog page linked from Settings.',
+			'**Quality Assurance**:',
+			'**Linting**: Resolved unused variables and svelte-check warnings.',
+			'**Type Safety**: Fixed TypeScript errors in TileEditorModal and tests.',
+			'**Test Coverage**: Improved unit test coverage for sound system.'
+		],
+		type: 'major'
+	},
+	{
 		version: 'Phase 36.5',
 		date: 'December 4, 2025',
 		title: 'Project Renaming (Wonderblocks to Kibi)',
@@ -434,7 +457,7 @@ export const CHANGELOG: ChangelogEntry[] = [
 		type: 'patch'
 	},
 	{
-		version: 'Phase 18',
+		version: 'Phase 18.5',
 		date: 'November 30, 2025',
 		title: 'Backward Compatibility & CI Optimization',
 		summary:
@@ -491,7 +514,7 @@ export const CHANGELOG: ChangelogEntry[] = [
 		type: 'major'
 	},
 	{
-		version: 'Phase 16',
+		version: 'Phase 16.5',
 		date: 'November 30, 2025',
 		title: 'Bug Fixes & UI Unification',
 		summary:
