@@ -2,9 +2,11 @@
 	import { syncStatus } from '$lib/services/cloud-sync';
 	import { RefreshCw, CloudOff } from 'lucide-svelte';
 	import { fade } from 'svelte/transition';
+
+	let statusText = $derived($syncStatus === 'error' ? 'offline' : $syncStatus);
 </script>
 
-<div class="sync-status" title="Sync Status: {$syncStatus}">
+<div class="sync-status" title="Sync Status: {statusText}">
 	{#if $syncStatus === 'syncing'}
 		<div transition:fade={{ duration: 200 }} class="spin-wrapper">
 			<RefreshCw size={16} />

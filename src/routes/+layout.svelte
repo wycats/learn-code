@@ -10,6 +10,10 @@
 	import OfflineIndicator from '$lib/components/common/OfflineIndicator.svelte';
 	import { swManager } from '$lib/services/sw-manager';
 	import { CloudSyncService } from '$lib/services/cloud-sync';
+	import type { LayoutData } from './$types';
+	import type { Snippet } from 'svelte';
+
+	let { children, data } = $props<{ children: Snippet; data: LayoutData }>();
 
 	// Ensure SW manager is initialized
 	$effect(() => {
@@ -17,10 +21,10 @@
 		// though the import side-effect might be enough.
 		// The singleton pattern in the file handles init.
 		console.log('SW Manager active', swManager);
-		CloudSyncService.pull();
+		if (data.user) {
+			CloudSyncService.pull();
+		}
 	});
-
-	let { children } = $props();
 </script>
 
 <svelte:head>

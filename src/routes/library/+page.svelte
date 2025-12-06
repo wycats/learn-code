@@ -9,11 +9,14 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
-	import { Hammer, FolderOpen, Share2 } from 'lucide-svelte';
+	import { Hammer, FolderOpen, Share2, Settings } from 'lucide-svelte';
 	import { toast } from '$lib/stores/toast.svelte';
 	import P2PModal from '$lib/components/builder/P2PModal.svelte';
 	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
 	import SyncStatus from '$lib/components/common/SyncStatus.svelte';
+	import type { PageData } from './$types';
+
+	let { data } = $props<{ data: PageData }>();
 
 	let progress = $state(ProgressService.load());
 	let isFileSystemSupported = fileSystem.isSupported;
@@ -25,6 +28,11 @@
 	function handlePackSelect(packId: string) {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto(`${base}/library/${packId}`);
+	}
+
+	function handleSettings() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		goto(`${base}/settings`);
 	}
 
 	function handleBuilder() {
@@ -114,8 +122,13 @@
 			<h1>Kibi</h1>
 		</div>
 		<div class="actions">
-			<SyncStatus />
+			{#if data.user}
+				<SyncStatus />
+			{/if}
 			<ThemeToggle />
+			<button class="action-btn" onclick={handleSettings} aria-label="Settings">
+				<Settings size={20} />
+			</button>
 			{#if isFileSystemSupported}
 				<button class="action-btn" onclick={handleOpenLocalFolder}>
 					<FolderOpen size={20} /> Open Local Folder
@@ -227,6 +240,7 @@
 	.actions {
 		display: flex;
 		gap: var(--size-3);
+		align-items: center;
 	}
 
 	.action-btn {

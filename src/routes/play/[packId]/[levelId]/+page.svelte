@@ -9,6 +9,9 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { ArrowLeft } from 'lucide-svelte';
+	import type { PageData } from './$types';
+
+	let { data } = $props<{ data: PageData }>();
 
 	const packId = $derived($page.params.packId ?? '');
 	const levelId = $derived($page.params.levelId ?? '');
@@ -68,14 +71,16 @@
 		if (game && game.status === 'won') {
 			const stars = calculateStars();
 			ProgressService.completeLevel(packId, levelId, stars);
-			CloudSyncService.push([
-				{
-					levelId,
-					status: 'completed',
-					stars,
-					updatedAt: new Date().toISOString()
-				}
-			]);
+			if (data.user) {
+				CloudSyncService.push([
+					{
+						levelId,
+						status: 'completed',
+						stars,
+						updatedAt: new Date().toISOString()
+					}
+				]);
+			}
 		}
 	});
 
