@@ -6,27 +6,108 @@ export interface ChangelogEntry {
 	date: string;
 	title: string;
 	summary: string;
-	features: string[];
+	features: { text: string; level: number }[];
 	type: 'major' | 'minor' | 'patch';
 }
 
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: 'Phase 41.5',
+		date: 'December 9, 2025',
+		title: 'Sync Polish & Library Updates',
+		summary:
+			'Refined the "Sync Status" indicator to reduce visual noise for non-logged-in users and improved access to the Changelog via the Library page. This polish phase ensures a cleaner experience for guests and better discoverability of app updates.',
+		features: [
+			{
+				text: '**Sync Status Visibility**:',
+				level: 0
+			},
+			{
+				text: 'Hidden for guests (non-logged-in users).',
+				level: 1
+			},
+			{
+				text: 'Only triggers sync logic when authenticated.',
+				level: 1
+			},
+			{
+				text: '**UI Polish**:',
+				level: 0
+			},
+			{
+				text: 'Vertically centered the sync status icon in the Library header.',
+				level: 1
+			},
+			{
+				text: 'Changed tooltip text from "error" to "offline" for better clarity.',
+				level: 1
+			},
+			{
+				text: '**Changelog Access**:',
+				level: 0
+			},
+			{
+				text: 'Added a "Settings" button to the Library page header, linking to the Changelog.',
+				level: 1
+			}
+		],
+		type: 'patch'
+	},
+	{
 		version: 'Phase 41',
 		date: 'December 9, 2025',
 		title: 'Release & Deployment',
 		summary:
-			'Prepared the application for release with a new "In-App Changelog" feature, critical bug fixes, and a comprehensive visual regression suite. This phase also included research for future error reporting tools.',
+			'Prepared the application for release with a new "In-App Changelog" feature, critical bug fixes, and a comprehensive visual regression suite. This phase also included a final branding sweep to rename "Code Climber" to "Kibi" and the addition of a Settings entry point to the home screen.',
 		features: [
-			'**In-App Changelog**:',
-			'**Automated Generation**: Script to parse `docs/agent-context/changelog.md` into structured data.',
-			'**UI**: New `/changelog` page linked from Settings.',
-			'**Markdown Support**: Enhanced rendering for bold text and other markdown features.',
-			'**Bug Fixes**:',
-			'**Duplicate Keys**: Fixed a crash caused by identical version strings for "Phase X" and "Phase X Polish".',
-			'**Markdown Rendering**: Fixed an issue where markdown syntax was being stripped.',
-			'**Future Planning**:',
-			'**Error Reporting**: Selected Highlight.io for Phase 42.'
+			{
+				text: '**In-App Changelog**:',
+				level: 0
+			},
+			{
+				text: '**Automated Generation**: Script to parse `docs/agent-context/changelog.md` into structured data.',
+				level: 1
+			},
+			{
+				text: '**UI**: New `/changelog` page linked from Settings.',
+				level: 1
+			},
+			{
+				text: '**Markdown Support**: Enhanced rendering for bold text and other markdown features.',
+				level: 1
+			},
+			{
+				text: '**Branding & UI**:',
+				level: 0
+			},
+			{
+				text: '**Rename**: Replaced remaining "Code Climber" references with "Kibi".',
+				level: 1
+			},
+			{
+				text: '**Settings**: Added a Settings gear icon to the Home page top bar.',
+				level: 1
+			},
+			{
+				text: '**Bug Fixes**:',
+				level: 0
+			},
+			{
+				text: '**Duplicate Keys**: Fixed a crash caused by identical version strings for "Phase X" and "Phase X Polish".',
+				level: 1
+			},
+			{
+				text: '**Markdown Rendering**: Fixed an issue where markdown syntax was being stripped.',
+				level: 1
+			},
+			{
+				text: '**Future Planning**:',
+				level: 0
+			},
+			{
+				text: '**Error Reporting**: Selected Highlight.io for Phase 42.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -37,16 +118,46 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Implemented core survival gameplay features including a Lives System, Health & Damage mechanics, and Game Over/Win states. Added support for configuring hazards in the Tile Editor and integrated sound effects for damage.',
 		features: [
-			'**Survival Mechanics**:',
-			'**Lives System**: Players have limited lives (hearts).',
-			'**Health & Damage**: Hazards like Spikes and Fire deal damage.',
-			'**Game Over / Win States**: Proper handling of level completion and failure.',
-			'**Tile Editor Updates**: Support for configuring hazards and their effects.',
-			"**Sound Effects**: Added 'hurt' sound and integrated audio feedback.",
-			'**Quality Assurance**:',
-			'**Linting**: Resolved unused variables and `svelte-check` warnings.',
-			'**Type Safety**: Fixed TypeScript errors in `TileEditorModal` and tests.',
-			'**Test Coverage**: Improved unit test coverage for sound system.'
+			{
+				text: '**Survival Mechanics**:',
+				level: 0
+			},
+			{
+				text: '**Lives System**: Players have limited lives (hearts).',
+				level: 1
+			},
+			{
+				text: '**Health & Damage**: Hazards like Spikes and Fire deal damage.',
+				level: 1
+			},
+			{
+				text: '**Game Over / Win States**: Proper handling of level completion and failure.',
+				level: 1
+			},
+			{
+				text: '**Tile Editor Updates**: Support for configuring hazards and their effects.',
+				level: 0
+			},
+			{
+				text: "**Sound Effects**: Added 'hurt' sound and integrated audio feedback.",
+				level: 0
+			},
+			{
+				text: '**Quality Assurance**:',
+				level: 0
+			},
+			{
+				text: '**Linting**: Resolved unused variables and `svelte-check` warnings.',
+				level: 1
+			},
+			{
+				text: '**Type Safety**: Fixed TypeScript errors in `TileEditorModal` and tests.',
+				level: 1
+			},
+			{
+				text: '**Test Coverage**: Improved unit test coverage for sound system.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -57,18 +168,54 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Renamed the project from "Wonderblocks" to "Kibi" to establish a unique identity and avoid trademark conflicts. This involved a comprehensive find-and-replace operation across the codebase, documentation, and configuration files. The narrative was updated to "The Kibi Chronicles", and the core pedagogy document was renamed to `kibi-pedagogy.md`.',
 		features: [
-			'**Project Identity**:',
-			'Renamed `package.json` name to `kibi`.',
-			'Updated `manifest.json` short_name and name.',
-			'Updated `README.md` with the new vision and name.',
-			'**Documentation**:',
-			'Created `docs/vision.md` outlining the "Thinking Magic" philosophy.',
-			'Renamed `docs/design/core/wonderblocks.md` to `docs/design/core/kibi-pedagogy.md`.',
-			'Updated `docs/design/index.md` and `docs/agent-context/changelog.md` references.',
-			'**Codebase**:',
-			'Renamed internal constants and event names (e.g., `wonderblocks_progress` -> `kibi_progress`).',
-			'Updated UI text in `src/routes/+page.svelte` and other components.',
-			'Verified all tests pass, including fixing a mock data issue in `src/routes/page.svelte.spec.ts`.'
+			{
+				text: '**Project Identity**:',
+				level: 0
+			},
+			{
+				text: 'Renamed `package.json` name to `kibi`.',
+				level: 1
+			},
+			{
+				text: 'Updated `manifest.json` short_name and name.',
+				level: 1
+			},
+			{
+				text: 'Updated `README.md` with the new vision and name.',
+				level: 1
+			},
+			{
+				text: '**Documentation**:',
+				level: 0
+			},
+			{
+				text: 'Created `docs/vision.md` outlining the "Thinking Magic" philosophy.',
+				level: 1
+			},
+			{
+				text: 'Renamed `docs/design/core/wonderblocks.md` to `docs/design/core/kibi-pedagogy.md`.',
+				level: 1
+			},
+			{
+				text: 'Updated `docs/design/index.md` and `docs/agent-context/changelog.md` references.',
+				level: 1
+			},
+			{
+				text: '**Codebase**:',
+				level: 0
+			},
+			{
+				text: 'Renamed internal constants and event names (e.g., `wonderblocks_progress` -> `kibi_progress`).',
+				level: 1
+			},
+			{
+				text: 'Updated UI text in `src/routes/+page.svelte` and other components.',
+				level: 1
+			},
+			{
+				text: 'Verified all tests pass, including fixing a mock data issue in `src/routes/page.svelte.spec.ts`.',
+				level: 1
+			}
 		],
 		type: 'patch'
 	},
@@ -79,19 +226,58 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Empowered the Architect to create complex custom terrain with configurable properties directly in the Builder. Introduced "Hybrid" tiles (e.g., Magic Doors, Traps) and implemented the "Direct Value Manipulation" pattern via a new `DialInput` component. This phase also added visual overlays to the Builder to communicate hidden tile properties and implemented a new "falling" animation for Void deaths. Crucially, we established a rigorous "Exhaustive Schema Test" to ensure backward compatibility as the data model evolves.',
 		features: [
-			'**Tile Editor Upgrade**:',
-			'Updated `TileEditorModal` to support `passableBy` (Key/Boat) and `onEnter` (Effect) properties.',
-			'Added visual overlays (Key, Ship, Skull, Snowflake icons) to `Cell` component for these properties.',
-			'**The Dial**:',
-			'Created `DialInput.svelte` for kinetic value manipulation.',
-			'Integrated the Dial into the Loop Block configuration in `Tray.svelte`.',
-			'**Void Visuals**:',
-			'Implemented "falling" animation (scale down + rotate + fade) for Void deaths.',
-			'Differentiated between "Hazard" (shake) and "Void" (fall) death reasons in game logic.',
-			'**Verification & Quality**:',
-			'Created `src/lib/game/schema.exhaustive.test.ts` to validate the full breadth of the Level Schema.',
-			'Fixed syntax errors and linting issues in `MiniPlayground.svelte` and other components.',
-			'Verified backward compatibility for legacy levels.'
+			{
+				text: '**Tile Editor Upgrade**:',
+				level: 0
+			},
+			{
+				text: 'Updated `TileEditorModal` to support `passableBy` (Key/Boat) and `onEnter` (Effect) properties.',
+				level: 1
+			},
+			{
+				text: 'Added visual overlays (Key, Ship, Skull, Snowflake icons) to `Cell` component for these properties.',
+				level: 1
+			},
+			{
+				text: '**The Dial**:',
+				level: 0
+			},
+			{
+				text: 'Created `DialInput.svelte` for kinetic value manipulation.',
+				level: 1
+			},
+			{
+				text: 'Integrated the Dial into the Loop Block configuration in `Tray.svelte`.',
+				level: 1
+			},
+			{
+				text: '**Void Visuals**:',
+				level: 0
+			},
+			{
+				text: 'Implemented "falling" animation (scale down + rotate + fade) for Void deaths.',
+				level: 1
+			},
+			{
+				text: 'Differentiated between "Hazard" (shake) and "Void" (fall) death reasons in game logic.',
+				level: 1
+			},
+			{
+				text: '**Verification & Quality**:',
+				level: 0
+			},
+			{
+				text: 'Created `src/lib/game/schema.exhaustive.test.ts` to validate the full breadth of the Level Schema.',
+				level: 1
+			},
+			{
+				text: 'Fixed syntax errors and linting issues in `MiniPlayground.svelte` and other components.',
+				level: 1
+			},
+			{
+				text: 'Verified backward compatibility for legacy levels.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -102,22 +288,70 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Implemented "The Field Guide", an in-game interactive manual designed to teach game mechanics without overwhelming the user with text. The guide uses a "multi-voice" approach (The Guide, Zoey, Jonas) to add personality and context. It features a responsive modal layout using the native `<dialog>` element for robust top-layer management and includes interactive "Mini Playgrounds" embedded directly in the book pages.',
 		features: [
-			'**Core Infrastructure**:',
-			'`BookSchema`: Zod schema for structured content (Chapters, Pages, Blocks).',
-			'`BookStore`: Svelte 5 Runes-based state management for navigation and visibility.',
-			'**UI Components**:',
-			'`BookModal`: Responsive modal container using `<dialog>` and `::backdrop`.',
-			'`BookPage`: Renderer for content blocks with voice-specific styling.',
-			'`MiniPlayground`: Embedded 3x3 game instances for interactive examples.',
-			'**Content**:',
-			'Chapter 1: "Survival Basics" (Movement, Goals, Hazards).',
-			'**Polish**:',
-			'Implemented native `<dialog>` support to resolve z-index stacking issues.',
-			'Added "Field Guide" trigger to the Game header.',
-			'**Bug Fixes (Post-Release)**:',
-			'**Modal Transparency**: Fixed transparent background issue by styling `<dialog>` and `::backdrop`.',
-			'**Playground Integration**: Fixed prop mismatch (`initialCode` -> `snippet`) and goal detection logic in `MiniPlayground`.',
-			'**Markdown Support**: Implemented lightweight Markdown rendering for text blocks.'
+			{
+				text: '**Core Infrastructure**:',
+				level: 0
+			},
+			{
+				text: '`BookSchema`: Zod schema for structured content (Chapters, Pages, Blocks).',
+				level: 1
+			},
+			{
+				text: '`BookStore`: Svelte 5 Runes-based state management for navigation and visibility.',
+				level: 1
+			},
+			{
+				text: '**UI Components**:',
+				level: 0
+			},
+			{
+				text: '`BookModal`: Responsive modal container using `<dialog>` and `::backdrop`.',
+				level: 1
+			},
+			{
+				text: '`BookPage`: Renderer for content blocks with voice-specific styling.',
+				level: 1
+			},
+			{
+				text: '`MiniPlayground`: Embedded 3x3 game instances for interactive examples.',
+				level: 1
+			},
+			{
+				text: '**Content**:',
+				level: 0
+			},
+			{
+				text: 'Chapter 1: "Survival Basics" (Movement, Goals, Hazards).',
+				level: 1
+			},
+			{
+				text: '**Polish**:',
+				level: 0
+			},
+			{
+				text: 'Implemented native `<dialog>` support to resolve z-index stacking issues.',
+				level: 1
+			},
+			{
+				text: 'Added "Field Guide" trigger to the Game header.',
+				level: 1
+			},
+			{
+				text: '**Bug Fixes (Post-Release)**:',
+				level: 0
+			},
+			{
+				text: '**Modal Transparency**: Fixed transparent background issue by styling `<dialog>` and `::backdrop`.',
+				level: 1
+			},
+			{
+				text: '**Playground Integration**: Fixed prop mismatch (`initialCode` -> `snippet`) and goal detection logic in `MiniPlayground`.',
+				level: 1
+			},
+			{
+				text: '**Markdown Support**: Implemented lightweight Markdown rendering for text blocks.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -128,17 +362,50 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Conducted a comprehensive "Fresh Eyes" review of the project, focusing on the newly implemented Authentication and Sync features. This review led to immediate usability improvements, including a new "Scan Device Code" page for parents, manual code entry fallbacks for devices without cameras, and a cleaner Sync Status indicator. Additionally, the project roadmap was significantly extended to Phase 40, outlining future work on Community features, Advanced Mechanics, and Accessibility.',
 		features: [
-			'**Auth Polish**:',
-			'**Scan Page**: Created `/auth/handshake/scan` for parents to scan child device codes.',
-			'**Manual Entry**: Added manual code display on child devices and entry form on parent devices as a fallback.',
-			'**Navigation**: Added "Scan Device Code" button to the Parent Dashboard.',
-			'**UI Polish**:',
-			'**Sync Status**: Updated `SyncStatus` component to be invisible when idle, reducing visual noise.',
-			'**Roadmap Update**:',
-			'Extended `plan-outline.md` to Phase 40.',
-			'Defined future phases for Community, Advanced Mechanics, and Accessibility.',
-			'**Documentation**:',
-			'Updated `ideas.md` and `deferred_work.md` based on the review.'
+			{
+				text: '**Auth Polish**:',
+				level: 0
+			},
+			{
+				text: '**Scan Page**: Created `/auth/handshake/scan` for parents to scan child device codes.',
+				level: 1
+			},
+			{
+				text: '**Manual Entry**: Added manual code display on child devices and entry form on parent devices as a fallback.',
+				level: 1
+			},
+			{
+				text: '**Navigation**: Added "Scan Device Code" button to the Parent Dashboard.',
+				level: 1
+			},
+			{
+				text: '**UI Polish**:',
+				level: 0
+			},
+			{
+				text: '**Sync Status**: Updated `SyncStatus` component to be invisible when idle, reducing visual noise.',
+				level: 1
+			},
+			{
+				text: '**Roadmap Update**:',
+				level: 0
+			},
+			{
+				text: 'Extended `plan-outline.md` to Phase 40.',
+				level: 1
+			},
+			{
+				text: 'Defined future phases for Community, Advanced Mechanics, and Accessibility.',
+				level: 1
+			},
+			{
+				text: '**Documentation**:',
+				level: 0
+			},
+			{
+				text: 'Updated `ideas.md` and `deferred_work.md` based on the review.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -149,19 +416,58 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Enabled seamless synchronization of game progress across devices using the authenticated profile system. Implemented a "High Water Mark" sync strategy that ensures the best result (highest stars, unlocked status) is always preserved, preventing progress loss. The system uses optimistic UI updates for a responsive experience, with background synchronization handling the server communication.',
 		features: [
-			'**Database Schema**:',
-			'Added `user_progress` table to store progress per profile and level.',
-			'**API Endpoints**:',
-			'`POST /api/sync`: Batch update endpoint that merges local changes with server state.',
-			'`GET /api/sync`: Endpoint to fetch full progress state.',
-			'**Client Service**:',
-			'`CloudSyncService`: Handles push/pull operations, offline queueing (stubbed), and merge logic.',
-			'`SyncStatus`: Reactive store and UI component to indicate sync state (Idle, Syncing, Error).',
-			'**UI Integration**:',
-			'Added `SyncStatus` indicator to the Library and Layout.',
-			'Integrated automatic sync on app load and level completion.',
-			'**Verification**:',
-			'Comprehensive unit tests for the merge logic and service interaction.'
+			{
+				text: '**Database Schema**:',
+				level: 0
+			},
+			{
+				text: 'Added `user_progress` table to store progress per profile and level.',
+				level: 1
+			},
+			{
+				text: '**API Endpoints**:',
+				level: 0
+			},
+			{
+				text: '`POST /api/sync`: Batch update endpoint that merges local changes with server state.',
+				level: 1
+			},
+			{
+				text: '`GET /api/sync`: Endpoint to fetch full progress state.',
+				level: 1
+			},
+			{
+				text: '**Client Service**:',
+				level: 0
+			},
+			{
+				text: '`CloudSyncService`: Handles push/pull operations, offline queueing (stubbed), and merge logic.',
+				level: 1
+			},
+			{
+				text: '`SyncStatus`: Reactive store and UI component to indicate sync state (Idle, Syncing, Error).',
+				level: 1
+			},
+			{
+				text: '**UI Integration**:',
+				level: 0
+			},
+			{
+				text: 'Added `SyncStatus` indicator to the Library and Layout.',
+				level: 1
+			},
+			{
+				text: 'Integrated automatic sync on app load and level completion.',
+				level: 1
+			},
+			{
+				text: '**Verification**:',
+				level: 0
+			},
+			{
+				text: 'Comprehensive unit tests for the merge logic and service interaction.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -172,18 +478,54 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Laid the groundwork for cloud persistence by implementing a custom authentication system and a "Parent/Child" profile model. This system allows a single parent account (authenticated via GitHub or Google) to manage multiple child profiles, each with their own progress and settings. We also implemented a secure "Device Authorization" flow using QR codes to log in child devices without sharing parent credentials.',
 		features: [
-			'**Database Schema**:',
-			'Defined `User`, `Session`, `Profile`, and `DeviceAuth` tables in Drizzle/Postgres.',
-			'**Authentication**:',
-			'Implemented OAuth 2.0 flows for GitHub and Google using `arctic`.',
-			'Implemented session management using `@oslojs/crypto` and cookies.',
-			'**Profile System**:',
-			'Created "Parent Dashboard" for managing child profiles (Avatar, Nickname, Color).',
-			'Implemented "Profile Switcher" for easy context switching.',
-			'**Device Authorization**:',
-			'Implemented "QR Handshake" flow: Parent scans QR on child device -> Approves -> Child device gets a long-lived session token.',
-			'**UI Implementation**:',
-			'Login Page, Profile Picker, Settings Page, and Handshake UI.'
+			{
+				text: '**Database Schema**:',
+				level: 0
+			},
+			{
+				text: 'Defined `User`, `Session`, `Profile`, and `DeviceAuth` tables in Drizzle/Postgres.',
+				level: 1
+			},
+			{
+				text: '**Authentication**:',
+				level: 0
+			},
+			{
+				text: 'Implemented OAuth 2.0 flows for GitHub and Google using `arctic`.',
+				level: 1
+			},
+			{
+				text: 'Implemented session management using `@oslojs/crypto` and cookies.',
+				level: 1
+			},
+			{
+				text: '**Profile System**:',
+				level: 0
+			},
+			{
+				text: 'Created "Parent Dashboard" for managing child profiles (Avatar, Nickname, Color).',
+				level: 1
+			},
+			{
+				text: 'Implemented "Profile Switcher" for easy context switching.',
+				level: 1
+			},
+			{
+				text: '**Device Authorization**:',
+				level: 0
+			},
+			{
+				text: 'Implemented "QR Handshake" flow: Parent scans QR on child device -> Approves -> Child device gets a long-lived session token.',
+				level: 1
+			},
+			{
+				text: '**UI Implementation**:',
+				level: 0
+			},
+			{
+				text: 'Login Page, Profile Picker, Settings Page, and Handshake UI.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -194,17 +536,50 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Optimized the synchronization logic to be more performant and verified the implementation of the Builder Polish phase. Specifically, the Vector Clock comparison logic was rewritten to be allocation-free, ensuring smoother performance during high-frequency updates. We also verified the "Use Test Level" text, Glassomorphic Cover styling, and Undo/Redo integration.',
 		features: [
-			'**Sync Optimization**:',
-			'Refactored `compareVectorClocks` in `src/lib/services/sync.ts` to use an allocation-free O(N) algorithm.',
-			'Verified correctness with unit tests.',
-			'**Builder Verification**:',
-			'Confirmed "Use Test Level" button text matches requirements.',
-			'Confirmed Glassomorphic styling for "Cover" tiles.',
-			'Confirmed removal of redundant UI elements.',
-			'Verified Undo/Redo state management logic.',
-			'**Code Quality**:',
-			'Resolved `svelte/no-navigation-without-resolve` lint errors by using programmatic navigation.',
-			'Fixed type safety issues and removed unused code across the codebase.'
+			{
+				text: '**Sync Optimization**:',
+				level: 0
+			},
+			{
+				text: 'Refactored `compareVectorClocks` in `src/lib/services/sync.ts` to use an allocation-free O(N) algorithm.',
+				level: 1
+			},
+			{
+				text: 'Verified correctness with unit tests.',
+				level: 1
+			},
+			{
+				text: '**Builder Verification**:',
+				level: 0
+			},
+			{
+				text: 'Confirmed "Use Test Level" button text matches requirements.',
+				level: 1
+			},
+			{
+				text: 'Confirmed Glassomorphic styling for "Cover" tiles.',
+				level: 1
+			},
+			{
+				text: 'Confirmed removal of redundant UI elements.',
+				level: 1
+			},
+			{
+				text: 'Verified Undo/Redo state management logic.',
+				level: 1
+			},
+			{
+				text: '**Code Quality**:',
+				level: 0
+			},
+			{
+				text: 'Resolved `svelte/no-navigation-without-resolve` lint errors by using programmatic navigation.',
+				level: 1
+			},
+			{
+				text: 'Fixed type safety issues and removed unused code across the codebase.',
+				level: 1
+			}
 		],
 		type: 'patch'
 	},
@@ -215,16 +590,46 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Implemented a "Serverless Sync" feature allowing users to synchronize their progress (levels unlocked, stars earned) between devices without creating a cloud account. This leverages the existing WebRTC/QR P2P infrastructure to securely transfer and merge user progress data.',
 		features: [
-			'**Sync Logic**:',
-			'`SyncService`: Implemented logic to merge `UserProgress` objects, prioritizing best scores (Stars > Blocks > Timestamp).',
-			'`SyncModal`: Created a dedicated modal wrapping `P2PModal` to handle the sync flow.',
-			'**UI Integration**:',
-			'Added "Sync Devices" button to the Home screen.',
-			'Verified flow via E2E tests.',
-			'**Testing**:',
-			'Added unit tests for `SyncService` merge logic.',
-			'Added E2E tests for `SyncModal` interaction.',
-			'Updated visual regression snapshots.'
+			{
+				text: '**Sync Logic**:',
+				level: 0
+			},
+			{
+				text: '`SyncService`: Implemented logic to merge `UserProgress` objects, prioritizing best scores (Stars > Blocks > Timestamp).',
+				level: 1
+			},
+			{
+				text: '`SyncModal`: Created a dedicated modal wrapping `P2PModal` to handle the sync flow.',
+				level: 1
+			},
+			{
+				text: '**UI Integration**:',
+				level: 0
+			},
+			{
+				text: 'Added "Sync Devices" button to the Home screen.',
+				level: 1
+			},
+			{
+				text: 'Verified flow via E2E tests.',
+				level: 1
+			},
+			{
+				text: '**Testing**:',
+				level: 0
+			},
+			{
+				text: 'Added unit tests for `SyncService` merge logic.',
+				level: 1
+			},
+			{
+				text: 'Added E2E tests for `SyncModal` interaction.',
+				level: 1
+			},
+			{
+				text: 'Updated visual regression snapshots.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -235,20 +640,62 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Addressed friction points identified in the "Fresh Eyes Review II" and user feedback, focusing on mobile ergonomics, P2P sharing fallback, and code maintainability. Refactored the Undo/Redo logic into a generic `HistoryManager` class, optimized the Builder toolbar for mobile devices, and added a manual fallback for P2P sharing. Additionally, replaced the native number input in the Builder Tray with a custom keypad for better mobile usability and polished the visual style of the "Cover" block.',
 		features: [
-			'**HistoryManager Refactoring**:',
-			'Extracted Undo/Redo logic from `BuilderModel` into a generic `HistoryManager<T>` class.',
-			'Added comprehensive unit tests for the new class.',
-			'Integrated `HistoryManager` back into `BuilderModel`.',
-			'**Mobile Polish**:',
-			'**Tray Keypad**: Replaced native number inputs with a custom, touch-friendly keypad for Loop blocks.',
-			'**Toolbar**: Hid the "Level Selector" on mobile screens (<600px) to reduce clutter.',
-			'**Browser Support**: Wrapped "Link to Disk" buttons in a feature check for `fileSystem.isSupported`.',
-			'**P2P Manual Fallback**:',
-			'**Show Code**: Added ability to reveal the raw connection string in the P2P modal.',
-			'**Enter Code**: Added manual input mode for pasting connection strings when scanning fails.',
-			'**UI**: Implemented clean, toggleable UI for manual code entry/display.',
-			'**Visual Polish**:',
-			'**Glassmorphic Cover**: Verified and polished the "Cover" tile style with `backdrop-filter`.'
+			{
+				text: '**HistoryManager Refactoring**:',
+				level: 0
+			},
+			{
+				text: 'Extracted Undo/Redo logic from `BuilderModel` into a generic `HistoryManager<T>` class.',
+				level: 1
+			},
+			{
+				text: 'Added comprehensive unit tests for the new class.',
+				level: 1
+			},
+			{
+				text: 'Integrated `HistoryManager` back into `BuilderModel`.',
+				level: 1
+			},
+			{
+				text: '**Mobile Polish**:',
+				level: 0
+			},
+			{
+				text: '**Tray Keypad**: Replaced native number inputs with a custom, touch-friendly keypad for Loop blocks.',
+				level: 1
+			},
+			{
+				text: '**Toolbar**: Hid the "Level Selector" on mobile screens (<600px) to reduce clutter.',
+				level: 1
+			},
+			{
+				text: '**Browser Support**: Wrapped "Link to Disk" buttons in a feature check for `fileSystem.isSupported`.',
+				level: 1
+			},
+			{
+				text: '**P2P Manual Fallback**:',
+				level: 0
+			},
+			{
+				text: '**Show Code**: Added ability to reveal the raw connection string in the P2P modal.',
+				level: 1
+			},
+			{
+				text: '**Enter Code**: Added manual input mode for pasting connection strings when scanning fails.',
+				level: 1
+			},
+			{
+				text: '**UI**: Implemented clean, toggleable UI for manual code entry/display.',
+				level: 1
+			},
+			{
+				text: '**Visual Polish**:',
+				level: 0
+			},
+			{
+				text: '**Glassmorphic Cover**: Verified and polished the "Cover" tile style with `backdrop-filter`.',
+				level: 1
+			}
 		],
 		type: 'patch'
 	},
@@ -259,17 +706,50 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Addressed deferred items from Phase 19 to refine the Level Builder experience. Implemented a robust Undo/Redo system for the Level Editor, allowing users to revert changes to terrain, logic, and settings. Polished the visual and interaction design of the Builder, including a Glassomorphic "Cover" block, improved Repeat Block input, and a smoother Function creation workflow.',
 		features: [
-			'**Undo/Redo System**:',
-			'Implemented history stack in `BuilderModel` using `.snapshot`.',
-			'Integrated `pushState()` calls across all builder actions (Terrain, Logic, Settings, Functions).',
-			'**Visual Polish**:',
-			'**Glassomorphism**: Verified "Cover" block style.',
-			'**Tile Dropdown**: Removed redundant dropdown in favor of the grid-based tool palette.',
-			'**Interaction Polish**:',
-			'**Repeat Block**: Replaced standard number input with a custom, touch-friendly text input.',
-			'**Infinity Targeting**: Disabled highlighting for the Infinity button to prevent tutorial confusion.',
-			'**Function UX**: Implemented auto-edit behavior when creating a new function.',
-			'**Text Updates**: Changed "Set as Start" to "Use Test Level" for clarity.'
+			{
+				text: '**Undo/Redo System**:',
+				level: 0
+			},
+			{
+				text: 'Implemented history stack in `BuilderModel` using `.snapshot`.',
+				level: 1
+			},
+			{
+				text: 'Integrated `pushState()` calls across all builder actions (Terrain, Logic, Settings, Functions).',
+				level: 1
+			},
+			{
+				text: '**Visual Polish**:',
+				level: 0
+			},
+			{
+				text: '**Glassomorphism**: Verified "Cover" block style.',
+				level: 1
+			},
+			{
+				text: '**Tile Dropdown**: Removed redundant dropdown in favor of the grid-based tool palette.',
+				level: 1
+			},
+			{
+				text: '**Interaction Polish**:',
+				level: 0
+			},
+			{
+				text: '**Repeat Block**: Replaced standard number input with a custom, touch-friendly text input.',
+				level: 1
+			},
+			{
+				text: '**Infinity Targeting**: Disabled highlighting for the Infinity button to prevent tutorial confusion.',
+				level: 1
+			},
+			{
+				text: '**Function UX**: Implemented auto-edit behavior when creating a new function.',
+				level: 1
+			},
+			{
+				text: '**Text Updates**: Changed "Set as Start" to "Use Test Level" for clarity.',
+				level: 1
+			}
 		],
 		type: 'patch'
 	},
@@ -280,12 +760,30 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Refined the visual representation of variables to strengthen the "Memory" metaphor. Added a "Brain" icon to the held item (Thought Bubble) and variable slots in blocks, while keeping the item on the ground simple (raw value). This distinction clarifies that the "Brain" represents the character\'s internal storage. Also improved grid rendering to prevent visual clutter when the character stands on an item.',
 		features: [
-			'**Visual Metaphor**:',
-			'**Thought Bubble**: Added `Brain` icon to indicate "Memory".',
-			'**Ground Item**: Kept simple (no icon) to distinguish from held state.',
-			'**Variable Slots**: Added "Mini Brain Token" to Loop blocks when a variable is used.',
-			'**Grid Polish**:',
-			'**Overlap Handling**: Hidden items on the ground when the character is standing on them.'
+			{
+				text: '**Visual Metaphor**:',
+				level: 0
+			},
+			{
+				text: '**Thought Bubble**: Added `Brain` icon to indicate "Memory".',
+				level: 1
+			},
+			{
+				text: '**Ground Item**: Kept simple (no icon) to distinguish from held state.',
+				level: 1
+			},
+			{
+				text: '**Variable Slots**: Added "Mini Brain Token" to Loop blocks when a variable is used.',
+				level: 1
+			},
+			{
+				text: '**Grid Polish**:',
+				level: 0
+			},
+			{
+				text: '**Overlap Handling**: Hidden items on the ground when the character is standing on them.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -296,18 +794,54 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Hardened the codebase by significantly increasing test coverage and resolving technical debt. This phase focused on ensuring the stability of critical systems like the Builder, Interpreter, and File System integration. We also addressed strict linting rules and type safety issues to ensure a clean and maintainable codebase.',
 		features: [
-			'**Test Coverage**:',
-			'**BuilderModel**: Added comprehensive tests for grid manipulation, tool selection, and persistence.',
-			'**StackInterpreter**: Expanded tests for error handling, complex control flow, and game mechanics.',
-			'**SoundManager**: Added tests for audio playback logic and state persistence.',
-			'**FileSystemService**: Recreated and fixed tests for the File System Access API wrapper.',
-			'**Quality Assurance**:',
-			'**Linting**: Resolved strict ESLint errors (`no-explicit-any`, `no-unused-vars`) across the codebase.',
-			'**Type Safety**: Fixed type mismatches in `LevelPack` schema and test mocks.',
-			'**CI Enforcement**: Updated coverage thresholds to block regressions in critical files.',
-			'**Refactoring**:',
-			'**Dependency Injection**: Refactored `FileSystemService` and `PersistenceService` for better testability.',
-			'**Mocking**: Improved mock implementations for browser APIs (`AudioContext`, `FileSystemHandle`).'
+			{
+				text: '**Test Coverage**:',
+				level: 0
+			},
+			{
+				text: '**BuilderModel**: Added comprehensive tests for grid manipulation, tool selection, and persistence.',
+				level: 1
+			},
+			{
+				text: '**StackInterpreter**: Expanded tests for error handling, complex control flow, and game mechanics.',
+				level: 1
+			},
+			{
+				text: '**SoundManager**: Added tests for audio playback logic and state persistence.',
+				level: 1
+			},
+			{
+				text: '**FileSystemService**: Recreated and fixed tests for the File System Access API wrapper.',
+				level: 1
+			},
+			{
+				text: '**Quality Assurance**:',
+				level: 0
+			},
+			{
+				text: '**Linting**: Resolved strict ESLint errors (`no-explicit-any`, `no-unused-vars`) across the codebase.',
+				level: 1
+			},
+			{
+				text: '**Type Safety**: Fixed type mismatches in `LevelPack` schema and test mocks.',
+				level: 1
+			},
+			{
+				text: '**CI Enforcement**: Updated coverage thresholds to block regressions in critical files.',
+				level: 1
+			},
+			{
+				text: '**Refactoring**:',
+				level: 0
+			},
+			{
+				text: '**Dependency Injection**: Refactored `FileSystemService` and `PersistenceService` for better testability.',
+				level: 1
+			},
+			{
+				text: '**Mocking**: Improved mock implementations for browser APIs (`AudioContext`, `FileSystemHandle`).',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -318,19 +852,58 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Refactored the core interaction logic into a "Headless Interaction System" and implemented "Native Modality" support. This separation of concerns allows for robust, testable interaction patterns (Drag-and-Drop, Click-Click, Keyboard) that are decoupled from the UI rendering. The system uses a central `InteractionManager` and `InteractionRegistry` to coordinate state, while `dnd.ts` adapters handle the specific input methods.',
 		features: [
-			'**Headless Interaction System**:',
-			'`InteractionManager`: Central state machine for interaction sessions (Source, Target, Candidates).',
-			'`InteractionRegistry`: Registry for interactive elements (Blocks, Slots, Tokens).',
-			'`InteractionSession`: Transient state object for active interactions.',
-			'**Native Modality**:',
-			'**Drag-and-Drop**: Implemented via `@atlaskit/pragmatic-drag-and-drop` adapters in `dnd.ts`.',
-			'**Click-Click**: Implemented via `ActionManager` for accessible, pointer-based interactions.',
-			'**Refactoring**:',
-			'Updated `Tray.svelte` and `Block.svelte` to use the new system.',
-			'Removed ad-hoc event handling logic from components.',
-			'**Testing**:',
-			'Comprehensive unit tests for `InteractionManager`, `dnd` adapters, and `Tray` integration.',
-			'Verified "Click-Click" and "Drag-and-Drop" flows.'
+			{
+				text: '**Headless Interaction System**:',
+				level: 0
+			},
+			{
+				text: '`InteractionManager`: Central state machine for interaction sessions (Source, Target, Candidates).',
+				level: 1
+			},
+			{
+				text: '`InteractionRegistry`: Registry for interactive elements (Blocks, Slots, Tokens).',
+				level: 1
+			},
+			{
+				text: '`InteractionSession`: Transient state object for active interactions.',
+				level: 1
+			},
+			{
+				text: '**Native Modality**:',
+				level: 0
+			},
+			{
+				text: '**Drag-and-Drop**: Implemented via `@atlaskit/pragmatic-drag-and-drop` adapters in `dnd.ts`.',
+				level: 1
+			},
+			{
+				text: '**Click-Click**: Implemented via `ActionManager` for accessible, pointer-based interactions.',
+				level: 1
+			},
+			{
+				text: '**Refactoring**:',
+				level: 0
+			},
+			{
+				text: 'Updated `Tray.svelte` and `Block.svelte` to use the new system.',
+				level: 1
+			},
+			{
+				text: 'Removed ad-hoc event handling logic from components.',
+				level: 1
+			},
+			{
+				text: '**Testing**:',
+				level: 0
+			},
+			{
+				text: 'Comprehensive unit tests for `InteractionManager`, `dnd` adapters, and `Tray` integration.',
+				level: 1
+			},
+			{
+				text: 'Verified "Click-Click" and "Drag-and-Drop" flows.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -341,15 +914,42 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Refined the "Variables" feature based on user feedback, improving visual affordances and type safety. The "Thought Bubble" metaphor was strengthened with clearer iconography and drop zones. Strict typing was enforced to prevent invalid variable assignments (e.g., dropping a string into a number field).',
 		features: [
-			'**Visual Affordances**:',
-			'Updated "Brain" icon and "Thought Bubble" visual style.',
-			'Added clearer drop zone indicators for variable targets.',
-			'**Targeting Mode**:',
-			'Implemented visual pulsing for valid targets when dragging a variable.',
-			'**Strict Typing**:',
-			'Enforced type checks in `InteractionManager` to prevent invalid drops.',
-			'**Narrative**:',
-			'Updated level intros to explain the "Thought Bubble" concept.'
+			{
+				text: '**Visual Affordances**:',
+				level: 0
+			},
+			{
+				text: 'Updated "Brain" icon and "Thought Bubble" visual style.',
+				level: 1
+			},
+			{
+				text: 'Added clearer drop zone indicators for variable targets.',
+				level: 1
+			},
+			{
+				text: '**Targeting Mode**:',
+				level: 0
+			},
+			{
+				text: 'Implemented visual pulsing for valid targets when dragging a variable.',
+				level: 1
+			},
+			{
+				text: '**Strict Typing**:',
+				level: 0
+			},
+			{
+				text: 'Enforced type checks in `InteractionManager` to prevent invalid drops.',
+				level: 1
+			},
+			{
+				text: '**Narrative**:',
+				level: 0
+			},
+			{
+				text: 'Updated level intros to explain the "Thought Bubble" concept.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -360,19 +960,58 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Implemented the "Thought Bubble" variable system, introducing the concept of state and possession to the game. This allows the character to pick up items (like keys) and use them as parameters in blocks (like Loop counts). The system uses a "Held Item" token that can be dragged or clicked to assign its value to other blocks.',
 		features: [
-			'**Core Logic**:',
-			'Updated `GameModel` to track `heldItem`.',
-			'Implemented `PickUp` block logic.',
-			'Implemented `VariableRef` parameter resolution in `StackInterpreter`.',
-			'**UI Components**:',
-			"**Held Item Token**: A draggable/clickable token in the Tray representing the character's inventory.",
-			'**Loop Badge**: Clickable badge on Loop blocks to assign variables.',
-			'**Loop Popover**: Added "Use Held Item" button for quick assignment.',
-			'**Interaction Design**:',
-			'Implemented "Click-Click" interaction pattern (Select Source -> Click Target) as an alternative to Drag-and-Drop.',
-			'**Testing**:',
-			'Added unit tests for the new "Click-Click" interaction flow.',
-			'Enforced code coverage thresholds in CI.'
+			{
+				text: '**Core Logic**:',
+				level: 0
+			},
+			{
+				text: 'Updated `GameModel` to track `heldItem`.',
+				level: 1
+			},
+			{
+				text: 'Implemented `PickUp` block logic.',
+				level: 1
+			},
+			{
+				text: 'Implemented `VariableRef` parameter resolution in `StackInterpreter`.',
+				level: 1
+			},
+			{
+				text: '**UI Components**:',
+				level: 0
+			},
+			{
+				text: "**Held Item Token**: A draggable/clickable token in the Tray representing the character's inventory.",
+				level: 1
+			},
+			{
+				text: '**Loop Badge**: Clickable badge on Loop blocks to assign variables.',
+				level: 1
+			},
+			{
+				text: '**Loop Popover**: Added "Use Held Item" button for quick assignment.',
+				level: 1
+			},
+			{
+				text: '**Interaction Design**:',
+				level: 0
+			},
+			{
+				text: 'Implemented "Click-Click" interaction pattern (Select Source -> Click Target) as an alternative to Drag-and-Drop.',
+				level: 1
+			},
+			{
+				text: '**Testing**:',
+				level: 0
+			},
+			{
+				text: 'Added unit tests for the new "Click-Click" interaction flow.',
+				level: 1
+			},
+			{
+				text: 'Enforced code coverage thresholds in CI.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -383,16 +1022,46 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Addressed remaining visual friction points (especially on mobile) and established a comprehensive visual regression test suite. This phase also included an ad-hoc "Schema Stability" initiative to ensure backward compatibility for user data.',
 		features: [
-			'**Visual Regression Suite**:',
-			'Created `e2e/visual-comprehensive.spec.ts` covering Home, Library, Game, and Builder.',
-			'Implemented "Golden Master" testing for schema stability (`src/fixtures/levels/v1`).',
-			'**Mobile Polish**:',
-			'Fixed `BuilderGoalModal` overflow on small screens.',
-			'Implemented responsive stacking for the Library header.',
-			'Verified horizontal scrolling for the Builder toolbar.',
-			'**Schema Stability**:',
-			'Created comprehensive JSON fixtures for all level features.',
-			'Implemented `schema-compat.test.ts` to validate fixtures against the Zod schema.'
+			{
+				text: '**Visual Regression Suite**:',
+				level: 0
+			},
+			{
+				text: 'Created `e2e/visual-comprehensive.spec.ts` covering Home, Library, Game, and Builder.',
+				level: 1
+			},
+			{
+				text: 'Implemented "Golden Master" testing for schema stability (`src/fixtures/levels/v1`).',
+				level: 1
+			},
+			{
+				text: '**Mobile Polish**:',
+				level: 0
+			},
+			{
+				text: 'Fixed `BuilderGoalModal` overflow on small screens.',
+				level: 1
+			},
+			{
+				text: 'Implemented responsive stacking for the Library header.',
+				level: 1
+			},
+			{
+				text: 'Verified horizontal scrolling for the Builder toolbar.',
+				level: 1
+			},
+			{
+				text: '**Schema Stability**:',
+				level: 0
+			},
+			{
+				text: 'Created comprehensive JSON fixtures for all level features.',
+				level: 1
+			},
+			{
+				text: 'Implemented `schema-compat.test.ts` to validate fixtures against the Zod schema.',
+				level: 1
+			}
 		],
 		type: 'patch'
 	},
@@ -403,18 +1072,54 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Optimized the application for mobile devices and touch interactions, ensuring a native-like experience on small screens. This phase involved a comprehensive audit of touch targets, implementation of responsive stacked layouts for the Game and Builder, and the conversion of static toolbars into floating bottom sheets. Additionally, native HTML5 Drag and Drop was verified as the baseline for mobile, simplifying the tech stack.',
 		features: [
-			'**Touch Target Audit**: Systematically updated all interactive elements to meet the 44px minimum size.',
-			'**Mobile Layouts**:',
-			'Implemented vertical stack layout for Game and Builder modes on mobile.',
-			'Converted control bars to floating bottom sheets for better thumb reachability.',
-			'Optimized `InstructionBar` and `StatusPanel` for compact screens.',
-			'**UX Polish**:',
-			'Refined P2P sharing flow (auto-detection of intent).',
-			'Simplified Function configuration UI.',
-			'Fixed scrolling issues in Tray configuration panels.',
-			'**Visual Polish**:',
-			'Upgraded typography to variable fonts (`Outfit`, `Inter`, `JetBrains Mono`).',
-			'Refined visual presentation of status indicators.'
+			{
+				text: '**Touch Target Audit**: Systematically updated all interactive elements to meet the 44px minimum size.',
+				level: 0
+			},
+			{
+				text: '**Mobile Layouts**:',
+				level: 0
+			},
+			{
+				text: 'Implemented vertical stack layout for Game and Builder modes on mobile.',
+				level: 1
+			},
+			{
+				text: 'Converted control bars to floating bottom sheets for better thumb reachability.',
+				level: 1
+			},
+			{
+				text: 'Optimized `InstructionBar` and `StatusPanel` for compact screens.',
+				level: 1
+			},
+			{
+				text: '**UX Polish**:',
+				level: 0
+			},
+			{
+				text: 'Refined P2P sharing flow (auto-detection of intent).',
+				level: 1
+			},
+			{
+				text: 'Simplified Function configuration UI.',
+				level: 1
+			},
+			{
+				text: 'Fixed scrolling issues in Tray configuration panels.',
+				level: 1
+			},
+			{
+				text: '**Visual Polish**:',
+				level: 0
+			},
+			{
+				text: 'Upgraded typography to variable fonts (`Outfit`, `Inter`, `JetBrains Mono`).',
+				level: 1
+			},
+			{
+				text: 'Refined visual presentation of status indicators.',
+				level: 1
+			}
 		],
 		type: 'patch'
 	},
@@ -425,12 +1130,30 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Enabled Architects to share their creations directly with Explorers without a centralized server. Implemented a WebRTC-based P2P sharing system that uses QR codes for the initial handshake (signaling), allowing for direct device-to-device transfer of levels and packs. This feature works entirely offline and leverages the PWA architecture.',
 		features: [
-			'**P2P Service**: `P2PConnection` class handling WebRTC offer/answer exchange and data channels.',
-			'**Share UI**:',
-			'`ShareModal`: Generates shareable links and QR codes for single levels.',
-			'`P2PModal`: Step-by-step wizard for the "Sender" and "Receiver" handshake flow.',
-			'**QR Code Integration**: Dynamic QR code generation for signaling data.',
-			'**Offline Support**: Verified functionality in offline-first PWA context.'
+			{
+				text: '**P2P Service**: `P2PConnection` class handling WebRTC offer/answer exchange and data channels.',
+				level: 0
+			},
+			{
+				text: '**Share UI**:',
+				level: 0
+			},
+			{
+				text: '`ShareModal`: Generates shareable links and QR codes for single levels.',
+				level: 1
+			},
+			{
+				text: '`P2PModal`: Step-by-step wizard for the "Sender" and "Receiver" handshake flow.',
+				level: 1
+			},
+			{
+				text: '**QR Code Integration**: Dynamic QR code generation for signaling data.',
+				level: 0
+			},
+			{
+				text: '**Offline Support**: Verified functionality in offline-first PWA context.',
+				level: 0
+			}
 		],
 		type: 'major'
 	},
@@ -441,14 +1164,38 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Addressed remaining usability issues in the Builder and improved the Function creation workflow. This phase focused on refining the "Call Function" block behavior, adding visual polish to the Builder (Glassomorphism), and implementing a robust Undo/Redo system for the Level Editor.',
 		features: [
-			'**Function UX**:',
-			'Improved `CallBlock` to show distinct states: "Select...", "Deleted", and "No Functions".',
-			'Added visual cues (red border/text) for invalid states.',
-			'**Builder Polish**:',
-			'**Glassomorphism**: Added a frosted glass effect to the "Cover" tile.',
-			'**Undo/Redo**: Implemented a full state history stack for the Level Builder using `.snapshot`.',
-			'**Loop Config**: Added a custom input field for loop counts.',
-			'**UI Cleanup**: Removed redundant tile dropdown and updated button text.'
+			{
+				text: '**Function UX**:',
+				level: 0
+			},
+			{
+				text: 'Improved `CallBlock` to show distinct states: "Select...", "Deleted", and "No Functions".',
+				level: 1
+			},
+			{
+				text: 'Added visual cues (red border/text) for invalid states.',
+				level: 1
+			},
+			{
+				text: '**Builder Polish**:',
+				level: 0
+			},
+			{
+				text: '**Glassomorphism**: Added a frosted glass effect to the "Cover" tile.',
+				level: 1
+			},
+			{
+				text: '**Undo/Redo**: Implemented a full state history stack for the Level Builder using `.snapshot`.',
+				level: 1
+			},
+			{
+				text: '**Loop Config**: Added a custom input field for loop counts.',
+				level: 1
+			},
+			{
+				text: '**UI Cleanup**: Removed redundant tile dropdown and updated button text.',
+				level: 1
+			}
 		],
 		type: 'patch'
 	},
@@ -459,16 +1206,46 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Refined the Builder and Game experience based on direct feedback from our primary persona, Jonas. This phase focused on visual polish, builder usability enhancements, and content refinement. Key improvements include a new "Ghost" move system for story segments, granular targeting for tutorials, and a significant expansion of the "endgame" content with the "Gauntlet" and "Hard" packs.',
 		features: [
-			'**Builder Enhancements**:',
-			'**Story Reordering**: Implemented Drag & Drop and "Ghost" move system for story segments.',
-			'**Granular Targeting**: Enabled targeting of specific block properties (Repeat Count, Function Name) for tutorials.',
-			'**Visual Polish**: Updated "Clear Blocks" icon to Broom (via `@lucide/lab`) and improved "Call ???" block empty state.',
-			'**Content Expansion**:',
-			'**Gauntlet Pack**: Polished narrative and mechanics for Levels 9-11.',
-			'**Hard Pack ("The Void")**: Created a new expert-level pack with a purple "glitch" theme (Levels 12-14).',
-			'**UX Improvements**:',
-			'Updated "Architect\'s Library" back button to use SVG arrow.',
-			'Refined "Move" mechanics in Story Editor to auto-open the timeline.'
+			{
+				text: '**Builder Enhancements**:',
+				level: 0
+			},
+			{
+				text: '**Story Reordering**: Implemented Drag & Drop and "Ghost" move system for story segments.',
+				level: 1
+			},
+			{
+				text: '**Granular Targeting**: Enabled targeting of specific block properties (Repeat Count, Function Name) for tutorials.',
+				level: 1
+			},
+			{
+				text: '**Visual Polish**: Updated "Clear Blocks" icon to Broom (via `@lucide/lab`) and improved "Call ???" block empty state.',
+				level: 1
+			},
+			{
+				text: '**Content Expansion**:',
+				level: 0
+			},
+			{
+				text: '**Gauntlet Pack**: Polished narrative and mechanics for Levels 9-11.',
+				level: 1
+			},
+			{
+				text: '**Hard Pack ("The Void")**: Created a new expert-level pack with a purple "glitch" theme (Levels 12-14).',
+				level: 1
+			},
+			{
+				text: '**UX Improvements**:',
+				level: 0
+			},
+			{
+				text: 'Updated "Architect\'s Library" back button to use SVG arrow.',
+				level: 1
+			},
+			{
+				text: 'Refined "Move" mechanics in Story Editor to auto-open the timeline.',
+				level: 1
+			}
 		],
 		type: 'patch'
 	},
@@ -479,12 +1256,30 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Ensured backward compatibility for existing user-created levels following the "Targeting Workflow" refactor and optimized the CI pipeline for faster, more reliable feedback. Implemented a schema migration layer to automatically transform legacy `highlight` fields into the new `targets` array format. Additionally, restored missing system default emojis in the Builder and expanded visual regression test coverage.',
 		features: [
-			'**Schema Migration**: Updated `StorySegmentSchema` and `HintSchema` in `src/lib/game/schema.ts` with `z.preprocess` logic to handle legacy data formats transparently.',
-			'**CI Optimization**:',
-			'Implemented caching for Playwright browsers to reduce build times.',
-			'Configured visual regression tests to be non-blocking in CI, allowing the build to pass while visual diffs are reviewed separately.',
-			'**Visual Testing**: Added `e2e/visual-extended.spec.ts` to cover Design System, Pack Details, and Builder states.',
-			'**Bug Fixes**: Restored system default emojis and characters in the Builder configuration dropdowns.'
+			{
+				text: '**Schema Migration**: Updated `StorySegmentSchema` and `HintSchema` in `src/lib/game/schema.ts` with `z.preprocess` logic to handle legacy data formats transparently.',
+				level: 0
+			},
+			{
+				text: '**CI Optimization**:',
+				level: 0
+			},
+			{
+				text: 'Implemented caching for Playwright browsers to reduce build times.',
+				level: 1
+			},
+			{
+				text: 'Configured visual regression tests to be non-blocking in CI, allowing the build to pass while visual diffs are reviewed separately.',
+				level: 1
+			},
+			{
+				text: '**Visual Testing**: Added `e2e/visual-extended.spec.ts` to cover Design System, Pack Details, and Builder states.',
+				level: 0
+			},
+			{
+				text: '**Bug Fixes**: Restored system default emojis and characters in the Builder configuration dropdowns.',
+				level: 0
+			}
 		],
 		type: 'patch'
 	},
@@ -495,15 +1290,42 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Established a robust "Design Review" workflow using automated visual regression testing with Playwright. This system acts as a safety net for UI changes and a tool for reviewing design updates. Additionally, finalized the deployment pipeline by provisioning a Neon Postgres database via the Vercel Marketplace and successfully deploying the application to production.',
 		features: [
-			'**Visual Regression Testing**:',
-			'Configured `playwright.config.ts` for visual comparison tests.',
-			'Created `e2e/visual.spec.ts` covering Home, Library, Game, and Builder.',
-			'Added NPM scripts (`test:visual`, `test:visual:review`, `test:visual:approve`) for the workflow.',
-			'**Deployment**:',
-			'Provisioned Neon Postgres database on Vercel.',
-			'Configured `drizzle.config.ts` and environment variables for production.',
-			'Pushed database schema to production.',
-			'Verified live deployment at `https://learn-coding-q0z9g8l76-yehuda-katzs-projects.vercel.app`.'
+			{
+				text: '**Visual Regression Testing**:',
+				level: 0
+			},
+			{
+				text: 'Configured `playwright.config.ts` for visual comparison tests.',
+				level: 1
+			},
+			{
+				text: 'Created `e2e/visual.spec.ts` covering Home, Library, Game, and Builder.',
+				level: 1
+			},
+			{
+				text: 'Added NPM scripts (`test:visual`, `test:visual:review`, `test:visual:approve`) for the workflow.',
+				level: 1
+			},
+			{
+				text: '**Deployment**:',
+				level: 0
+			},
+			{
+				text: 'Provisioned Neon Postgres database on Vercel.',
+				level: 1
+			},
+			{
+				text: 'Configured `drizzle.config.ts` and environment variables for production.',
+				level: 1
+			},
+			{
+				text: 'Pushed database schema to production.',
+				level: 1
+			},
+			{
+				text: 'Verified live deployment at `https://learn-coding-q0z9g8l76-yehuda-katzs-projects.vercel.app`.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -514,18 +1336,54 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Prepared the application for public release by implementing a robust Progressive Web App (PWA) strategy and configuring the deployment pipeline. Implemented a custom Service Worker with a "Kill Switch" for emergency updates and offline-first caching. Configured Vercel hosting with Postgres database integration.',
 		features: [
-			'**PWA Implementation**:',
-			'Custom `service-worker.ts` with precaching and runtime caching.',
-			'"Kill Switch" logic to force updates when critical bugs are fixed.',
-			'`manifest.json` and app icons for installability.',
-			'`OfflineIndicator` component for network status feedback.',
-			'**Deployment Setup**:',
-			'Configured `adapter-auto` for Vercel deployment.',
-			'Set up Drizzle ORM with Postgres (local Docker + Vercel Postgres).',
-			'Created `docker-compose.yml` for local development database.',
-			'**Infrastructure**:',
-			'`sw-manager.ts` for client-side Service Worker lifecycle management.',
-			'`feedback.ts` service with offline queueing support.'
+			{
+				text: '**PWA Implementation**:',
+				level: 0
+			},
+			{
+				text: 'Custom `service-worker.ts` with precaching and runtime caching.',
+				level: 1
+			},
+			{
+				text: '"Kill Switch" logic to force updates when critical bugs are fixed.',
+				level: 1
+			},
+			{
+				text: '`manifest.json` and app icons for installability.',
+				level: 1
+			},
+			{
+				text: '`OfflineIndicator` component for network status feedback.',
+				level: 1
+			},
+			{
+				text: '**Deployment Setup**:',
+				level: 0
+			},
+			{
+				text: 'Configured `adapter-auto` for Vercel deployment.',
+				level: 1
+			},
+			{
+				text: 'Set up Drizzle ORM with Postgres (local Docker + Vercel Postgres).',
+				level: 1
+			},
+			{
+				text: 'Created `docker-compose.yml` for local development database.',
+				level: 1
+			},
+			{
+				text: '**Infrastructure**:',
+				level: 0
+			},
+			{
+				text: '`sw-manager.ts` for client-side Service Worker lifecycle management.',
+				level: 1
+			},
+			{
+				text: '`feedback.ts` service with offline queueing support.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -536,19 +1394,58 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Addressed critical bugs and unified the Builder UI to align with the "Diagetic Axiom". Merged the Story Editor directly into the main layout, removing the need for a separate mode trigger. Fixed several high-priority bugs in Level 7 ("Functions") and the Builder.',
 		features: [
-			'**UI Unification**:',
-			'Removed `BuilderStoryTrigger` and embedded `BuilderStoryBar` in the main layout.',
-			'Simplified `BuilderModel` by removing the explicit `story` mode.',
-			'**Bug Fixes**:',
-			'Fixed "Select a segment" empty state in Story Editor.',
-			'Fixed missing IDs in legacy levels causing UI issues.',
-			'Fixed Level 5 ("Stairway to the Stars") impossible geometry.',
-			'**Level 7 Fixes**:',
-			'Fixed "Call ???" data loss bug.',
-			'Fixed UI flickering between Main/Function tabs.',
-			'Fixed incorrect hint logic.',
-			'Fixed execution visualization persistence (green checks).',
-			'Improved "Call" block feedback (immediate success mark).'
+			{
+				text: '**UI Unification**:',
+				level: 0
+			},
+			{
+				text: 'Removed `BuilderStoryTrigger` and embedded `BuilderStoryBar` in the main layout.',
+				level: 1
+			},
+			{
+				text: 'Simplified `BuilderModel` by removing the explicit `story` mode.',
+				level: 1
+			},
+			{
+				text: '**Bug Fixes**:',
+				level: 0
+			},
+			{
+				text: 'Fixed "Select a segment" empty state in Story Editor.',
+				level: 1
+			},
+			{
+				text: 'Fixed missing IDs in legacy levels causing UI issues.',
+				level: 1
+			},
+			{
+				text: 'Fixed Level 5 ("Stairway to the Stars") impossible geometry.',
+				level: 1
+			},
+			{
+				text: '**Level 7 Fixes**:',
+				level: 1
+			},
+			{
+				text: 'Fixed "Call ???" data loss bug.',
+				level: 2
+			},
+			{
+				text: 'Fixed UI flickering between Main/Function tabs.',
+				level: 2
+			},
+			{
+				text: 'Fixed incorrect hint logic.',
+				level: 2
+			},
+			{
+				text: 'Fixed execution visualization persistence (green checks).',
+				level: 2
+			},
+			{
+				text: 'Improved "Call" block feedback (immediate success mark).',
+				level: 2
+			}
 		],
 		type: 'patch'
 	},
@@ -559,17 +1456,50 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Expanded the "endgame" content with a challenging "Gauntlet" pack and deepened the narrative experience by framing it as a playful dialogue between the Architect (Jonas) and the Explorer (Zoey). Created two new levels ("Slippery Slopes" and "The Floor is Lava") to complete the Gauntlet pack. Updated the metadata and hints for Levels 1-8 to reflect the new narrative arc. Added a feedback mechanism to the Home Screen.',
 		features: [
-			'**Gauntlet Expansion**:',
-			'Created Level 10 ("Slippery Slopes") focusing on ice mechanics.',
-			'Created Level 11 ("The Floor is Lava") focusing on hazard avoidance.',
-			'Updated `GAUNTLET_PACK` to include the new levels.',
-			'**Narrative Polish**:',
-			'Rewrote intros/outros for Levels 1-8 to feature "Jonas vs. Zoey" dialogue.',
-			'Updated Guide hints to reference "The Architect".',
-			'**Hint System Audit**:',
-			'Added missing "Idle" and "Anti-Pattern" hints to Levels 3, 5, 6, 7, and 8.',
-			'**Feedback Mechanism**:',
-			'Added a `mailto` link to the Home Screen for user feedback.'
+			{
+				text: '**Gauntlet Expansion**:',
+				level: 0
+			},
+			{
+				text: 'Created Level 10 ("Slippery Slopes") focusing on ice mechanics.',
+				level: 1
+			},
+			{
+				text: 'Created Level 11 ("The Floor is Lava") focusing on hazard avoidance.',
+				level: 1
+			},
+			{
+				text: 'Updated `GAUNTLET_PACK` to include the new levels.',
+				level: 1
+			},
+			{
+				text: '**Narrative Polish**:',
+				level: 0
+			},
+			{
+				text: 'Rewrote intros/outros for Levels 1-8 to feature "Jonas vs. Zoey" dialogue.',
+				level: 1
+			},
+			{
+				text: 'Updated Guide hints to reference "The Architect".',
+				level: 1
+			},
+			{
+				text: '**Hint System Audit**:',
+				level: 0
+			},
+			{
+				text: 'Added missing "Idle" and "Anti-Pattern" hints to Levels 3, 5, 6, 7, and 8.',
+				level: 1
+			},
+			{
+				text: '**Feedback Mechanism**:',
+				level: 0
+			},
+			{
+				text: 'Added a `mailto` link to the Home Screen for user feedback.',
+				level: 1
+			}
 		],
 		type: 'patch'
 	},
@@ -580,23 +1510,74 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Empowered "The Architect" with advanced tools to create complex, rich, and shareable learning experiences. Introduced "Functions" (Magic Blocks) into the Builder, added a new "Spikes" hazard mechanic, and polished the UI with difficulty indicators, selectable icons, and speaker avatars. Crucially, enabled local file system access via the File System Access API, allowing users to "Link" packs to their local disk for seamless syncing and backup.',
 		features: [
-			'**Functions in Builder**:',
-			'`FunctionManager` and `FunctionEditor` UI components.',
-			'Updated `BuilderModel` to manage function definitions.',
-			'Integration with `StackInterpreter` for executing user-defined functions.',
-			'**Hazards (Spikes)**:',
-			'Added `spikes` cell type and rendering.',
-			'Updated interpreter logic to handle hazard collisions (death state).',
-			'Added Spikes tool to the Builder palette.',
-			'**Local File System Integration**:',
-			'`FileSystemService` wrapping the File System Access API.',
-			'"Link to Disk" feature for persistent syncing of packs.',
-			'"Open Local Folder" in Library for loading external packs.',
-			'Inline status feedback (replacing alerts/toasts) for file operations.',
-			"**UI Polish (Jonas's Wishlist)**:",
-			'Difficulty indicators (Green/Yellow/Red dots) on Level Map.',
-			'`IconPicker` for custom level/pack icons.',
-			'Avatar selection support in Story Editor.'
+			{
+				text: '**Functions in Builder**:',
+				level: 0
+			},
+			{
+				text: '`FunctionManager` and `FunctionEditor` UI components.',
+				level: 1
+			},
+			{
+				text: 'Updated `BuilderModel` to manage function definitions.',
+				level: 1
+			},
+			{
+				text: 'Integration with `StackInterpreter` for executing user-defined functions.',
+				level: 1
+			},
+			{
+				text: '**Hazards (Spikes)**:',
+				level: 0
+			},
+			{
+				text: 'Added `spikes` cell type and rendering.',
+				level: 1
+			},
+			{
+				text: 'Updated interpreter logic to handle hazard collisions (death state).',
+				level: 1
+			},
+			{
+				text: 'Added Spikes tool to the Builder palette.',
+				level: 1
+			},
+			{
+				text: '**Local File System Integration**:',
+				level: 0
+			},
+			{
+				text: '`FileSystemService` wrapping the File System Access API.',
+				level: 1
+			},
+			{
+				text: '"Link to Disk" feature for persistent syncing of packs.',
+				level: 1
+			},
+			{
+				text: '"Open Local Folder" in Library for loading external packs.',
+				level: 1
+			},
+			{
+				text: 'Inline status feedback (replacing alerts/toasts) for file operations.',
+				level: 1
+			},
+			{
+				text: "**UI Polish (Jonas's Wishlist)**:",
+				level: 0
+			},
+			{
+				text: 'Difficulty indicators (Green/Yellow/Red dots) on Level Map.',
+				level: 1
+			},
+			{
+				text: '`IconPicker` for custom level/pack icons.',
+				level: 1
+			},
+			{
+				text: 'Avatar selection support in Story Editor.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -607,11 +1588,26 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Addressed high-priority friction points identified in the "Fresh Eyes" review, focusing on navigation structure and mobile responsiveness. Reorganized the Builder UI into a cleaner, tabbed interface and implemented a responsive vertical stack layout for smaller screens. Fixed a critical usability bug in Story Mode target selection.',
 		features: [
-			'**Home Screen Redesign**: Added a prominent "Builder Mode" entry point.',
-			'**Responsive Layouts**: Implemented vertical stack layout for Game and Builder interfaces on mobile (<768px).',
-			'**Builder UI Cleanup**: Refactored `BuilderTray` into a tabbed interface (Terrain, Actors, Logic, Story) and added the "Grid" tool.',
-			'**Navigation Consistency**: Standardized "Back" button behavior and iconography.',
-			'**Story Mode Fix**: Fixed target selection interaction and added visual feedback for highlighting tools.'
+			{
+				text: '**Home Screen Redesign**: Added a prominent "Builder Mode" entry point.',
+				level: 0
+			},
+			{
+				text: '**Responsive Layouts**: Implemented vertical stack layout for Game and Builder interfaces on mobile (<768px).',
+				level: 0
+			},
+			{
+				text: '**Builder UI Cleanup**: Refactored `BuilderTray` into a tabbed interface (Terrain, Actors, Logic, Story) and added the "Grid" tool.',
+				level: 0
+			},
+			{
+				text: '**Navigation Consistency**: Standardized "Back" button behavior and iconography.',
+				level: 0
+			},
+			{
+				text: '**Story Mode Fix**: Fixed target selection interaction and added visual feedback for highlighting tools.',
+				level: 0
+			}
 		],
 		type: 'patch'
 	},
@@ -622,11 +1618,26 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Conducted a "soft" phase focused on solidifying the project\'s design foundation. Stepped back from feature development to document personas, codify design axioms, and conduct a "Fresh Eyes" review. This work ensures future development remains aligned with core values. Additionally, addressed significant technical debt by fixing over 30 linting errors and warnings across the codebase.',
 		features: [
-			'**Persona Enrichment**: Updated `docs/design/personas.md` to reflect "Architect" and "Guide" roles.',
-			'**The Constitution**: Created `docs/design/axioms.md` defining 9 core design principles.',
-			'**Fresh Eyes Review**: Documented friction points in `docs/design/friction-log.md`.',
-			'**Code Quality**: Fixed linting errors (unused imports, floating promises, missing keys) across the codebase.',
-			'**Documentation Cleanup**: Reorganized `docs/design/index.md` and archived obsolete docs.'
+			{
+				text: '**Persona Enrichment**: Updated `docs/design/personas.md` to reflect "Architect" and "Guide" roles.',
+				level: 0
+			},
+			{
+				text: '**The Constitution**: Created `docs/design/axioms.md` defining 9 core design principles.',
+				level: 0
+			},
+			{
+				text: '**Fresh Eyes Review**: Documented friction points in `docs/design/friction-log.md`.',
+				level: 0
+			},
+			{
+				text: '**Code Quality**: Fixed linting errors (unused imports, floating promises, missing keys) across the codebase.',
+				level: 0
+			},
+			{
+				text: '**Documentation Cleanup**: Reorganized `docs/design/index.md` and archived obsolete docs.',
+				level: 0
+			}
 		],
 		type: 'major'
 	},
@@ -637,20 +1648,62 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Transformed the learning experience into an active, intelligent coaching system. Introduced a "Guide" character (a friendly robot) who provides context-aware hints when users struggle. Empowered level creators to author these guided experiences using new tools in the Level Builder, including a Hint Editor, Snapshot Tool, and Spotlight targeting system.',
 		features: [
-			'**Program Analysis Engine**:',
-			'Implemented static analysis utilities (`countBlocks`, `hasSequence`, `detectAntiPatterns`) to inspect user code.',
-			'**Hint Engine**:',
-			'Created `HintManager` to trigger hints based on Time, Idle, Attempts, or Code Analysis.',
-			'**Guide Character**:',
-			'Implemented `Guide.svelte`, an animated SVG robot with emotional states (Idle, Thinking, Talking, Happy, Sad).',
-			'**Authoring Tools**:',
-			'**Hint Editor**: UI in `BuilderTray` to define hints and triggers.',
-			'**Snapshot Tool**: Ability to save the current tray as `initialProgram` for debugging levels.',
-			'**Spotlight Targeting**: "Map Pin" tool in Story Editor to select grid/block targets.',
-			'**Content Updates**:',
-			'Updated Level 1 and Level 4 ("The Bug") to use the new hint system.',
-			'**UI Polish**:',
-			'Added live highlight previews, gentle fade effects, and an emoji picker for story configuration.'
+			{
+				text: '**Program Analysis Engine**:',
+				level: 0
+			},
+			{
+				text: 'Implemented static analysis utilities (`countBlocks`, `hasSequence`, `detectAntiPatterns`) to inspect user code.',
+				level: 1
+			},
+			{
+				text: '**Hint Engine**:',
+				level: 0
+			},
+			{
+				text: 'Created `HintManager` to trigger hints based on Time, Idle, Attempts, or Code Analysis.',
+				level: 1
+			},
+			{
+				text: '**Guide Character**:',
+				level: 0
+			},
+			{
+				text: 'Implemented `Guide.svelte`, an animated SVG robot with emotional states (Idle, Thinking, Talking, Happy, Sad).',
+				level: 1
+			},
+			{
+				text: '**Authoring Tools**:',
+				level: 0
+			},
+			{
+				text: '**Hint Editor**: UI in `BuilderTray` to define hints and triggers.',
+				level: 1
+			},
+			{
+				text: '**Snapshot Tool**: Ability to save the current tray as `initialProgram` for debugging levels.',
+				level: 1
+			},
+			{
+				text: '**Spotlight Targeting**: "Map Pin" tool in Story Editor to select grid/block targets.',
+				level: 1
+			},
+			{
+				text: '**Content Updates**:',
+				level: 0
+			},
+			{
+				text: 'Updated Level 1 and Level 4 ("The Bug") to use the new hint system.',
+				level: 1
+			},
+			{
+				text: '**UI Polish**:',
+				level: 0
+			},
+			{
+				text: 'Added live highlight previews, gentle fade effects, and an emoji picker for story configuration.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -661,17 +1714,50 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Implemented a comprehensive "Level Builder" inspired by Super Mario Maker, enabling users to create, test, and share custom levels. The builder features a tactile "drag-to-paint" interface, a dedicated Story Editor for narrative elements, and seamless switching between Edit and Test modes. This phase also introduced serialization (Export/Import) to allow sharing of level files.',
 		features: [
-			'**Builder Core**:',
-			'`BuilderModel`: Svelte 5 Runes-based state management for the editor.',
-			'`Grid` Updates: Added support for "Edit Mode" with drag-to-paint interactions and hover effects.',
-			'**Builder UI**:',
-			'`BuilderTray`: A comprehensive tool palette with Terrain/Actor tools, Level Config, and Backpack (Block limits).',
-			'`StoryEditor`: A dedicated interface for crafting Intro/Outro dialogue sequences.',
-			'**Mode Switching**: Seamless toggle between "Edit" (Builder UI) and "Test" (Game UI) modes.',
-			'**Test Mode Features**:',
-			'**Cheats**: Added "Rotate Character" and "Reset Position" tools to facilitate rapid debugging.',
-			'**Serialization**:',
-			'Implemented JSON Export and Import functionality for level sharing.'
+			{
+				text: '**Builder Core**:',
+				level: 0
+			},
+			{
+				text: '`BuilderModel`: Svelte 5 Runes-based state management for the editor.',
+				level: 1
+			},
+			{
+				text: '`Grid` Updates: Added support for "Edit Mode" with drag-to-paint interactions and hover effects.',
+				level: 1
+			},
+			{
+				text: '**Builder UI**:',
+				level: 0
+			},
+			{
+				text: '`BuilderTray`: A comprehensive tool palette with Terrain/Actor tools, Level Config, and Backpack (Block limits).',
+				level: 1
+			},
+			{
+				text: '`StoryEditor`: A dedicated interface for crafting Intro/Outro dialogue sequences.',
+				level: 1
+			},
+			{
+				text: '**Mode Switching**: Seamless toggle between "Edit" (Builder UI) and "Test" (Game UI) modes.',
+				level: 1
+			},
+			{
+				text: '**Test Mode Features**:',
+				level: 0
+			},
+			{
+				text: '**Cheats**: Added "Rotate Character" and "Reset Position" tools to facilitate rapid debugging.',
+				level: 1
+			},
+			{
+				text: '**Serialization**:',
+				level: 0
+			},
+			{
+				text: 'Implemented JSON Export and Import functionality for level sharing.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -682,26 +1768,86 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Implemented "Functions" (Magic Blocks) to introduce the concept of reusable code, and a comprehensive Audio System for immersive feedback. This involved a significant update to the `GameModel` to support multiple editing contexts and updating the `StackInterpreter` to handle function calls with a call stack.',
 		features: [
-			'**Functions Core Logic**:',
-			'Updated `LevelSchema` to support `functions`.',
-			'Added `CallBlock` type.',
-			'Updated `StackInterpreter` to handle `CALL` and `RETURN` operations with stack frames.',
-			'Implemented context switching in `GameModel` (`activeProgram`).',
-			'**Function Editor UI**:',
-			'Updated `Tray.svelte` with tabs to switch between Main Program and Function definitions.',
-			'Added `MagicBlock` (Call Block) visualization.',
-			'Added smooth transitions (`fly`/`fade`) when switching contexts.',
-			'**Visual Execution**:',
-			'Updated Interpreter to automatically switch the UI context when execution enters a function, allowing users to see the function executing step-by-step.',
-			'**Audio System**:',
-			'Implemented `SoundManager` using Web Audio API.',
-			'Added support for voiceovers in `Dialogue` and looping ambient tracks.',
-			'**Content**:',
-			'Level 7 ("The Magic Spell"): Introduction to functions.',
-			'Level 8 ("Pattern Recognition"): Complex pattern solving with functions.',
-			'**UI Refinements**:',
-			'Implemented "Infinite Loop" logic and UI.',
-			'Refactored Loop Block configuration into a "Contextual Configuration Panel" in the Tray using Glassomorphism and Popover API.'
+			{
+				text: '**Functions Core Logic**:',
+				level: 0
+			},
+			{
+				text: 'Updated `LevelSchema` to support `functions`.',
+				level: 1
+			},
+			{
+				text: 'Added `CallBlock` type.',
+				level: 1
+			},
+			{
+				text: 'Updated `StackInterpreter` to handle `CALL` and `RETURN` operations with stack frames.',
+				level: 1
+			},
+			{
+				text: 'Implemented context switching in `GameModel` (`activeProgram`).',
+				level: 1
+			},
+			{
+				text: '**Function Editor UI**:',
+				level: 0
+			},
+			{
+				text: 'Updated `Tray.svelte` with tabs to switch between Main Program and Function definitions.',
+				level: 1
+			},
+			{
+				text: 'Added `MagicBlock` (Call Block) visualization.',
+				level: 1
+			},
+			{
+				text: 'Added smooth transitions (`fly`/`fade`) when switching contexts.',
+				level: 1
+			},
+			{
+				text: '**Visual Execution**:',
+				level: 0
+			},
+			{
+				text: 'Updated Interpreter to automatically switch the UI context when execution enters a function, allowing users to see the function executing step-by-step.',
+				level: 1
+			},
+			{
+				text: '**Audio System**:',
+				level: 0
+			},
+			{
+				text: 'Implemented `SoundManager` using Web Audio API.',
+				level: 1
+			},
+			{
+				text: 'Added support for voiceovers in `Dialogue` and looping ambient tracks.',
+				level: 1
+			},
+			{
+				text: '**Content**:',
+				level: 0
+			},
+			{
+				text: 'Level 7 ("The Magic Spell"): Introduction to functions.',
+				level: 1
+			},
+			{
+				text: 'Level 8 ("Pattern Recognition"): Complex pattern solving with functions.',
+				level: 1
+			},
+			{
+				text: '**UI Refinements**:',
+				level: 0
+			},
+			{
+				text: 'Implemented "Infinite Loop" logic and UI.',
+				level: 1
+			},
+			{
+				text: 'Refactored Loop Block configuration into a "Contextual Configuration Panel" in the Tray using Glassomorphism and Popover API.',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -712,16 +1858,46 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Transformed the tutorial from a passive reading experience into an interactive, non-blocking coaching system. Implemented a persistent "Dashboard" layout to stabilize the UI and allow simultaneous reading and playing. Added a "Spotlight" system to visually guide users to specific UI elements. Refactored the state management to use in-place updates for `SvelteMap` to ensure robust reactivity. Polished the visual experience with smooth character animations, win state effects, and a harmonized color palette.',
 		features: [
-			'**Persistent Tutorial UI**: `InstructionBar` and `StatusPanel` integrated into a fixed-height Dashboard.',
-			'**Interactive Triggers**: Story advances automatically based on user actions (e.g., placing a block).',
-			'**Spotlight System**: Visual highlighting for blocks and grid cells driven by story data.',
-			'**Visual Polish**:',
-			'Smooth CSS transitions for character movement.',
-			'"Pop-in" animations for Win Modal.',
-			'Explicit loop counts on blocks.',
-			'Harmonized "Modern Matte" color usage.',
-			'Fixed layout shifts and grid rendering issues (off-by-one error).',
-			'**Technical Refactor**: Encapsulated `executionState` and `loopProgress` in `GameModel` to prevent reactivity bugs.'
+			{
+				text: '**Persistent Tutorial UI**: `InstructionBar` and `StatusPanel` integrated into a fixed-height Dashboard.',
+				level: 0
+			},
+			{
+				text: '**Interactive Triggers**: Story advances automatically based on user actions (e.g., placing a block).',
+				level: 0
+			},
+			{
+				text: '**Spotlight System**: Visual highlighting for blocks and grid cells driven by story data.',
+				level: 0
+			},
+			{
+				text: '**Visual Polish**:',
+				level: 0
+			},
+			{
+				text: 'Smooth CSS transitions for character movement.',
+				level: 1
+			},
+			{
+				text: '"Pop-in" animations for Win Modal.',
+				level: 1
+			},
+			{
+				text: 'Explicit loop counts on blocks.',
+				level: 1
+			},
+			{
+				text: 'Harmonized "Modern Matte" color usage.',
+				level: 1
+			},
+			{
+				text: 'Fixed layout shifts and grid rendering issues (off-by-one error).',
+				level: 1
+			},
+			{
+				text: '**Technical Refactor**: Encapsulated `executionState` and `loopProgress` in `GameModel` to prevent reactivity bugs.',
+				level: 0
+			}
 		],
 		type: 'major'
 	},
@@ -732,21 +1908,66 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Expanded the prototype into a playable learning module with a narrative arc. Implemented the "Again" (Loop) block with nested drag-and-drop, a dialogue system for storytelling, and a "Block Limit" mechanic to enforce efficient coding. Created Levels 1-6 covering basic movement, loops, and debugging. Refined the UI into a responsive "IDE-style" layout. Migrated the drag-and-drop system to `@atlaskit/pragmatic-drag-and-drop` for a robust, no-layout-shift experience. Implemented a Stack-Based Interpreter to support "Step Back" debugging. Added procedural sound effects and ensured full accessibility compliance.',
 		features: [
-			'**Loop Block**: Nested drag-and-drop support and interpreter logic.',
-			'**Narrative System**: `Dialogue` component and story segments in levels.',
-			'**Levels 1-6**:',
-			'1-3: Basic Movement & Intro.',
-			'4: "The Bug" (Debugging pre-filled code).',
-			'5: "Stairway" (Forced Loop via Block Limit).',
-			'6: "Big Zig Zag" (Complex Patterns).',
-			'**UI Refinement**: Two-column layout, "Stop" button, "Ghost" drag effect.',
-			'**Win/Loss States**: `WinModal` and visual feedback for collisions.',
-			'**Technical Refactor**:',
-			'Replaced `SortableJS` with `@atlaskit/pragmatic-drag-and-drop`.',
-			'Implemented Stack-Based Interpreter for "Step Back" capability.',
-			'Migrated to `SvelteMap`/`SvelteSet` for fine-grained reactivity.',
-			'Added `SoundManager` (Web Audio API) for procedural sound effects.',
-			'Fixed Accessibility issues (keyboard navigation, ARIA roles).'
+			{
+				text: '**Loop Block**: Nested drag-and-drop support and interpreter logic.',
+				level: 0
+			},
+			{
+				text: '**Narrative System**: `Dialogue` component and story segments in levels.',
+				level: 0
+			},
+			{
+				text: '**Levels 1-6**:',
+				level: 0
+			},
+			{
+				text: '1-3: Basic Movement & Intro.',
+				level: 1
+			},
+			{
+				text: '4: "The Bug" (Debugging pre-filled code).',
+				level: 1
+			},
+			{
+				text: '5: "Stairway" (Forced Loop via Block Limit).',
+				level: 1
+			},
+			{
+				text: '6: "Big Zig Zag" (Complex Patterns).',
+				level: 1
+			},
+			{
+				text: '**UI Refinement**: Two-column layout, "Stop" button, "Ghost" drag effect.',
+				level: 0
+			},
+			{
+				text: '**Win/Loss States**: `WinModal` and visual feedback for collisions.',
+				level: 0
+			},
+			{
+				text: '**Technical Refactor**:',
+				level: 0
+			},
+			{
+				text: 'Replaced `SortableJS` with `@atlaskit/pragmatic-drag-and-drop`.',
+				level: 1
+			},
+			{
+				text: 'Implemented Stack-Based Interpreter for "Step Back" capability.',
+				level: 1
+			},
+			{
+				text: 'Migrated to `SvelteMap`/`SvelteSet` for fine-grained reactivity.',
+				level: 1
+			},
+			{
+				text: 'Added `SoundManager` (Web Audio API) for procedural sound effects.',
+				level: 1
+			},
+			{
+				text: 'Fixed Accessibility issues (keyboard navigation, ARIA roles).',
+				level: 1
+			}
 		],
 		type: 'major'
 	},
@@ -757,12 +1978,30 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Built the functional "unplugged-digital" prototype implementing the core "Stop & Go" mechanics. Developed the `GameModel` using Svelte 5 Runes, the `Mimic` interpreter using generator functions for step-by-step execution, and a touch-friendly drag-and-drop interface using `svelte-dnd-action`. Created the first level "Cross the River" to validate the end-to-end loop.',
 		features: [
-			'`src/lib/game/model.svelte.ts`: Reactive game state with Undo/Redo.',
-			'`src/lib/game/mimic.ts`: Generator-based execution engine.',
-			'`src/lib/components/game/Tray.svelte`: Drag-and-drop block coding interface.',
-			'`src/lib/components/game/Grid.svelte`: 5x5 Game Stage.',
-			'`src/routes/game/+page.svelte`: Integrated game prototype.',
-			'`src/lib/game/levels.ts`: Level 1 definition.'
+			{
+				text: '`src/lib/game/model.svelte.ts`: Reactive game state with Undo/Redo.',
+				level: 0
+			},
+			{
+				text: '`src/lib/game/mimic.ts`: Generator-based execution engine.',
+				level: 0
+			},
+			{
+				text: '`src/lib/components/game/Tray.svelte`: Drag-and-drop block coding interface.',
+				level: 0
+			},
+			{
+				text: '`src/lib/components/game/Grid.svelte`: 5x5 Game Stage.',
+				level: 0
+			},
+			{
+				text: '`src/routes/game/+page.svelte`: Integrated game prototype.',
+				level: 0
+			},
+			{
+				text: '`src/lib/game/levels.ts`: Level 1 definition.',
+				level: 0
+			}
 		],
 		type: 'major'
 	},
@@ -773,10 +2012,22 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Established a robust, future-proof styling architecture using Baseline 2025 features. Implemented the "Modern Matte" aesthetic using Open Props and semantic tokens with `light-dark()` for native dark mode support. Refined layout primitives and created a "Kitchen Sink" page to validate the design system.',
 		features: [
-			'`src/app.css`: Global styles with `@layer`, semantic tokens, and `light-dark()`.',
-			'`src/lib/components/layout/Switch.svelte`: New layout primitive using Container Queries.',
-			'`src/routes/design/+page.svelte`: Kitchen Sink / Style Guide page.',
-			'Refined `Stack`, `Grid`, `Cluster`, `Center`, `Box` components.'
+			{
+				text: '`src/app.css`: Global styles with `@layer`, semantic tokens, and `light-dark()`.',
+				level: 0
+			},
+			{
+				text: '`src/lib/components/layout/Switch.svelte`: New layout primitive using Container Queries.',
+				level: 0
+			},
+			{
+				text: '`src/routes/design/+page.svelte`: Kitchen Sink / Style Guide page.',
+				level: 0
+			},
+			{
+				text: 'Refined `Stack`, `Grid`, `Cluster`, `Center`, `Box` components.',
+				level: 0
+			}
 		],
 		type: 'major'
 	},
@@ -787,11 +2038,26 @@ export const CHANGELOG: ChangelogEntry[] = [
 		summary:
 			'Established the pedagogical and technical foundation for "Wonderblocks". Defined the core "Stop & Go" mechanics, researched prior art (Cubetto, ScratchJr), and established the "Modern Matte" visual style. Set up the SvelteKit project structure with Open Props for styling and a custom "Mimic" interpreter architecture.',
 		features: [
-			'`docs/design/mechanics.md`: Core game mechanics definition.',
-			'`docs/design/visual-style.md`: Visual design system (Modern Matte).',
-			'`docs/design/personas.md`: User personas (Zoey, Jonas).',
-			'`docs/agent-context/current/technical-architecture.md`: Technical stack and architecture.',
-			'Project Skeleton: SvelteKit app with Open Props and "Every Layout" primitives.'
+			{
+				text: '`docs/design/mechanics.md`: Core game mechanics definition.',
+				level: 0
+			},
+			{
+				text: '`docs/design/visual-style.md`: Visual design system (Modern Matte).',
+				level: 0
+			},
+			{
+				text: '`docs/design/personas.md`: User personas (Zoey, Jonas).',
+				level: 0
+			},
+			{
+				text: '`docs/agent-context/current/technical-architecture.md`: Technical stack and architecture.',
+				level: 0
+			},
+			{
+				text: 'Project Skeleton: SvelteKit app with Open Props and "Every Layout" primitives.',
+				level: 0
+			}
 		],
 		type: 'major'
 	}

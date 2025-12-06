@@ -9,7 +9,7 @@ interface ChangelogEntry {
 	date: string;
 	title: string;
 	summary: string;
-	features: string[];
+	features: { text: string; level: number }[];
 	type: 'major' | 'minor' | 'patch';
 }
 
@@ -50,16 +50,20 @@ function parseChangelog(content: string): ChangelogEntry[] {
 
 		// Find Deliverables (Features)
 		const deliverablesStartIndex = lines.findIndex((l) => l.startsWith('**Key Deliverables:**'));
-		const features: string[] = [];
+		const features: { text: string; level: number }[] = [];
 		if (deliverablesStartIndex !== -1) {
 			for (let i = deliverablesStartIndex + 1; i < lines.length; i++) {
-				const line = lines[i].trim();
-				if (line.startsWith('-')) {
+				const line = lines[i];
+				const trimmedLine = line.trim();
+				if (trimmedLine.startsWith('-')) {
+					// Calculate indentation level
+					const match = line.match(/^(\s*)-/);
+					const indent = match ? match[1].length : 0;
+					const level = Math.floor(indent / 2); // Assuming 2 spaces per level
+
 					// Clean up markdown links and code blocks for cleaner UI text
-					const cleanLine = line.substring(1).trim();
-					// cleanLine = cleanLine.replace(/`([^`]+)`/g, '$1'); // Remove code ticks
-					// cleanLine = cleanLine.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'); // Remove links
-					features.push(cleanLine);
+					const cleanLine = trimmedLine.substring(1).trim();
+					features.push({ text: cleanLine, level });
 				}
 			}
 		}
@@ -95,7 +99,7 @@ export interface ChangelogEntry {
 	date: string;
 	title: string;
 	summary: string;
-	features: string[];
+	features: { text: string; level: number }[];
 	type: 'major' | 'minor' | 'patch';
 }
 

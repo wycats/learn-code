@@ -42,9 +42,9 @@
 					{#if entry.features.length > 0}
 						<div class="features-list">
 							{#each entry.features as feature (feature)}
-								<div class="feature-item">
+								<div class="feature-item" style="margin-left: {feature.level * 1.5}rem">
 									<span class="bullet">•</span>
-									<Markdown content={feature} />
+									<Markdown content={feature.text} />
 								</div>
 							{/each}
 						</div>
