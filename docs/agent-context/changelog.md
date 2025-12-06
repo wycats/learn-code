@@ -770,7 +770,7 @@ Implemented core survival gameplay features including a Lives System, Health & D
 **Date:** December 9, 2025
 
 **Summary:**
-Prepared the application for release with a new "In-App Changelog" feature, critical bug fixes, and a comprehensive visual regression suite. This phase also included research for future error reporting tools.
+Prepared the application for release with a new "In-App Changelog" feature, critical bug fixes, and a comprehensive visual regression suite. This phase also included a final branding sweep to rename "Code Climber" to "Kibi" and the addition of a Settings entry point to the home screen.
 
 **Key Deliverables:**
 
@@ -778,6 +778,9 @@ Prepared the application for release with a new "In-App Changelog" feature, crit
   - **Automated Generation**: Script to parse `docs/agent-context/changelog.md` into structured data.
   - **UI**: New `/changelog` page linked from Settings.
   - **Markdown Support**: Enhanced rendering for bold text and other markdown features.
+- **Branding & UI**:
+  - **Rename**: Replaced remaining "Code Climber" references with "Kibi".
+  - **Settings**: Added a Settings gear icon to the Home page top bar.
 - **Bug Fixes**:
   - **Duplicate Keys**: Fixed a crash caused by identical version strings for "Phase X" and "Phase X Polish".
   - **Markdown Rendering**: Fixed an issue where markdown syntax was being stripped.
