@@ -156,6 +156,9 @@
 
 		<div class="footer">
 			<button onclick={goBack} class="link-btn">Back to Game</button>
+			<span class="separator">•</span>
+			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+			<a href="{base}/changelog" class="link-btn">Changelog</a>
 		</div>
 	</div>
 </div>
@@ -364,5 +367,13 @@
 		padding: var(--size-4);
 		text-align: center;
 		border-top: 1px solid var(--surface-3);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--size-3);
+	}
+
+	.separator {
+		color: var(--text-3);
 	}
 </style>

@@ -7,7 +7,11 @@ import { deleteSessionTokenCookie, invalidateSession } from '$lib/server/auth';
 
 export const load: PageServerLoad = async (event) => {
 	if (!event.locals.user) {
-		return redirect(302, '/login');
+		return {
+			user: null,
+			profiles: [],
+			devices: []
+		};
 	}
 
 	const profiles = await db.query.profile.findMany({

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Trash2, LogOut, Smartphone, Info } from 'lucide-svelte';
+	import { Trash2, LogOut, Smartphone, Info, LogIn } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import { base } from '$app/paths';
 
@@ -13,69 +13,79 @@
 			<h1>Settings</h1>
 			<p class="subtitle">Manage your account and devices</p>
 		</div>
-		<form method="POST" action="?/logout" use:enhance>
-			<button class="logout-btn">
-				<LogOut size={16} />
-				Sign Out
-			</button>
-		</form>
+		{#if data.user}
+			<form method="POST" action="?/logout" use:enhance>
+				<button class="logout-btn">
+					<LogOut size={16} />
+					Sign Out
+				</button>
+			</form>
+		{:else}
+			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+			<a href="{base}/login" class="login-btn">
+				<LogIn size={16} />
+				Sign In
+			</a>
+		{/if}
 	</header>
 
-	<section class="section">
-		<h2>Profiles</h2>
-		<div class="profiles-grid">
-			{#each data.profiles as profile (profile.id)}
-				<div class="profile-card">
-					<div class="profile-info">
-						<div
-							class="avatar"
-							style="background-color: {profile.color}20; border-color: {profile.color}"
-						>
-							{#if profile.avatar === 'robot'}🤖
-							{:else if profile.avatar === 'cat'}🐱
-							{:else if profile.avatar === 'dog'}🐶
-							{:else}��{/if}
+	{#if data.user}
+		<section class="section">
+			<h2>Profiles</h2>
+			<div class="profiles-grid">
+				{#each data.profiles as profile (profile.id)}
+					<div class="profile-card">
+						<div class="profile-info">
+							<div
+								class="avatar"
+								style="background-color: {profile.color}20; border-color: {profile.color}"
+							>
+								{#if profile.avatar === 'robot'}🤖
+								{:else if profile.avatar === 'cat'}🐱
+								{:else if profile.avatar === 'dog'}🐶
+								{:else}��{/if}
+							</div>
+							<span class="profile-name">{profile.nickname}</span>
 						</div>
-						<span class="profile-name">{profile.nickname}</span>
+						<form method="POST" action="?/deleteProfile" use:enhance>
+							<input type="hidden" name="profileId" value={profile.id} />
+							<button class="delete-btn" aria-label="Delete profile">
+								<Trash2 size={16} />
+							</button>
+						</form>
 					</div>
-					<form method="POST" action="?/deleteProfile" use:enhance>
-						<input type="hidden" name="profileId" value={profile.id} />
-						<button class="delete-btn" aria-label="Delete profile">
-							<Trash2 size={16} />
-						</button>
-					</form>
-				</div>
-			{/each}
-		</div>
-	</section>
+				{/each}
+			</div>
+		</section>
 
-	<section class="section">
-		<h2>Connected Devices</h2>
-		<div class="devices-list">
-			{#each data.devices as device (device.id)}
-				<div class="device-card">
-					<div class="device-info">
-						<div class="device-icon">
-							<Smartphone size={20} />
+		<section class="section">
+			<h2>Connected Devices</h2>
+			<div class="devices-list">
+				{#each data.devices as device (device.id)}
+					<div class="device-card">
+						<div class="device-info">
+							<div class="device-icon">
+								<Smartphone size={20} />
+							</div>
+							<div>
+								<p class="device-name">Device connected via QR</p>
+								<p class="device-date">
+									Authorized on {new Date(device.createdAt).toLocaleDateString()}
+								</p>
+							</div>
 						</div>
-						<div>
-							<p class="device-name">Device connected via QR</p>
-							<p class="device-date">
-								Authorized on {new Date(device.createdAt).toLocaleDateString()}
-							</p>
-						</div>
+						<form method="POST" action="?/revokeDevice" use:enhance>
+							<input type="hidden" name="deviceId" value={device.id} />
+							<button class="revoke-btn">Revoke</button>
+						</form>
 					</div>
-					<form method="POST" action="?/revokeDevice" use:enhance>
-						<input type="hidden" name="deviceId" value={device.id} />
-						<button class="revoke-btn">Revoke</button>
-					</form>
-				</div>
-			{/each}
-			{#if data.devices.length === 0}
-				<p class="empty-state">No other devices connected.</p>
-			{/if}
-		</div>
-	</section>
+				{/each}
+				{#if data.devices.length === 0}
+					<p class="empty-state">No other devices connected.</p>
+				{/if}
+			</div>
+		</section>
+	{/if}
 
 	<section class="section">
 		<h2>About</h2>
@@ -137,6 +147,23 @@
 
 	.logout-btn:hover {
 		background-color: var(--surface-3);
+	}
+
+	.login-btn {
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		padding: var(--size-2) var(--size-4);
+		border-radius: var(--radius-2);
+		background-color: var(--brand);
+		color: white;
+		text-decoration: none;
+		font-weight: var(--font-weight-6);
+		transition: background-color 0.2s;
+	}
+
+	.login-btn:hover {
+		background-color: var(--brand-hover);
 	}
 
 	.section {
