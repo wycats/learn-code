@@ -25,19 +25,19 @@
 </script>
 
 <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-<span>{@html parse(content)}</span>
+<span class="markdown">{@html parse(content)}</span>
 
 <style>
-	strong {
+	.markdown :global(strong) {
 		font-weight: bold;
 		color: var(--text-1);
 	}
 
-	em {
+	.markdown :global(em) {
 		font-style: italic;
 	}
 
-	code {
+	.markdown :global(code) {
 		background: var(--surface-2);
 		padding: 0.2em 0.4em;
 		border-radius: var(--radius-1);
@@ -45,7 +45,7 @@
 		font-size: 0.9em;
 	}
 
-	a {
+	.markdown :global(a) {
 		color: var(--brand);
 		text-decoration: underline;
 	}

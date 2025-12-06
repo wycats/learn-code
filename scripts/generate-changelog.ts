@@ -56,9 +56,9 @@ function parseChangelog(content: string): ChangelogEntry[] {
 				const line = lines[i].trim();
 				if (line.startsWith('-')) {
 					// Clean up markdown links and code blocks for cleaner UI text
-					let cleanLine = line.substring(1).trim();
-					cleanLine = cleanLine.replace(/`([^`]+)`/g, '$1'); // Remove code ticks
-					cleanLine = cleanLine.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'); // Remove links
+					const cleanLine = line.substring(1).trim();
+					// cleanLine = cleanLine.replace(/`([^`]+)`/g, '$1'); // Remove code ticks
+					// cleanLine = cleanLine.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'); // Remove links
 					features.push(cleanLine);
 				}
 			}

@@ -10019,7 +10019,35 @@
 		},
 		"f": { "0": 1, "1": 1, "2": 0, "3": 0, "4": 0 },
 		"b": { "0": [0, 1], "1": [1, 0], "2": [0, 1], "3": [1, 1] },
-		"meta": { "lastBranch": 0, "lastFunction": 0, "lastStatement": 0, "seen": {} }
+		"meta": {
+			"lastBranch": 4,
+			"lastFunction": 5,
+			"lastStatement": 13,
+			"seen": {
+				"f:1:0:1:1": 0,
+				"s:4:16:4:Infinity": 0,
+				"s:5:13:5:Infinity": 1,
+				"s:7:1:19:Infinity": 2,
+				"f:7:8:7:15": 1,
+				"b:8:7:8:Infinity:undefined:undefined:undefined:undefined": 0,
+				"s:8:7:8:Infinity": 3,
+				"s:8:12:8:Infinity": 4,
+				"b:10:6:18:Infinity:undefined:undefined:undefined:undefined": 1,
+				"s:10:6:18:Infinity": 5,
+				"s:11:3:13:Infinity": 6,
+				"f:11:42:11:50": 2,
+				"s:12:4:12:Infinity": 7,
+				"s:15:3:17:Infinity": 8,
+				"f:15:39:15:47": 3,
+				"s:16:4:16:Infinity": 9,
+				"s:24:17:24:Infinity": 10,
+				"f:24:17:24:19": 4,
+				"b:22:5:22:Infinity:undefined:undefined:undefined:undefined": 2,
+				"s:22:5:22:Infinity": 11,
+				"b:22:5:22:10:22:10:22:Infinity": 3,
+				"s:22:26:22:Infinity": 12
+			}
+		}
 	},
 	"/home/ykatz/Code/Personal/learn-coding/src/lib/components/common/OfflineIndicator.svelte": {
 		"path": "/home/ykatz/Code/Personal/learn-coding/src/lib/components/common/OfflineIndicator.svelte",
@@ -10137,24 +10165,7 @@
 		"s": { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0 },
 		"f": { "0": 0, "1": 0, "2": 0 },
 		"b": {},
-		"meta": {
-			"lastBranch": 0,
-			"lastFunction": 3,
-			"lastStatement": 8,
-			"seen": {
-				"f:1:0:1:1": 0,
-				"s:12:17:12:28": 0,
-				"s:13:42:13:46": 1,
-				"s:15:1:22:Infinity": 2,
-				"f:15:8:15:15": 1,
-				"s:16:2:19:Infinity": 3,
-				"s:21:2:21:Infinity": 4,
-				"s:24:1:26:Infinity": 5,
-				"f:24:10:24:17": 2,
-				"s:25:2:25:Infinity": 6,
-				"s:29:9:29:Infinity": 7
-			}
-		}
+		"meta": { "lastBranch": 0, "lastFunction": 0, "lastStatement": 0, "seen": {} }
 	},
 	"/home/ykatz/Code/Personal/learn-coding/src/lib/components/common/SyncModal.svelte": {
 		"path": "/home/ykatz/Code/Personal/learn-coding/src/lib/components/common/SyncModal.svelte",
@@ -18952,6 +18963,23 @@
 				"s:23:9:23:Infinity": 6,
 				"s:28:13:28:Infinity": 7
 			}
+		}
+	},
+	"/home/ykatz/Code/Personal/learn-coding/src/lib/data/changelog.ts": {
+		"path": "/home/ykatz/Code/Personal/learn-coding/src/lib/data/changelog.ts",
+		"statementMap": {
+			"0": { "start": { "line": 13, "column": 43 }, "end": { "line": 782, "column": null } }
+		},
+		"fnMap": {},
+		"branchMap": {},
+		"s": { "0": 0 },
+		"f": {},
+		"b": {},
+		"meta": {
+			"lastBranch": 0,
+			"lastFunction": 0,
+			"lastStatement": 1,
+			"seen": { "s:13:43:782:Infinity": 0 }
 		}
 	},
 	"/home/ykatz/Code/Personal/learn-coding/src/lib/game/analysis.ts": {
@@ -41135,6 +41163,71 @@
 			}
 		}
 	},
+	"/home/ykatz/Code/Personal/learn-coding/src/routes/changelog/+page.svelte": {
+		"path": "/home/ykatz/Code/Personal/learn-coding/src/routes/changelog/+page.svelte",
+		"statementMap": {
+			"0": { "start": { "line": 13, "column": 20 }, "end": { "line": 13, "column": null } },
+			"1": { "start": { "line": 23, "column": 9 }, "end": { "line": 23, "column": 22 } },
+			"2": { "start": { "line": 23, "column": 27 }, "end": { "line": 23, "column": null } },
+			"3": { "start": { "line": 24, "column": 48 }, "end": { "line": 24, "column": null } },
+			"4": { "start": { "line": 27, "column": 47 }, "end": { "line": 27, "column": null } },
+			"5": { "start": { "line": 28, "column": 8 }, "end": { "line": 28, "column": null } },
+			"6": { "start": { "line": 31, "column": 23 }, "end": { "line": 31, "column": null } },
+			"7": { "start": { "line": 32, "column": 8 }, "end": { "line": 32, "column": null } },
+			"8": { "start": { "line": 35, "column": 10 }, "end": { "line": 35, "column": null } },
+			"9": { "start": { "line": 39, "column": 25 }, "end": { "line": 39, "column": null } },
+			"10": { "start": { "line": 43, "column": 14 }, "end": { "line": 43, "column": 32 } },
+			"11": { "start": { "line": 43, "column": 39 }, "end": { "line": 43, "column": null } },
+			"12": { "start": { "line": 46, "column": 16 }, "end": { "line": 46, "column": null } }
+		},
+		"fnMap": {
+			"0": {
+				"name": "(anonymous_0)",
+				"decl": { "start": { "line": 1, "column": 0 }, "end": { "line": 1, "column": null } },
+				"loc": { "start": { "line": 1, "column": 0 }, "end": { "line": 7, "column": null } },
+				"line": 1
+			}
+		},
+		"branchMap": {},
+		"s": {
+			"0": 0,
+			"1": 0,
+			"2": 0,
+			"3": 0,
+			"4": 0,
+			"5": 0,
+			"6": 0,
+			"7": 0,
+			"8": 0,
+			"9": 0,
+			"10": 0,
+			"11": 0,
+			"12": 0
+		},
+		"f": { "0": 0 },
+		"b": {},
+		"meta": {
+			"lastBranch": 0,
+			"lastFunction": 1,
+			"lastStatement": 13,
+			"seen": {
+				"f:1:0:1:Infinity": 0,
+				"s:13:20:13:Infinity": 0,
+				"s:23:9:23:22": 1,
+				"s:23:27:23:Infinity": 2,
+				"s:24:48:24:Infinity": 3,
+				"s:27:47:27:Infinity": 4,
+				"s:28:8:28:Infinity": 5,
+				"s:31:23:31:Infinity": 6,
+				"s:32:8:32:Infinity": 7,
+				"s:35:10:35:Infinity": 8,
+				"s:39:25:39:Infinity": 9,
+				"s:43:14:43:32": 10,
+				"s:43:39:43:Infinity": 11,
+				"s:46:16:46:Infinity": 12
+			}
+		}
+	},
 	"/home/ykatz/Code/Personal/learn-coding/src/routes/design/+page.svelte": {
 		"path": "/home/ykatz/Code/Personal/learn-coding/src/routes/design/+page.svelte",
 		"statementMap": {},
@@ -44032,25 +44125,27 @@
 	"/home/ykatz/Code/Personal/learn-coding/src/routes/settings/+page.svelte": {
 		"path": "/home/ykatz/Code/Personal/learn-coding/src/routes/settings/+page.svelte",
 		"statementMap": {
-			"0": { "start": { "line": 6, "column": 11 }, "end": { "line": 6, "column": null } },
-			"1": { "start": { "line": 17, "column": 18 }, "end": { "line": 17, "column": null } },
-			"2": { "start": { "line": 26, "column": 10 }, "end": { "line": 26, "column": 27 } },
-			"3": { "start": { "line": 26, "column": 34 }, "end": { "line": 26, "column": null } },
-			"4": { "start": { "line": 31, "column": 33 }, "end": { "line": 31, "column": null } },
-			"5": { "start": { "line": 38, "column": 34 }, "end": { "line": 38, "column": null } },
-			"6": { "start": { "line": 41, "column": 51 }, "end": { "line": 41, "column": null } },
-			"7": { "start": { "line": 43, "column": 21 }, "end": { "line": 43, "column": null } },
-			"8": { "start": { "line": 54, "column": 10 }, "end": { "line": 54, "column": 26 } },
-			"9": { "start": { "line": 54, "column": 32 }, "end": { "line": 54, "column": null } },
-			"10": { "start": { "line": 58, "column": 25 }, "end": { "line": 58, "column": null } },
-			"11": { "start": { "line": 63, "column": 27 }, "end": { "line": 63, "column": null } },
-			"12": { "start": { "line": 68, "column": 50 }, "end": { "line": 68, "column": null } }
+			"0": { "start": { "line": 7, "column": 11 }, "end": { "line": 7, "column": null } },
+			"1": { "start": { "line": 18, "column": 18 }, "end": { "line": 18, "column": null } },
+			"2": { "start": { "line": 27, "column": 10 }, "end": { "line": 27, "column": 27 } },
+			"3": { "start": { "line": 27, "column": 34 }, "end": { "line": 27, "column": null } },
+			"4": { "start": { "line": 32, "column": 33 }, "end": { "line": 32, "column": null } },
+			"5": { "start": { "line": 39, "column": 34 }, "end": { "line": 39, "column": null } },
+			"6": { "start": { "line": 42, "column": 51 }, "end": { "line": 42, "column": null } },
+			"7": { "start": { "line": 44, "column": 21 }, "end": { "line": 44, "column": null } },
+			"8": { "start": { "line": 55, "column": 10 }, "end": { "line": 55, "column": 26 } },
+			"9": { "start": { "line": 55, "column": 32 }, "end": { "line": 55, "column": null } },
+			"10": { "start": { "line": 59, "column": 25 }, "end": { "line": 59, "column": null } },
+			"11": { "start": { "line": 64, "column": 27 }, "end": { "line": 64, "column": null } },
+			"12": { "start": { "line": 69, "column": 50 }, "end": { "line": 69, "column": null } },
+			"13": { "start": { "line": 83, "column": 12 }, "end": { "line": 83, "column": null } },
+			"14": { "start": { "line": 85, "column": 16 }, "end": { "line": 85, "column": null } }
 		},
 		"fnMap": {
 			"0": {
 				"name": "(anonymous_0)",
 				"decl": { "start": { "line": 1, "column": 0 }, "end": { "line": 1, "column": null } },
-				"loc": { "start": { "line": 1, "column": 0 }, "end": { "line": 7, "column": null } },
+				"loc": { "start": { "line": 1, "column": 0 }, "end": { "line": 8, "column": null } },
 				"line": 1
 			}
 		},
@@ -44068,29 +44163,33 @@
 			"9": 0,
 			"10": 0,
 			"11": 0,
-			"12": 0
+			"12": 0,
+			"13": 0,
+			"14": 0
 		},
 		"f": { "0": 0 },
 		"b": {},
 		"meta": {
 			"lastBranch": 0,
 			"lastFunction": 1,
-			"lastStatement": 13,
+			"lastStatement": 15,
 			"seen": {
 				"f:1:0:1:Infinity": 0,
-				"s:6:11:6:Infinity": 0,
-				"s:17:18:17:Infinity": 1,
-				"s:26:10:26:27": 2,
-				"s:26:34:26:Infinity": 3,
-				"s:31:33:31:Infinity": 4,
-				"s:38:34:38:Infinity": 5,
-				"s:41:51:41:Infinity": 6,
-				"s:43:21:43:Infinity": 7,
-				"s:54:10:54:26": 8,
-				"s:54:32:54:Infinity": 9,
-				"s:58:25:58:Infinity": 10,
-				"s:63:27:63:Infinity": 11,
-				"s:68:50:68:Infinity": 12
+				"s:7:11:7:Infinity": 0,
+				"s:18:18:18:Infinity": 1,
+				"s:27:10:27:27": 2,
+				"s:27:34:27:Infinity": 3,
+				"s:32:33:32:Infinity": 4,
+				"s:39:34:39:Infinity": 5,
+				"s:42:51:42:Infinity": 6,
+				"s:44:21:44:Infinity": 7,
+				"s:55:10:55:26": 8,
+				"s:55:32:55:Infinity": 9,
+				"s:59:25:59:Infinity": 10,
+				"s:64:27:64:Infinity": 11,
+				"s:69:50:69:Infinity": 12,
+				"s:83:12:83:Infinity": 13,
+				"s:85:16:85:Infinity": 14
 			}
 		}
 	}

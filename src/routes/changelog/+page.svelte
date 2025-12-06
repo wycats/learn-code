@@ -2,6 +2,7 @@
 	import { CHANGELOG } from '$lib/data/changelog';
 	import { ArrowLeft, Calendar } from 'lucide-svelte';
 	import { base } from '$app/paths';
+	import Markdown from '$lib/components/ui/Markdown.svelte';
 
 	// Group by year/month if needed, but simple list is fine for now.
 </script>
@@ -43,7 +44,7 @@
 							{#each entry.features as feature (feature)}
 								<div class="feature-item">
 									<span class="bullet">•</span>
-									<span>{feature}</span>
+									<Markdown content={feature} />
 								</div>
 							{/each}
 						</div>

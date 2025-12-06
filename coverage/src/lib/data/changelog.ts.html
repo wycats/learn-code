@@ -1,0 +1,2428 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>Code coverage report for src/lib/data/changelog.ts</title>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="../../../prettify.css" />
+		<link rel="stylesheet" href="../../../base.css" />
+		<link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<style type="text/css">
+			.coverage-summary .sorter {
+				background-image: url(../../../sort-arrow-sprite.png);
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="wrapper">
+			<div class="pad1">
+				<h1>
+					<a href="../../../index.html">All files</a> /
+					<a href="index.html">src/lib/data</a> changelog.ts
+				</h1>
+				<div class="clearfix">
+					<div class="fl pad1y space-right2">
+						<span class="strong">0% </span>
+						<span class="quiet">Statements</span>
+						<span class="fraction">0/1</span>
+					</div>
+
+					<div class="fl pad1y space-right2">
+						<span class="strong">100% </span>
+						<span class="quiet">Branches</span>
+						<span class="fraction">0/0</span>
+					</div>
+
+					<div class="fl pad1y space-right2">
+						<span class="strong">100% </span>
+						<span class="quiet">Functions</span>
+						<span class="fraction">0/0</span>
+					</div>
+
+					<div class="fl pad1y space-right2">
+						<span class="strong">0% </span>
+						<span class="quiet">Lines</span>
+						<span class="fraction">0/1</span>
+					</div>
+				</div>
+				<p class="quiet">
+					Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>,
+					<em>p</em> or <em>k</em> for the previous block.
+				</p>
+				<template id="filterTemplate">
+					<div class="quiet">
+						Filter:
+						<input type="search" id="fileSearch" />
+					</div>
+				</template>
+			</div>
+			<div class="status-line low"></div>
+			<pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a>
+<a name='L193'></a><a href='#L193'>193</a>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a>
+<a name='L197'></a><a href='#L197'>197</a>
+<a name='L198'></a><a href='#L198'>198</a>
+<a name='L199'></a><a href='#L199'>199</a>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a>
+<a name='L219'></a><a href='#L219'>219</a>
+<a name='L220'></a><a href='#L220'>220</a>
+<a name='L221'></a><a href='#L221'>221</a>
+<a name='L222'></a><a href='#L222'>222</a>
+<a name='L223'></a><a href='#L223'>223</a>
+<a name='L224'></a><a href='#L224'>224</a>
+<a name='L225'></a><a href='#L225'>225</a>
+<a name='L226'></a><a href='#L226'>226</a>
+<a name='L227'></a><a href='#L227'>227</a>
+<a name='L228'></a><a href='#L228'>228</a>
+<a name='L229'></a><a href='#L229'>229</a>
+<a name='L230'></a><a href='#L230'>230</a>
+<a name='L231'></a><a href='#L231'>231</a>
+<a name='L232'></a><a href='#L232'>232</a>
+<a name='L233'></a><a href='#L233'>233</a>
+<a name='L234'></a><a href='#L234'>234</a>
+<a name='L235'></a><a href='#L235'>235</a>
+<a name='L236'></a><a href='#L236'>236</a>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a>
+<a name='L241'></a><a href='#L241'>241</a>
+<a name='L242'></a><a href='#L242'>242</a>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a>
+<a name='L258'></a><a href='#L258'>258</a>
+<a name='L259'></a><a href='#L259'>259</a>
+<a name='L260'></a><a href='#L260'>260</a>
+<a name='L261'></a><a href='#L261'>261</a>
+<a name='L262'></a><a href='#L262'>262</a>
+<a name='L263'></a><a href='#L263'>263</a>
+<a name='L264'></a><a href='#L264'>264</a>
+<a name='L265'></a><a href='#L265'>265</a>
+<a name='L266'></a><a href='#L266'>266</a>
+<a name='L267'></a><a href='#L267'>267</a>
+<a name='L268'></a><a href='#L268'>268</a>
+<a name='L269'></a><a href='#L269'>269</a>
+<a name='L270'></a><a href='#L270'>270</a>
+<a name='L271'></a><a href='#L271'>271</a>
+<a name='L272'></a><a href='#L272'>272</a>
+<a name='L273'></a><a href='#L273'>273</a>
+<a name='L274'></a><a href='#L274'>274</a>
+<a name='L275'></a><a href='#L275'>275</a>
+<a name='L276'></a><a href='#L276'>276</a>
+<a name='L277'></a><a href='#L277'>277</a>
+<a name='L278'></a><a href='#L278'>278</a>
+<a name='L279'></a><a href='#L279'>279</a>
+<a name='L280'></a><a href='#L280'>280</a>
+<a name='L281'></a><a href='#L281'>281</a>
+<a name='L282'></a><a href='#L282'>282</a>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a>
+<a name='L288'></a><a href='#L288'>288</a>
+<a name='L289'></a><a href='#L289'>289</a>
+<a name='L290'></a><a href='#L290'>290</a>
+<a name='L291'></a><a href='#L291'>291</a>
+<a name='L292'></a><a href='#L292'>292</a>
+<a name='L293'></a><a href='#L293'>293</a>
+<a name='L294'></a><a href='#L294'>294</a>
+<a name='L295'></a><a href='#L295'>295</a>
+<a name='L296'></a><a href='#L296'>296</a>
+<a name='L297'></a><a href='#L297'>297</a>
+<a name='L298'></a><a href='#L298'>298</a>
+<a name='L299'></a><a href='#L299'>299</a>
+<a name='L300'></a><a href='#L300'>300</a>
+<a name='L301'></a><a href='#L301'>301</a>
+<a name='L302'></a><a href='#L302'>302</a>
+<a name='L303'></a><a href='#L303'>303</a>
+<a name='L304'></a><a href='#L304'>304</a>
+<a name='L305'></a><a href='#L305'>305</a>
+<a name='L306'></a><a href='#L306'>306</a>
+<a name='L307'></a><a href='#L307'>307</a>
+<a name='L308'></a><a href='#L308'>308</a>
+<a name='L309'></a><a href='#L309'>309</a>
+<a name='L310'></a><a href='#L310'>310</a>
+<a name='L311'></a><a href='#L311'>311</a>
+<a name='L312'></a><a href='#L312'>312</a>
+<a name='L313'></a><a href='#L313'>313</a>
+<a name='L314'></a><a href='#L314'>314</a>
+<a name='L315'></a><a href='#L315'>315</a>
+<a name='L316'></a><a href='#L316'>316</a>
+<a name='L317'></a><a href='#L317'>317</a>
+<a name='L318'></a><a href='#L318'>318</a>
+<a name='L319'></a><a href='#L319'>319</a>
+<a name='L320'></a><a href='#L320'>320</a>
+<a name='L321'></a><a href='#L321'>321</a>
+<a name='L322'></a><a href='#L322'>322</a>
+<a name='L323'></a><a href='#L323'>323</a>
+<a name='L324'></a><a href='#L324'>324</a>
+<a name='L325'></a><a href='#L325'>325</a>
+<a name='L326'></a><a href='#L326'>326</a>
+<a name='L327'></a><a href='#L327'>327</a>
+<a name='L328'></a><a href='#L328'>328</a>
+<a name='L329'></a><a href='#L329'>329</a>
+<a name='L330'></a><a href='#L330'>330</a>
+<a name='L331'></a><a href='#L331'>331</a>
+<a name='L332'></a><a href='#L332'>332</a>
+<a name='L333'></a><a href='#L333'>333</a>
+<a name='L334'></a><a href='#L334'>334</a>
+<a name='L335'></a><a href='#L335'>335</a>
+<a name='L336'></a><a href='#L336'>336</a>
+<a name='L337'></a><a href='#L337'>337</a>
+<a name='L338'></a><a href='#L338'>338</a>
+<a name='L339'></a><a href='#L339'>339</a>
+<a name='L340'></a><a href='#L340'>340</a>
+<a name='L341'></a><a href='#L341'>341</a>
+<a name='L342'></a><a href='#L342'>342</a>
+<a name='L343'></a><a href='#L343'>343</a>
+<a name='L344'></a><a href='#L344'>344</a>
+<a name='L345'></a><a href='#L345'>345</a>
+<a name='L346'></a><a href='#L346'>346</a>
+<a name='L347'></a><a href='#L347'>347</a>
+<a name='L348'></a><a href='#L348'>348</a>
+<a name='L349'></a><a href='#L349'>349</a>
+<a name='L350'></a><a href='#L350'>350</a>
+<a name='L351'></a><a href='#L351'>351</a>
+<a name='L352'></a><a href='#L352'>352</a>
+<a name='L353'></a><a href='#L353'>353</a>
+<a name='L354'></a><a href='#L354'>354</a>
+<a name='L355'></a><a href='#L355'>355</a>
+<a name='L356'></a><a href='#L356'>356</a>
+<a name='L357'></a><a href='#L357'>357</a>
+<a name='L358'></a><a href='#L358'>358</a>
+<a name='L359'></a><a href='#L359'>359</a>
+<a name='L360'></a><a href='#L360'>360</a>
+<a name='L361'></a><a href='#L361'>361</a>
+<a name='L362'></a><a href='#L362'>362</a>
+<a name='L363'></a><a href='#L363'>363</a>
+<a name='L364'></a><a href='#L364'>364</a>
+<a name='L365'></a><a href='#L365'>365</a>
+<a name='L366'></a><a href='#L366'>366</a>
+<a name='L367'></a><a href='#L367'>367</a>
+<a name='L368'></a><a href='#L368'>368</a>
+<a name='L369'></a><a href='#L369'>369</a>
+<a name='L370'></a><a href='#L370'>370</a>
+<a name='L371'></a><a href='#L371'>371</a>
+<a name='L372'></a><a href='#L372'>372</a>
+<a name='L373'></a><a href='#L373'>373</a>
+<a name='L374'></a><a href='#L374'>374</a>
+<a name='L375'></a><a href='#L375'>375</a>
+<a name='L376'></a><a href='#L376'>376</a>
+<a name='L377'></a><a href='#L377'>377</a>
+<a name='L378'></a><a href='#L378'>378</a>
+<a name='L379'></a><a href='#L379'>379</a>
+<a name='L380'></a><a href='#L380'>380</a>
+<a name='L381'></a><a href='#L381'>381</a>
+<a name='L382'></a><a href='#L382'>382</a>
+<a name='L383'></a><a href='#L383'>383</a>
+<a name='L384'></a><a href='#L384'>384</a>
+<a name='L385'></a><a href='#L385'>385</a>
+<a name='L386'></a><a href='#L386'>386</a>
+<a name='L387'></a><a href='#L387'>387</a>
+<a name='L388'></a><a href='#L388'>388</a>
+<a name='L389'></a><a href='#L389'>389</a>
+<a name='L390'></a><a href='#L390'>390</a>
+<a name='L391'></a><a href='#L391'>391</a>
+<a name='L392'></a><a href='#L392'>392</a>
+<a name='L393'></a><a href='#L393'>393</a>
+<a name='L394'></a><a href='#L394'>394</a>
+<a name='L395'></a><a href='#L395'>395</a>
+<a name='L396'></a><a href='#L396'>396</a>
+<a name='L397'></a><a href='#L397'>397</a>
+<a name='L398'></a><a href='#L398'>398</a>
+<a name='L399'></a><a href='#L399'>399</a>
+<a name='L400'></a><a href='#L400'>400</a>
+<a name='L401'></a><a href='#L401'>401</a>
+<a name='L402'></a><a href='#L402'>402</a>
+<a name='L403'></a><a href='#L403'>403</a>
+<a name='L404'></a><a href='#L404'>404</a>
+<a name='L405'></a><a href='#L405'>405</a>
+<a name='L406'></a><a href='#L406'>406</a>
+<a name='L407'></a><a href='#L407'>407</a>
+<a name='L408'></a><a href='#L408'>408</a>
+<a name='L409'></a><a href='#L409'>409</a>
+<a name='L410'></a><a href='#L410'>410</a>
+<a name='L411'></a><a href='#L411'>411</a>
+<a name='L412'></a><a href='#L412'>412</a>
+<a name='L413'></a><a href='#L413'>413</a>
+<a name='L414'></a><a href='#L414'>414</a>
+<a name='L415'></a><a href='#L415'>415</a>
+<a name='L416'></a><a href='#L416'>416</a>
+<a name='L417'></a><a href='#L417'>417</a>
+<a name='L418'></a><a href='#L418'>418</a>
+<a name='L419'></a><a href='#L419'>419</a>
+<a name='L420'></a><a href='#L420'>420</a>
+<a name='L421'></a><a href='#L421'>421</a>
+<a name='L422'></a><a href='#L422'>422</a>
+<a name='L423'></a><a href='#L423'>423</a>
+<a name='L424'></a><a href='#L424'>424</a>
+<a name='L425'></a><a href='#L425'>425</a>
+<a name='L426'></a><a href='#L426'>426</a>
+<a name='L427'></a><a href='#L427'>427</a>
+<a name='L428'></a><a href='#L428'>428</a>
+<a name='L429'></a><a href='#L429'>429</a>
+<a name='L430'></a><a href='#L430'>430</a>
+<a name='L431'></a><a href='#L431'>431</a>
+<a name='L432'></a><a href='#L432'>432</a>
+<a name='L433'></a><a href='#L433'>433</a>
+<a name='L434'></a><a href='#L434'>434</a>
+<a name='L435'></a><a href='#L435'>435</a>
+<a name='L436'></a><a href='#L436'>436</a>
+<a name='L437'></a><a href='#L437'>437</a>
+<a name='L438'></a><a href='#L438'>438</a>
+<a name='L439'></a><a href='#L439'>439</a>
+<a name='L440'></a><a href='#L440'>440</a>
+<a name='L441'></a><a href='#L441'>441</a>
+<a name='L442'></a><a href='#L442'>442</a>
+<a name='L443'></a><a href='#L443'>443</a>
+<a name='L444'></a><a href='#L444'>444</a>
+<a name='L445'></a><a href='#L445'>445</a>
+<a name='L446'></a><a href='#L446'>446</a>
+<a name='L447'></a><a href='#L447'>447</a>
+<a name='L448'></a><a href='#L448'>448</a>
+<a name='L449'></a><a href='#L449'>449</a>
+<a name='L450'></a><a href='#L450'>450</a>
+<a name='L451'></a><a href='#L451'>451</a>
+<a name='L452'></a><a href='#L452'>452</a>
+<a name='L453'></a><a href='#L453'>453</a>
+<a name='L454'></a><a href='#L454'>454</a>
+<a name='L455'></a><a href='#L455'>455</a>
+<a name='L456'></a><a href='#L456'>456</a>
+<a name='L457'></a><a href='#L457'>457</a>
+<a name='L458'></a><a href='#L458'>458</a>
+<a name='L459'></a><a href='#L459'>459</a>
+<a name='L460'></a><a href='#L460'>460</a>
+<a name='L461'></a><a href='#L461'>461</a>
+<a name='L462'></a><a href='#L462'>462</a>
+<a name='L463'></a><a href='#L463'>463</a>
+<a name='L464'></a><a href='#L464'>464</a>
+<a name='L465'></a><a href='#L465'>465</a>
+<a name='L466'></a><a href='#L466'>466</a>
+<a name='L467'></a><a href='#L467'>467</a>
+<a name='L468'></a><a href='#L468'>468</a>
+<a name='L469'></a><a href='#L469'>469</a>
+<a name='L470'></a><a href='#L470'>470</a>
+<a name='L471'></a><a href='#L471'>471</a>
+<a name='L472'></a><a href='#L472'>472</a>
+<a name='L473'></a><a href='#L473'>473</a>
+<a name='L474'></a><a href='#L474'>474</a>
+<a name='L475'></a><a href='#L475'>475</a>
+<a name='L476'></a><a href='#L476'>476</a>
+<a name='L477'></a><a href='#L477'>477</a>
+<a name='L478'></a><a href='#L478'>478</a>
+<a name='L479'></a><a href='#L479'>479</a>
+<a name='L480'></a><a href='#L480'>480</a>
+<a name='L481'></a><a href='#L481'>481</a>
+<a name='L482'></a><a href='#L482'>482</a>
+<a name='L483'></a><a href='#L483'>483</a>
+<a name='L484'></a><a href='#L484'>484</a>
+<a name='L485'></a><a href='#L485'>485</a>
+<a name='L486'></a><a href='#L486'>486</a>
+<a name='L487'></a><a href='#L487'>487</a>
+<a name='L488'></a><a href='#L488'>488</a>
+<a name='L489'></a><a href='#L489'>489</a>
+<a name='L490'></a><a href='#L490'>490</a>
+<a name='L491'></a><a href='#L491'>491</a>
+<a name='L492'></a><a href='#L492'>492</a>
+<a name='L493'></a><a href='#L493'>493</a>
+<a name='L494'></a><a href='#L494'>494</a>
+<a name='L495'></a><a href='#L495'>495</a>
+<a name='L496'></a><a href='#L496'>496</a>
+<a name='L497'></a><a href='#L497'>497</a>
+<a name='L498'></a><a href='#L498'>498</a>
+<a name='L499'></a><a href='#L499'>499</a>
+<a name='L500'></a><a href='#L500'>500</a>
+<a name='L501'></a><a href='#L501'>501</a>
+<a name='L502'></a><a href='#L502'>502</a>
+<a name='L503'></a><a href='#L503'>503</a>
+<a name='L504'></a><a href='#L504'>504</a>
+<a name='L505'></a><a href='#L505'>505</a>
+<a name='L506'></a><a href='#L506'>506</a>
+<a name='L507'></a><a href='#L507'>507</a>
+<a name='L508'></a><a href='#L508'>508</a>
+<a name='L509'></a><a href='#L509'>509</a>
+<a name='L510'></a><a href='#L510'>510</a>
+<a name='L511'></a><a href='#L511'>511</a>
+<a name='L512'></a><a href='#L512'>512</a>
+<a name='L513'></a><a href='#L513'>513</a>
+<a name='L514'></a><a href='#L514'>514</a>
+<a name='L515'></a><a href='#L515'>515</a>
+<a name='L516'></a><a href='#L516'>516</a>
+<a name='L517'></a><a href='#L517'>517</a>
+<a name='L518'></a><a href='#L518'>518</a>
+<a name='L519'></a><a href='#L519'>519</a>
+<a name='L520'></a><a href='#L520'>520</a>
+<a name='L521'></a><a href='#L521'>521</a>
+<a name='L522'></a><a href='#L522'>522</a>
+<a name='L523'></a><a href='#L523'>523</a>
+<a name='L524'></a><a href='#L524'>524</a>
+<a name='L525'></a><a href='#L525'>525</a>
+<a name='L526'></a><a href='#L526'>526</a>
+<a name='L527'></a><a href='#L527'>527</a>
+<a name='L528'></a><a href='#L528'>528</a>
+<a name='L529'></a><a href='#L529'>529</a>
+<a name='L530'></a><a href='#L530'>530</a>
+<a name='L531'></a><a href='#L531'>531</a>
+<a name='L532'></a><a href='#L532'>532</a>
+<a name='L533'></a><a href='#L533'>533</a>
+<a name='L534'></a><a href='#L534'>534</a>
+<a name='L535'></a><a href='#L535'>535</a>
+<a name='L536'></a><a href='#L536'>536</a>
+<a name='L537'></a><a href='#L537'>537</a>
+<a name='L538'></a><a href='#L538'>538</a>
+<a name='L539'></a><a href='#L539'>539</a>
+<a name='L540'></a><a href='#L540'>540</a>
+<a name='L541'></a><a href='#L541'>541</a>
+<a name='L542'></a><a href='#L542'>542</a>
+<a name='L543'></a><a href='#L543'>543</a>
+<a name='L544'></a><a href='#L544'>544</a>
+<a name='L545'></a><a href='#L545'>545</a>
+<a name='L546'></a><a href='#L546'>546</a>
+<a name='L547'></a><a href='#L547'>547</a>
+<a name='L548'></a><a href='#L548'>548</a>
+<a name='L549'></a><a href='#L549'>549</a>
+<a name='L550'></a><a href='#L550'>550</a>
+<a name='L551'></a><a href='#L551'>551</a>
+<a name='L552'></a><a href='#L552'>552</a>
+<a name='L553'></a><a href='#L553'>553</a>
+<a name='L554'></a><a href='#L554'>554</a>
+<a name='L555'></a><a href='#L555'>555</a>
+<a name='L556'></a><a href='#L556'>556</a>
+<a name='L557'></a><a href='#L557'>557</a>
+<a name='L558'></a><a href='#L558'>558</a>
+<a name='L559'></a><a href='#L559'>559</a>
+<a name='L560'></a><a href='#L560'>560</a>
+<a name='L561'></a><a href='#L561'>561</a>
+<a name='L562'></a><a href='#L562'>562</a>
+<a name='L563'></a><a href='#L563'>563</a>
+<a name='L564'></a><a href='#L564'>564</a>
+<a name='L565'></a><a href='#L565'>565</a>
+<a name='L566'></a><a href='#L566'>566</a>
+<a name='L567'></a><a href='#L567'>567</a>
+<a name='L568'></a><a href='#L568'>568</a>
+<a name='L569'></a><a href='#L569'>569</a>
+<a name='L570'></a><a href='#L570'>570</a>
+<a name='L571'></a><a href='#L571'>571</a>
+<a name='L572'></a><a href='#L572'>572</a>
+<a name='L573'></a><a href='#L573'>573</a>
+<a name='L574'></a><a href='#L574'>574</a>
+<a name='L575'></a><a href='#L575'>575</a>
+<a name='L576'></a><a href='#L576'>576</a>
+<a name='L577'></a><a href='#L577'>577</a>
+<a name='L578'></a><a href='#L578'>578</a>
+<a name='L579'></a><a href='#L579'>579</a>
+<a name='L580'></a><a href='#L580'>580</a>
+<a name='L581'></a><a href='#L581'>581</a>
+<a name='L582'></a><a href='#L582'>582</a>
+<a name='L583'></a><a href='#L583'>583</a>
+<a name='L584'></a><a href='#L584'>584</a>
+<a name='L585'></a><a href='#L585'>585</a>
+<a name='L586'></a><a href='#L586'>586</a>
+<a name='L587'></a><a href='#L587'>587</a>
+<a name='L588'></a><a href='#L588'>588</a>
+<a name='L589'></a><a href='#L589'>589</a>
+<a name='L590'></a><a href='#L590'>590</a>
+<a name='L591'></a><a href='#L591'>591</a>
+<a name='L592'></a><a href='#L592'>592</a>
+<a name='L593'></a><a href='#L593'>593</a>
+<a name='L594'></a><a href='#L594'>594</a>
+<a name='L595'></a><a href='#L595'>595</a>
+<a name='L596'></a><a href='#L596'>596</a>
+<a name='L597'></a><a href='#L597'>597</a>
+<a name='L598'></a><a href='#L598'>598</a>
+<a name='L599'></a><a href='#L599'>599</a>
+<a name='L600'></a><a href='#L600'>600</a>
+<a name='L601'></a><a href='#L601'>601</a>
+<a name='L602'></a><a href='#L602'>602</a>
+<a name='L603'></a><a href='#L603'>603</a>
+<a name='L604'></a><a href='#L604'>604</a>
+<a name='L605'></a><a href='#L605'>605</a>
+<a name='L606'></a><a href='#L606'>606</a>
+<a name='L607'></a><a href='#L607'>607</a>
+<a name='L608'></a><a href='#L608'>608</a>
+<a name='L609'></a><a href='#L609'>609</a>
+<a name='L610'></a><a href='#L610'>610</a>
+<a name='L611'></a><a href='#L611'>611</a>
+<a name='L612'></a><a href='#L612'>612</a>
+<a name='L613'></a><a href='#L613'>613</a>
+<a name='L614'></a><a href='#L614'>614</a>
+<a name='L615'></a><a href='#L615'>615</a>
+<a name='L616'></a><a href='#L616'>616</a>
+<a name='L617'></a><a href='#L617'>617</a>
+<a name='L618'></a><a href='#L618'>618</a>
+<a name='L619'></a><a href='#L619'>619</a>
+<a name='L620'></a><a href='#L620'>620</a>
+<a name='L621'></a><a href='#L621'>621</a>
+<a name='L622'></a><a href='#L622'>622</a>
+<a name='L623'></a><a href='#L623'>623</a>
+<a name='L624'></a><a href='#L624'>624</a>
+<a name='L625'></a><a href='#L625'>625</a>
+<a name='L626'></a><a href='#L626'>626</a>
+<a name='L627'></a><a href='#L627'>627</a>
+<a name='L628'></a><a href='#L628'>628</a>
+<a name='L629'></a><a href='#L629'>629</a>
+<a name='L630'></a><a href='#L630'>630</a>
+<a name='L631'></a><a href='#L631'>631</a>
+<a name='L632'></a><a href='#L632'>632</a>
+<a name='L633'></a><a href='#L633'>633</a>
+<a name='L634'></a><a href='#L634'>634</a>
+<a name='L635'></a><a href='#L635'>635</a>
+<a name='L636'></a><a href='#L636'>636</a>
+<a name='L637'></a><a href='#L637'>637</a>
+<a name='L638'></a><a href='#L638'>638</a>
+<a name='L639'></a><a href='#L639'>639</a>
+<a name='L640'></a><a href='#L640'>640</a>
+<a name='L641'></a><a href='#L641'>641</a>
+<a name='L642'></a><a href='#L642'>642</a>
+<a name='L643'></a><a href='#L643'>643</a>
+<a name='L644'></a><a href='#L644'>644</a>
+<a name='L645'></a><a href='#L645'>645</a>
+<a name='L646'></a><a href='#L646'>646</a>
+<a name='L647'></a><a href='#L647'>647</a>
+<a name='L648'></a><a href='#L648'>648</a>
+<a name='L649'></a><a href='#L649'>649</a>
+<a name='L650'></a><a href='#L650'>650</a>
+<a name='L651'></a><a href='#L651'>651</a>
+<a name='L652'></a><a href='#L652'>652</a>
+<a name='L653'></a><a href='#L653'>653</a>
+<a name='L654'></a><a href='#L654'>654</a>
+<a name='L655'></a><a href='#L655'>655</a>
+<a name='L656'></a><a href='#L656'>656</a>
+<a name='L657'></a><a href='#L657'>657</a>
+<a name='L658'></a><a href='#L658'>658</a>
+<a name='L659'></a><a href='#L659'>659</a>
+<a name='L660'></a><a href='#L660'>660</a>
+<a name='L661'></a><a href='#L661'>661</a>
+<a name='L662'></a><a href='#L662'>662</a>
+<a name='L663'></a><a href='#L663'>663</a>
+<a name='L664'></a><a href='#L664'>664</a>
+<a name='L665'></a><a href='#L665'>665</a>
+<a name='L666'></a><a href='#L666'>666</a>
+<a name='L667'></a><a href='#L667'>667</a>
+<a name='L668'></a><a href='#L668'>668</a>
+<a name='L669'></a><a href='#L669'>669</a>
+<a name='L670'></a><a href='#L670'>670</a>
+<a name='L671'></a><a href='#L671'>671</a>
+<a name='L672'></a><a href='#L672'>672</a>
+<a name='L673'></a><a href='#L673'>673</a>
+<a name='L674'></a><a href='#L674'>674</a>
+<a name='L675'></a><a href='#L675'>675</a>
+<a name='L676'></a><a href='#L676'>676</a>
+<a name='L677'></a><a href='#L677'>677</a>
+<a name='L678'></a><a href='#L678'>678</a>
+<a name='L679'></a><a href='#L679'>679</a>
+<a name='L680'></a><a href='#L680'>680</a>
+<a name='L681'></a><a href='#L681'>681</a>
+<a name='L682'></a><a href='#L682'>682</a>
+<a name='L683'></a><a href='#L683'>683</a>
+<a name='L684'></a><a href='#L684'>684</a>
+<a name='L685'></a><a href='#L685'>685</a>
+<a name='L686'></a><a href='#L686'>686</a>
+<a name='L687'></a><a href='#L687'>687</a>
+<a name='L688'></a><a href='#L688'>688</a>
+<a name='L689'></a><a href='#L689'>689</a>
+<a name='L690'></a><a href='#L690'>690</a>
+<a name='L691'></a><a href='#L691'>691</a>
+<a name='L692'></a><a href='#L692'>692</a>
+<a name='L693'></a><a href='#L693'>693</a>
+<a name='L694'></a><a href='#L694'>694</a>
+<a name='L695'></a><a href='#L695'>695</a>
+<a name='L696'></a><a href='#L696'>696</a>
+<a name='L697'></a><a href='#L697'>697</a>
+<a name='L698'></a><a href='#L698'>698</a>
+<a name='L699'></a><a href='#L699'>699</a>
+<a name='L700'></a><a href='#L700'>700</a>
+<a name='L701'></a><a href='#L701'>701</a>
+<a name='L702'></a><a href='#L702'>702</a>
+<a name='L703'></a><a href='#L703'>703</a>
+<a name='L704'></a><a href='#L704'>704</a>
+<a name='L705'></a><a href='#L705'>705</a>
+<a name='L706'></a><a href='#L706'>706</a>
+<a name='L707'></a><a href='#L707'>707</a>
+<a name='L708'></a><a href='#L708'>708</a>
+<a name='L709'></a><a href='#L709'>709</a>
+<a name='L710'></a><a href='#L710'>710</a>
+<a name='L711'></a><a href='#L711'>711</a>
+<a name='L712'></a><a href='#L712'>712</a>
+<a name='L713'></a><a href='#L713'>713</a>
+<a name='L714'></a><a href='#L714'>714</a>
+<a name='L715'></a><a href='#L715'>715</a>
+<a name='L716'></a><a href='#L716'>716</a>
+<a name='L717'></a><a href='#L717'>717</a>
+<a name='L718'></a><a href='#L718'>718</a>
+<a name='L719'></a><a href='#L719'>719</a>
+<a name='L720'></a><a href='#L720'>720</a>
+<a name='L721'></a><a href='#L721'>721</a>
+<a name='L722'></a><a href='#L722'>722</a>
+<a name='L723'></a><a href='#L723'>723</a>
+<a name='L724'></a><a href='#L724'>724</a>
+<a name='L725'></a><a href='#L725'>725</a>
+<a name='L726'></a><a href='#L726'>726</a>
+<a name='L727'></a><a href='#L727'>727</a>
+<a name='L728'></a><a href='#L728'>728</a>
+<a name='L729'></a><a href='#L729'>729</a>
+<a name='L730'></a><a href='#L730'>730</a>
+<a name='L731'></a><a href='#L731'>731</a>
+<a name='L732'></a><a href='#L732'>732</a>
+<a name='L733'></a><a href='#L733'>733</a>
+<a name='L734'></a><a href='#L734'>734</a>
+<a name='L735'></a><a href='#L735'>735</a>
+<a name='L736'></a><a href='#L736'>736</a>
+<a name='L737'></a><a href='#L737'>737</a>
+<a name='L738'></a><a href='#L738'>738</a>
+<a name='L739'></a><a href='#L739'>739</a>
+<a name='L740'></a><a href='#L740'>740</a>
+<a name='L741'></a><a href='#L741'>741</a>
+<a name='L742'></a><a href='#L742'>742</a>
+<a name='L743'></a><a href='#L743'>743</a>
+<a name='L744'></a><a href='#L744'>744</a>
+<a name='L745'></a><a href='#L745'>745</a>
+<a name='L746'></a><a href='#L746'>746</a>
+<a name='L747'></a><a href='#L747'>747</a>
+<a name='L748'></a><a href='#L748'>748</a>
+<a name='L749'></a><a href='#L749'>749</a>
+<a name='L750'></a><a href='#L750'>750</a>
+<a name='L751'></a><a href='#L751'>751</a>
+<a name='L752'></a><a href='#L752'>752</a>
+<a name='L753'></a><a href='#L753'>753</a>
+<a name='L754'></a><a href='#L754'>754</a>
+<a name='L755'></a><a href='#L755'>755</a>
+<a name='L756'></a><a href='#L756'>756</a>
+<a name='L757'></a><a href='#L757'>757</a>
+<a name='L758'></a><a href='#L758'>758</a>
+<a name='L759'></a><a href='#L759'>759</a>
+<a name='L760'></a><a href='#L760'>760</a>
+<a name='L761'></a><a href='#L761'>761</a>
+<a name='L762'></a><a href='#L762'>762</a>
+<a name='L763'></a><a href='#L763'>763</a>
+<a name='L764'></a><a href='#L764'>764</a>
+<a name='L765'></a><a href='#L765'>765</a>
+<a name='L766'></a><a href='#L766'>766</a>
+<a name='L767'></a><a href='#L767'>767</a>
+<a name='L768'></a><a href='#L768'>768</a>
+<a name='L769'></a><a href='#L769'>769</a>
+<a name='L770'></a><a href='#L770'>770</a>
+<a name='L771'></a><a href='#L771'>771</a>
+<a name='L772'></a><a href='#L772'>772</a>
+<a name='L773'></a><a href='#L773'>773</a>
+<a name='L774'></a><a href='#L774'>774</a>
+<a name='L775'></a><a href='#L775'>775</a>
+<a name='L776'></a><a href='#L776'>776</a>
+<a name='L777'></a><a href='#L777'>777</a>
+<a name='L778'></a><a href='#L778'>778</a>
+<a name='L779'></a><a href='#L779'>779</a>
+<a name='L780'></a><a href='#L780'>780</a>
+<a name='L781'></a><a href='#L781'>781</a>
+<a name='L782'></a><a href='#L782'>782</a>
+<a name='L783'></a><a href='#L783'>783</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// This file is auto-generated by scripts/generate-changelog.ts
+// Do not edit manually.
+&nbsp;
+export interface ChangelogEntry {
+	version: string;
+	date: string;
+	title: string;
+	summary: string;
+	features: string[];
+	type: 'major' | 'minor' | 'patch';
+}
+&nbsp;
+export const CHANGELOG: ChangelogEntry[] = <span class="cstat-no" title="statement not covered" >[</span>
+	{
+		version: 'Phase 40',
+		date: 'December 9, 2025',
+		title: 'Lives &amp; Survival Mechanics',
+		summary:
+			'Implemented core survival gameplay features including a Lives System, Health &amp; Damage mechanics, and Game Over/Win states. Added support for configuring hazards in the Tile Editor and integrated sound effects for damage. Additionally, introduced an "In-App Changelog" feature that is automatically generated from this documentation, ensuring transparency and easy access to the project\'s history.',
+		features: [
+			'**Survival Mechanics**:',
+			'**Lives System**: Players have limited lives (hearts).',
+			'**Health &amp; Damage**: Hazards like Spikes and Fire deal damage.',
+			'**Game Over / Win States**: Proper handling of level completion and failure.',
+			'**Tile Editor Updates**: Support for configuring hazards and their effects.',
+			"**Sound Effects**: Added 'hurt' sound and integrated audio feedback.",
+			'**In-App Changelog**:',
+			'**Automated Generation**: Script to parse docs/agent-context/changelog.md into structured data.',
+			'**UI**: New /changelog page linked from Settings.',
+			'**Quality Assurance**:',
+			'**Linting**: Resolved unused variables and svelte-check warnings.',
+			'**Type Safety**: Fixed TypeScript errors in TileEditorModal and tests.',
+			'**Test Coverage**: Improved unit test coverage for sound system.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 36.5',
+		date: 'December 4, 2025',
+		title: 'Project Renaming (Wonderblocks to Kibi)',
+		summary:
+			'Renamed the project from "Wonderblocks" to "Kibi" to establish a unique identity and avoid trademark conflicts. This involved a comprehensive find-and-replace operation across the codebase, documentation, and configuration files. The narrative was updated to "The Kibi Chronicles", and the core pedagogy document was renamed to `kibi-pedagogy.md`.',
+		features: [
+			'**Project Identity**:',
+			'Renamed package.json name to kibi.',
+			'Updated manifest.json short_name and name.',
+			'Updated README.md with the new vision and name.',
+			'**Documentation**:',
+			'Created docs/vision.md outlining the "Thinking Magic" philosophy.',
+			'Renamed docs/design/core/wonderblocks.md to docs/design/core/kibi-pedagogy.md.',
+			'Updated docs/design/index.md and docs/agent-context/changelog.md references.',
+			'**Codebase**:',
+			'Renamed internal constants and event names (e.g., wonderblocks_progress -&gt; kibi_progress).',
+			'Updated UI text in src/routes/+page.svelte and other components.',
+			'Verified all tests pass, including fixing a mock data issue in src/routes/page.svelte.spec.ts.'
+		],
+		type: 'patch'
+	},
+	{
+		version: 'Phase 38',
+		date: 'December 4, 2025',
+		title: 'The Terrain Architect',
+		summary:
+			'Empowered the Architect to create complex custom terrain with configurable properties directly in the Builder. Introduced "Hybrid" tiles (e.g., Magic Doors, Traps) and implemented the "Direct Value Manipulation" pattern via a new `DialInput` component. This phase also added visual overlays to the Builder to communicate hidden tile properties and implemented a new "falling" animation for Void deaths. Crucially, we established a rigorous "Exhaustive Schema Test" to ensure backward compatibility as the data model evolves.',
+		features: [
+			'**Tile Editor Upgrade**:',
+			'Updated TileEditorModal to support passableBy (Key/Boat) and onEnter (Effect) properties.',
+			'Added visual overlays (Key, Ship, Skull, Snowflake icons) to Cell component for these properties.',
+			'**The Dial**:',
+			'Created DialInput.svelte for kinetic value manipulation.',
+			'Integrated the Dial into the Loop Block configuration in Tray.svelte.',
+			'**Void Visuals**:',
+			'Implemented "falling" animation (scale down + rotate + fade) for Void deaths.',
+			'Differentiated between "Hazard" (shake) and "Void" (fall) death reasons in game logic.',
+			'**Verification &amp; Quality**:',
+			'Created src/lib/game/schema.exhaustive.test.ts to validate the full breadth of the Level Schema.',
+			'Fixed syntax errors and linting issues in MiniPlayground.svelte and other components.',
+			'Verified backward compatibility for legacy levels.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 36',
+		date: 'December 3, 2025',
+		title: 'The Field Guide',
+		summary:
+			'Implemented "The Field Guide", an in-game interactive manual designed to teach game mechanics without overwhelming the user with text. The guide uses a "multi-voice" approach (The Guide, Zoey, Jonas) to add personality and context. It features a responsive modal layout using the native `&lt;dialog&gt;` element for robust top-layer management and includes interactive "Mini Playgrounds" embedded directly in the book pages.',
+		features: [
+			'**Core Infrastructure**:',
+			'BookSchema: Zod schema for structured content (Chapters, Pages, Blocks).',
+			'BookStore: Svelte 5 Runes-based state management for navigation and visibility.',
+			'**UI Components**:',
+			'BookModal: Responsive modal container using &lt;dialog&gt; and ::backdrop.',
+			'BookPage: Renderer for content blocks with voice-specific styling.',
+			'MiniPlayground: Embedded 3x3 game instances for interactive examples.',
+			'**Content**:',
+			'Chapter 1: "Survival Basics" (Movement, Goals, Hazards).',
+			'**Polish**:',
+			'Implemented native &lt;dialog&gt; support to resolve z-index stacking issues.',
+			'Added "Field Guide" trigger to the Game header.',
+			'**Bug Fixes (Post-Release)**:',
+			'**Modal Transparency**: Fixed transparent background issue by styling &lt;dialog&gt; and ::backdrop.',
+			'**Playground Integration**: Fixed prop mismatch (initialCode -&gt; snippet) and goal detection logic in MiniPlayground.',
+			'**Markdown Support**: Implemented lightweight Markdown rendering for text blocks.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 35',
+		date: 'December 3, 2025',
+		title: 'Fresh Eyes Review &amp; Roadmap Update',
+		summary:
+			'Conducted a comprehensive "Fresh Eyes" review of the project, focusing on the newly implemented Authentication and Sync features. This review led to immediate usability improvements, including a new "Scan Device Code" page for parents, manual code entry fallbacks for devices without cameras, and a cleaner Sync Status indicator. Additionally, the project roadmap was significantly extended to Phase 40, outlining future work on Community features, Advanced Mechanics, and Accessibility.',
+		features: [
+			'**Auth Polish**:',
+			'**Scan Page**: Created /auth/handshake/scan for parents to scan child device codes.',
+			'**Manual Entry**: Added manual code display on child devices and entry form on parent devices as a fallback.',
+			'**Navigation**: Added "Scan Device Code" button to the Parent Dashboard.',
+			'**UI Polish**:',
+			'**Sync Status**: Updated SyncStatus component to be invisible when idle, reducing visual noise.',
+			'**Roadmap Update**:',
+			'Extended plan-outline.md to Phase 40.',
+			'Defined future phases for Community, Advanced Mechanics, and Accessibility.',
+			'**Documentation**:',
+			'Updated ideas.md and deferred_work.md based on the review.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 34',
+		date: 'December 3, 2025',
+		title: 'Cloud Sync &amp; Progress Tracking',
+		summary:
+			'Enabled seamless synchronization of game progress across devices using the authenticated profile system. Implemented a "High Water Mark" sync strategy that ensures the best result (highest stars, unlocked status) is always preserved, preventing progress loss. The system uses optimistic UI updates for a responsive experience, with background synchronization handling the server communication.',
+		features: [
+			'**Database Schema**:',
+			'Added user_progress table to store progress per profile and level.',
+			'**API Endpoints**:',
+			'POST /api/sync: Batch update endpoint that merges local changes with server state.',
+			'GET /api/sync: Endpoint to fetch full progress state.',
+			'**Client Service**:',
+			'CloudSyncService: Handles push/pull operations, offline queueing (stubbed), and merge logic.',
+			'SyncStatus: Reactive store and UI component to indicate sync state (Idle, Syncing, Error).',
+			'**UI Integration**:',
+			'Added SyncStatus indicator to the Library and Layout.',
+			'Integrated automatic sync on app load and level completion.',
+			'**Verification**:',
+			'Comprehensive unit tests for the merge logic and service interaction.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 33',
+		date: 'December 3, 2025',
+		title: 'Authentication &amp; Cloud Foundation',
+		summary:
+			'Laid the groundwork for cloud persistence by implementing a custom authentication system and a "Parent/Child" profile model. This system allows a single parent account (authenticated via GitHub or Google) to manage multiple child profiles, each with their own progress and settings. We also implemented a secure "Device Authorization" flow using QR codes to log in child devices without sharing parent credentials.',
+		features: [
+			'**Database Schema**:',
+			'Defined User, Session, Profile, and DeviceAuth tables in Drizzle/Postgres.',
+			'**Authentication**:',
+			'Implemented OAuth 2.0 flows for GitHub and Google using arctic.',
+			'Implemented session management using @oslojs/crypto and cookies.',
+			'**Profile System**:',
+			'Created "Parent Dashboard" for managing child profiles (Avatar, Nickname, Color).',
+			'Implemented "Profile Switcher" for easy context switching.',
+			'**Device Authorization**:',
+			'Implemented "QR Handshake" flow: Parent scans QR on child device -&gt; Approves -&gt; Child device gets a long-lived session token.',
+			'**UI Implementation**:',
+			'Login Page, Profile Picker, Settings Page, and Handshake UI.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 32',
+		date: 'December 3, 2025',
+		title: 'Sync Optimization &amp; Builder Polish Refinement',
+		summary:
+			'Optimized the synchronization logic to be more performant and verified the implementation of the Builder Polish phase. Specifically, the Vector Clock comparison logic was rewritten to be allocation-free, ensuring smoother performance during high-frequency updates. We also verified the "Use Test Level" text, Glassomorphic Cover styling, and Undo/Redo integration.',
+		features: [
+			'**Sync Optimization**:',
+			'Refactored compareVectorClocks in src/lib/services/sync.ts to use an allocation-free O(N) algorithm.',
+			'Verified correctness with unit tests.',
+			'**Builder Verification**:',
+			'Confirmed "Use Test Level" button text matches requirements.',
+			'Confirmed Glassomorphic styling for "Cover" tiles.',
+			'Confirmed removal of redundant UI elements.',
+			'Verified Undo/Redo state management logic.',
+			'**Code Quality**:',
+			'Resolved svelte/no-navigation-without-resolve lint errors by using programmatic navigation.',
+			'Fixed type safety issues and removed unused code across the codebase.'
+		],
+		type: 'patch'
+	},
+	{
+		version: 'Phase 31',
+		date: 'December 3, 2025',
+		title: 'P2P Progress Sync',
+		summary:
+			'Implemented a "Serverless Sync" feature allowing users to synchronize their progress (levels unlocked, stars earned) between devices without creating a cloud account. This leverages the existing WebRTC/QR P2P infrastructure to securely transfer and merge user progress data.',
+		features: [
+			'**Sync Logic**:',
+			'SyncService: Implemented logic to merge UserProgress objects, prioritizing best scores (Stars &gt; Blocks &gt; Timestamp).',
+			'SyncModal: Created a dedicated modal wrapping P2PModal to handle the sync flow.',
+			'**UI Integration**:',
+			'Added "Sync Devices" button to the Home screen.',
+			'Verified flow via E2E tests.',
+			'**Testing**:',
+			'Added unit tests for SyncService merge logic.',
+			'Added E2E tests for SyncModal interaction.',
+			'Updated visual regression snapshots.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 30.5',
+		date: 'December 3, 2025',
+		title: 'Fresh Eyes Polish',
+		summary:
+			'Addressed friction points identified in the "Fresh Eyes Review II" and user feedback, focusing on mobile ergonomics, P2P sharing fallback, and code maintainability. Refactored the Undo/Redo logic into a generic `HistoryManager` class, optimized the Builder toolbar for mobile devices, and added a manual fallback for P2P sharing. Additionally, replaced the native number input in the Builder Tray with a custom keypad for better mobile usability and polished the visual style of the "Cover" block.',
+		features: [
+			'**HistoryManager Refactoring**:',
+			'Extracted Undo/Redo logic from BuilderModel into a generic HistoryManager&lt;T&gt; class.',
+			'Added comprehensive unit tests for the new class.',
+			'Integrated HistoryManager back into BuilderModel.',
+			'**Mobile Polish**:',
+			'**Tray Keypad**: Replaced native number inputs with a custom, touch-friendly keypad for Loop blocks.',
+			'**Toolbar**: Hid the "Level Selector" on mobile screens (&lt;600px) to reduce clutter.',
+			'**Browser Support**: Wrapped "Link to Disk" buttons in a feature check for fileSystem.isSupported.',
+			'**P2P Manual Fallback**:',
+			'**Show Code**: Added ability to reveal the raw connection string in the P2P modal.',
+			'**Enter Code**: Added manual input mode for pasting connection strings when scanning fails.',
+			'**UI**: Implemented clean, toggleable UI for manual code entry/display.',
+			'**Visual Polish**:',
+			'**Glassmorphic Cover**: Verified and polished the "Cover" tile style with backdrop-filter.'
+		],
+		type: 'patch'
+	},
+	{
+		version: 'Phase 30',
+		date: 'December 2, 2025',
+		title: 'Builder Polish &amp; Undo/Redo',
+		summary:
+			'Addressed deferred items from Phase 19 to refine the Level Builder experience. Implemented a robust Undo/Redo system for the Level Editor, allowing users to revert changes to terrain, logic, and settings. Polished the visual and interaction design of the Builder, including a Glassomorphic "Cover" block, improved Repeat Block input, and a smoother Function creation workflow.',
+		features: [
+			'**Undo/Redo System**:',
+			'Implemented history stack in BuilderModel using .snapshot.',
+			'Integrated pushState() calls across all builder actions (Terrain, Logic, Settings, Functions).',
+			'**Visual Polish**:',
+			'**Glassomorphism**: Verified "Cover" block style.',
+			'**Tile Dropdown**: Removed redundant dropdown in favor of the grid-based tool palette.',
+			'**Interaction Polish**:',
+			'**Repeat Block**: Replaced standard number input with a custom, touch-friendly text input.',
+			'**Infinity Targeting**: Disabled highlighting for the Infinity button to prevent tutorial confusion.',
+			'**Function UX**: Implemented auto-edit behavior when creating a new function.',
+			'**Text Updates**: Changed "Set as Start" to "Use Test Level" for clarity.'
+		],
+		type: 'patch'
+	},
+	{
+		version: 'Phase 29',
+		date: 'December 2, 2025',
+		title: 'Variable Visual Feedback',
+		summary:
+			'Refined the visual representation of variables to strengthen the "Memory" metaphor. Added a "Brain" icon to the held item (Thought Bubble) and variable slots in blocks, while keeping the item on the ground simple (raw value). This distinction clarifies that the "Brain" represents the character\'s internal storage. Also improved grid rendering to prevent visual clutter when the character stands on an item.',
+		features: [
+			'**Visual Metaphor**:',
+			'**Thought Bubble**: Added Brain icon to indicate "Memory".',
+			'**Ground Item**: Kept simple (no icon) to distinguish from held state.',
+			'**Variable Slots**: Added "Mini Brain Token" to Loop blocks when a variable is used.',
+			'**Grid Polish**:',
+			'**Overlap Handling**: Hidden items on the ground when the character is standing on them.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 28',
+		date: 'December 2, 2025',
+		title: 'Test Coverage &amp; Quality Assurance',
+		summary:
+			'Hardened the codebase by significantly increasing test coverage and resolving technical debt. This phase focused on ensuring the stability of critical systems like the Builder, Interpreter, and File System integration. We also addressed strict linting rules and type safety issues to ensure a clean and maintainable codebase.',
+		features: [
+			'**Test Coverage**:',
+			'**BuilderModel**: Added comprehensive tests for grid manipulation, tool selection, and persistence.',
+			'**StackInterpreter**: Expanded tests for error handling, complex control flow, and game mechanics.',
+			'**SoundManager**: Added tests for audio playback logic and state persistence.',
+			'**FileSystemService**: Recreated and fixed tests for the File System Access API wrapper.',
+			'**Quality Assurance**:',
+			'**Linting**: Resolved strict ESLint errors (no-explicit-any, no-unused-vars) across the codebase.',
+			'**Type Safety**: Fixed type mismatches in LevelPack schema and test mocks.',
+			'**CI Enforcement**: Updated coverage thresholds to block regressions in critical files.',
+			'**Refactoring**:',
+			'**Dependency Injection**: Refactored FileSystemService and PersistenceService for better testability.',
+			'**Mocking**: Improved mock implementations for browser APIs (AudioContext, FileSystemHandle).'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 27',
+		date: 'December 2, 2025',
+		title: 'Component Architecture &amp; Shared Abstractions',
+		summary:
+			'Refactored the core interaction logic into a "Headless Interaction System" and implemented "Native Modality" support. This separation of concerns allows for robust, testable interaction patterns (Drag-and-Drop, Click-Click, Keyboard) that are decoupled from the UI rendering. The system uses a central `InteractionManager` and `InteractionRegistry` to coordinate state, while `dnd.ts` adapters handle the specific input methods.',
+		features: [
+			'**Headless Interaction System**:',
+			'InteractionManager: Central state machine for interaction sessions (Source, Target, Candidates).',
+			'InteractionRegistry: Registry for interactive elements (Blocks, Slots, Tokens).',
+			'InteractionSession: Transient state object for active interactions.',
+			'**Native Modality**:',
+			'**Drag-and-Drop**: Implemented via @atlaskit/pragmatic-drag-and-drop adapters in dnd.ts.',
+			'**Click-Click**: Implemented via ActionManager for accessible, pointer-based interactions.',
+			'**Refactoring**:',
+			'Updated Tray.svelte and Block.svelte to use the new system.',
+			'Removed ad-hoc event handling logic from components.',
+			'**Testing**:',
+			'Comprehensive unit tests for InteractionManager, dnd adapters, and Tray integration.',
+			'Verified "Click-Click" and "Drag-and-Drop" flows.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 26',
+		date: 'December 2, 2025',
+		title: 'Variable Interaction Refinement',
+		summary:
+			'Refined the "Variables" feature based on user feedback, improving visual affordances and type safety. The "Thought Bubble" metaphor was strengthened with clearer iconography and drop zones. Strict typing was enforced to prevent invalid variable assignments (e.g., dropping a string into a number field).',
+		features: [
+			'**Visual Affordances**:',
+			'Updated "Brain" icon and "Thought Bubble" visual style.',
+			'Added clearer drop zone indicators for variable targets.',
+			'**Targeting Mode**:',
+			'Implemented visual pulsing for valid targets when dragging a variable.',
+			'**Strict Typing**:',
+			'Enforced type checks in InteractionManager to prevent invalid drops.',
+			'**Narrative**:',
+			'Updated level intros to explain the "Thought Bubble" concept.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 25',
+		date: 'December 2, 2025',
+		title: 'Variables &amp; Memory ("The Thought Bubble")',
+		summary:
+			'Implemented the "Thought Bubble" variable system, introducing the concept of state and possession to the game. This allows the character to pick up items (like keys) and use them as parameters in blocks (like Loop counts). The system uses a "Held Item" token that can be dragged or clicked to assign its value to other blocks.',
+		features: [
+			'**Core Logic**:',
+			'Updated GameModel to track heldItem.',
+			'Implemented PickUp block logic.',
+			'Implemented VariableRef parameter resolution in StackInterpreter.',
+			'**UI Components**:',
+			"**Held Item Token**: A draggable/clickable token in the Tray representing the character's inventory.",
+			'**Loop Badge**: Clickable badge on Loop blocks to assign variables.',
+			'**Loop Popover**: Added "Use Held Item" button for quick assignment.',
+			'**Interaction Design**:',
+			'Implemented "Click-Click" interaction pattern (Select Source -&gt; Click Target) as an alternative to Drag-and-Drop.',
+			'**Testing**:',
+			'Added unit tests for the new "Click-Click" interaction flow.',
+			'Enforced code coverage thresholds in CI.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 24',
+		date: 'December 1, 2025',
+		title: 'Visual Polish &amp; Coverage',
+		summary:
+			'Addressed remaining visual friction points (especially on mobile) and established a comprehensive visual regression test suite. This phase also included an ad-hoc "Schema Stability" initiative to ensure backward compatibility for user data.',
+		features: [
+			'**Visual Regression Suite**:',
+			'Created e2e/visual-comprehensive.spec.ts covering Home, Library, Game, and Builder.',
+			'Implemented "Golden Master" testing for schema stability (src/fixtures/levels/v1).',
+			'**Mobile Polish**:',
+			'Fixed BuilderGoalModal overflow on small screens.',
+			'Implemented responsive stacking for the Library header.',
+			'Verified horizontal scrolling for the Builder toolbar.',
+			'**Schema Stability**:',
+			'Created comprehensive JSON fixtures for all level features.',
+			'Implemented schema-compat.test.ts to validate fixtures against the Zod schema.'
+		],
+		type: 'patch'
+	},
+	{
+		version: 'Phase 22',
+		date: 'December 1, 2025',
+		title: 'Mobile &amp; Phone Polish',
+		summary:
+			'Optimized the application for mobile devices and touch interactions, ensuring a native-like experience on small screens. This phase involved a comprehensive audit of touch targets, implementation of responsive stacked layouts for the Game and Builder, and the conversion of static toolbars into floating bottom sheets. Additionally, native HTML5 Drag and Drop was verified as the baseline for mobile, simplifying the tech stack.',
+		features: [
+			'**Touch Target Audit**: Systematically updated all interactive elements to meet the 44px minimum size.',
+			'**Mobile Layouts**:',
+			'Implemented vertical stack layout for Game and Builder modes on mobile.',
+			'Converted control bars to floating bottom sheets for better thumb reachability.',
+			'Optimized InstructionBar and StatusPanel for compact screens.',
+			'**UX Polish**:',
+			'Refined P2P sharing flow (auto-detection of intent).',
+			'Simplified Function configuration UI.',
+			'Fixed scrolling issues in Tray configuration panels.',
+			'**Visual Polish**:',
+			'Upgraded typography to variable fonts (Outfit, Inter, JetBrains Mono).',
+			'Refined visual presentation of status indicators.'
+		],
+		type: 'patch'
+	},
+	{
+		version: 'Phase 21',
+		date: 'December 1, 2025',
+		title: 'P2P Sharing',
+		summary:
+			'Enabled Architects to share their creations directly with Explorers without a centralized server. Implemented a WebRTC-based P2P sharing system that uses QR codes for the initial handshake (signaling), allowing for direct device-to-device transfer of levels and packs. This feature works entirely offline and leverages the PWA architecture.',
+		features: [
+			'**P2P Service**: P2PConnection class handling WebRTC offer/answer exchange and data channels.',
+			'**Share UI**:',
+			'ShareModal: Generates shareable links and QR codes for single levels.',
+			'P2PModal: Step-by-step wizard for the "Sender" and "Receiver" handshake flow.',
+			'**QR Code Integration**: Dynamic QR code generation for signaling data.',
+			'**Offline Support**: Verified functionality in offline-first PWA context.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 20',
+		date: 'December 1, 2025',
+		title: 'Function UX &amp; Builder Polish',
+		summary:
+			'Addressed remaining usability issues in the Builder and improved the Function creation workflow. This phase focused on refining the "Call Function" block behavior, adding visual polish to the Builder (Glassomorphism), and implementing a robust Undo/Redo system for the Level Editor.',
+		features: [
+			'**Function UX**:',
+			'Improved CallBlock to show distinct states: "Select...", "Deleted", and "No Functions".',
+			'Added visual cues (red border/text) for invalid states.',
+			'**Builder Polish**:',
+			'**Glassomorphism**: Added a frosted glass effect to the "Cover" tile.',
+			'**Undo/Redo**: Implemented a full state history stack for the Level Builder using .snapshot.',
+			'**Loop Config**: Added a custom input field for loop counts.',
+			'**UI Cleanup**: Removed redundant tile dropdown and updated button text.'
+		],
+		type: 'patch'
+	},
+	{
+		version: 'Phase 19',
+		date: 'November 30, 2025',
+		title: "The Architect's Polish",
+		summary:
+			'Refined the Builder and Game experience based on direct feedback from our primary persona, Jonas. This phase focused on visual polish, builder usability enhancements, and content refinement. Key improvements include a new "Ghost" move system for story segments, granular targeting for tutorials, and a significant expansion of the "endgame" content with the "Gauntlet" and "Hard" packs.',
+		features: [
+			'**Builder Enhancements**:',
+			'**Story Reordering**: Implemented Drag &amp; Drop and "Ghost" move system for story segments.',
+			'**Granular Targeting**: Enabled targeting of specific block properties (Repeat Count, Function Name) for tutorials.',
+			'**Visual Polish**: Updated "Clear Blocks" icon to Broom (via @lucide/lab) and improved "Call ???" block empty state.',
+			'**Content Expansion**:',
+			'**Gauntlet Pack**: Polished narrative and mechanics for Levels 9-11.',
+			'**Hard Pack ("The Void")**: Created a new expert-level pack with a purple "glitch" theme (Levels 12-14).',
+			'**UX Improvements**:',
+			'Updated "Architect\'s Library" back button to use SVG arrow.',
+			'Refined "Move" mechanics in Story Editor to auto-open the timeline.'
+		],
+		type: 'patch'
+	},
+	{
+		version: 'Phase 18.5',
+		date: 'November 30, 2025',
+		title: 'Backward Compatibility &amp; CI Optimization',
+		summary:
+			'Ensured backward compatibility for existing user-created levels following the "Targeting Workflow" refactor and optimized the CI pipeline for faster, more reliable feedback. Implemented a schema migration layer to automatically transform legacy `highlight` fields into the new `targets` array format. Additionally, restored missing system default emojis in the Builder and expanded visual regression test coverage.',
+		features: [
+			'**Schema Migration**: Updated StorySegmentSchema and HintSchema in src/lib/game/schema.ts with z.preprocess logic to handle legacy data formats transparently.',
+			'**CI Optimization**:',
+			'Implemented caching for Playwright browsers to reduce build times.',
+			'Configured visual regression tests to be non-blocking in CI, allowing the build to pass while visual diffs are reviewed separately.',
+			'**Visual Testing**: Added e2e/visual-extended.spec.ts to cover Design System, Pack Details, and Builder states.',
+			'**Bug Fixes**: Restored system default emojis and characters in the Builder configuration dropdowns.'
+		],
+		type: 'patch'
+	},
+	{
+		version: 'Phase 18',
+		date: 'November 30, 2025',
+		title: 'Visual Regression Testing &amp; Deployment',
+		summary:
+			'Established a robust "Design Review" workflow using automated visual regression testing with Playwright. This system acts as a safety net for UI changes and a tool for reviewing design updates. Additionally, finalized the deployment pipeline by provisioning a Neon Postgres database via the Vercel Marketplace and successfully deploying the application to production.',
+		features: [
+			'**Visual Regression Testing**:',
+			'Configured playwright.config.ts for visual comparison tests.',
+			'Created e2e/visual.spec.ts covering Home, Library, Game, and Builder.',
+			'Added NPM scripts (test:visual, test:visual:review, test:visual:approve) for the workflow.',
+			'**Deployment**:',
+			'Provisioned Neon Postgres database on Vercel.',
+			'Configured drizzle.config.ts and environment variables for production.',
+			'Pushed database schema to production.',
+			'Verified live deployment at https://learn-coding-q0z9g8l76-yehuda-katzs-projects.vercel.app.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 17',
+		date: 'November 30, 2025',
+		title: 'Deployment &amp; Distribution',
+		summary:
+			'Prepared the application for public release by implementing a robust Progressive Web App (PWA) strategy and configuring the deployment pipeline. Implemented a custom Service Worker with a "Kill Switch" for emergency updates and offline-first caching. Configured Vercel hosting with Postgres database integration.',
+		features: [
+			'**PWA Implementation**:',
+			'Custom service-worker.ts with precaching and runtime caching.',
+			'"Kill Switch" logic to force updates when critical bugs are fixed.',
+			'manifest.json and app icons for installability.',
+			'OfflineIndicator component for network status feedback.',
+			'**Deployment Setup**:',
+			'Configured adapter-auto for Vercel deployment.',
+			'Set up Drizzle ORM with Postgres (local Docker + Vercel Postgres).',
+			'Created docker-compose.yml for local development database.',
+			'**Infrastructure**:',
+			'sw-manager.ts for client-side Service Worker lifecycle management.',
+			'feedback.ts service with offline queueing support.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 16.5',
+		date: 'November 30, 2025',
+		title: 'Bug Fixes &amp; UI Unification',
+		summary:
+			'Addressed critical bugs and unified the Builder UI to align with the "Diagetic Axiom". Merged the Story Editor directly into the main layout, removing the need for a separate mode trigger. Fixed several high-priority bugs in Level 7 ("Functions") and the Builder.',
+		features: [
+			'**UI Unification**:',
+			'Removed BuilderStoryTrigger and embedded BuilderStoryBar in the main layout.',
+			'Simplified BuilderModel by removing the explicit story mode.',
+			'**Bug Fixes**:',
+			'Fixed "Select a segment" empty state in Story Editor.',
+			'Fixed missing IDs in legacy levels causing UI issues.',
+			'Fixed Level 5 ("Stairway to the Stars") impossible geometry.',
+			'**Level 7 Fixes**:',
+			'Fixed "Call ???" data loss bug.',
+			'Fixed UI flickering between Main/Function tabs.',
+			'Fixed incorrect hint logic.',
+			'Fixed execution visualization persistence (green checks).',
+			'Improved "Call" block feedback (immediate success mark).'
+		],
+		type: 'patch'
+	},
+	{
+		version: 'Phase 16',
+		date: 'November 30, 2025',
+		title: 'Content Expansion &amp; Narrative Polish',
+		summary:
+			'Expanded the "endgame" content with a challenging "Gauntlet" pack and deepened the narrative experience by framing it as a playful dialogue between the Architect (Jonas) and the Explorer (Zoey). Created two new levels ("Slippery Slopes" and "The Floor is Lava") to complete the Gauntlet pack. Updated the metadata and hints for Levels 1-8 to reflect the new narrative arc. Added a feedback mechanism to the Home Screen.',
+		features: [
+			'**Gauntlet Expansion**:',
+			'Created Level 10 ("Slippery Slopes") focusing on ice mechanics.',
+			'Created Level 11 ("The Floor is Lava") focusing on hazard avoidance.',
+			'Updated GAUNTLET_PACK to include the new levels.',
+			'**Narrative Polish**:',
+			'Rewrote intros/outros for Levels 1-8 to feature "Jonas vs. Zoey" dialogue.',
+			'Updated Guide hints to reference "The Architect".',
+			'**Hint System Audit**:',
+			'Added missing "Idle" and "Anti-Pattern" hints to Levels 3, 5, 6, 7, and 8.',
+			'**Feedback Mechanism**:',
+			'Added a mailto link to the Home Screen for user feedback.'
+		],
+		type: 'patch'
+	},
+	{
+		version: 'Phase 15',
+		date: 'November 29, 2025',
+		title: 'Advanced Builder Features',
+		summary:
+			'Empowered "The Architect" with advanced tools to create complex, rich, and shareable learning experiences. Introduced "Functions" (Magic Blocks) into the Builder, added a new "Spikes" hazard mechanic, and polished the UI with difficulty indicators, selectable icons, and speaker avatars. Crucially, enabled local file system access via the File System Access API, allowing users to "Link" packs to their local disk for seamless syncing and backup.',
+		features: [
+			'**Functions in Builder**:',
+			'FunctionManager and FunctionEditor UI components.',
+			'Updated BuilderModel to manage function definitions.',
+			'Integration with StackInterpreter for executing user-defined functions.',
+			'**Hazards (Spikes)**:',
+			'Added spikes cell type and rendering.',
+			'Updated interpreter logic to handle hazard collisions (death state).',
+			'Added Spikes tool to the Builder palette.',
+			'**Local File System Integration**:',
+			'FileSystemService wrapping the File System Access API.',
+			'"Link to Disk" feature for persistent syncing of packs.',
+			'"Open Local Folder" in Library for loading external packs.',
+			'Inline status feedback (replacing alerts/toasts) for file operations.',
+			"**UI Polish (Jonas's Wishlist)**:",
+			'Difficulty indicators (Green/Yellow/Red dots) on Level Map.',
+			'IconPicker for custom level/pack icons.',
+			'Avatar selection support in Story Editor.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 14',
+		date: 'November 29, 2025',
+		title: 'Navigation &amp; Layout Polish',
+		summary:
+			'Addressed high-priority friction points identified in the "Fresh Eyes" review, focusing on navigation structure and mobile responsiveness. Reorganized the Builder UI into a cleaner, tabbed interface and implemented a responsive vertical stack layout for smaller screens. Fixed a critical usability bug in Story Mode target selection.',
+		features: [
+			'**Home Screen Redesign**: Added a prominent "Builder Mode" entry point.',
+			'**Responsive Layouts**: Implemented vertical stack layout for Game and Builder interfaces on mobile (&lt;768px).',
+			'**Builder UI Cleanup**: Refactored BuilderTray into a tabbed interface (Terrain, Actors, Logic, Story) and added the "Grid" tool.',
+			'**Navigation Consistency**: Standardized "Back" button behavior and iconography.',
+			'**Story Mode Fix**: Fixed target selection interaction and added visual feedback for highlighting tools.'
+		],
+		type: 'patch'
+	},
+	{
+		version: 'Phase 13',
+		date: 'November 29, 2025',
+		title: 'Design &amp; Reflection',
+		summary:
+			'Conducted a "soft" phase focused on solidifying the project\'s design foundation. Stepped back from feature development to document personas, codify design axioms, and conduct a "Fresh Eyes" review. This work ensures future development remains aligned with core values. Additionally, addressed significant technical debt by fixing over 30 linting errors and warnings across the codebase.',
+		features: [
+			'**Persona Enrichment**: Updated docs/design/personas.md to reflect "Architect" and "Guide" roles.',
+			'**The Constitution**: Created docs/design/axioms.md defining 9 core design principles.',
+			'**Fresh Eyes Review**: Documented friction points in docs/design/friction-log.md.',
+			'**Code Quality**: Fixed linting errors (unused imports, floating promises, missing keys) across the codebase.',
+			'**Documentation Cleanup**: Reorganized docs/design/index.md and archived obsolete docs.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 8',
+		date: 'November 28, 2025',
+		title: 'Intelligent Tutoring System',
+		summary:
+			'Transformed the learning experience into an active, intelligent coaching system. Introduced a "Guide" character (a friendly robot) who provides context-aware hints when users struggle. Empowered level creators to author these guided experiences using new tools in the Level Builder, including a Hint Editor, Snapshot Tool, and Spotlight targeting system.',
+		features: [
+			'**Program Analysis Engine**:',
+			'Implemented static analysis utilities (countBlocks, hasSequence, detectAntiPatterns) to inspect user code.',
+			'**Hint Engine**:',
+			'Created HintManager to trigger hints based on Time, Idle, Attempts, or Code Analysis.',
+			'**Guide Character**:',
+			'Implemented Guide.svelte, an animated SVG robot with emotional states (Idle, Thinking, Talking, Happy, Sad).',
+			'**Authoring Tools**:',
+			'**Hint Editor**: UI in BuilderTray to define hints and triggers.',
+			'**Snapshot Tool**: Ability to save the current tray as initialProgram for debugging levels.',
+			'**Spotlight Targeting**: "Map Pin" tool in Story Editor to select grid/block targets.',
+			'**Content Updates**:',
+			'Updated Level 1 and Level 4 ("The Bug") to use the new hint system.',
+			'**UI Polish**:',
+			'Added live highlight previews, gentle fade effects, and an emoji picker for story configuration.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 7',
+		date: 'November 28, 2025',
+		title: 'Level Builder',
+		summary:
+			'Implemented a comprehensive "Level Builder" inspired by Super Mario Maker, enabling users to create, test, and share custom levels. The builder features a tactile "drag-to-paint" interface, a dedicated Story Editor for narrative elements, and seamless switching between Edit and Test modes. This phase also introduced serialization (Export/Import) to allow sharing of level files.',
+		features: [
+			'**Builder Core**:',
+			'BuilderModel: Svelte 5 Runes-based state management for the editor.',
+			'Grid Updates: Added support for "Edit Mode" with drag-to-paint interactions and hover effects.',
+			'**Builder UI**:',
+			'BuilderTray: A comprehensive tool palette with Terrain/Actor tools, Level Config, and Backpack (Block limits).',
+			'StoryEditor: A dedicated interface for crafting Intro/Outro dialogue sequences.',
+			'**Mode Switching**: Seamless toggle between "Edit" (Builder UI) and "Test" (Game UI) modes.',
+			'**Test Mode Features**:',
+			'**Cheats**: Added "Rotate Character" and "Reset Position" tools to facilitate rapid debugging.',
+			'**Serialization**:',
+			'Implemented JSON Export and Import functionality for level sharing.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 6',
+		date: 'November 28, 2025',
+		title: 'Advanced Concepts &amp; Audio',
+		summary:
+			'Implemented "Functions" (Magic Blocks) to introduce the concept of reusable code, and a comprehensive Audio System for immersive feedback. This involved a significant update to the `GameModel` to support multiple editing contexts and updating the `StackInterpreter` to handle function calls with a call stack.',
+		features: [
+			'**Functions Core Logic**:',
+			'Updated LevelSchema to support functions.',
+			'Added CallBlock type.',
+			'Updated StackInterpreter to handle CALL and RETURN operations with stack frames.',
+			'Implemented context switching in GameModel (activeProgram).',
+			'**Function Editor UI**:',
+			'Updated Tray.svelte with tabs to switch between Main Program and Function definitions.',
+			'Added MagicBlock (Call Block) visualization.',
+			'Added smooth transitions (fly/fade) when switching contexts.',
+			'**Visual Execution**:',
+			'Updated Interpreter to automatically switch the UI context when execution enters a function, allowing users to see the function executing step-by-step.',
+			'**Audio System**:',
+			'Implemented SoundManager using Web Audio API.',
+			'Added support for voiceovers in Dialogue and looping ambient tracks.',
+			'**Content**:',
+			'Level 7 ("The Magic Spell"): Introduction to functions.',
+			'Level 8 ("Pattern Recognition"): Complex pattern solving with functions.',
+			'**UI Refinements**:',
+			'Implemented "Infinite Loop" logic and UI.',
+			'Refactored Loop Block configuration into a "Contextual Configuration Panel" in the Tray using Glassomorphism and Popover API.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 5',
+		date: 'November 28, 2025',
+		title: 'Interactive Pedagogy',
+		summary:
+			'Transformed the tutorial from a passive reading experience into an interactive, non-blocking coaching system. Implemented a persistent "Dashboard" layout to stabilize the UI and allow simultaneous reading and playing. Added a "Spotlight" system to visually guide users to specific UI elements. Refactored the state management to use in-place updates for `SvelteMap` to ensure robust reactivity. Polished the visual experience with smooth character animations, win state effects, and a harmonized color palette.',
+		features: [
+			'**Persistent Tutorial UI**: InstructionBar and StatusPanel integrated into a fixed-height Dashboard.',
+			'**Interactive Triggers**: Story advances automatically based on user actions (e.g., placing a block).',
+			'**Spotlight System**: Visual highlighting for blocks and grid cells driven by story data.',
+			'**Visual Polish**:',
+			'Smooth CSS transitions for character movement.',
+			'"Pop-in" animations for Win Modal.',
+			'Explicit loop counts on blocks.',
+			'Harmonized "Modern Matte" color usage.',
+			'Fixed layout shifts and grid rendering issues (off-by-one error).',
+			'**Technical Refactor**: Encapsulated executionState and loopProgress in GameModel to prevent reactivity bugs.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 4',
+		date: 'November 27, 2025',
+		title: 'Content &amp; Curriculum',
+		summary:
+			'Expanded the prototype into a playable learning module with a narrative arc. Implemented the "Again" (Loop) block with nested drag-and-drop, a dialogue system for storytelling, and a "Block Limit" mechanic to enforce efficient coding. Created Levels 1-6 covering basic movement, loops, and debugging. Refined the UI into a responsive "IDE-style" layout. Migrated the drag-and-drop system to `@atlaskit/pragmatic-drag-and-drop` for a robust, no-layout-shift experience. Implemented a Stack-Based Interpreter to support "Step Back" debugging. Added procedural sound effects and ensured full accessibility compliance.',
+		features: [
+			'**Loop Block**: Nested drag-and-drop support and interpreter logic.',
+			'**Narrative System**: Dialogue component and story segments in levels.',
+			'**Levels 1-6**:',
+			'1-3: Basic Movement &amp; Intro.',
+			'4: "The Bug" (Debugging pre-filled code).',
+			'5: "Stairway" (Forced Loop via Block Limit).',
+			'6: "Big Zig Zag" (Complex Patterns).',
+			'**UI Refinement**: Two-column layout, "Stop" button, "Ghost" drag effect.',
+			'**Win/Loss States**: WinModal and visual feedback for collisions.',
+			'**Technical Refactor**:',
+			'Replaced SortableJS with @atlaskit/pragmatic-drag-and-drop.',
+			'Implemented Stack-Based Interpreter for "Step Back" capability.',
+			'Migrated to SvelteMap/SvelteSet for fine-grained reactivity.',
+			'Added SoundManager (Web Audio API) for procedural sound effects.',
+			'Fixed Accessibility issues (keyboard navigation, ARIA roles).'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 3',
+		date: 'November 27, 2025',
+		title: 'Prototype / MVP',
+		summary:
+			'Built the functional "unplugged-digital" prototype implementing the core "Stop &amp; Go" mechanics. Developed the `GameModel` using Svelte 5 Runes, the `Mimic` interpreter using generator functions for step-by-step execution, and a touch-friendly drag-and-drop interface using `svelte-dnd-action`. Created the first level "Cross the River" to validate the end-to-end loop.',
+		features: [
+			'src/lib/game/model.svelte.ts: Reactive game state with Undo/Redo.',
+			'src/lib/game/mimic.ts: Generator-based execution engine.',
+			'src/lib/components/game/Tray.svelte: Drag-and-drop block coding interface.',
+			'src/lib/components/game/Grid.svelte: 5x5 Game Stage.',
+			'src/routes/game/+page.svelte: Integrated game prototype.',
+			'src/lib/game/levels.ts: Level 1 definition.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 2',
+		date: 'November 27, 2025',
+		title: 'Modern CSS Foundation',
+		summary:
+			'Established a robust, future-proof styling architecture using Baseline 2025 features. Implemented the "Modern Matte" aesthetic using Open Props and semantic tokens with `light-dark()` for native dark mode support. Refined layout primitives and created a "Kitchen Sink" page to validate the design system.',
+		features: [
+			'src/app.css: Global styles with @layer, semantic tokens, and light-dark().',
+			'src/lib/components/layout/Switch.svelte: New layout primitive using Container Queries.',
+			'src/routes/design/+page.svelte: Kitchen Sink / Style Guide page.',
+			'Refined Stack, Grid, Cluster, Center, Box components.'
+		],
+		type: 'major'
+	},
+	{
+		version: 'Phase 1',
+		date: '[Current Date]',
+		title: 'Foundation &amp; Research',
+		summary:
+			'Established the pedagogical and technical foundation for "Wonderblocks". Defined the core "Stop &amp; Go" mechanics, researched prior art (Cubetto, ScratchJr), and established the "Modern Matte" visual style. Set up the SvelteKit project structure with Open Props for styling and a custom "Mimic" interpreter architecture.',
+		features: [
+			'docs/design/mechanics.md: Core game mechanics definition.',
+			'docs/design/visual-style.md: Visual design system (Modern Matte).',
+			'docs/design/personas.md: User personas (Zoey, Jonas).',
+			'docs/agent-context/current/technical-architecture.md: Technical stack and architecture.',
+			'Project Skeleton: SvelteKit app with Open Props and "Every Layout" primitives.'
+		],
+		type: 'major'
+	}
+];
+&nbsp;</pre></td></tr></table></pre>
+
+			<div class="push"></div>
+			<!-- for sticky footer -->
+		</div>
+		<!-- /wrapper -->
+		<div class="footer quiet pad2 space-top1 center small">
+			Code coverage generated by
+			<a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+			at 2025-12-06T21:37:27.162Z
+		</div>
+		<script src="../../../prettify.js"></script>
+		<script>
+			window.onload = function () {
+				prettyPrint();
+			};
+		</script>
+		<script src="../../../sorter.js"></script>
+		<script src="../../../block-navigation.js"></script>
+	</body>
+</html>

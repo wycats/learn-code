@@ -65,6 +65,18 @@
   - **Implementation**: Likely involves converting Zod to JSON Schema and performing a semantic diff, or building a custom Zod walker.
   - **Value**: Useful for framework authors and library maintainers to prevent accidental breaking changes in their public API contracts.
 
+## Error Reporting & Observability
+
+- [ ] **Error Reporting Integration**: Implement a robust error reporting solution to capture runtime exceptions and performance issues. (Planned Phase 42)
+  - **Decision**: **Highlight.io**.
+    - **Why**: It combines error monitoring with **Session Replay** and logging in a single, open-source friendly platform.
+    - **Value**: For a highly interactive app like Kibi, seeing _what_ the user did (Session Replay) is often more valuable than just the stack trace.
+    - **Privacy**: Offers good privacy controls (masking) which is crucial for a kids' app.
+  - **Implementation**:
+    - Add the SDK to `hooks.client.ts` and `hooks.server.ts`.
+    - Configure source map uploading in the build pipeline.
+    - Ensure PII (Personally Identifiable Information) is scrubbed, especially given the target audience.
+
 ## Field Guide Improvements
 
 - [ ] **The Origin of Kibi**: Add a "Secret Chapter" or easter egg in the Field Guide that explains the "Kibibyte" origin story. This should be a jumping-off point for explaining binary numbers and powers of two to curious kids.
