@@ -593,3 +593,24 @@
 
 - All UI text updated.
 - E2E tests updated to check for "Kibi".
+
+## Phase 42: Fix loading hang and navigation crash
+
+### 63. Full Reloads for Critical Navigation
+
+**Decision:** Use `window.location.href` (full page reload) instead of SvelteKit's `goto` (client-side routing) for "Exit" and "Back" actions in the Game Player and Builder.
+**Context:** We encountered persistent 500 errors and state corruption when navigating back from deep routes (like the Game Player or Builder) to the main menu. This is likely due to complex state cleanup issues or memory leaks in the client-side router when handling heavy Svelte 5 runes state.
+**Consequence:**
+
+- Navigating "Back" from the Builder or Player now triggers a full browser refresh.
+- This ensures a completely clean slate for the application state, preventing "zombie" state from causing crashes.
+- The user experience impact is minimal (sub-second reload) compared to the stability gain.
+
+### 64. Safe Proxy Cloning with `$state.snapshot`
+
+**Decision:** Always use `$state.snapshot(obj)` before passing Svelte 5 proxy objects to `structuredClone` or other serialization boundaries.
+**Context:** Svelte 5 wraps state objects in proxies. `structuredClone` throws an error when it encounters these proxies if they contain non-clonable internal state.
+**Consequence:**
+
+- We updated `CampaignService` and other services to unwrap proxies before cloning.
+- This prevents "DataCloneError" and ensures reliable data persistence.

@@ -1,53 +1,58 @@
-# Walkthrough - Sync Status & Library Polish
+# Walkthrough: Phase 42 (Jonas' Feedback)
 
-## Overview
+## Bug Fix: New Pack Loading Hang
 
-This session focused on refining the "Sync Status" indicator and improving access to the Changelog via the Library page. The goal was to reduce visual noise for non-logged-in users and provide a clearer path to app updates.
+### The Issue
 
-## Changes
+Users reported that creating a new pack and level, then trying to play it via "Start Coding" -> Pack -> Level resulted in a "Loading..." hang.
 
-### 1. Sync Status Visibility
+### Root Cause
 
-- **Problem**: The sync status indicator (cloud icon) was visible to all users, showing an "error" state for guests who hadn't logged in. This was confusing and alarming.
-- **Solution**:
-  - Updated `src/routes/library/+page.svelte` to conditionally render the `<SyncStatus />` component only when `data.user` is present.
-  - Updated `src/routes/+layout.svelte` to only trigger `CloudSyncService.pull()` if a user is authenticated.
-  - Updated `src/routes/play/[packId]/[levelId]/+page.svelte` to only trigger `CloudSyncService.push()` on level completion if a user is authenticated.
+1.  **Pack Loading**: The `play` page (`src/routes/play/[packId]/[levelId]/+page.svelte`) was only checking `getPack(packId)`, which only returns built-in packs. It was not checking `localPacksStore` or `CampaignService` for user-created packs.
+2.  **Proxy Cloning**: When cloning the level definition to avoid mutation, `structuredClone` was failing on the Svelte 5 `$state` proxy object.
 
-### 2. Sync Status Alignment & Terminology
+### The Fix
 
-- **Problem**: The sync status icon was not vertically centered in the header, and the tooltip "error" was too alarming for network issues.
-- **Solution**:
-  - Added `align-items: center` to the `.actions` container in `src/routes/library/+page.svelte`.
-  - Updated `src/lib/components/common/SyncStatus.svelte` to display "offline" instead of "error" in the tooltip when the sync state is `error`.
+1.  **Async Pack Loading**: Updated the `play` page to load the pack asynchronously, checking `getPack`, `localPacksStore`, and `CampaignService` in order.
+2.  **Snapshot Cloning**: Used `$state.snapshot(proxy)` to unwrap the proxy before passing it to `structuredClone`.
 
-### 3. Changelog Access
+### Verification
 
-- **Problem**: The user requested a better way to access the Changelog.
-- **Solution**:
-  - Added a "Settings" button (gear icon) to the `src/routes/library/+page.svelte` header.
-  - This button links to `/settings`, where the Changelog is already accessible.
+Added a new E2E test `e2e/play-local-pack.spec.ts` that:
 
-### 4. Guest Access to Settings
+1.  Creates a new pack via the Builder.
+2.  Adds a level.
+3.  Navigates to the Home screen.
+4.  Starts the game with the new pack.
+5.  Verifies the game loads successfully.
 
-- **Problem**: Guests (unauthenticated users) were redirected to the login page when trying to access `/settings` or `/changelog`.
-- **Solution**:
-  - Updated `src/routes/settings/+page.server.ts` to allow `null` users (removed the redirect).
-  - Updated `src/routes/settings/+page.svelte` to conditionally show a "Sign In" button instead of the profile form for guests.
-  - Added a "Changelog" link to the footer of the Login page (`src/routes/login/+page.svelte`) for easier access.
+## Bug Fix: Navigation Crash (500 Error)
 
-### 5. Changelog Indentation
+### The Issue
 
-- **Problem**: Nested lists in the changelog markdown were rendering as flat lists.
-- **Solution**:
-  - Updated `scripts/generate-changelog.ts` to parse indentation levels (2 spaces = level 1, etc.).
-  - Updated `src/lib/data/changelog.ts` schema to include a `level` property for features.
-  - Updated `src/routes/changelog/+page.svelte` to apply dynamic `margin-left` based on the `level`.
+Users reported a 500 error and "Failed to fetch dynamically imported module" when navigating back from "Architect's Library" to the Home screen. This appeared to be caused by a client-side routing issue or server crash during HMR updates.
 
-## Verification
+### The Fix
 
-- **Manual Check**: Verified that the sync status is hidden for guests and visible for logged-in users.
-- **Manual Check**: Verified guests can access Settings and Changelog without redirect.
-- **Manual Check**: Verified nested items in the Changelog are indented.
-- **Tests**: Ran `pnpm test:unit` to ensure no regressions in sync logic or component rendering.
-- **Linting**: Fixed a `no-explicit-any` lint error in `src/routes/+layout.svelte` and a `missing-key` error in `src/routes/changelog/+page.svelte`.
+Updated the "Back" button in `src/routes/builder/packs/+page.svelte` and the "Exit" button in `src/routes/play/[packId]/[levelId]/+page.svelte` to use `window.location.href` instead of `goto`. This forces a full page reload, clearing any corrupted client-side state and ensuring a fresh environment.
+
+### Verification
+
+Added `e2e/navigation-crash.spec.ts` to verify that navigating Home -> Builder -> Home does not crash the application.
+
+## How to Try It Out
+
+1.  **Verify New Pack Loading**:
+    - Go to "Builder Mode".
+    - Click "Create New Pack".
+    - Add a level (click "+", select "Empty Room").
+    - Go back to the Home screen.
+    - Click "Start Coding".
+    - Select your new pack ("New Adventure").
+    - Click the level.
+    - **Verify**: The game loads and you can play.
+
+2.  **Verify Navigation Stability**:
+    - Go to "Builder Mode".
+    - Click the "Back" arrow (top left).
+    - **Verify**: You return to the Home screen without a crash or error in the console.

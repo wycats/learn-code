@@ -809,3 +809,20 @@ Refined the "Sync Status" indicator to reduce visual noise for non-logged-in use
   - Added "Sign In" button for guests on Settings page.
 - **Changelog Formatting**:
   - Implemented indentation for nested lists in the Changelog UI.
+
+## Phase 42: Fix loading hang and navigation crash (Completed)
+
+**Date:** December 9, 2025
+
+**Summary:**
+Addressed two critical bugs affecting user experience: a "Loading..." hang when creating new packs, and a 500 error crash when navigating back from the Architect's Library. The loading hang was caused by a race condition in the `CampaignService` and improper handling of Svelte 5 proxies during cloning. The navigation crash was due to client-side routing state corruption, which was resolved by forcing full page reloads on critical "exit" paths.
+
+**Key Deliverables:**
+
+- **Bug Fixes**:
+  - **Loading Hang**: Fixed by ensuring `CampaignService` correctly initializes `localPacksStore` and using `$state.snapshot` to safely clone proxy objects.
+  - **Navigation Crash**: Implemented `window.location.href` for "Exit" and "Back" actions in the Player and Builder to clear client state and prevent memory leaks.
+- **Testing**:
+  - **E2E Tests**: Added `e2e/play-local-pack.spec.ts` to verify local pack loading and `e2e/navigation-crash.spec.ts` to prevent regression of the navigation crash.
+- **Documentation**:
+  - Updated `walkthrough.md` with verification steps for the fixes.

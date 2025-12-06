@@ -408,12 +408,15 @@
 - [x] **Pull Request**: Submit and merge the changes to the main branch.
 - [x] **Deployment Verification**: Confirm Vercel picks up the changes and deploys successfully.
 
-## Phase 42: Jonas' Feedback
+## Phase 42: Fix loading hang and navigation crash (Completed)
 
 **Goal:** Address feedback from Jonas regarding the "Game" experience, specifically focusing on the "Run" button behavior and visual clarity.
 
-- [ ] **Run Button Logic**: Update the "Run" button to restart the level if the character is already at the goal or in a failure state.
-- [ ] **Visual Clarity**: Improve the visual distinction between "Edit" and "Run" modes.
+- [x] **Loading Hang**: Fix race condition in `CampaignService` causing new packs to hang.
+- [x] **Navigation Crash**: Fix 500 errors on back navigation by implementing full reloads.
+- [x] **Regression Testing**: Add E2E tests for local pack loading and navigation stability.
+- [ ] **Run Button Logic**: Update the "Run" button to restart the level if the character is already at the goal or in a failure state. (Deferred)
+- [ ] **Visual Clarity**: Improve the visual distinction between "Edit" and "Run" modes. (Deferred)
 
 ## Phase 43: Accessibility
 

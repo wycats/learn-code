@@ -8,3 +8,8 @@
 ## Phase 33 (Authentication)
 
 - **Neon Auth**: We decided to use a custom auth implementation instead of Neon Auth (Decision 41).
+
+## Phase 42 (Jonas' Feedback)
+
+- **Run Button Logic**: Update the "Run" button to restart the level if the character is already at the goal or in a failure state.
+- **Visual Clarity**: Improve the visual distinction between "Edit" and "Run" modes.
