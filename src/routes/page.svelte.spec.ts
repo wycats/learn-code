@@ -5,7 +5,8 @@ import Page from './+page.svelte';
 
 describe('/+page.svelte', () => {
 	it('should render h1', async () => {
-		render(Page, {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		render(Page as any, {
 			props: {
 				data: {
 					user: null,

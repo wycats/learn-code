@@ -31,14 +31,78 @@
 
 	let dialog: HTMLDialogElement;
 
+	const TYPES: {
+		value: string;
+		type: TileType;
+		onEnter?: 'kill' | 'slide' | 'damage' | 'none';
+		label: string;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		icon: any;
+		description: string;
+	}[] = [
+		{
+			value: 'floor',
+			type: 'floor',
+			label: 'Floor',
+			icon: Footprints,
+			description: 'Safe to walk on'
+		},
+		{ value: 'wall', type: 'wall', label: 'Wall', icon: BrickWall, description: 'Blocks movement' },
+		{
+			value: 'hazard',
+			type: 'hazard',
+			onEnter: 'kill',
+			label: 'Hazard',
+			icon: Skull,
+			description: 'Fatal to touch'
+		},
+		{
+			value: 'ice',
+			type: 'ice',
+			onEnter: 'slide',
+			label: 'Ice',
+			icon: Snowflake,
+			description: 'Causes sliding'
+		},
+		{
+			value: 'water',
+			type: 'water',
+			label: 'Water',
+			icon: Waves,
+			description: 'Requires swimming'
+		},
+		{
+			value: 'spikes',
+			type: 'hazard',
+			onEnter: 'damage',
+			label: 'Spikes',
+			icon: Triangle,
+			description: 'Damage on enter'
+		},
+		{
+			value: 'fire',
+			type: 'hazard',
+			onEnter: 'damage',
+			label: 'Fire',
+			icon: Flame,
+			description: 'Damage on enter'
+		}
+	];
+
 	let name = $state(tile?.name || 'New Tile');
-	let type = $state<TileType>(tile?.type || 'floor');
+	let selectedType = $state<string>(
+		TYPES.find((t) => t.type === tile?.type && t.onEnter === tile?.onEnter)?.value ||
+			TYPES.find((t) => t.type === tile?.type)?.value ||
+			'floor'
+	);
 	let passableBy = $state(tile?.passableBy || 'none');
 	let onEnter = $state(tile?.onEnter || 'none');
 	let color = $state(tile?.visuals.color || 'var(--surface-2)');
 	let pattern = $state(tile?.visuals.pattern || '');
 	let decal = $state(tile?.visuals.decal || '');
 	let scope = $state<'pack' | 'level'>(initialScope);
+
+	let actualType = $derived(TYPES.find((t) => t.value === selectedType)?.type || 'floor');
 
 	$effect(() => {
 		dialog?.showModal();
@@ -56,22 +120,6 @@
 		{ label: 'Indigo', value: 'var(--indigo-3)' },
 		{ label: 'Violet', value: 'var(--violet-3)' },
 		{ label: 'Pink', value: 'var(--pink-3)' }
-	];
-
-	const TYPES: {
-		value: TileType;
-		label: string;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		icon: any;
-		description: string;
-	}[] = [
-		{ value: 'floor', label: 'Floor', icon: Footprints, description: 'Safe to walk on' },
-		{ value: 'wall', label: 'Wall', icon: BrickWall, description: 'Blocks movement' },
-		{ value: 'hazard', label: 'Hazard', icon: Skull, description: 'Fatal to touch' },
-		{ value: 'ice', label: 'Ice', icon: Snowflake, description: 'Causes sliding' },
-		{ value: 'water', label: 'Water', icon: Waves, description: 'Requires swimming' },
-		{ value: 'spikes', label: 'Spikes', icon: Triangle, description: 'Damage on enter' },
-		{ value: 'fire', label: 'Fire', icon: Flame, description: 'Damage on enter' }
 	];
 
 	const PASSABILITY_OPTIONS = [
@@ -93,7 +141,7 @@
 		const newTile: TileDefinition = {
 			id: tile?.id || crypto.randomUUID(),
 			name,
-			type,
+			type: actualType,
 			passableBy: passableBy === 'none' ? undefined : passableBy,
 			onEnter: onEnter === 'none' ? undefined : (onEnter as 'kill' | 'slide' | 'damage'),
 			visuals: {
@@ -130,7 +178,7 @@
 						customTile={{
 							id: 'preview',
 							name,
-							type,
+							type: actualType,
 							visuals: { color, pattern, decal }
 						}}
 					/>
@@ -221,7 +269,7 @@
 				/>
 				<div class="meta-row">
 					<div class="type-badge">
-						{TYPES.find((t) => t.value === type)?.label}
+						{TYPES.find((t) => t.value === selectedType)?.label}
 					</div>
 
 					<div class="scope-selector">
@@ -253,8 +301,11 @@
 				{#each TYPES as t (t.value)}
 					<button
 						class="behavior-card"
-						class:active={type === t.value}
-						onclick={() => (type = t.value)}
+						class:active={selectedType === t.value}
+						onclick={() => {
+							selectedType = t.value;
+							if (t.onEnter) onEnter = t.onEnter;
+						}}
 					>
 						<div class="behavior-icon">
 							<t.icon size={24} />
