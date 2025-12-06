@@ -786,3 +786,25 @@ Prepared the application for release with a new "In-App Changelog" feature, crit
   - **Markdown Rendering**: Fixed an issue where markdown syntax was being stripped.
 - **Future Planning**:
   - **Error Reporting**: Selected Highlight.io for Phase 42.
+
+## Phase 41: Release & Deployment (Completed)
+
+**Date:** December 9, 2025
+
+**Summary:**
+Prepared the application for release with a new "In-App Changelog" feature, critical bug fixes, and a comprehensive visual regression suite. This phase also included a final branding sweep to rename "Code Climber" to "Kibi" and the addition of a Settings entry point to the home screen.
+
+**Key Deliverables:**
+
+- **In-App Changelog**:
+  - **Automated Generation**: Script to parse `docs/agent-context/changelog.md` into structured data.
+  - **UI**: New `/changelog` page linked from Settings.
+  - **Markdown Support**: Enhanced rendering for bold text and other markdown features.
+- **Branding & UI**:
+  - **Rename**: Replaced remaining "Code Climber" references with "Kibi".
+  - **Settings**: Added a Settings gear icon to the Home page top bar.
+- **Bug Fixes**:
+  - **Duplicate Keys**: Fixed a crash caused by identical version strings for "Phase X" and "Phase X Polish".
+  - **Markdown Rendering**: Fixed an issue where markdown syntax was being stripped.
+- **Future Planning**:
+  - **Error Reporting**: Selected Highlight.io for Phase 42.

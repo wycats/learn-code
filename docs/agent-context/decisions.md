@@ -572,3 +572,24 @@
 - Users own their data in their own repositories.
 - We introduce concepts like "Forking" and "Pull Requests" as game mechanics.
 - We align with Axiom 3 (Creation is Social) and Axiom 16 (Tooling Parity).
+
+## Phase 41: Release & Deployment
+
+### 61. In-App Changelog Strategy
+
+**Decision:** Use a static data file (`src/lib/data/changelog.ts`) generated from markdown to decouple the UI from the docs but keep a single source of truth for content.
+**Context:** We want users to see what's new without leaving the app. However, we don't want to maintain two separate changelogs manually.
+**Consequence:**
+
+- We wrote a script (`scripts/generate-changelog.ts`) to parse `docs/agent-context/changelog.md`.
+- The build process (or pre-commit hook) ensures the data file is up to date.
+- The UI is simple and fast, reading from a local TS file.
+
+### 62. Branding Finalization
+
+**Decision:** Finalize "Kibi" renaming across the app.
+**Context:** "Code Climber" was a placeholder. "Kibi" is the final name.
+**Consequence:**
+
+- All UI text updated.
+- E2E tests updated to check for "Kibi".

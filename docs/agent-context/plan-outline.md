@@ -400,13 +400,13 @@
 - [x] **Lives System**: A survival mechanic where hazards reduce a life counter.
 - [x] **New Hazards**: Fire, Moving Platforms, etc.
 
-## Phase 41: Release & Deployment (Active)
+## Phase 41: Release & Deployment (Completed)
 
 **Goal:** Wrap up Phase 40 changes, submit a PR, and deploy to Vercel.
 
-- [ ] **Pre-flight Checks**: Run full test suite and build verification.
-- [ ] **Pull Request**: Submit and merge the changes to the main branch.
-- [ ] **Deployment Verification**: Confirm Vercel picks up the changes and deploys successfully.
+- [x] **Pre-flight Checks**: Run full test suite and build verification.
+- [x] **Pull Request**: Submit and merge the changes to the main branch.
+- [x] **Deployment Verification**: Confirm Vercel picks up the changes and deploys successfully.
 
 ## Phase 42: Accessibility
 

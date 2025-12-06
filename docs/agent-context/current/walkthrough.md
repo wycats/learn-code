@@ -31,3 +31,18 @@ This phase focused on preparing the application for release, including a compreh
 
 - **Tests**: Ran `pnpm test` and `pnpm check`, ensuring all tests pass.
 - **Visuals**: Verified the changelog UI and markdown rendering.
+
+## How to Try It Out
+
+1.  **Changelog**:
+    - Navigate to the **Settings** page (via the gear icon on the Home page or the menu).
+    - Click on the **Changelog** link.
+    - Verify that the changelog is displayed correctly, with proper formatting (bold text, lists, etc.).
+2.  **Branding**:
+    - Go to the **Home** page.
+    - Verify that the title says "Kibi" and not "Code Climber".
+    - Go to the **Library** page.
+    - Verify that the title says "Kibi Library".
+3.  **Settings Access**:
+    - On the **Home** page, look for the **Settings** gear icon in the top bar.
+    - Click it to ensure it navigates to the Settings page.
