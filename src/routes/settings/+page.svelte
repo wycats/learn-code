@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Trash2, LogOut, Smartphone } from 'lucide-svelte';
+	import { Trash2, LogOut, Smartphone, Info } from 'lucide-svelte';
 	import type { PageData } from './$types';
+	import { base } from '$app/paths';
 
 	let { data } = $props<{ data: PageData }>();
 </script>
@@ -74,6 +75,20 @@
 				<p class="empty-state">No other devices connected.</p>
 			{/if}
 		</div>
+	</section>
+
+	<section class="section">
+		<h2>About</h2>
+		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+		<a href="{base}/changelog" class="about-link">
+			<div class="about-icon">
+				<Info size={20} />
+			</div>
+			<div class="about-content">
+				<span class="about-title">Changelog</span>
+				<span class="about-desc">See what's new in Kibi</span>
+			</div>
+		</a>
 	</section>
 </div>
 
@@ -252,5 +267,50 @@
 		color: var(--text-2);
 		font-style: italic;
 		font-size: var(--font-size-1);
+	}
+
+	.about-link {
+		display: flex;
+		align-items: center;
+		gap: var(--size-3);
+		padding: var(--size-4);
+		background-color: var(--surface-2);
+		border-radius: var(--radius-3);
+		border: 1px solid var(--surface-3);
+		text-decoration: none;
+		color: var(--text-1);
+		transition:
+			transform 0.2s,
+			box-shadow 0.2s;
+	}
+
+	.about-link:hover {
+		transform: translateY(-2px);
+		box-shadow: var(--shadow-2);
+		border-color: var(--brand);
+	}
+
+	.about-icon {
+		padding: var(--size-2);
+		background-color: var(--surface-1);
+		border-radius: var(--radius-round);
+		color: var(--brand);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.about-content {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.about-title {
+		font-weight: var(--font-weight-6);
+	}
+
+	.about-desc {
+		font-size: var(--font-size-0);
+		color: var(--text-2);
 	}
 </style>
