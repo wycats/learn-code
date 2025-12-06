@@ -82,7 +82,19 @@ export class SoundManager {
 		}
 	}
 
-	play(type: 'step' | 'turn' | 'win' | 'fail' | 'click' | 'delete' | 'pickup' | 'drop' | 'sweep') {
+	play(
+		type:
+			| 'step'
+			| 'turn'
+			| 'win'
+			| 'fail'
+			| 'click'
+			| 'delete'
+			| 'pickup'
+			| 'drop'
+			| 'sweep'
+			| 'hurt'
+	) {
 		const ctx = this.getContext();
 		if (!ctx) return;
 
@@ -137,6 +149,17 @@ export class SoundManager {
 				gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
 				osc.start(now);
 				osc.stop(now + 0.3);
+				break;
+
+			case 'hurt':
+				// Sharp descending sawtooth
+				osc.type = 'sawtooth';
+				osc.frequency.setValueAtTime(400, now);
+				osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+				gain.gain.setValueAtTime(0.2, now);
+				gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+				osc.start(now);
+				osc.stop(now + 0.1);
 				break;
 
 			case 'click':

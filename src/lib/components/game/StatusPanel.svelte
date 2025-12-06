@@ -79,16 +79,16 @@
 	}
 
 	.running .icon-wrapper {
-		color: var(--green-6);
-		background-color: var(--green-0);
+		color: light-dark(var(--green-6), var(--green-4));
+		background-color: light-dark(var(--green-0), var(--green-9));
 	}
 	.won .icon-wrapper {
-		color: var(--yellow-6);
-		background-color: var(--yellow-0);
+		color: light-dark(var(--yellow-6), var(--yellow-4));
+		background-color: light-dark(var(--yellow-0), var(--yellow-9));
 	}
 	.planning .icon-wrapper {
-		color: var(--blue-6);
-		background-color: var(--blue-0);
+		color: light-dark(var(--blue-6), var(--blue-4));
+		background-color: light-dark(var(--blue-0), var(--blue-9));
 	}
 
 	.info h3 {
@@ -127,6 +127,25 @@
 	.par-badge .value {
 		font-size: var(--font-size-2);
 		font-weight: 700;
-		color: var(--indigo-7);
+		color: light-dark(var(--indigo-7), var(--indigo-3));
+	}
+
+	@media (max-width: 600px) {
+		.status-panel {
+			padding: 0 var(--size-2);
+		}
+		.status-content {
+			gap: var(--size-2);
+		}
+		.icon-wrapper {
+			width: 32px;
+			height: 32px;
+		}
+		.par-badge {
+			padding: var(--size-1) var(--size-2);
+		}
+		.par-badge .value {
+			font-size: var(--font-size-1);
+		}
 	}
 </style>

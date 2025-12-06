@@ -1,0 +1,9 @@
+[project]
+name = "learn-coding"
+domain = "learn-coding.localhost"
+
+[services.web]
+command = "pnpm dev --port $PORT"
+depends_on = []
+
+[services.web.env]

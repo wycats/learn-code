@@ -23,7 +23,16 @@
 </script>
 
 {#if builder.mode === 'test'}
-	<Game game={builder.game} architectMode={true} onExit={() => builder.setMode('edit')} />
+	<Game
+		game={builder.game}
+		architectMode={true}
+		onExit={() => builder.setMode('edit')}
+		onTarget={(target) => {
+			if (builder.targetingState.isActive) {
+				builder.targetingState.onToggle(target);
+			}
+		}}
+	/>
 {:else}
 	<div class="builder-interface" class:targeting-active={builder.targetingState.isActive}>
 		{#if builder.targetingState.isActive}
@@ -54,9 +63,7 @@
 				</div>
 
 				{#if showSettings}
-					<div class="settings-overlay">
-						<BuilderGoalModal {builder} onClose={() => (showSettings = false)} />
-					</div>
+					<BuilderGoalModal {builder} onClose={() => (showSettings = false)} />
 				{/if}
 			</div>
 
@@ -80,6 +87,13 @@
 		grid-template-columns: 1fr 400px;
 		height: 100%;
 		overflow: hidden;
+	}
+
+	@media (max-width: 768px) {
+		.workspace {
+			grid-template-columns: 1fr;
+			grid-template-rows: 1.5fr 1fr;
+		}
 	}
 
 	.stage-area {
@@ -108,15 +122,6 @@
 		place-items: center;
 		overflow: auto;
 		padding: var(--size-4);
-	}
-
-	.settings-overlay {
-		position: absolute;
-		inset: 0;
-		display: grid;
-		place-items: center;
-		background-color: rgba(0, 0, 0, 0.5);
-		z-index: 20;
 	}
 
 	.tray-area {

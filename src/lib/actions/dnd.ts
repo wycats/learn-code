@@ -77,3 +77,42 @@ export function dropTarget(node: HTMLElement, options: DropTargetOptions) {
 		destroy: cleanup
 	};
 }
+
+export function draggableVariable(node: HTMLElement, options: { type: string } = { type: 'any' }) {
+	const cleanup = draggable({
+		element: node,
+		getInitialData: () => ({
+			type: 'variable',
+			variableId: 'heldItem',
+			variableType: options.type
+		}),
+		onDragStart: () => node.classList.add('dragging'),
+		onDrop: () => node.classList.remove('dragging')
+	});
+
+	return {
+		destroy: cleanup
+	};
+}
+
+export function dropTargetForVariable(
+	node: HTMLElement,
+	options: { onDrop: () => void; allowedTypes?: string[] }
+) {
+	const cleanup = dropTargetForElements({
+		element: node,
+		canDrop: ({ source }) => {
+			if (source.data.type !== 'variable') return false;
+			if (!options.allowedTypes) return true;
+			return options.allowedTypes.includes(source.data.variableType as string);
+		},
+		getData: () => ({ type: 'variable-slot' }),
+		onDrop: () => options.onDrop(),
+		onDragEnter: () => node.classList.add('drag-over'),
+		onDragLeave: () => node.classList.remove('drag-over')
+	});
+
+	return {
+		destroy: cleanup
+	};
+}

@@ -2,7 +2,6 @@ import type { LevelPack } from '$lib/game/types';
 import { saveHandle, getHandle, removeHandle } from './handle-registry';
 
 // Types for the File System Access API
-// These are often not fully available in standard TS libs yet, so we define what we need.
 export interface FileSystemHandle {
 	kind: 'file' | 'directory';
 	name: string;
@@ -72,7 +71,23 @@ declare global {
 	}
 }
 
-export class FileSystemService {
+export interface FileSystemService {
+	isSupported: boolean;
+	openDirectory(): Promise<FileSystemDirectoryHandle | null>;
+	savePackToDisk(pack: LevelPack, handle?: FileSystemDirectoryHandle): Promise<void>;
+	loadPackFromDisk(folderHandle: FileSystemDirectoryHandle): Promise<LevelPack>;
+	listPacksInDirectory(
+		root: FileSystemDirectoryHandle
+	): Promise<Array<{ handle: FileSystemDirectoryHandle; name: string }>>;
+	isPackLinked(packId: string): Promise<boolean>;
+	linkPackToDisk(packId: string): Promise<FileSystemDirectoryHandle>;
+	syncPackToDisk(packId: string, pack: LevelPack): Promise<void>;
+	loadLinkedPack(packId: string): Promise<LevelPack | null>;
+	unlinkPack(packId: string): Promise<void>;
+	verifyPermission(handle: FileSystemHandle, readWrite: boolean): Promise<boolean>;
+}
+
+export class BrowserFileSystemService implements FileSystemService {
 	private rootHandle: FileSystemDirectoryHandle | null = null;
 
 	constructor() {}
@@ -125,9 +140,6 @@ export class FileSystemService {
 		const writable = await packFile.createWritable();
 		await writable.write(JSON.stringify(pack, null, 2));
 		await writable.close();
-
-		// We could also save individual levels as separate files if we wanted to explode the format,
-		// but for now, keeping it as a single JSON is simpler and matches our internal model.
 	}
 
 	async loadPackFromDisk(folderHandle: FileSystemDirectoryHandle): Promise<LevelPack> {
@@ -243,4 +255,4 @@ export class FileSystemService {
 	}
 }
 
-export const fileSystem = new FileSystemService();
+export const fileSystem = new BrowserFileSystemService();

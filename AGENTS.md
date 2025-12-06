@@ -101,4 +101,5 @@ After completing the code, ask the user if they want a playground link. Only cal
 ### Development Server
 
 - **User Managed**: The user is responsible for running and managing the development server (e.g., `pnpm dev`).
+- **URL**: The development server is expected to be running at `https://learn-coding.localhost/`.
 - **Troubleshooting**: If the dev server is not working or needs a restart, **do not** try to restart it yourself. Instead, instruct the user to restart it.

@@ -1,0 +1,86 @@
+{
+	"id": "level-8",
+	"name": "Pattern Recognition",
+	"description": "A giant staircase. Jonas says you can solve it with one spell.",
+	"gridSize": {
+		"width": 10,
+		"height": 10
+	},
+	"start": {
+		"x": 1,
+		"y": 8
+	},
+	"startOrientation": "N",
+	"goal": {
+		"x": 8,
+		"y": 1
+	},
+	"layout": {
+		"1,8": "grass",
+		"1,7": "grass",
+		"1,6": "grass",
+		"2,6": "grass",
+		"3,6": "grass",
+		"3,5": "grass",
+		"3,4": "grass",
+		"4,4": "grass",
+		"5,4": "grass",
+		"5,3": "grass",
+		"5,2": "grass",
+		"6,2": "grass",
+		"7,2": "grass",
+		"7,1": "grass",
+		"8,1": "goal"
+	},
+	"availableBlocks": {
+		"move-forward": "unlimited",
+		"turn-right": "unlimited",
+		"call": "unlimited"
+	},
+	"maxBlocks": 8,
+	"functions": {
+		"Stairs": []
+	},
+	"solutionPar": 5,
+	"intro": [
+		{
+			"speaker": "Jonas",
+			"text": "I built this giant staircase. Can you climb it?",
+			"emotion": "neutral"
+		},
+		{
+			"speaker": "Zoey",
+			"text": "It repeats the same pattern over and over: Up two, Right two.",
+			"emotion": "concerned"
+		},
+		{
+			"speaker": "Jonas",
+			"text": "Exactly! Use a Function to capture the pattern.",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "System",
+			"text": "Create a 'Stairs' function for the pattern, then call it multiple times.",
+			"targets": ["ui:function-tab"]
+		}
+	],
+	"hints": [
+		{
+			"id": "l8-hint-idle",
+			"text": "Define the 'Stairs' function to go Up 2, Turn Right, Move 2, Turn Left (Wait, you only have Turn Right! Use 3 Turn Rights to turn Left).",
+			"trigger": {
+				"type": "idle",
+				"value": 25
+			},
+			"targets": ["ui:function-tab"]
+		},
+		{
+			"id": "l8-hint-call",
+			"text": "Now call 'Stairs' multiple times in your Main program to climb to the top.",
+			"trigger": {
+				"type": "attempts",
+				"value": 2
+			}
+		}
+	]
+}

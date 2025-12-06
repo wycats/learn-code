@@ -3,6 +3,7 @@
 	import { X, CircleCheck, CircleAlert, Info, TriangleAlert } from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
+	import { onMount } from 'svelte';
 
 	const icons = {
 		success: CircleCheck,
@@ -10,9 +11,15 @@
 		info: Info,
 		warning: TriangleAlert
 	};
+
+	let container: HTMLElement;
+
+	onMount(() => {
+		container?.showPopover();
+	});
 </script>
 
-<div class="toast-container">
+<div class="toast-container" bind:this={container} popover="manual">
 	{#each toast.toasts as t (t.id)}
 		<div
 			class="toast {t.type}"
@@ -38,8 +45,16 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--size-2);
-		z-index: 9999;
+		/* z-index: 9999; Removed in favor of popover API */
 		pointer-events: none; /* Allow clicking through container */
+		background: transparent;
+		border: none;
+		padding: 0;
+		margin: 0;
+		inset: auto; /* Reset popover defaults */
+		right: var(--size-4); /* Re-apply positioning */
+		bottom: var(--size-4);
+		overflow: visible;
 	}
 
 	.toast {
@@ -99,9 +114,12 @@
 		border: none;
 		color: var(--text-3);
 		cursor: pointer;
-		padding: 4px;
+		min-width: var(--touch-target-min);
+		min-height: var(--touch-target-min);
 		display: flex;
 		align-items: center;
+		justify-content: center;
+		padding: 0;
 		border-radius: var(--radius-1);
 	}
 

@@ -110,6 +110,7 @@
 		max-width: 90%;
 		border: none; /* Remove border for preview mode to look cleaner */
 		background-color: var(--surface-1); /* Blend in more */
+		min-height: var(--touch-target-min);
 	}
 
 	.content.preview-mode:hover {
@@ -128,7 +129,8 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
-		padding: var(--size-1) var(--size-3);
+		padding: 0 var(--size-3);
+		min-height: var(--touch-target-min);
 		background-color: var(--blue-6);
 		color: white;
 		border: none;

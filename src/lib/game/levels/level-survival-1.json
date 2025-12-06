@@ -1,0 +1,23 @@
+{
+	"id": "level-survival-1",
+	"name": "Survival Basics",
+	"description": "Learn to avoid hazards and manage your health.",
+	"gridSize": { "width": 6, "height": 6 },
+	"start": { "x": 0, "y": 2 },
+	"startOrientation": "E",
+	"goal": { "x": 5, "y": 2 },
+	"defaultTerrain": "grass",
+	"layout": {
+		"2,2": "fire",
+		"3,2": "fire"
+	},
+	"availableBlocks": ["move-forward", "turn-left", "turn-right"],
+	"startingLives": 3,
+	"intro": [
+		{
+			"speaker": "Guide",
+			"text": "Careful! That fire looks hot. You can walk through it, but it will hurt!",
+			"emotion": "concerned"
+		}
+	]
+}

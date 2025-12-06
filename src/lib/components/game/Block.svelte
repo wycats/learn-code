@@ -1,17 +1,29 @@
 <script lang="ts">
 	import type { Block } from '$lib/game/types';
 	import type { GameModel } from '$lib/game/model.svelte';
-	import { draggableBlock, dropTarget } from '$lib/actions/dnd';
-	import { getDragContext } from '$lib/game/drag-context.svelte';
+	import { interactionTarget, interactionManager } from '$lib/interactions';
+	import { draggableSource, dropTarget } from '$lib/interactions/dnd';
+	import { dropTargetForVariable } from '$lib/actions/dnd';
+	import type { ComponentInterface } from '$lib/interactions/types';
 	import BlockComponent from './Block.svelte';
 	import DropIndicator from './DropIndicator.svelte';
-	import { ArrowUp, RotateCcw, RotateCw, Repeat, Check, XCircle, Wand2 } from 'lucide-svelte';
+	import {
+		ArrowUp,
+		RotateCcw,
+		RotateCw,
+		Repeat,
+		Check,
+		XCircle,
+		Wand2,
+		Grab,
+		Brain,
+		Ship
+	} from 'lucide-svelte';
 
 	interface Props {
 		block: Block;
 		game?: GameModel;
 		activeBlockId?: string | null;
-		selectedBlockIds?: Set<string>;
 		onSelect?: (id: string) => void;
 		onContainerClick?: (id: string) => void;
 		isPalette?: boolean;
@@ -20,23 +32,51 @@
 		isSuccess?: boolean;
 		loopProgress?: number;
 		onTarget?: (target: string) => void;
+		isTargetMode?: boolean;
+		disabled?: boolean;
 	}
 
 	let {
 		block,
 		game,
 		activeBlockId = null,
-		selectedBlockIds = new Set(),
 		onSelect,
 		onContainerClick,
 		isPalette = false,
 		isBlocked = false,
 		isSuccess = false,
 		loopProgress = 0,
-		onTarget
+		onTarget,
+		isTargetMode = false,
+		disabled = false
 	}: Props = $props();
 
-	const dragCtx = getDragContext();
+	// Interaction State
+	let node: HTMLElement | undefined = $state();
+	let slotNode: HTMLElement | undefined = $state();
+	let interactionState = $derived(interactionManager.getComponentState(block.id));
+	let slotState = $derived(interactionManager.getComponentState(`${block.id}-children`));
+	let highlightStyle = $state<'ghost' | 'ring' | 'pulse' | null>(null);
+
+	const api: ComponentInterface = {
+		highlight: (style) => {
+			highlightStyle = style;
+		},
+		clearHighlight: () => {
+			highlightStyle = null;
+		},
+		scrollIntoView: () => node?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+		getBoundingRect: () => node?.getBoundingClientRect() || new DOMRect(),
+		focus: () => node?.focus()
+	};
+
+	const slotApi: ComponentInterface = {
+		highlight: () => {}, // TODO: Implement slot highlighting
+		clearHighlight: () => {},
+		scrollIntoView: () => slotNode?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+		getBoundingRect: () => slotNode?.getBoundingClientRect() || new DOMRect(),
+		focus: () => slotNode?.focus()
+	};
 
 	// Derived state from game model if available
 	const derivedIsSuccess = $derived(
@@ -93,6 +133,25 @@
 			onContainerClick(block.id);
 		}
 	}
+
+	function handleVariableDrop() {
+		if (game && block.type === 'loop') {
+			game.updateBlock(block.id, {
+				count: { type: 'variable', variableId: 'heldItem' }
+			});
+		}
+	}
+
+	function handleBadgeClick(e: MouseEvent) {
+		if (onTarget && block.count !== undefined) {
+			e.stopPropagation();
+			onTarget(`block:${block.id}:count`);
+		}
+	}
+
+	const isVariable = $derived(
+		typeof block.count === 'object' && block.count !== null && 'type' in block.count
+	);
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -101,12 +160,36 @@
 	class="block"
 	data-type={block.type}
 	class:active={derivedActiveBlockId === block.id}
-	class:selected={selectedBlockIds.has(block.id)}
-	class:ghost={block.isGhost}
+	class:selected={interactionState.isSelected}
+	class:ghost={block.isGhost || interactionState.status === 'source' || highlightStyle === 'ghost'}
 	class:blocked={derivedIsBlocked}
 	class:success={derivedIsSuccess}
-	class:highlighted={isHighlighted}
+	class:highlighted={isHighlighted || highlightStyle === 'pulse'}
+	class:ring={interactionState.status === 'candidate' || highlightStyle === 'ring'}
 	onclick={handleClick}
+	onkeydown={(e) => {
+		if (e.key === 'Enter' || e.key === ' ') {
+			e.preventDefault();
+			handleClick(e as unknown as MouseEvent);
+		}
+	}}
+	tabindex="0"
+	role="button"
+	bind:this={node}
+	use:interactionTarget={{
+		node: {
+			id: block.id,
+			role: 'block',
+			dataType: 'statement',
+			data: block
+		},
+		api
+	}}
+	use:draggableSource={{
+		id: block.id,
+		data: { type: 'block', block: block, isPaletteItem: isPalette },
+		disabled: disabled
+	}}
 >
 	<div class="header">
 		<div class="icon">
@@ -116,10 +199,14 @@
 				<RotateCcw size={24} />
 			{:else if block.type === 'turn-right'}
 				<RotateCw size={24} />
+			{:else if block.type === 'pick-up'}
+				<Grab size={24} />
 			{:else if block.type === 'loop'}
 				<Repeat size={24} />
 			{:else if block.type === 'call'}
 				<Wand2 size={24} />
+			{:else if block.type === 'board'}
+				<Ship size={24} />
 			{/if}
 		</div>
 		<span class="label">
@@ -129,20 +216,33 @@
 				Left
 			{:else if block.type === 'turn-right'}
 				Right
+			{:else if block.type === 'pick-up'}
+				Pick Up
+			{:else if block.type === 'board'}
+				Board
 			{:else if block.type === 'loop'}
 				Repeat
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<span
 					class="loop-badge"
-					class:targetable={!!onTarget && block.count !== undefined}
-					onclick={(e) => {
-						if (onTarget && block.count !== undefined) {
-							e.stopPropagation();
-							onTarget(`block:${block.id}:count`);
-						}
-					}}>{block.count ? `${block.count}x` : '∞'}</span
+					class:targetable={isTargetMode && block.count !== undefined}
+					class:variable={isVariable}
+					use:dropTargetForVariable={{
+						onDrop: handleVariableDrop,
+						allowedTypes: ['number']
+					}}
+					onclick={handleBadgeClick}
+					data-target={`block:${block.id}:count`}
 				>
+					{#if isVariable}
+						<div class="variable-token-mini">
+							<Brain size={14} />
+						</div>
+					{:else}
+						{block.count ? `${block.count}x` : '∞'}
+					{/if}
+				</span>
 			{:else if block.type === 'call'}
 				Call
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -152,7 +252,7 @@
 					class:empty={functionStatus === 'empty'}
 					class:missing={functionStatus === 'missing'}
 					class:none={functionStatus === 'none'}
-					class:targetable={!!onTarget}
+					class:targetable={isTargetMode}
 					onclick={(e) => {
 						if (onTarget) {
 							e.stopPropagation();
@@ -177,37 +277,41 @@
 	{#if block.type === 'loop' && !isPalette}
 		<div
 			class="children"
-			use:dropTarget={{
-				blockId: `${block.id}-children`,
-				type: 'drop-target'
+			bind:this={slotNode}
+			use:interactionTarget={{
+				node: {
+					id: `${block.id}-children`,
+					role: 'slot',
+					dataType: 'statement',
+					accepts: ['statement'],
+					parentId: block.id
+				},
+				api: slotApi
 			}}
+			use:dropTarget={{ id: `${block.id}-children` }}
+			class:ring={slotState.status === 'candidate'}
 			onclick={handleContainerClick}
 		>
-			{#each block.children || [] as child, index (child.id)}
+			{#each block.children || [] as child (child.id)}
+				{@const childState = interactionManager.getComponentState(child.id)}
 				<div class="block-wrapper" style:position="relative">
-					{#if dragCtx?.targetId === child.id && dragCtx?.closestEdge === 'top'}
+					{#if childState.status === 'candidate' && childState.isHovered && childState.edge === 'top'}
 						<DropIndicator edge="top" />
 					{/if}
 
-					<div
-						use:draggableBlock={{ block: child }}
-						use:dropTarget={{
-							blockId: child.id,
-							index: index,
-							type: 'drop-target'
-						}}
-					>
+					<div>
 						<BlockComponent
 							block={child}
 							{game}
 							activeBlockId={derivedActiveBlockId}
-							{selectedBlockIds}
 							{onSelect}
 							{onContainerClick}
+							{onTarget}
+							{isTargetMode}
 						/>
 					</div>
 
-					{#if dragCtx?.targetId === child.id && dragCtx?.closestEdge === 'bottom'}
+					{#if childState.status === 'candidate' && childState.isHovered && childState.edge === 'bottom'}
 						<DropIndicator edge="bottom" />
 					{/if}
 				</div>
@@ -286,6 +390,12 @@
 		border-color: var(--pink-3);
 	}
 
+	.block[data-type='board'] {
+		background-color: var(--cyan-2);
+		color: var(--cyan-9);
+		border-color: var(--cyan-3);
+	}
+
 	.block[data-type='loop']:not(:has(.children)) {
 		padding-bottom: var(--size-2); /* Reset padding if no children */
 	}
@@ -328,13 +438,13 @@
 
 	@keyframes pulse-highlight {
 		0% {
-			box-shadow: 0 0 0 0 rgba(var(--pink-5-rgb), 0.7);
+			box-shadow: 0 0 0 0 color-mix(in srgb, var(--pink-5), transparent 30%);
 		}
 		70% {
-			box-shadow: 0 0 0 10px rgba(var(--pink-5-rgb), 0);
+			box-shadow: 0 0 0 10px color-mix(in srgb, var(--pink-5), transparent 100%);
 		}
 		100% {
-			box-shadow: 0 0 0 0 rgba(var(--pink-5-rgb), 0);
+			box-shadow: 0 0 0 0 color-mix(in srgb, var(--pink-5), transparent 100%);
 		}
 	}
 
@@ -374,7 +484,7 @@
 
 	.children {
 		min-height: 60px;
-		background-color: rgba(255, 255, 255, 0.3);
+		background-color: rgba(0, 0, 0, 0.05);
 		border-radius: var(--radius-2);
 		padding: var(--size-2);
 		display: flex;
@@ -417,6 +527,29 @@
 		padding: 0 6px;
 		border-radius: var(--radius-round);
 		font-weight: 800;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 24px;
+		height: 24px;
+	}
+
+	.loop-badge.variable {
+		padding: 0;
+		background: transparent;
+	}
+
+	.variable-token-mini {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		background-color: var(--surface-1);
+		border: 2px solid var(--blue-3);
+		border-radius: 50%;
+		color: var(--blue-7);
+		box-shadow: var(--shadow-1);
 	}
 
 	.function-badge {
@@ -460,11 +593,31 @@
 	.loop-badge.targetable,
 	.function-badge.targetable {
 		cursor: crosshair;
+		animation: pulse-target 2s infinite;
 	}
 
 	.loop-badge.targetable:hover,
 	.function-badge.targetable:hover {
 		background: rgba(255, 255, 255, 0.2);
 		outline: 2px solid var(--accent-color);
+	}
+
+	.loop-badge:global(.drag-over) {
+		background-color: var(--brand-dim, var(--blue-2));
+		outline: 2px solid var(--brand, var(--blue-5));
+		transform: scale(1.1);
+		z-index: 10;
+	}
+
+	@keyframes pulse-target {
+		0% {
+			box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); /* blue-5 */
+		}
+		70% {
+			box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+		}
 	}
 </style>

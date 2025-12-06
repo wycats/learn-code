@@ -2,15 +2,18 @@
 	import { page } from '$app/stores';
 	import { getPack } from '$lib/game/packs';
 	import { localPacksStore } from '$lib/game/local-packs.svelte';
+	import { CampaignService } from '$lib/game/campaigns';
 	import { ProgressService } from '$lib/game/progress';
 	import LevelMap from '$lib/components/library/LevelMap.svelte';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { ArrowLeft } from 'lucide-svelte';
 	import { onMount } from 'svelte';
+	import type { LevelPack } from '$lib/game/schema';
 
 	const packId = $derived($page.params.packId ?? '');
-	const pack = $derived(getPack(packId) || localPacksStore.getPack(packId));
+	let pack = $state<LevelPack | null>(null);
+	let loading = $state(true);
 	let progress = $state(ProgressService.load());
 
 	function handleLevelSelect(levelId: string) {
@@ -23,12 +26,40 @@
 		goto(`${base}/library`);
 	}
 
+	$effect(() => {
+		if (packId) {
+			loadPackData();
+		}
+	});
+
+	async function loadPackData() {
+		loading = true;
+		// 1. Check System Packs
+		let p = getPack(packId);
+
+		// 2. Check Local/P2P Packs
+		if (!p) {
+			p = localPacksStore.getPack(packId);
+		}
+
+		// 3. Check IndexedDB (My Projects)
+		if (!p) {
+			const local = await CampaignService.get(packId);
+			if (local) p = local;
+		}
+
+		pack = p ?? null;
+		loading = false;
+	}
+
 	onMount(() => {
 		progress = ProgressService.load();
 	});
 </script>
 
-{#if pack}
+{#if loading}
+	<div class="loading">Loading...</div>
+{:else if pack}
 	<div class="pack-detail">
 		<header class="detail-header">
 			<button class="back-button" onclick={handleBack}>
@@ -119,5 +150,13 @@
 		place-items: center;
 		height: 100vh;
 		gap: var(--size-4);
+	}
+
+	.loading {
+		display: grid;
+		place-items: center;
+		height: 100vh;
+		font-size: var(--font-size-3);
+		color: var(--text-2);
 	}
 </style>

@@ -3,8 +3,11 @@
 	import type { GridPosition } from '$lib/game/types';
 	import Cell from './Cell.svelte';
 	import Character from './Character.svelte';
+	import ThoughtBubble from './ThoughtBubble.svelte';
+	import { resolveItemDefinition } from '$lib/game/utils';
 	import { RotateCw } from 'lucide-svelte';
-	import { fade } from 'svelte/transition';
+	import { fade, crossfade } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 
 	interface Props {
 		game: GameModel;
@@ -29,6 +32,11 @@
 		onRotateStart,
 		onInteractionEnd
 	}: Props = $props();
+
+	const [send, receive] = crossfade({
+		duration: 400,
+		easing: quintOut
+	});
 
 	let isDragging = $state(false);
 	let dragStartPos = $state<GridPosition | null>(null);
@@ -111,6 +119,8 @@
 				const type = game.level.layout[key] || game.level.defaultTerrain || 'grass';
 				const customTile = game.level.customTiles?.[type];
 				const id = game.level.cellIds?.[key];
+				const item = game.level.items?.[key];
+				const isCollected = game.collectedItems.has(key);
 
 				// Check if this is the goal position
 				const isGoal = game.level.goal.x === x && game.level.goal.y === y;
@@ -127,7 +137,9 @@
 					y,
 					id,
 					type: isGoal && !isCharacterHere ? 'goal' : isGoal ? 'grass' : type,
-					customTile
+					customTile,
+					item: !isCollected ? item : undefined,
+					isCharacterHere
 				});
 			}
 		}
@@ -144,6 +156,15 @@
 			};
 		}
 		return undefined;
+	});
+
+	const hasCollectibleItems = $derived.by(() => {
+		if (!game.level.items) return false;
+		return Object.values(game.level.items).some((item) => {
+			const def = resolveItemDefinition(game.level, item.type);
+			if (def && def.behavior === 'vehicle') return false;
+			return true;
+		});
 	});
 </script>
 
@@ -174,10 +195,13 @@
 			<Cell
 				type={cell.type}
 				customTile={cell.customTile}
+				item={cell.item}
 				x={cell.x}
 				y={cell.y}
 				id={cell.id}
+				isCharacterHere={cell.isCharacterHere}
 				{highlight}
+				{send}
 			/>
 		</div>
 	{/each}
@@ -195,6 +219,9 @@
 		tabindex="0"
 	>
 		<Character direction={game.characterOrientation} {game} />
+		{#if hasCollectibleItems || game.heldItem}
+			<ThoughtBubble item={game.heldItem} {receive} />
+		{/if}
 
 		{#if isBuilder && (selectedActor === 'start' || isHoveringCharacter)}
 			<button

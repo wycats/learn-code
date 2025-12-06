@@ -18,10 +18,16 @@
 		StepForward,
 		StepBack,
 		RotateCw,
-		RefreshCcw
+		RefreshCcw,
+		BookOpen
 	} from 'lucide-svelte';
 	import { soundManager } from '$lib/game/sound';
 	import { fade } from 'svelte/transition';
+	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
+	import DevConnectionStatus from '$lib/components/common/DevConnectionStatus.svelte';
+	import { bookStore } from '$lib/game/book/store.svelte';
+	import BookModal from '$lib/components/game/book/BookModal.svelte';
+	import HealthDisplay from '$lib/components/game/HealthDisplay.svelte';
 
 	interface Props {
 		game: GameModel;
@@ -191,10 +197,15 @@
 </script>
 
 <div class="game-layout">
+	<BookModal />
 	<header>
 		<Cluster justify="space-between" align="center">
 			<div class="left-controls">
 				{@render headerLeft?.()}
+
+				<button class="btn-icon" onclick={() => bookStore.open()} title="Field Guide">
+					<BookOpen size={20} />
+				</button>
 
 				{#if architectMode}
 					<div class="architect-badge">ARCHITECT</div>
@@ -212,6 +223,11 @@
 				<button class="btn-icon" onclick={() => (game.status = 'goal')} title="Level Info">
 					<Info size={20} />
 				</button>
+
+				{#if game.maxLives > 1}
+					<div class="separator"></div>
+					<HealthDisplay lives={game.lives} maxLives={game.maxLives} />
+				{/if}
 			</div>
 
 			<div class="controls">
@@ -237,11 +253,12 @@
 					class:stop={isRunning && !isPaused}
 					onclick={handlePlay}
 					disabled={!isRunning && game.program.length === 0}
+					aria-label={isRunning && !isPaused ? 'Stop' : 'Play'}
 				>
 					{#if isRunning && !isPaused}
-						<Square size={16} fill="currentColor" /> Stop
+						<Square size={16} fill="currentColor" /> <span class="btn-label">Stop</span>
 					{:else}
-						<Play size={16} fill="currentColor" /> Play
+						<Play size={16} fill="currentColor" /> <span class="btn-label">Play</span>
 					{/if}
 				</button>
 				<button
@@ -250,7 +267,7 @@
 					disabled={!isRunning || !interpreter}
 					title="Step Back"
 				>
-					<StepBack size={16} /> Back
+					<StepBack size={16} /> <span class="btn-label">Back</span>
 				</button>
 				<button
 					class="btn-secondary"
@@ -258,19 +275,21 @@
 					disabled={game.program.length === 0 || (isRunning && !isPaused)}
 					title="Step Forward"
 				>
-					<StepForward size={16} /> Step
+					<StepForward size={16} /> <span class="btn-label">Step</span>
 				</button>
 				<button class="btn-secondary" onclick={handleReset} disabled={isRunning && !isPaused}>
-					<RotateCcw size={16} /> Reset
+					<RotateCcw size={16} /> <span class="btn-label">Reset</span>
 				</button>
 			</div>
 
-			{#if onExit}
-				<div class="right-controls">
+			<div class="right-controls">
+				<DevConnectionStatus />
+				<ThemeToggle />
+				{#if onExit}
 					<div class="separator"></div>
 					<button class="btn-secondary" onclick={onExit}> Exit Test </button>
-				</div>
-			{/if}
+				{/if}
+			</div>
 		</Cluster>
 	</header>
 
@@ -426,7 +445,8 @@
 	.btn-primary {
 		background-color: var(--green-5);
 		color: white;
-		padding: var(--size-2) var(--size-4);
+		padding: 0 var(--size-4);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-round);
 		font-weight: bold;
 		border: none;
@@ -434,6 +454,7 @@
 		transition: transform 0.1s;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: var(--size-2);
 	}
 
@@ -453,20 +474,22 @@
 	.btn-secondary {
 		background-color: var(--surface-3);
 		color: var(--text-1);
-		padding: var(--size-2) var(--size-4);
+		padding: 0 var(--size-4);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-round);
 		border: none;
 		cursor: pointer;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: var(--size-2);
 	}
 
 	.btn-icon {
 		background-color: transparent;
 		color: var(--text-1);
-		width: var(--size-8);
-		height: var(--size-8);
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		border-radius: var(--radius-round);
 		border: 1px solid var(--surface-3);
 		cursor: pointer;
@@ -495,5 +518,42 @@
 		height: var(--size-6);
 		background-color: var(--surface-3);
 		margin: 0 var(--size-2);
+	}
+
+	@media (max-width: 600px) {
+		.btn-label {
+			display: none;
+		}
+
+		.btn-primary,
+		.btn-secondary {
+			padding: 0;
+			width: 44px; /* Fixed width for icon-only */
+			height: 44px;
+			justify-content: center;
+		}
+
+		.controls {
+			position: fixed;
+			bottom: var(--size-4);
+			left: 50%;
+			transform: translateX(-50%);
+			background-color: var(--surface-1);
+			padding: var(--size-2) var(--size-3);
+			border-radius: var(--radius-pill);
+			box-shadow: var(--shadow-5);
+			z-index: 100;
+			border: 1px solid var(--surface-3);
+			width: auto;
+			gap: var(--size-3);
+		}
+
+		.separator {
+			display: none; /* Hide separator in floating bar */
+		}
+
+		.dashboard-area {
+			min-height: 90px;
+		}
 	}
 </style>
