@@ -1,7 +1,23 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
-	import { Code, ArrowRight, Hammer, ScanLine } from 'lucide-svelte';
+	import {
+		Code,
+		ArrowRight,
+		Hammer,
+		ScanLine,
+		RefreshCw,
+		LogIn,
+		User,
+		Settings
+	} from 'lucide-svelte';
+	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
+	import SyncModal from '$lib/components/common/SyncModal.svelte';
+	import DevConnectionStatus from '$lib/components/common/DevConnectionStatus.svelte';
+	import type { PageData } from './$types';
+
+	let { data } = $props<{ data: PageData }>();
+	let showSync = $state(false);
 
 	function handleStart() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
@@ -17,18 +33,56 @@
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto(`${base}/play`);
 	}
+
+	function handleLogin() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		goto(`${base}/login`);
+	}
+
+	function handleProfile() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		goto(`${base}/profiles`);
+	}
+
+	function handleSettings() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		goto(`${base}/settings`);
+	}
 </script>
 
+{#if showSync}
+	<SyncModal onClose={() => (showSync = false)} />
+{/if}
+
 <div class="landing-container">
+	<div class="top-bar">
+		<DevConnectionStatus />
+		<ThemeToggle />
+		<button class="icon-btn" onclick={handleSettings} aria-label="Settings">
+			<Settings size={20} />
+		</button>
+	</div>
 	<div class="hero">
 		<div class="logo-icon">
 			<Code size={64} strokeWidth={2} />
 		</div>
-		<h1>Code Climber</h1>
+		<h1>Kibi</h1>
 		<p class="tagline">Master the logic of code, one block at a time.</p>
 
 		<div class="actions">
-			<button class="cta-button primary" onclick={handleStart}>
+			{#if !data.user}
+				<button class="cta-button primary" onclick={handleLogin}>
+					<span>Login</span>
+					<LogIn size={20} />
+				</button>
+			{:else}
+				<button class="cta-button secondary" onclick={handleProfile}>
+					<span>Switch Profile ({data.profile?.nickname})</span>
+					<User size={20} />
+				</button>
+			{/if}
+
+			<button class="cta-button {data.user ? 'primary' : 'secondary'}" onclick={handleStart}>
 				<span>Start Coding</span>
 				<ArrowRight size={20} />
 			</button>
@@ -38,13 +92,20 @@
 				<Hammer size={20} />
 			</button>
 
-			<button class="cta-button tertiary" onclick={handleScan}>
-				<span>Scan Level</span>
-				<ScanLine size={20} />
-			</button>
+			<div class="secondary-actions">
+				<button class="cta-button tertiary" onclick={handleScan}>
+					<span>Scan Level</span>
+					<ScanLine size={20} />
+				</button>
+
+				<button class="cta-button tertiary" onclick={() => (showSync = true)}>
+					<span>Sync Devices</span>
+					<RefreshCw size={20} />
+				</button>
+			</div>
 		</div>
 
-		<a href="mailto:feedback@wonderblocks.app?subject=Code Climber Feedback" class="feedback-link">
+		<a href="mailto:feedback@kibi.app?subject=Kibi Feedback" class="feedback-link">
 			Send Feedback
 		</a>
 	</div>
@@ -57,6 +118,17 @@
 		place-items: center;
 		background-color: var(--surface-1);
 		background-image: radial-gradient(circle at center, var(--surface-2) 0%, transparent 70%);
+		position: relative;
+	}
+
+	.top-bar {
+		position: absolute;
+		top: var(--size-3);
+		right: var(--size-3);
+		z-index: 10;
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
 	}
 
 	.hero {
@@ -76,6 +148,7 @@
 		padding: var(--size-4);
 		border-radius: var(--radius-round);
 		box-shadow: var(--shadow-3);
+		border: 1px solid var(--surface-3);
 	}
 
 	h1 {
@@ -100,6 +173,12 @@
 		gap: var(--size-3);
 		width: 100%;
 		margin-top: var(--size-4);
+	}
+
+	.secondary-actions {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--size-3);
 	}
 
 	.cta-button {
@@ -152,6 +231,8 @@
 		color: var(--text-2);
 		box-shadow: none;
 		border: 1px solid var(--surface-3);
+		padding: var(--size-3);
+		font-size: var(--font-size-1);
 	}
 
 	.cta-button.tertiary:hover {
@@ -170,5 +251,25 @@
 	.feedback-link:hover {
 		opacity: 1;
 		text-decoration: underline;
+	}
+
+	.icon-btn {
+		background: none;
+		border: none;
+		color: var(--text-2);
+		cursor: pointer;
+		padding: var(--size-2);
+		border-radius: var(--radius-round);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition:
+			background-color 0.2s,
+			color 0.2s;
+	}
+
+	.icon-btn:hover {
+		background-color: var(--surface-2);
+		color: var(--text-1);
 	}
 </style>

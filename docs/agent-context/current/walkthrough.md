@@ -1,47 +1,58 @@
-# Phase 21: P2P Sharing Walkthrough
+# Walkthrough: Phase 42 (Jonas' Feedback)
 
-## Overview
+## Bug Fix: New Pack Loading Hang
 
-In this phase, we implemented a peer-to-peer sharing system that allows Architects to share their creations directly with Explorers without relying on a centralized server. This aligns with our "Offline First" and "Local Ownership" axioms.
+### The Issue
 
-## Key Features
+Users reported that creating a new pack and level, then trying to play it via "Start Coding" -> Pack -> Level resulted in a "Loading..." hang.
 
-### 1. Magic QR Codes (Single Level Sharing)
+### Root Cause
 
-For sharing individual levels, we implemented a compressed URL scheme.
+1.  **Pack Loading**: The `play` page (`src/routes/play/[packId]/[levelId]/+page.svelte`) was only checking `getPack(packId)`, which only returns built-in packs. It was not checking `localPacksStore` or `CampaignService` for user-created packs.
+2.  **Proxy Cloning**: When cloning the level definition to avoid mutation, `structuredClone` was failing on the Svelte 5 `$state` proxy object.
 
-- **Mechanism**: The level JSON is minified, compressed (using `lz-string`), and encoded into a URL hash.
-- **QR Code**: This URL is then converted into a QR code using `qrcode`.
-- **Experience**: The receiver scans the QR code, and the app instantly loads the level from the URL hash. No network request required (other than loading the app itself).
+### The Fix
 
-### 2. WebRTC Handshake (Pack Sharing)
+1.  **Async Pack Loading**: Updated the `play` page to load the pack asynchronously, checking `getPack`, `localPacksStore`, and `CampaignService` in order.
+2.  **Snapshot Cloning**: Used `$state.snapshot(proxy)` to unwrap the proxy before passing it to `structuredClone`.
 
-For larger payloads like full Level Packs, we implemented a WebRTC data channel.
+### Verification
 
-- **Signaling**: Instead of a signaling server, we use QR codes to exchange the SDP Offer and Answer.
-  1. **Sender** creates an Offer -> QR Code.
-  2. **Receiver** scans Offer -> Generates Answer -> QR Code.
-  3. **Sender** scans Answer -> Connection Established.
-- **Data Transfer**: Once connected, the pack data is serialized and sent over the WebRTC DataChannel.
-- **Experience**: A "magic handshake" that feels like beaming data between devices.
+Added a new E2E test `e2e/play-local-pack.spec.ts` that:
 
-### 3. UI Integration
+1.  Creates a new pack via the Builder.
+2.  Adds a level.
+3.  Navigates to the Home screen.
+4.  Starts the game with the new pack.
+5.  Verifies the game loads successfully.
 
-- **Builder Toolbar**: Added a "Share" button (Share2 icon) to the main toolbar.
-- **Share Modal**: Provides options for "Link/QR" (Single Level) and "P2P Transfer" (Pack).
-- **P2P Wizard**: A step-by-step modal (`P2PModal`) guiding users through the scan-scan-connect process.
+## Bug Fix: Navigation Crash (500 Error)
 
-## Technical Decisions
+### The Issue
 
-- **Library Choice**: Used `simple-peer` (via a lightweight wrapper `P2PConnection`) to abstract WebRTC complexity.
-- **Compression**: `lz-string` was chosen for its efficiency in compressing JSON for URL safety.
-- **Offline Support**: The entire flow works offline (once the app is loaded), leveraging the Service Worker for asset caching.
+Users reported a 500 error and "Failed to fetch dynamically imported module" when navigating back from "Architect's Library" to the Home screen. This appeared to be caused by a client-side routing issue or server crash during HMR updates.
 
-## Challenges & Solutions
+### The Fix
 
-- **QR Code Density**: Large levels created QR codes that were too dense to scan easily.
-  - _Solution_: We implemented `lz-string` compression to significantly reduce the payload size. For very large levels/packs, we force the WebRTC flow.
-- **Visual Regressions**: The new toolbar button caused layout shifts in the visual tests.
-  - _Solution_: We updated the visual snapshots to reflect the new UI state.
-- **Accessibility**: The new modals had some focus/tabindex issues.
-  - _Solution_: We audited and fixed the ARIA roles and tabindex attributes in `ShareModal` and `P2PModal`.
+Updated the "Back" button in `src/routes/builder/packs/+page.svelte` and the "Exit" button in `src/routes/play/[packId]/[levelId]/+page.svelte` to use `window.location.href` instead of `goto`. This forces a full page reload, clearing any corrupted client-side state and ensuring a fresh environment.
+
+### Verification
+
+Added `e2e/navigation-crash.spec.ts` to verify that navigating Home -> Builder -> Home does not crash the application.
+
+## How to Try It Out
+
+1.  **Verify New Pack Loading**:
+    - Go to "Builder Mode".
+    - Click "Create New Pack".
+    - Add a level (click "+", select "Empty Room").
+    - Go back to the Home screen.
+    - Click "Start Coding".
+    - Select your new pack ("New Adventure").
+    - Click the level.
+    - **Verify**: The game loads and you can play.
+
+2.  **Verify Navigation Stability**:
+    - Go to "Builder Mode".
+    - Click the "Back" arrow (top left).
+    - **Verify**: You return to the Home screen without a crash or error in the console.

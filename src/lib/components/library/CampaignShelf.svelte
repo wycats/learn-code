@@ -56,7 +56,14 @@
 
 	.pack-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-		gap: var(--size-5);
+		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+		gap: var(--size-4);
+	}
+
+	@media (max-width: 480px) {
+		.pack-grid {
+			grid-template-columns: 1fr;
+			gap: var(--size-3);
+		}
 	}
 </style>

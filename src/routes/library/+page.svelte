@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { PACKS } from '$lib/game/packs';
 	import { ProgressService } from '$lib/game/progress';
+	import { CampaignService } from '$lib/game/campaigns';
 	import { fileSystem } from '$lib/services/file-system';
 	import { localPacksStore } from '$lib/game/local-packs.svelte';
 	import type { LevelPack } from '$lib/game/types';
@@ -8,19 +9,30 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
-	import { Hammer, FolderOpen, Share2 } from 'lucide-svelte';
+	import { Hammer, FolderOpen, Share2, Settings } from 'lucide-svelte';
 	import { toast } from '$lib/stores/toast.svelte';
 	import P2PModal from '$lib/components/builder/P2PModal.svelte';
+	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
+	import SyncStatus from '$lib/components/common/SyncStatus.svelte';
+	import type { PageData } from './$types';
+
+	let { data } = $props<{ data: PageData }>();
 
 	let progress = $state(ProgressService.load());
 	let isFileSystemSupported = fileSystem.isSupported;
 	let showP2PModal = $state(false);
 	let p2pData = $state<unknown | undefined>(undefined);
 	let p2pMode = $state<'send' | 'receive'>('receive');
+	let customPacks = $state<LevelPack[]>([]);
 
 	function handlePackSelect(packId: string) {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto(`${base}/library/${packId}`);
+	}
+
+	function handleSettings() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		goto(`${base}/settings`);
 	}
 
 	function handleBuilder() {
@@ -86,17 +98,37 @@
 	}
 
 	onMount(() => {
-		// Refresh progress when returning to the page
-		progress = ProgressService.load();
+		const init = async () => {
+			// Refresh progress when returning to the page
+			progress = ProgressService.load();
+			// Load custom packs from IndexedDB
+			customPacks = await CampaignService.loadAll();
+		};
+		init();
+
+		const handleUpdate = () => {
+			progress = ProgressService.load();
+		};
+		window.addEventListener('kibi-progress-updated', handleUpdate);
+		return () => {
+			window.removeEventListener('kibi-progress-updated', handleUpdate);
+		};
 	});
 </script>
 
 <div class="library-container">
 	<header class="library-header">
 		<div class="logo">
-			<h1>Code Climber</h1>
+			<h1>Kibi</h1>
 		</div>
 		<div class="actions">
+			{#if data.user}
+				<SyncStatus />
+			{/if}
+			<ThemeToggle />
+			<button class="action-btn" onclick={handleSettings} aria-label="Settings">
+				<Settings size={20} />
+			</button>
 			{#if isFileSystemSupported}
 				<button class="action-btn" onclick={handleOpenLocalFolder}>
 					<FolderOpen size={20} /> Open Local Folder
@@ -132,6 +164,19 @@
 				/>
 			</div>
 		{/if}
+
+		{#if customPacks.length > 0}
+			<div class="local-section">
+				<h2>My Projects</h2>
+				<CampaignShelf
+					packs={customPacks}
+					{progress}
+					onPackSelect={handlePackSelect}
+					onSavePack={isFileSystemSupported ? handleSavePackToDisk : undefined}
+					onSharePack={handleSharePack}
+				/>
+			</div>
+		{/if}
 	</main>
 
 	{#if showP2PModal}
@@ -158,6 +203,29 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--size-3);
+	}
+
+	@media (max-width: 600px) {
+		.library-header {
+			flex-direction: column;
+			align-items: stretch;
+			padding: var(--size-3);
+		}
+
+		.logo {
+			text-align: center;
+		}
+
+		.actions {
+			justify-content: center;
+			flex-wrap: wrap;
+		}
+
+		.library-content {
+			padding: var(--size-3);
+		}
 	}
 
 	.logo h1 {
@@ -172,6 +240,7 @@
 	.actions {
 		display: flex;
 		gap: var(--size-3);
+		align-items: center;
 	}
 
 	.action-btn {

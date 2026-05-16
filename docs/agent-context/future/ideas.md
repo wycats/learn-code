@@ -16,29 +16,78 @@
 
 ## Improvements Suggested by the Kids
 
-- [ ] **Boat**: A boat that allows the character to cross water tiles. (Suggested by Zoey)
+- [x] **Boat**: A boat that allows the character to cross water tiles. (Suggested by Zoey)
 - [ ] **Custom Core Blocks**: Allow advanced users (like Jonas leveling up) to define their own core blocks. This would be a "ZPD" (Zone of Proximal Development) feature, bridging the gap between using blocks and understanding their implementation.
+- [ ] **Text-to-Speech (TTS)**: Use the Web Speech API to read dialogue and instructions aloud. This supports pre-literate users and adds immersion. (Planned Phase 41)
 
 ## Jonas's Wishlist (Nov 2025)
 
-- [ ] **Publishing**: A way to share levels (maybe a simple file-based repo or lightweight backend).
-- [ ] **Feedback Button**: A way for players to send feedback to level creators (e.g., "Too hard", "Fun!", "Broken"). (Partially addressed in Phase 16 via mailto)
-- [ ] **P2P Sharing**: A "serverless" way for Architects to share levels with Explorers directly.
-  - **Magic QR Codes**: Encode small levels (compressed JSON) directly into a QR code. The Explorer scans it, and the level loads instantly. No internet required (if the app is cached).
-  - **WebRTC Link**: For larger packs, use a simple signaling handshake (via a tiny public server or manual code entry) to establish a direct P2P data channel between devices.
-  - **Local Network**: If on the same Wi-Fi, perhaps a direct IP connection (harder with HTTPS requirements).
+- [ ] **Publishing**: A way to share levels (maybe a simple file-based repo or lightweight backend). (Planned Phase 39)
+- [ ] **Feedback Button**: A way for players to send feedback to level creators (e.g., "Too hard", "Fun!", "Broken"). (Partially addressed in Phase 16 via mailto, Planned Phase 43)
+- [ ] **Local Network Sharing**: If on the same Wi-Fi, perhaps a direct IP connection (harder with HTTPS requirements).
+- [ ] **Story/Tutorial Control**: (Planned Phase 44)
+  - **Unmask Blocks**: Allow the Architect to specify a point in the dialogue where the block tray becomes interactive (unmasked). Currently, it's either all hidden or all shown.
+  - **Interactive Tutorials**: (Future) Validate that the user performed a specific action (e.g., "Move the block") before advancing the story.
 
 ## Mechanics & Blocks
 
-- [ ] **Hazard Block**: A block that kills the player on contact (like a spike or fire).
-- [ ] **Lives System**: A mechanic where the player has a limited number of lives. Walking into a hazard loses a life. This adds a "survival" challenge to levels.
-- [ ] **Pack-wide tiles**: Allow defining custom tiles (like water, spikes) that can be used across multiple levels in a pack.
+- [ ] **Hazard Block**: A block that kills the player on contact (like a spike or fire). (Planned Phase 38)
+- [ ] **Lives System**: A mechanic where the player has a limited number of lives. Walking into a hazard loses a life. This adds a "survival" challenge to levels. (Planned Phase 40)
+- [ ] **Pack-wide tiles**: Allow defining custom tiles (like water, spikes) that can be used across multiple levels in a pack. (Planned Phase 38)
 
 ## Storage & Persistence
 
+- [ ] **Offline Sync & Conflict Resolution**: A robust system for syncing data between devices using QR codes, designed for the "Architect" persona.
+  - **Git-like Structure**: Store changes as deltas with provenance and cached snapshots.
+  - **Conflict Resolution**:
+    - **Granularity**: Define merge granularity to avoid "frankenstein levels".
+    - **UI**: Present conflicts clearly ("You made changes to Level X in both Device A and Device B. Which would you like to pick?").
+    - **Grouping**: Allow resolving groups of changes from the same provenance branch together, with the option to "break it apart".
+  - **Goal**: Enable offline "sync" without overwhelming users, while teaching basic version control concepts.
+
 - [ ] **OPFS for Level Storage**: Use the Origin Private File System (OPFS) to store user-created levels locally in the browser. This provides a more robust and performant storage solution than localStorage, especially for larger levels or assets.
 
-- [ ] **Community Contributions**: Allow Architects to submit Pull Requests to the main repository to add their levels to the built-in packs.
+- [ ] **Community Contributions**: Allow Architects to submit Pull Requests to the main repository to add their levels to the built-in packs. (Planned Phase 39)
   - **Educational Value**: This provides an entry point for kids to learn about Git, GitHub, and the open-source contribution workflow (PRs, code review).
   - **Workflow**: Since levels are just JSON files, the barrier to entry is low. We can provide a guide or a simplified UI to help generate the PR.
   - **Considerations**: Not all parents will want their kids to have GitHub accounts. We should support submitting proposals via other means (e.g., feedback form) but encourage the "real" workflow for those who are ready.
+
+- [ ] **Self-Hosted Auth Sidecar**: A simplified, open-source server that handles the "Backend for Frontend" (BFF) OAuth piece.
+  - **Problem**: GitHub OAuth requires a Client Secret, which cannot be stored in a client-side app (even a PWA). This creates a dependency on the hosted Kibi server for the "Connect to GitHub" feature.
+  - **Solution**: A small Docker container that runs just the auth endpoints (`/login/github`, `/callback`, `/refresh`) and exposes them to the local Kibi instance.
+  - **Goal**: Enable full self-hosting of the "Engineer Mode" features without relying on our infrastructure.
+
+## Tooling & Infrastructure
+
+- [ ] **Zod Schema Diff / Compatibility Checker**: A library or tool that implements "Spec-ulation" rules (Rich Hickey) for Zod schemas. (Planned Phase 45)
+  - **Goal**: Statically detect breaking changes in Zod schemas without needing a full fixture suite.
+  - **Heuristic**: Inputs can be widened (contravariant), outputs can be narrowed (covariant).
+  - **Implementation**: Likely involves converting Zod to JSON Schema and performing a semantic diff, or building a custom Zod walker.
+  - **Value**: Useful for framework authors and library maintainers to prevent accidental breaking changes in their public API contracts.
+
+## Error Reporting & Observability
+
+- [ ] **Error Reporting Integration**: Implement a robust error reporting solution to capture runtime exceptions and performance issues. (Planned Phase 42)
+  - **Decision**: **Highlight.io**.
+    - **Why**: It combines error monitoring with **Session Replay** and logging in a single, open-source friendly platform.
+    - **Value**: For a highly interactive app like Kibi, seeing _what_ the user did (Session Replay) is often more valuable than just the stack trace.
+    - **Privacy**: Offers good privacy controls (masking) which is crucial for a kids' app.
+  - **Implementation**:
+    - Add the SDK to `hooks.client.ts` and `hooks.server.ts`.
+    - Configure source map uploading in the build pipeline.
+    - Ensure PII (Personally Identifiable Information) is scrubbed, especially given the target audience.
+
+## Field Guide Improvements
+
+- [ ] **The Origin of Kibi**: Add a "Secret Chapter" or easter egg in the Field Guide that explains the "Kibibyte" origin story. This should be a jumping-off point for explaining binary numbers and powers of two to curious kids.
+- [ ] **Context-Aware Manual**: The Field Guide should be customized for the level the user is on, showing relevant chapters or highlighting concepts used in the current level. (Planned Phase 44)
+- [ ] **Architect Control**: Give the Architect control over the Field Guide content for their levels. (Planned Phase 44)
+- [ ] - [ ] **"Just-in-Time" vs. "Library"**: Avoid the "unread dot" fatigue. Instead of a manual that accumulates unread content, integrate the information directly into the user flow (e.g., context-sensitive help) or structure it as a reference library that doesn't demand to be "read" linearly.
+- [ ] **Custom Field Guide Entries**: Allow Architects to write their own Field Guide entries for their custom packs.
+  - **Rationale**: Just as we provide documentation for built-in blocks, users creating complex levels or mechanics should be able to explain them to players.
+  - **Implementation**: Add a `guide` section to the Pack JSON schema.
+  - **Pedagogy**: Teaches the importance of documentation alongside code.
+
+```
+
+```
