@@ -39,7 +39,7 @@ test('Try Again resets and reruns the same failed program immediately', async ({
 
 	await page.getByRole('button', { name: 'Play' }).click();
 	await expect(page.getByRole('button', { name: 'Try Again' })).toBeVisible({ timeout: 7000 });
-	await expect(page.getByText('Try Again').first()).toBeVisible();
+	await expect(page.locator('.status-panel').getByText('Try Again')).toBeVisible();
 	await expect(page.getByText('Run stopped. Try Again or edit after Reset.')).toBeVisible();
 
 	await page.getByRole('button', { name: 'Try Again' }).click();
