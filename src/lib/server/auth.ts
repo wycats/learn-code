@@ -6,13 +6,13 @@ import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
 import { Google, GitHub } from 'arctic';
 import { env } from '$env/dynamic/private';
+import { getBaseUrl } from '$lib/server/oauth-config';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
 export const sessionCookieName = 'auth-session';
 
-// TODO: Make this configurable for production
-const BASE_URL = env.BASE_URL || 'http://localhost:5173';
+const BASE_URL = getBaseUrl();
 
 export const google = new Google(
 	env.GOOGLE_CLIENT_ID ?? '',

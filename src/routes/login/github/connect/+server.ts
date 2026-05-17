@@ -3,8 +3,17 @@ import { github } from '$lib/server/auth';
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { sanitizeRedirectPath } from '$lib/server/security';
+import { getOAuthProviderConfigStatus } from '$lib/server/oauth-config';
 
 export const GET: RequestHandler = async ({ cookies, url }) => {
+	const config = getOAuthProviderConfigStatus('github');
+	if (!config.configured) {
+		return new Response(
+			`GitHub login is not configured. Missing: ${config.missing.join(', ')}. See .env.example.`,
+			{ status: 503 }
+		);
+	}
+
 	const state = generateState();
 	// Request repo scope so pack publishing can create private repositories by default.
 	const authorizationUrl = await github.createAuthorizationURL(state, ['user:email', 'repo']);
