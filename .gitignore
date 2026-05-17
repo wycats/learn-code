@@ -33,7 +33,10 @@ src/lib/paraglide
 
 # PGlite local development database
 .pglite
+.pglite-e2e
 
 *storybook.log
 storybook-static
 .env*.local
+
+coverage/

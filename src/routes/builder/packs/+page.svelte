@@ -38,8 +38,8 @@
 	}
 
 	function handleBack() {
-		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		void goto(`${base}/`);
+		// Force a full reload to ensure clean state when returning to home
+		window.location.href = `${base}/`;
 	}
 </script>
 

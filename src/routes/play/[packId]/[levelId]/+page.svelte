@@ -1,29 +1,63 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { getPack } from '$lib/game/packs';
+	import { localPacksStore } from '$lib/game/local-packs.svelte';
+	import { CampaignService } from '$lib/game/campaigns';
 	import { ProgressService } from '$lib/game/progress';
+	import { CloudSyncService } from '$lib/services/cloud-sync';
 	import { GameModel } from '$lib/game/model.svelte';
-	import type { Character, Emotion } from '$lib/game/types';
+	import type { Character, Emotion, LevelPack, LevelDefinition } from '$lib/game/types';
 	import Game from '$lib/components/game/Game.svelte';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { ArrowLeft } from 'lucide-svelte';
+	import type { PageData } from './$types';
+
+	let { data } = $props<{ data: PageData }>();
 
 	const packId = $derived($page.params.packId ?? '');
 	const levelId = $derived($page.params.levelId ?? '');
-	const pack = $derived(getPack(packId));
 
+	let pack = $state<LevelPack | null>(null);
 	let game = $state<GameModel | null>(null);
 	let hasNextLevel = $state(false);
 	let nextLevelId = $state<string | null>(null);
 
-	// Load level when params change
+	// Load pack
+	$effect(() => {
+		if (packId) {
+			loadPack();
+		}
+	});
+
+	async function loadPack() {
+		// 1. Check System Packs
+		let p = getPack(packId);
+
+		// 2. Check Local/P2P Packs
+		if (!p) {
+			p = localPacksStore.getPack(packId);
+		}
+
+		// 3. Check IndexedDB (My Projects)
+		if (!p) {
+			const local = await CampaignService.get(packId);
+			if (local) {
+				p = local as LevelPack;
+			}
+		}
+
+		pack = p ?? null;
+	}
+
+	// Load level when pack and levelId are ready
 	$effect(() => {
 		if (pack && levelId) {
 			const levelIndex = pack.levels.findIndex((l) => l.id === levelId);
 			if (levelIndex !== -1) {
 				// Clone level to avoid mutating the source
-				const level = structuredClone(pack.levels[levelIndex]);
+				// Use $state.snapshot to unwrap proxy before cloning
+				const level = structuredClone($state.snapshot(pack.levels[levelIndex])) as LevelDefinition;
 
 				// Check if unlocked
 				const progress = ProgressService.load();
@@ -67,6 +101,16 @@
 		if (game && game.status === 'won') {
 			const stars = calculateStars();
 			ProgressService.completeLevel(packId, levelId, stars);
+			if (data.user) {
+				CloudSyncService.push([
+					{
+						levelId,
+						status: 'completed',
+						stars,
+						updatedAt: new Date().toISOString()
+					}
+				]);
+			}
 		}
 	});
 
@@ -88,8 +132,8 @@
 	}
 
 	function handleExit() {
-		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		goto(`${base}/library/${packId}`);
+		// Force a full reload to ensure clean state
+		window.location.href = `${base}/library/${packId}`;
 	}
 </script>
 

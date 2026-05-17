@@ -1,0 +1,81 @@
+{
+	"id": "level-1",
+	"name": "Cross the River",
+	"description": "Jonas built a bridge. Can you cross it?",
+	"gridSize": {
+		"width": 5,
+		"height": 5
+	},
+	"start": {
+		"x": 0,
+		"y": 2
+	},
+	"startOrientation": "E",
+	"goal": {
+		"x": 4,
+		"y": 2
+	},
+	"layout": {
+		"1,0": "water",
+		"1,1": "water",
+		"1,2": "grass",
+		"1,3": "water",
+		"1,4": "water",
+		"3,0": "wall",
+		"3,1": "wall",
+		"3,3": "wall",
+		"3,4": "wall"
+	},
+	"availableBlocks": {
+		"move-forward": "unlimited",
+		"turn-left": "unlimited",
+		"turn-right": "unlimited"
+	},
+	"solutionPar": 5,
+	"intro": [
+		{
+			"id": "intro-1",
+			"speaker": "Zoey",
+			"text": "Hi! I'm Zoey. I need to get to the other side.",
+			"emotion": "happy"
+		},
+		{
+			"id": "intro-2",
+			"speaker": "Guide",
+			"text": "Greetings. I am the Guide. The Architect, Jonas, has constructed this path.",
+			"emotion": "neutral"
+		},
+		{
+			"id": "intro-3",
+			"speaker": "Zoey",
+			"text": "Nice bridge, Jonas! Let's go.",
+			"emotion": "happy"
+		},
+		{
+			"id": "intro-4",
+			"speaker": "Guide",
+			"text": "Drag or click the 'Step' block to help Zoey cross.",
+			"emotion": "thinking",
+			"targets": ["block:move-forward"]
+		}
+	],
+	"hints": [
+		{
+			"id": "hint-idle-1",
+			"text": "Drag or click the 'Step' block from the tray to the workspace.",
+			"trigger": {
+				"type": "idle",
+				"value": 15
+			},
+			"targets": ["ui:tray"]
+		},
+		{
+			"id": "hint-attempts-1",
+			"text": "You need to move 4 steps forward. Try adding more blocks.",
+			"trigger": {
+				"type": "attempts",
+				"value": 2
+			}
+		}
+	]
+}

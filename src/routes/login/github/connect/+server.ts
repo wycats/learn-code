@@ -1,0 +1,32 @@
+import { generateState } from 'arctic';
+import { github } from '$lib/server/auth';
+import { redirect } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import { sanitizeRedirectPath } from '$lib/server/security';
+
+export const GET: RequestHandler = async ({ cookies, url }) => {
+	const state = generateState();
+	// Request 'public_repo' scope for the "Connect" flow
+	const authorizationUrl = await github.createAuthorizationURL(state, [
+		'user:email',
+		'public_repo'
+	]);
+
+	cookies.set('github_oauth_state', state, {
+		path: '/',
+		secure: import.meta.env.PROD,
+		httpOnly: true,
+		maxAge: 60 * 10,
+		sameSite: 'lax'
+	});
+
+	cookies.set('auth_redirect_to', sanitizeRedirectPath(url.searchParams.get('redirectTo')), {
+		path: '/',
+		secure: import.meta.env.PROD,
+		httpOnly: true,
+		maxAge: 60 * 10,
+		sameSite: 'lax'
+	});
+
+	redirect(302, authorizationUrl.toString());
+};
