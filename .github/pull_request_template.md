@@ -8,13 +8,13 @@
 
 <!-- What will players, builders, parents, or maintainers notice? If there are no user-facing changes, say so briefly. -->
 
-## Implementation changes (optional)
+## Implementation notes
 
-<!-- Include only implementation details that help reviewers understand the approach, tradeoffs, or risks. Avoid listing files mechanically. -->
+<!-- Include this section when the approach, tradeoffs, risks, or non-obvious constraints matter for review. Omit it for straightforward changes. Avoid listing files mechanically. -->
 
-## Reviewer notes (optional)
+## Reviewer focus
 
-<!-- Anything specific reviewers should focus on, decisions that need confirmation, or follow-up work that is intentionally out of scope. -->
+<!-- Include this section when there are specific decisions to confirm, areas needing extra attention, or follow-up work intentionally left out of scope. Omit it when there is nothing special to call out. -->
 
 <!--
 PR descriptions should explain the story of the change. They do not need to break the fourth wall by listing every changed file or every local validation command that was run. Keep validation details in comments, CI, or reviewer discussion when they are useful.
