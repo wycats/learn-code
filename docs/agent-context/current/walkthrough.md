@@ -1,47 +1,37 @@
-# Phase 21: P2P Sharing Walkthrough
+# Walkthrough: PR #5 Baseline Hardening
 
-## Overview
+## Why This Pass Exists
 
-In this phase, we implemented a peer-to-peer sharing system that allows Architects to share their creations directly with Explorers without relying on a centralized server. This aligns with our "Offline First" and "Local Ownership" axioms.
+The curated PR #5 branch contains substantial real work, but targeted review found blockers before it could safely become the project baseline. This pass hardens the blocker areas without starting a new product feature phase.
 
-## Key Features
+## What Changed
 
-### 1. Magic QR Codes (Single Level Sharing)
+### Local/Production DB Behavior
 
-For sharing individual levels, we implemented a compressed URL scheme.
+The hardening branch combines the PGlite local-development default from `main` with the curated branch's build-safe production behavior. Local dev can run without Docker or DB env vars, while production still fails explicitly if DB-backed code paths are used without `POSTGRES_URL` or `DATABASE_URL`.
 
-- **Mechanism**: The level JSON is minified, compressed (using `lz-string`), and encoded into a URL hash.
-- **QR Code**: This URL is then converted into a QR code using `qrcode`.
-- **Experience**: The receiver scans the QR code, and the app instantly loads the level from the URL hash. No network request required (other than loading the app itself).
+### Auth and Cloud Safety
 
-### 2. WebRTC Handshake (Pack Sharing)
+OAuth callbacks now use proper Arctic token accessors, validate provider payloads, require verified email ownership, and restrict redirect targets to local paths. Layout data now exposes only a sanitized session shape, including a boolean GitHub connection marker instead of the encrypted GitHub token.
 
-For larger payloads like full Level Packs, we implemented a WebRTC data channel.
+Profile deletion and device revocation are scoped to the current user. Device authorization now records the created session so connected devices can be revoked later.
 
-- **Signaling**: Instead of a signaling server, we use QR codes to exchange the SDP Offer and Answer.
-  1. **Sender** creates an Offer -> QR Code.
-  2. **Receiver** scans Offer -> Generates Answer -> QR Code.
-  3. **Sender** scans Answer -> Connection Established.
-- **Data Transfer**: Once connected, the pack data is serialized and sent over the WebRTC DataChannel.
-- **Experience**: A "magic handshake" that feels like beaming data between devices.
+### Sync and GitHub Publishing
 
-### 3. UI Integration
+Cloud sync payloads are validated before persistence. GitHub pack payloads are validated against the pack schema, generated repo/file names are sanitized, and new GitHub repositories default to private.
 
-- **Builder Toolbar**: Added a "Share" button (Share2 icon) to the main toolbar.
-- **Share Modal**: Provides options for "Link/QR" (Single Level) and "P2P Transfer" (Pack).
-- **P2P Wizard**: A step-by-step modal (`P2PModal`) guiding users through the scan-scan-connect process.
+### Migration Safety
 
-## Technical Decisions
+The auth migration no longer drops the legacy singular `user` and `session` tables. That avoids destructive behavior during baseline adoption.
 
-- **Library Choice**: Used `simple-peer` (via a lightweight wrapper `P2PConnection`) to abstract WebRTC complexity.
-- **Compression**: `lz-string` was chosen for its efficiency in compressing JSON for URL safety.
-- **Offline Support**: The entire flow works offline (once the app is loaded), leveraging the Service Worker for asset caching.
+### Visual and CI Policy
 
-## Challenges & Solutions
+Playwright once again manages its own local preview server using `pnpm`. CI no longer supplies fake Postgres env vars or treats E2E/visual failures as silently advisory. Argos screenshot names are unique, and the visual scripts now match the Argos workflow.
 
-- **QR Code Density**: Large levels created QR codes that were too dense to scan easily.
-  - _Solution_: We implemented `lz-string` compression to significantly reduce the payload size. For very large levels/packs, we force the WebRTC flow.
-- **Visual Regressions**: The new toolbar button caused layout shifts in the visual tests.
-  - _Solution_: We updated the visual snapshots to reflect the new UI state.
-- **Accessibility**: The new modals had some focus/tabindex issues.
-  - _Solution_: We audited and fixed the ARIA roles and tabindex attributes in `ShareModal` and `P2PModal`.
+## Remaining Decision
+
+Kibi is coherent in the candidate baseline, but final merge should explicitly confirm that Kibi is the intended product name.
+
+## Validation
+
+The hardening branch should pass Node 24 install/check/lint/unit/build/E2E/visual validation before review.

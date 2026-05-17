@@ -1,12 +1,15 @@
 <script lang="ts">
 	import type { BuilderModel, BuilderTool } from '$lib/game/builder-model.svelte';
 	import type { BlockType, CellType } from '$lib/game/types';
-	import type { TileDefinition } from '$lib/game/schema';
+	import type { TileDefinition, ItemDefinition } from '$lib/game/schema';
 	import BlockComponent from '$lib/components/game/Block.svelte';
 	import Cell from '$lib/components/game/Cell.svelte';
 	import HintEditor from './HintEditor.svelte';
 	import TileEditorModal from './TileEditorModal.svelte';
 	import FunctionManager from './FunctionManager.svelte';
+	import { draggableVariable } from '$lib/actions/dnd';
+	import { AVATAR_ICONS } from '$lib/game/icons';
+	import { resolveItemDefinition } from '$lib/game/utils';
 
 	import {
 		Infinity as InfinityIcon,
@@ -17,7 +20,10 @@
 		Pencil,
 		Trash2,
 		FunctionSquare,
-		Globe
+		Globe,
+		MessageCircle,
+		Ship,
+		Box
 	} from 'lucide-svelte';
 	import { fade, scale } from 'svelte/transition';
 
@@ -48,6 +54,7 @@
 		color?: string;
 		isCustom?: boolean;
 		tileDef?: TileDefinition;
+		itemDef?: ItemDefinition;
 		scope?: 'pack' | 'level';
 	};
 
@@ -61,6 +68,10 @@
 		{ id: 'dirt', value: 'dirt', label: 'Dirt' },
 		{ id: 'spikes', value: 'spikes', label: 'Spikes', color: 'var(--red-7)' },
 		{ id: 'cover', value: 'cover', label: 'Cover', color: 'var(--blue-3)' }
+	];
+
+	const standardItemTools: TerrainTool[] = [
+		{ id: 'boat', value: 'boat', label: 'Boat', type: 'item', icon: Ship }
 	];
 
 	let terrainTools = $derived.by(() => {
@@ -90,7 +101,40 @@
 			};
 		});
 
-		return [...standardTerrainTools, ...packTools, ...levelTools];
+		const packItems: TerrainTool[] = Object.values(builder.pack.customItems || {}).map((item) => {
+			return {
+				id: item.id,
+				value: item.id,
+				label: item.name,
+				type: 'item',
+				icon: AVATAR_ICONS[item.visuals.icon.toLowerCase() as keyof typeof AVATAR_ICONS] || Box,
+				isCustom: true,
+				itemDef: item,
+				scope: 'pack'
+			};
+		});
+
+		const levelItems: TerrainTool[] = Object.values(builder.level.customItems || {}).map((item) => {
+			return {
+				id: item.id,
+				value: item.id,
+				label: item.name,
+				type: 'item',
+				icon: AVATAR_ICONS[item.visuals.icon.toLowerCase() as keyof typeof AVATAR_ICONS] || Box,
+				isCustom: true,
+				itemDef: item,
+				scope: 'level'
+			};
+		});
+
+		return [
+			...standardTerrainTools,
+			...standardItemTools,
+			...packTools,
+			...levelTools,
+			...packItems,
+			...levelItems
+		];
 	});
 
 	function selectTool(tool: BuilderTool) {
@@ -142,10 +186,21 @@
 
 	const isFading = $derived(builder.game.previewHighlight?.fading);
 
+	const hasCollectibleItems = $derived.by(() => {
+		if (!builder.level.items) return false;
+		return Object.values(builder.level.items).some((item) => {
+			const def = resolveItemDefinition(builder.level, item.type, builder.pack);
+			if (def && def.behavior === 'vehicle') return false;
+			return true;
+		});
+	});
+
 	const blockTypes: { type: BlockType; label: string; comingSoon?: boolean }[] = [
 		{ type: 'move-forward', label: 'Move' },
 		{ type: 'turn-left', label: 'Left' },
 		{ type: 'turn-right', label: 'Right' },
+		{ type: 'pick-up', label: 'Pick Up' },
+		{ type: 'board', label: 'Board' },
 		{ type: 'loop', label: 'Loop' },
 		{ type: 'call', label: 'Call' }
 	];
@@ -315,7 +370,13 @@
 								style:--tool-color={tool.color}
 							>
 								<div class="cell-preview">
-									<Cell type={tool.value as CellType} customTile={tool.tileDef} />
+									{#if tool.type === 'item' && tool.icon}
+										<div class="item-preview">
+											<tool.icon size={32} />
+										</div>
+									{:else}
+										<Cell type={tool.value as CellType} customTile={tool.tileDef} />
+									{/if}
 								</div>
 								<span class="tool-label">{tool.label}</span>
 							</button>
@@ -350,6 +411,17 @@
 			</div>
 		{:else if activeTab === 'logic'}
 			<div class="backpack-section" transition:fade={{ duration: 200 }}>
+				{#if hasCollectibleItems}
+					<div class="variables-section" transition:scale={{ duration: 200 }}>
+						<div class="variable-token" use:draggableVariable title="Drag to use held item">
+							<div class="token-icon">
+								<MessageCircle size={20} />
+							</div>
+							<span class="token-label">Held Item</span>
+						</div>
+					</div>
+				{/if}
+
 				<div class="block-list">
 					{#each blockTypes as { type, comingSoon } (type)}
 						{@const isIncluded = type in builder.level.availableBlocks}
@@ -494,13 +566,22 @@
 		padding-bottom: var(--size-2);
 		flex-shrink: 0;
 		overflow-x: auto;
+		max-width: 100%;
+		/* Hide scrollbar for cleaner look but keep functionality */
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.tray-tabs::-webkit-scrollbar {
+		display: none;
 	}
 
 	.tab-btn {
 		flex: 1;
 		background: none;
 		border: none;
-		padding: var(--size-2);
+		padding: 0 var(--size-2);
+		min-height: var(--touch-target-min);
 		border-radius: var(--radius-2);
 		cursor: pointer;
 		color: var(--text-2);
@@ -534,6 +615,49 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--size-2);
+	}
+
+	.variables-section {
+		padding: var(--size-2);
+		background-color: var(--surface-1);
+		border-radius: var(--radius-2);
+		display: flex;
+		justify-content: center;
+	}
+
+	.variable-token {
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		padding: var(--size-2) var(--size-3);
+		background-color: var(--surface-2);
+		border: 2px solid var(--surface-3);
+		border-radius: var(--radius-round);
+		cursor: grab;
+		width: fit-content;
+		transition: all 0.2s;
+	}
+
+	.variable-token:hover {
+		border-color: var(--brand);
+		background-color: var(--surface-3);
+		transform: translateY(-2px);
+	}
+
+	.variable-token :global(.dragging) {
+		opacity: 0.5;
+	}
+
+	.token-icon {
+		color: var(--brand);
+		display: grid;
+		place-items: center;
+	}
+
+	.token-label {
+		font-weight: bold;
+		font-size: var(--font-size-0);
+		color: var(--text-1);
 	}
 
 	/* Terrain Tools */
@@ -570,6 +694,16 @@
 		border-radius: var(--radius-2);
 		overflow: hidden;
 		box-shadow: var(--shadow-1);
+	}
+
+	.item-preview {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: var(--surface-2);
+		color: var(--text-1);
 	}
 
 	.tool-btn:hover {
@@ -652,8 +786,8 @@
 		background-color: var(--surface-3);
 		border: none;
 		border-radius: 50%;
-		width: 20px;
-		height: 20px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -789,8 +923,8 @@
 		color: white;
 		font-size: var(--font-size-00);
 		font-weight: bold;
-		width: 24px;
-		height: 24px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
@@ -820,13 +954,14 @@
 		top: 0;
 		right: 0;
 		transform-origin: top right;
+		min-height: var(--touch-target-min);
 	}
 
 	.limit-btn {
 		background: none;
 		border: none;
 		cursor: pointer;
-		padding: 4px;
+		padding: 0;
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
@@ -834,8 +969,8 @@
 		color: var(--text-2);
 		font-weight: bold;
 		font-size: var(--font-size-00);
-		width: 24px;
-		height: 24px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		transition: background-color 0.1s;
 	}
 
@@ -850,16 +985,16 @@
 	}
 
 	.limit-btn.small {
-		width: 20px;
-		height: 20px;
-		font-size: 14px;
-		padding: 0;
+		width: 44px;
+		height: 44px;
+		font-size: 16px;
 	}
 
 	.limit-btn.text {
 		width: auto;
-		padding: 0 4px;
+		padding: 0 8px;
 		border-radius: var(--radius-1);
+		min-width: var(--touch-target-min);
 	}
 
 	.limit-value {

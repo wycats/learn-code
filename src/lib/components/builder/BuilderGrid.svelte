@@ -233,8 +233,8 @@
 	}
 
 	.add-btn {
-		width: 24px;
-		height: 24px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		border-radius: 50%;
 		border: 1px solid var(--surface-3);
 		background-color: var(--surface-2);
@@ -261,14 +261,14 @@
 		place-items: center;
 		width: 100%;
 		height: 100%;
-		min-width: 20px;
-		min-height: 20px;
+		min-width: var(--touch-target-min);
+		min-height: var(--touch-target-min);
 		z-index: 1; /* Above Add Button */
 	}
 
 	.trash-btn {
-		width: 24px;
-		height: 24px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
 		border-radius: 50%;
 		background-color: var(--red-1);
 		color: var(--red-7);

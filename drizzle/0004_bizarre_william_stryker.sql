@@ -1,0 +1,1 @@
+ALTER TABLE "sessions" ADD COLUMN "github_access_token" text;

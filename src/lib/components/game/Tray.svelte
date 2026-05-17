@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { draggableBlock, dropTarget } from '$lib/actions/dnd';
+	import { draggableVariable } from '$lib/actions/dnd';
+	import { interactionTarget, interactionManager } from '$lib/interactions';
+	import { focusManager } from '$lib/interactions/focus.svelte';
+	import { editorState } from '$lib/interactions/editor.svelte';
+	import { dropTarget } from '$lib/interactions/dnd';
 	import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 	import {
 		extractClosestEdge,
@@ -7,14 +11,14 @@
 	} from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 	import BlockComponent from './Block.svelte';
 	import DropIndicator from './DropIndicator.svelte';
+	import DialInput from '$lib/components/builder/DialInput.svelte';
 	import type { Block, BlockType } from '$lib/game/types';
 	import type { GameModel } from '$lib/game/model.svelte';
-	import { setDragContext } from '$lib/game/drag-context.svelte';
-	import { Trash2, Move, ListChecks, Copy, Infinity as InfinityIcon } from 'lucide-svelte';
+	import { resolveItemDefinition } from '$lib/game/utils';
+	import { Trash2, Move, ListChecks, Copy, Infinity as InfinityIcon, Brain } from 'lucide-svelte';
 	import { Icon } from 'lucide-svelte';
 	import { broom } from '@lucide/lab';
 	import { soundManager } from '$lib/game/sound';
-	import { SvelteSet } from 'svelte/reactivity';
 	import { fly, fade } from 'svelte/transition';
 
 	interface Props {
@@ -37,6 +41,17 @@
 			}
 		}
 		return items;
+	});
+
+	const hasVariables = $derived.by(() => {
+		if ('pick-up' in game.level.availableBlocks) return true;
+		if (!game.level.items) return false;
+
+		return Object.values(game.level.items).some((item) => {
+			const def = resolveItemDefinition(game.level, item.type, undefined);
+			if (def && def.behavior === 'vehicle') return false;
+			return true;
+		});
 	});
 
 	// Helper to count blocks by type across the entire solution (program + functions)
@@ -93,26 +108,17 @@
 	});
 
 	// Drag State
-	const dragCtx = setDragContext();
+	let isDragging = $state(false);
 
 	// Selection State
-	const selectedBlockIds = new SvelteSet<string>();
-	let isMultiSelectMode = $state(false);
+	let isVariableSelected = $state(false);
 
 	// Insertion Mode State
 	let insertionMode = $state<{ type: BlockType } | null>(null);
 
-	// Move Mode State
-	let isMoveMode = $state(false);
-
-	// Paste Mode State
-	let isPasteMode = $state(false);
-	let clipboard = $state<Block[]>([]);
-
-	// Ghost State
-	let ghostTargetId = $state<string | null>(null);
-	let ghostSourceType = $state<BlockType | null>(null);
-	let defaultGhostId = $state<string | null>(null);
+	// Editor State Delegation
+	const isMoveMode = $derived(editorState.mode === 'move');
+	const isPasteMode = $derived(editorState.mode === 'paste');
 
 	// Trash State
 	let isTrashActive = $state(false);
@@ -129,16 +135,49 @@
 	}
 
 	const selectedBlocks = $derived(
-		Array.from(selectedBlockIds)
+		Array.from(interactionManager.selection)
 			.map((id) => findBlock(game.activeProgram, id))
 			.filter((b) => b !== null) as Block[]
 	);
 	const primarySelectedBlock = $derived(selectedBlocks.length === 1 ? selectedBlocks[0] : null);
 	const selectedBlockId = $derived(primarySelectedBlock?.id ?? null); // Backwards compatibility for logic that expects single ID
 
-	function updateLoopCount(count: number | undefined) {
+	function handleVariableClick() {
+		if (isDisabled) return;
+		isVariableSelected = !isVariableSelected;
+		if (isVariableSelected) {
+			interactionManager.clearSelection();
+			if (onTarget) onTarget('variable:heldItem');
+		}
+	}
+
+	function handleTargetClick(target: string) {
+		if (isVariableSelected) {
+			// Parse target string 'block:{id}:count'
+			const match = target.match(/^block:(.+):count$/);
+			if (match) {
+				const blockId = match[1];
+				game.updateBlock(blockId, {
+					count: { type: 'variable', variableId: 'heldItem' }
+				});
+				soundManager.play('click');
+				isVariableSelected = false;
+				interactionManager.clearSelection();
+			}
+		} else if (onTarget) {
+			onTarget(target);
+		}
+	}
+
+	function updateLoopCount(count: number | undefined | 'variable') {
 		if (primarySelectedBlock && primarySelectedBlock.type === 'loop') {
-			game.updateBlock(primarySelectedBlock.id, { count });
+			if (count === 'variable') {
+				game.updateBlock(primarySelectedBlock.id, {
+					count: { type: 'variable', variableId: 'heldItem' }
+				});
+			} else {
+				game.updateBlock(primarySelectedBlock.id, { count });
+			}
 		}
 	}
 
@@ -148,255 +187,19 @@
 		}
 	}
 
-	function deepCloneWithNewIds(block: Block): Block {
-		const newBlock = { ...block, id: crypto.randomUUID() };
-		if (newBlock.children) {
-			newBlock.children = newBlock.children.map((child) => deepCloneWithNewIds(child));
-		}
-		// Remove ghost flag if present (shouldn't be, but safety)
-		delete newBlock.isGhost;
-		return newBlock;
-	}
-
-	function clearGhosts() {
-		ghostTargetId = null;
-		ghostSourceType = null;
-		defaultGhostId = null;
-		function removeGhosts(blocks: Block[]) {
-			for (let i = blocks.length - 1; i >= 0; i--) {
-				if (blocks[i].isGhost) {
-					blocks.splice(i, 1);
-				} else {
-					const children = blocks[i].children;
-					if (children) {
-						removeGhosts(children);
-					}
-				}
-			}
-		}
-		removeGhosts(game.activeProgram);
-		game.activeProgram = [...game.activeProgram];
-	}
-
-	function confirmGhost(ghostBlock: Block) {
-		game.commit();
-
-		// If we are in move mode, we need to delete the original block first
-		if (isMoveMode && selectedBlockId) {
-			// We need to find the original block ID.
-			// Wait, selectedBlockId IS the original block ID in move mode.
-			// But if we clicked a ghost, selectedBlockId is now the ghost ID?
-			// No, handleSelect sets selectedBlockId to ghost ID *after* confirmGhost.
-			// So selectedBlockId is still the original block here.
-
-			// However, we need to be careful not to delete the ghost we just clicked.
-			// The ghost is in the tree. The original is also in the tree.
-
-			// Let's remove the original block
-			removeBlock(game.activeProgram, selectedBlockId);
-			isMoveMode = false;
-		}
-
-		if (isPasteMode && clipboard.length > 0) {
-			const newBlocks = clipboard.map((b) => deepCloneWithNewIds(b));
-
-			function finalizePaste(blocks: Block[]) {
-				for (let i = blocks.length - 1; i >= 0; i--) {
-					const b = blocks[i];
-					if (b.id === ghostBlock.id) {
-						// Replace ghost with new blocks
-						blocks.splice(i, 1, ...newBlocks);
-					} else if (b.isGhost) {
-						blocks.splice(i, 1);
-					}
-					if (b.children) finalizePaste(b.children);
-				}
-			}
-			finalizePaste(game.activeProgram);
-			game.activeProgram = [...game.activeProgram];
-
-			selectedBlockIds.clear();
-			for (const b of newBlocks) selectedBlockIds.add(b.id);
-			isPasteMode = false;
-			return;
-		}
-
-		function finalize(blocks: Block[]) {
-			for (let i = blocks.length - 1; i >= 0; i--) {
-				const b = blocks[i];
-				if (b.id === ghostBlock.id) {
-					delete b.isGhost;
-				} else if (b.isGhost) {
-					blocks.splice(i, 1);
-				}
-
-				if (b.children) {
-					finalize(b.children);
-				}
-			}
-		}
-		finalize(game.activeProgram);
-		game.activeProgram = [...game.activeProgram];
-
-		// Restore selection to the target block (if it exists) so we can keep editing relative to it
-		if (ghostTargetId) {
-			selectedBlockIds.clear();
-			selectedBlockIds.add(ghostTargetId);
-		} else {
-			// Fallback to selecting the new block if we lost context
-			selectedBlockIds.clear();
-			selectedBlockIds.add(ghostBlock.id);
-		}
-	}
-
-	function showGhosts(targetBlock: Block, source: Block | BlockType) {
-		const sourceType = typeof source === 'string' ? source : source.type;
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const { id, ...sourceProps } = typeof source === 'string' ? { id: '' } : source;
-
-		ghostTargetId = targetBlock.id;
-		ghostSourceType = sourceType;
-
-		const ghostBefore: Block = {
-			id: crypto.randomUUID(),
-			type: sourceType,
-			isGhost: true,
-			...sourceProps
-		};
-		const ghostAfter: Block = {
-			id: crypto.randomUUID(),
-			type: sourceType,
-			isGhost: true,
-			...sourceProps
-		};
-		const ghostInside: Block = {
-			id: crypto.randomUUID(),
-			type: sourceType,
-			isGhost: true,
-			...sourceProps
-		};
-
-		function insertGhostsRecursive(blocks: Block[]): boolean {
-			const index = blocks.findIndex((b) => b.id === targetBlock.id);
-			if (index !== -1) {
-				// If target is loop, offer Before, Inside and After
-				if (targetBlock.type === 'loop') {
-					// Insert ghost after loop
-					blocks.splice(index + 1, 0, ghostAfter);
-					// Insert ghost before loop
-					blocks.splice(index, 0, ghostBefore);
-
-					// Insert ghost inside loop
-					if (!targetBlock.children) targetBlock.children = [];
-					targetBlock.children.push(ghostInside);
-
-					defaultGhostId = ghostInside.id;
-				} else {
-					// If target is regular block, offer Before and After
-					blocks.splice(index + 1, 0, ghostAfter);
-					blocks.splice(index, 0, ghostBefore);
-
-					defaultGhostId = ghostAfter.id;
-				}
-				return true;
-			}
-
-			for (const block of blocks) {
-				if (block.children && insertGhostsRecursive(block.children)) return true;
-			}
-			return false;
-		}
-
-		insertGhostsRecursive(game.activeProgram);
-		game.activeProgram = [...game.activeProgram];
-	}
-
 	function handleSelect(id: string) {
-		const block = findBlock(game.activeProgram, id);
+		editorState.handleBlockClick(game, id);
 
-		// If we clicked a ghost, confirm it
-		if (block?.isGhost) {
-			confirmGhost(block);
-			return;
-		}
-
-		// Paste Mode Logic
-		if (isPasteMode && clipboard.length > 0 && block) {
-			// If we click the SAME target again, confirm default ghost
-			if (id === ghostTargetId && defaultGhostId) {
-				const defaultGhost = findBlock(game.activeProgram, defaultGhostId);
-				if (defaultGhost) {
-					confirmGhost(defaultGhost);
-					return;
-				}
-			}
-
-			clearGhosts();
-			showGhosts(block, clipboard[0]);
-			return;
-		}
-
-		// If we are in Move Mode (and didn't click a ghost), show ghosts around the clicked block
-		if (isMoveMode && selectedBlockId && block) {
-			// Don't move into self
-			if (block.id === selectedBlockId) return;
-
-			// If we click the SAME target again, confirm the default ghost
-			if (id === ghostTargetId && defaultGhostId) {
-				const defaultGhost = findBlock(game.activeProgram, defaultGhostId);
-				if (defaultGhost) {
-					confirmGhost(defaultGhost);
-					return;
-				}
-			}
-
-			// Don't move into children (cycle)
-			function isChild(parent: Block, targetId: string): boolean {
-				if (!parent.children) return false;
-				for (const child of parent.children) {
-					if (child.id === targetId) return true;
-					if (isChild(child, targetId)) return true;
-				}
-				return false;
-			}
-			const sourceBlock = findBlock(game.activeProgram, selectedBlockId);
-			if (sourceBlock && isChild(sourceBlock, block.id)) return;
-
-			clearGhosts();
-			if (sourceBlock) {
-				showGhosts(block, sourceBlock);
-			}
-			return;
-		}
+		// If we select a different block (and not in multi-select), we might need to sync local state?
+		// No, local state is gone.
 
 		if (insertionMode) {
 			insertionMode = null;
 		}
 
-		// Clear ghosts if we select something else
-		clearGhosts();
-
-		// Multi-Select Logic
-		if (isMultiSelectMode) {
-			if (selectedBlockIds.has(id)) {
-				selectedBlockIds.delete(id);
-			} else {
-				selectedBlockIds.add(id);
-			}
-			return;
-		}
-
-		// If we select a different block, exit move mode
-		if (selectedBlockId !== id) {
-			isMoveMode = false;
-			isPasteMode = false; // Exit paste mode if we select normally
-			selectedBlockIds.clear();
-			selectedBlockIds.add(id);
-		} else {
-			// Deselect
-			selectedBlockIds.clear();
-			isMoveMode = false;
-			isPasteMode = false;
+		// Variable selection logic
+		if (id !== selectedBlockId) {
+			isVariableSelected = false;
 		}
 	}
 
@@ -408,23 +211,27 @@
 		// If we have a selected block, show ghosts around it
 		if (selectedBlockId) {
 			// If we click the SAME palette item again, confirm the default ghost
-			if (selectedBlockId === ghostTargetId && ghostSourceType === type && defaultGhostId) {
-				const defaultGhost = findBlock(game.activeProgram, defaultGhostId);
+			if (
+				selectedBlockId === editorState.ghostTargetId &&
+				editorState.ghostSourceType === type &&
+				editorState.defaultGhostId
+			) {
+				const defaultGhost = findBlock(game.activeProgram, editorState.defaultGhostId);
 				if (defaultGhost) {
-					confirmGhost(defaultGhost);
+					editorState.confirmGhost(game, defaultGhost);
 					return;
 				}
 			}
 
-			clearGhosts();
+			editorState.clearGhosts();
 			const target = findBlock(game.activeProgram, selectedBlockId);
 			if (target) {
-				showGhosts(target, sourceBlock);
+				editorState.showGhosts(game, target, sourceBlock);
 				return;
 			}
 		}
 
-		clearGhosts();
+		editorState.clearGhosts();
 
 		// Create new block with properties
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -437,8 +244,7 @@
 		if (lastBlock && lastBlock.type === 'loop') {
 			game.insertBlockIntoContainer(lastBlock.id, newBlock);
 			// Select the container so we can edit its properties (and subsequent clicks use ghosts)
-			selectedBlockIds.clear();
-			selectedBlockIds.add(lastBlock.id);
+			interactionManager.select(lastBlock.id);
 		} else {
 			// Otherwise, append to end of main program
 			game.addBlock(newBlock);
@@ -448,31 +254,27 @@
 	}
 
 	function handleDeleteSelected() {
-		if (selectedBlockIds.size === 0) return;
+		if (interactionManager.selection.size === 0) return;
 		soundManager.play('delete');
-		game.deleteBlocks(Array.from(selectedBlockIds));
-		selectedBlockIds.clear();
+		game.deleteBlocks(Array.from(interactionManager.selection));
+		interactionManager.clearSelection();
 	}
 
 	function handleDuplicate() {
-		if (selectedBlockIds.size === 0) return;
+		if (interactionManager.selection.size === 0) return;
 		soundManager.play('click');
 
 		// Deep clone selected blocks
-		const blocks = Array.from(selectedBlockIds)
+		const blocks = Array.from(interactionManager.selection)
 			.map((id) => findBlock(game.activeProgram, id))
 			.filter((b) => b !== null) as Block[];
 
-		// Store in clipboard
-		clipboard = JSON.parse(JSON.stringify(blocks));
-
-		isPasteMode = true;
-		isMoveMode = false;
-		isMultiSelectMode = false;
+		editorState.copy(blocks);
+		editorState.isMultiSelectMode = false;
 
 		// Show ghosts around the primary selection immediately
-		if (primarySelectedBlock) {
-			showGhosts(primarySelectedBlock, clipboard[0]);
+		if (primarySelectedBlock && editorState.clipboard.length > 0) {
+			editorState.showGhosts(game, primarySelectedBlock, editorState.clipboard[0]);
 		}
 	}
 
@@ -529,12 +331,36 @@
 		game.clearProgram();
 	}
 
+	function handleWindowKeydown(e: KeyboardEvent) {
+		if (isDisabled) return;
+
+		// If we are editing a text input, ignore
+		if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+		if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+			const current = document.activeElement?.getAttribute('data-interaction-id');
+			if (current) {
+				e.preventDefault();
+				focusManager.navigate(current, 'next');
+			} else if (game.activeProgram.length > 0) {
+				// If nothing focused, focus the first block in program
+				e.preventDefault();
+				focusManager.focus(game.activeProgram[0].id);
+			}
+		} else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+			const current = document.activeElement?.getAttribute('data-interaction-id');
+			if (current) {
+				e.preventDefault();
+				focusManager.navigate(current, 'prev');
+			}
+		}
+	}
+
 	$effect(() => {
 		if (game.status === 'running') {
-			selectedBlockIds.clear();
-			isMoveMode = false;
-			isPasteMode = false;
-			isMultiSelectMode = false;
+			interactionManager.clearSelection();
+			editorState.setMode('idle');
+			editorState.isMultiSelectMode = false;
 			insertionMode = null;
 		}
 	});
@@ -553,10 +379,23 @@
 	});
 
 	$effect(() => {
+		// Auto-select function if there is only one
+		if (
+			primarySelectedBlock?.type === 'call' &&
+			functionNames.length === 1 &&
+			primarySelectedBlock.functionName !== functionNames[0]
+		) {
+			// Use untracked to avoid infinite loops if updateCallFunction touches signals read here (though it shouldn't)
+			// Actually, just calling it is fine as long as it stabilizes.
+			updateCallFunction(functionNames[0]);
+		}
+	});
+
+	$effect(() => {
 		return monitorForElements({
 			onDragStart: () => {
 				soundManager.play('pickup');
-				dragCtx.isDragging = true;
+				isDragging = true;
 				isTrashActive = false;
 			},
 			onDrag: ({ location }) => {
@@ -564,19 +403,13 @@
 				if (target) {
 					const data = target.data;
 					isTrashActive = data.type === 'trash';
-					dragCtx.targetId = (data.blockId as string) || 'program-list';
-					dragCtx.closestEdge = extractClosestEdge(data);
 				} else {
 					isTrashActive = false;
-					dragCtx.targetId = null;
-					dragCtx.closestEdge = null;
 				}
 			},
 			onDrop: ({ source, location }) => {
 				if (isDisabled) return;
-				dragCtx.isDragging = false;
-				dragCtx.targetId = null;
-				dragCtx.closestEdge = null;
+				isDragging = false;
 				isTrashActive = false;
 
 				const target = location.current.dropTargets[0];
@@ -681,6 +514,8 @@
 	});
 </script>
 
+<svelte:window onkeydown={handleWindowKeydown} />
+
 <div class="tray">
 	<div class="palette">
 		<h3>Blocks</h3>
@@ -694,6 +529,26 @@
 					{/if}
 				</div>
 			{/if}
+
+			{#if hasVariables}
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div
+					class="variable-token"
+					use:draggableVariable={{ type: 'number' }}
+					title="Drag to use held item"
+					class:disabled={isDisabled}
+					class:selected={isVariableSelected}
+					onclick={handleVariableClick}
+					data-target="variable:heldItem"
+				>
+					<div class="token-icon">
+						<Brain size={20} />
+					</div>
+					<span class="token-label">Held Item</span>
+				</div>
+			{/if}
+
 			{#each paletteItems as item (item.id)}
 				{@const limit = getLimit(item.type)}
 				{@const used = usedCounts[item.type] || 0}
@@ -702,11 +557,6 @@
 					class:opacity-50={typeFull || isDisabled}
 					class:highlighted={highlight?.targets?.includes(`block:${item.type}`)}
 					class:fading={highlight?.targets?.includes(`block:${item.type}`) && highlight?.fading}
-					use:draggableBlock={{
-						block: item,
-						isPaletteItem: true,
-						disabled: typeFull || isDisabled
-					}}
 					style:position="relative"
 				>
 					<BlockComponent
@@ -714,6 +564,7 @@
 						isPalette={true}
 						onSelect={() => handlePaletteClick(item)}
 						{onTarget}
+						disabled={typeFull || isDisabled}
 					/>
 					{#if limit !== 'unlimited'}
 						<div class="limit-badge" class:full={typeFull}>
@@ -776,43 +627,73 @@
 					in:fly={{ x: 20, duration: 300, delay: 100 }}
 					out:fade={{ duration: 100 }}
 					data-block-id="program-list"
-					use:dropTarget={{
-						blockId: 'program-list',
-						type: 'drop-target'
+					use:interactionTarget={{
+						node: {
+							id: 'program-list',
+							role: 'root',
+							dataType: 'statement',
+							accepts: ['statement']
+						},
+						api: {
+							highlight: () => {},
+							clearHighlight: () => {},
+							scrollIntoView: () => {},
+							getBoundingRect: () => new DOMRect(),
+							focus: () =>
+								(document.querySelector('[data-block-id="program-list"]') as HTMLElement)?.focus()
+						}
 					}}
-					onclick={() => selectedBlockIds.clear()}
+					use:dropTarget={{
+						id: 'program-list',
+						data: { type: 'drop-target', blockId: 'program-list' }
+					}}
+					onclick={() => interactionManager.clearSelection()}
 					role="button"
 					tabindex="0"
 					onkeydown={(e) => {
-						if (e.key === 'Enter' || e.key === ' ') selectedBlockIds.clear();
+						if (e.key === 'Enter' || e.key === ' ') interactionManager.clearSelection();
 					}}
 				>
 					{#each game.activeProgram as item, index (item.id)}
+						{@const itemState = interactionManager.getComponentState(item.id)}
 						<div class="block-wrapper" style:position="relative">
-							{#if dragCtx.targetId === item.id && dragCtx.closestEdge === 'top'}
+							{#if itemState.status === 'candidate' && itemState.isHovered && itemState.edge === 'top'}
 								<DropIndicator edge="top" />
 							{/if}
 
 							<div
-								use:draggableBlock={{ block: item, disabled: isDisabled }}
+								use:interactionTarget={{
+									node: {
+										id: `gap-${item.id}`,
+										role: 'slot',
+										dataType: 'statement',
+										accepts: ['statement']
+									},
+									api: {
+										highlight: () => {},
+										clearHighlight: () => {},
+										scrollIntoView: () => {},
+										getBoundingRect: () => new DOMRect(),
+										focus: () => {}
+									}
+								}}
 								use:dropTarget={{
-									blockId: item.id,
-									index: index,
-									type: 'drop-target'
+									id: `gap-${item.id}`,
+									data: { type: 'drop-target', blockId: item.id, index: index }
 								}}
 							>
 								<BlockComponent
 									block={item}
 									{game}
 									activeBlockId={game.activeBlockId}
-									{selectedBlockIds}
 									onSelect={handleSelect}
 									onContainerClick={handleContainerClick}
-									{onTarget}
+									onTarget={handleTargetClick}
+									isTargetMode={isVariableSelected}
 								/>
 							</div>
 
-							{#if dragCtx.targetId === item.id && dragCtx.closestEdge === 'bottom'}
+							{#if itemState.status === 'candidate' && itemState.isHovered && itemState.edge === 'bottom'}
 								<DropIndicator edge="bottom" />
 							{/if}
 						</div>
@@ -827,51 +708,50 @@
 	</div>
 
 	<!-- Floating Toolbar (Trash / Inspector) -->
-	<div class="floating-toolbar" class:visible={dragCtx.isDragging || selectedBlockIds.size > 0}>
+	<div class="floating-toolbar" class:visible={isDragging || interactionManager.selection.size > 0}>
 		<!-- Configuration Panel (Left of Toolbar) -->
 		{#if primarySelectedBlock?.type === 'loop'}
 			<div class="config-panel" transition:fly={{ x: -20, duration: 200 }}>
 				<div class="config-header">Repeat</div>
-				<div class="config-grid">
-					{#each [2, 3, 4, 5, 10] as count (count)}
-						<button
-							class="config-btn"
-							class:active={primarySelectedBlock.count === count}
-							class:highlighted={highlight?.targets?.includes(`config:loop:${count}`)}
-							onclick={() => updateLoopCount(count)}
-							data-value={count}
-						>
-							{count}x
-						</button>
-					{/each}
-					<div class="custom-input-wrapper">
-						<input
-							type="number"
-							class="config-input"
-							class:highlighted={highlight?.targets?.includes(`config:loop:custom`)}
-							value={primarySelectedBlock.count ?? ''}
-							placeholder="#"
-							min="1"
-							max="99"
-							oninput={(e) => {
-								const val = parseInt(e.currentTarget.value);
-								updateLoopCount(isNaN(val) ? undefined : val);
-							}}
-							onclick={(e) => e.stopPropagation()}
+
+				<div class="config-content">
+					<div class="dial-wrapper">
+						<DialInput
+							value={typeof primarySelectedBlock.count === 'number'
+								? primarySelectedBlock.count
+								: 2}
+							min={1}
+							max={99}
+							label="Times"
+							onChange={(val) => updateLoopCount(val)}
 						/>
 					</div>
-					{#if game.level.allowInfiniteLoop !== false}
-						<button
-							class="config-btn infinity"
-							class:active={primarySelectedBlock.count === undefined}
-							class:highlighted={highlight?.targets?.includes(`config:loop:infinity`)}
-							onclick={() => updateLoopCount(undefined)}
-							title="Repeat Forever"
-							data-value="infinity"
-						>
-							<InfinityIcon size={20} />
-						</button>
-					{/if}
+
+					<div class="special-options">
+						{#if hasVariables}
+							<button
+								class="config-btn variable"
+								class:active={typeof primarySelectedBlock.count === 'object'}
+								class:highlighted={highlight?.targets?.includes(`config:loop:variable`)}
+								onclick={() => updateLoopCount('variable')}
+								title="Use Held Item"
+								data-value="variable"
+							>
+								<Brain size={20} />
+							</button>
+						{/if}
+						{#if game.level.allowInfiniteLoop !== false}
+							<button
+								class="config-btn infinity"
+								class:active={primarySelectedBlock.count === undefined}
+								onclick={() => updateLoopCount(undefined)}
+								title="Repeat Forever"
+								data-value="infinity"
+							>
+								<InfinityIcon size={20} />
+							</button>
+						{/if}
+					</div>
 				</div>
 			</div>
 		{:else if primarySelectedBlock?.type === 'call'}
@@ -880,6 +760,12 @@
 				<div class="config-list">
 					{#if functionNames.length === 0}
 						<div class="empty-msg">No functions created</div>
+					{:else if functionNames.length === 1}
+						{@const name = functionNames[0]}
+						<div class="single-function-display">
+							<span class="label">Calling:</span>
+							<span class="value">{name}</span>
+						</div>
 					{:else}
 						{#each functionNames as name (name)}
 							<button
@@ -899,8 +785,19 @@
 			<div
 				class="toolbar-btn trash-zone"
 				class:active={isTrashActive}
+				use:interactionTarget={{
+					node: { id: 'trash-zone', role: 'root', dataType: 'any', accepts: ['any'] },
+					api: {
+						highlight: () => {},
+						clearHighlight: () => {},
+						scrollIntoView: () => {},
+						getBoundingRect: () => new DOMRect(),
+						focus: () => {} // TODO: Implement focus
+					}
+				}}
 				use:dropTarget={{
-					type: 'trash'
+					id: 'trash-zone',
+					data: { type: 'trash' }
 				}}
 				onclick={handleDeleteSelected}
 				title="Drag here to delete, or click to delete selected"
@@ -912,12 +809,12 @@
 			>
 				<Trash2 size={24} />
 				<span class="label">Delete</span>
-				{#if selectedBlockIds.size > 1}
-					<span class="badge">{selectedBlockIds.size}</span>
+				{#if interactionManager.selection.size > 1}
+					<span class="badge">{interactionManager.selection.size}</span>
 				{/if}
 			</div>
 
-			{#if selectedBlockIds.size > 0}
+			{#if interactionManager.selection.size > 0}
 				<div
 					class="toolbar-btn"
 					class:active={isPasteMode}
@@ -935,13 +832,14 @@
 
 				<div
 					class="toolbar-btn"
-					class:active={isMultiSelectMode}
-					onclick={() => (isMultiSelectMode = !isMultiSelectMode)}
+					class:active={editorState.isMultiSelectMode}
+					onclick={() => (editorState.isMultiSelectMode = !editorState.isMultiSelectMode)}
 					title="Toggle Multi-Select Mode"
 					role="button"
 					tabindex="0"
 					onkeydown={(e) => {
-						if (e.key === 'Enter' || e.key === ' ') isMultiSelectMode = !isMultiSelectMode;
+						if (e.key === 'Enter' || e.key === ' ')
+							editorState.isMultiSelectMode = !editorState.isMultiSelectMode;
 					}}
 				>
 					<ListChecks size={24} />
@@ -949,16 +847,17 @@
 				</div>
 			{/if}
 
-			{#if selectedBlockIds.size === 1}
+			{#if interactionManager.selection.size === 1}
 				<div
 					class="toolbar-btn"
 					class:active={isMoveMode}
-					onclick={() => (isMoveMode = !isMoveMode)}
+					onclick={() => editorState.setMode(isMoveMode ? 'idle' : 'move')}
 					title="Move selected block"
 					role="button"
 					tabindex="0"
 					onkeydown={(e) => {
-						if (e.key === 'Enter' || e.key === ' ') isMoveMode = !isMoveMode;
+						if (e.key === 'Enter' || e.key === ' ')
+							editorState.setMode(isMoveMode ? 'idle' : 'move');
 					}}
 				>
 					<Move size={24} />
@@ -983,7 +882,35 @@
 	@media (max-width: 768px) {
 		.tray {
 			grid-template-rows: 1fr;
-			grid-template-columns: 140px 1fr; /* Palette | Program */
+			grid-template-columns: 110px 1fr; /* Palette | Program */
+			gap: var(--size-2);
+			padding: var(--size-2);
+		}
+
+		.floating-toolbar {
+			left: 50%;
+			top: var(--size-2);
+			bottom: auto;
+			transform: translateX(-50%) translateY(-20px);
+			flex-direction: row;
+		}
+
+		.floating-toolbar.visible {
+			transform: translateX(-50%) translateY(0);
+		}
+
+		.toolbar-container {
+			flex-direction: row;
+		}
+
+		.config-panel {
+			right: auto;
+			bottom: 100%;
+			top: auto;
+			transform: translateX(-50%);
+			left: 50%;
+			margin-bottom: var(--size-2);
+			margin-right: 0;
 		}
 	}
 
@@ -1019,14 +946,14 @@
 		margin-right: var(--size-3);
 
 		/* Glassomorphism */
-		background: rgba(255, 255, 255, 0.65);
+		background: light-dark(rgba(255, 255, 255, 0.65), rgba(0, 0, 0, 0.65));
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
-		border: 1px solid rgba(255, 255, 255, 0.5);
+		border: 1px solid light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1));
 		box-shadow:
 			0 10px 25px -5px rgba(0, 0, 0, 0.1),
 			0 8px 10px -6px rgba(0, 0, 0, 0.1),
-			inset 0 0 20px rgba(255, 255, 255, 0.5);
+			inset 0 0 20px light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.05));
 
 		border-radius: var(--radius-3);
 		padding: var(--size-3);
@@ -1047,18 +974,37 @@
 		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 	}
 
-	.config-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: var(--size-2);
-	}
-
 	.config-list {
 		display: flex;
 		flex-direction: column;
 		gap: var(--size-1);
-		max-height: 200px;
+		max-height: 60vh;
 		overflow-y: auto;
+		/* Add padding to accommodate hover/active transforms without triggering scrollbars */
+		padding: var(--size-1);
+	}
+
+	.single-function-display {
+		background-color: var(--blue-2);
+		color: var(--blue-7);
+		border: 1px solid var(--blue-5);
+		border-radius: var(--radius-2);
+		padding: var(--size-3);
+		text-align: center;
+		font-weight: bold;
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-1);
+	}
+
+	.single-function-display .label {
+		font-size: var(--font-size-0);
+		text-transform: uppercase;
+		opacity: 0.7;
+	}
+
+	.single-function-display .value {
+		font-size: var(--font-size-2);
 	}
 
 	.empty-msg {
@@ -1071,8 +1017,8 @@
 
 	.config-btn {
 		aspect-ratio: 1;
-		background-color: rgba(255, 255, 255, 0.5);
-		border: 1px solid rgba(0, 0, 0, 0.05);
+		background-color: light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1));
+		border: 1px solid light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.1));
 		border-radius: var(--radius-2);
 		font-size: var(--font-size-1);
 		font-weight: bold;
@@ -1086,7 +1032,7 @@
 	}
 
 	.config-btn:hover {
-		background-color: white;
+		background-color: light-dark(white, var(--surface-3));
 		transform: translateY(-2px);
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 		color: var(--text-1);
@@ -1108,37 +1054,11 @@
 		transform: translateY(1px);
 	}
 
-	.config-btn.highlighted,
-	.config-input.highlighted {
+	.config-btn.highlighted {
 		outline: 3px solid var(--pink-5);
 		box-shadow: 0 0 15px var(--pink-5);
 		z-index: 10;
 		animation: pulse-highlight 1.5s infinite;
-	}
-
-	.custom-input-wrapper {
-		grid-column: span 1;
-		display: flex;
-	}
-
-	.config-input {
-		width: 100%;
-		height: 100%;
-		border: 1px solid rgba(0, 0, 0, 0.1);
-		border-radius: var(--radius-2);
-		text-align: center;
-		font-weight: bold;
-		font-size: var(--font-size-1);
-		color: var(--text-1);
-		background-color: rgba(255, 255, 255, 0.5);
-		padding: 0;
-		transition: all 0.2s;
-	}
-
-	.config-input:focus {
-		background-color: white;
-		outline: 2px solid var(--blue-5);
-		border-color: transparent;
 	}
 
 	.toolbar-container {
@@ -1253,7 +1173,9 @@
 		border: none;
 		color: var(--text-3);
 		cursor: pointer;
-		padding: 4px;
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
+		padding: 0;
 		border-radius: var(--radius-1);
 		display: flex;
 		align-items: center;
@@ -1310,7 +1232,7 @@
 	.disabled-overlay {
 		position: absolute;
 		inset: 0;
-		background-color: rgba(255, 255, 255, 0.6);
+		background-color: light-dark(rgba(255, 255, 255, 0.6), rgba(0, 0, 0, 0.6));
 		backdrop-filter: blur(2px);
 		z-index: 20;
 		display: flex;
@@ -1418,12 +1340,15 @@
 	.context-tabs button {
 		background: none;
 		border: none;
-		padding: var(--size-1) var(--size-2);
+		padding: 0 var(--size-2);
+		min-height: var(--touch-target-min);
 		font-weight: bold;
 		color: var(--text-2);
 		cursor: pointer;
 		border-radius: var(--radius-2);
 		white-space: nowrap;
+		display: flex;
+		align-items: center;
 	}
 
 	.context-tabs button.active {
@@ -1456,5 +1381,73 @@
 	.limit-badge.full {
 		background-color: var(--surface-4);
 		color: var(--text-3);
+	}
+
+	.variable-token {
+		grid-column: 1 / -1; /* Span full width */
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		padding: var(--size-2) var(--size-3);
+		background-color: var(--surface-2);
+		border: 2px solid var(--surface-3);
+		border-radius: var(--radius-round);
+		cursor: grab;
+		width: fit-content;
+		margin: 0 auto var(--size-2) auto;
+		transition: all 0.2s;
+	}
+
+	.variable-token:hover {
+		border-color: var(--brand);
+		background-color: var(--surface-3);
+		transform: translateY(-2px);
+	}
+
+	.variable-token.selected {
+		border-color: var(--brand);
+		background-color: var(--brand-dim);
+		box-shadow: 0 0 0 2px var(--brand);
+	}
+
+	.variable-token.disabled {
+		opacity: 0.5;
+		pointer-events: none;
+	}
+
+	.variable-token :global(.dragging) {
+		opacity: 0.5;
+	}
+
+	.token-icon {
+		color: var(--brand);
+		display: grid;
+		place-items: center;
+	}
+
+	.token-label {
+		font-weight: bold;
+		font-size: var(--font-size-0);
+		color: var(--text-1);
+	}
+
+	.config-content {
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-3);
+		align-items: center;
+	}
+
+	.dial-wrapper {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+	}
+
+	.special-options {
+		display: flex;
+		gap: var(--size-2);
+		width: 100%;
+		justify-content: center;
 	}
 </style>

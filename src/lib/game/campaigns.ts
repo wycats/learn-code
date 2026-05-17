@@ -1,20 +1,20 @@
 import { LevelPackSchema, type LevelPack } from './schema';
 import { getPack } from './packs';
-import { savePack, loadPack, listPacks, deletePack, createDefaultPack } from './persistence';
+import { persistence, createDefaultPack } from './persistence';
 
 export class CampaignService {
 	static async loadAll(): Promise<LevelPack[]> {
-		const metadataList = await listPacks();
+		const metadataList = await persistence.listPacks();
 		const packs: LevelPack[] = [];
 		for (const meta of metadataList) {
-			const pack = await loadPack(meta.id);
+			const pack = await persistence.loadPack(meta.id);
 			if (pack) packs.push(pack);
 		}
 		return packs;
 	}
 
 	static async get(id: string): Promise<LevelPack | null> {
-		return await loadPack(id);
+		return await persistence.loadPack(id);
 	}
 
 	static async create(data: Partial<LevelPack>): Promise<LevelPack> {
@@ -33,12 +33,12 @@ export class CampaignService {
 		// Validate
 		const validated = LevelPackSchema.parse(newPack);
 
-		await savePack(validated);
+		await persistence.savePack(validated);
 		return validated;
 	}
 
 	static async update(id: string, data: Partial<LevelPack>): Promise<LevelPack | null> {
-		const existing = await loadPack(id);
+		const existing = await persistence.loadPack(id);
 		if (!existing) return null;
 
 		const updatedPack = {
@@ -50,12 +50,12 @@ export class CampaignService {
 		// Validate
 		const validated = LevelPackSchema.parse(updatedPack);
 
-		await savePack(validated);
+		await persistence.savePack(validated);
 		return validated;
 	}
 
 	static async delete(id: string): Promise<void> {
-		await deletePack(id);
+		await persistence.deletePack(id);
 	}
 
 	static async clone(sourcePackId: string): Promise<LevelPack | null> {
@@ -74,7 +74,7 @@ export class CampaignService {
 		clonedPack.updated = Date.now();
 		clonedPack.author = 'You';
 
-		await savePack(clonedPack);
+		await persistence.savePack(clonedPack);
 		return clonedPack;
 	}
 }
