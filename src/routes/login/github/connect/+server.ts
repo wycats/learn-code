@@ -6,7 +6,7 @@ import { sanitizeRedirectPath } from '$lib/server/security';
 
 export const GET: RequestHandler = async ({ cookies, url }) => {
 	const state = generateState();
-	// Request 'public_repo' scope for the "Connect" flow
+	// Request repo scope so pack publishing can create private repositories by default.
 	const authorizationUrl = await github.createAuthorizationURL(state, ['user:email', 'repo']);
 
 	cookies.set('github_oauth_state', state, {
