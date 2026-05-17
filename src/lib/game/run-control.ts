@@ -21,16 +21,16 @@ export function getRunControlState({
 	isExecuting,
 	isPaused
 }: RunControlInput): RunControlState {
-	if (status === 'story' || status === 'goal') {
-		return { label: 'Play', action: 'none', disabled: true };
-	}
-
 	if (isExecuting && !isPaused) {
 		return { label: 'Stop', action: 'stop', disabled: false };
 	}
 
 	if (isExecuting && isPaused && status === 'running') {
 		return { label: 'Play', action: 'resume', disabled: false };
+	}
+
+	if (status === 'story' || status === 'goal') {
+		return { label: 'Play', action: 'none', disabled: true };
 	}
 
 	if (status === 'won') {

@@ -48,6 +48,17 @@ describe('getRunControlState', () => {
 		});
 	});
 
+	it.each(['story', 'goal'] satisfies GameStatus[])(
+		'keeps Stop available in %s if another control changes status during active execution',
+		(status) => {
+			expect(state({ status, isExecuting: true, isPaused: false })).toEqual({
+				label: 'Stop',
+				action: 'stop',
+				disabled: false
+			});
+		}
+	);
+
 	it('resumes while execution is paused in running state', () => {
 		expect(state({ status: 'running', isExecuting: true, isPaused: true })).toEqual({
 			label: 'Play',

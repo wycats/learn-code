@@ -101,20 +101,21 @@
 	// Watch for win state to save progress
 	$effect(() => {
 		if (game && game.status === 'won') {
-			if (completedLevelIds.has(levelId)) return;
+			const completionKey = `${packId}:${levelId}`;
+			if (completedLevelIds.has(completionKey)) return;
 
-			completedLevelIds.add(levelId);
 			const stars = calculateStars();
 			ProgressService.completeLevel(packId, levelId, stars);
+			completedLevelIds.add(completionKey);
 			if (data.user) {
-				CloudSyncService.push([
+				void CloudSyncService.push([
 					{
 						levelId,
 						status: 'completed',
 						stars,
 						updatedAt: new Date().toISOString()
 					}
-				]);
+				]).catch(() => completedLevelIds.delete(completionKey));
 			}
 		}
 	});

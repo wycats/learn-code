@@ -2,7 +2,7 @@
 
 ## Status
 
-Planning. Do not implement until this plan is reviewed and approved.
+PER 1 Run / Replay behavior is implemented and under PR review. Broader visual clarity and the first kinetic accessibility slice remain open.
 
 ## Why This Phase
 
@@ -66,8 +66,13 @@ Pick a small, concrete slice from the Phase 43 roadmap rather than attempting al
 - Targeted Playwright coverage for run/replay and mode clarity
 - Visual check for key affected screens
 
+## Resolved PER 1 Decisions
+
+1. Run from `won` is labeled `Replay` and immediately reruns the same program from the start.
+2. Run from `lost` is labeled `Try Again` and immediately reruns the same program from the start.
+3. Step-then-Play resumes the paused interpreter instead of restarting.
+
 ## Open Questions
 
-1. Should Run from `won` immediately replay, or should the button label change to `Replay`?
-2. Should Run from `lost` reset and replay, or reset to planning only?
-3. Which kinetic slice should ship first: Ghost Replay or Snap-to-intent?
+1. Which kinetic slice should ship first: Ghost Replay or Snap-to-intent?
+2. Should broader visual clarity focus first on player mode, builder mode, or both?

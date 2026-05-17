@@ -274,6 +274,7 @@ export class StackInterpreter {
 				if (this.stack.length >= 50) {
 					console.error('Stack overflow');
 					this.game.lastEvent = { type: 'fail', timestamp: Date.now() };
+					this.game.recordFailure();
 					this.game.status = 'lost';
 					this.game.executionState.set(block.id, 'failure');
 					return false;

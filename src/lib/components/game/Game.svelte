@@ -75,6 +75,7 @@
 	function handleStartPlanning() {
 		stopInterpreter();
 		game.status = 'planning';
+		game.reset();
 	}
 
 	async function startExecution() {
