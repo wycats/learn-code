@@ -7,10 +7,7 @@ import { sanitizeRedirectPath } from '$lib/server/security';
 export const GET: RequestHandler = async ({ cookies, url }) => {
 	const state = generateState();
 	// Request 'public_repo' scope for the "Connect" flow
-	const authorizationUrl = await github.createAuthorizationURL(state, [
-		'user:email',
-		'public_repo'
-	]);
+	const authorizationUrl = await github.createAuthorizationURL(state, ['user:email', 'repo']);
 
 	cookies.set('github_oauth_state', state, {
 		path: '/',

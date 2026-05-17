@@ -21,7 +21,7 @@ const connectionString = env.POSTGRES_URL || env.DATABASE_URL;
 
 let dbInstance: Database;
 
-if (!connectionString || connectionString.startsWith('pglite:')) {
+if ((dev && !connectionString) || connectionString?.startsWith('pglite:')) {
 	const dataDir = connectionString?.replace(/^pglite:/, '') || './.pglite';
 	const client = new PGlite(dataDir);
 	const db = drizzlePglite(client, { schema });

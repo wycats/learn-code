@@ -14,5 +14,9 @@ export const GET: RequestHandler = async (event) => {
 		return json({ status: 'authorized' });
 	}
 
+	if (result.status === 'claimed') {
+		return json({ status: 'expired' });
+	}
+
 	return json({ status: result.status });
 };

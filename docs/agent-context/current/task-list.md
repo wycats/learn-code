@@ -45,6 +45,7 @@
 
 ## Validation
 
-- [ ] Run Node 24 install/check/lint/unit/build/E2E/visual validation.
-- [ ] Run `git diff --check`.
-- [ ] Re-review remediated blockers.
+- [x] Run Node 24 install/check/lint/unit/build/E2E/visual validation.
+- [x] Run `git diff --check`.
+- [x] Re-review remediated blockers.
+- [ ] Open the hardening PR after final targeted fixes are reviewed.

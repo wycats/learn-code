@@ -26,6 +26,8 @@ export async function getHandshakeStatus(id: string) {
 	}
 
 	if (record.status === 'authorized' && record.userId) {
+		if (record.sessionId) return { status: 'claimed' };
+
 		const sessionToken = generateSessionToken();
 		const session = await createSession(sessionToken, record.userId);
 
