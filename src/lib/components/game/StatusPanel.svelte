@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { GameModel } from '$lib/game/model.svelte';
-	import { Play, CheckCircle2, BrainCircuit } from 'lucide-svelte';
+	import { Play, CheckCircle2, BrainCircuit, XCircle } from 'lucide-svelte';
 
 	interface Props {
 		game: GameModel;
@@ -28,6 +28,16 @@
 			<div class="info">
 				<h3>Level Complete!</h3>
 				<p>Great work!</p>
+			</div>
+		</div>
+	{:else if game.status === 'lost'}
+		<div class="status-content lost">
+			<div class="icon-wrapper">
+				<XCircle size={24} />
+			</div>
+			<div class="info">
+				<h3>Try Again</h3>
+				<p>The run stopped before the goal. Try the same program again, or Reset to edit.</p>
 			</div>
 		</div>
 	{:else}
@@ -85,6 +95,10 @@
 	.won .icon-wrapper {
 		color: light-dark(var(--yellow-6), var(--yellow-4));
 		background-color: light-dark(var(--yellow-0), var(--yellow-9));
+	}
+	.lost .icon-wrapper {
+		color: light-dark(var(--red-6), var(--red-4));
+		background-color: light-dark(var(--red-0), var(--red-9));
 	}
 	.planning .icon-wrapper {
 		color: light-dark(var(--blue-6), var(--blue-4));

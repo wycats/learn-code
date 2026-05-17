@@ -144,4 +144,20 @@ describe('Tray Component', () => {
 
 		expect(game.clearProgram).toHaveBeenCalled();
 	});
+
+	it('explains that the tray is disabled after a failed run', async () => {
+		game.status = 'lost';
+
+		const { getByText } = render(Tray, { game });
+
+		expect(getByText('Run stopped. Try Again, or Reset to edit.')).toBeInTheDocument();
+	});
+
+	it('explains that the tray is disabled after a successful run', async () => {
+		game.status = 'won';
+
+		const { getByText } = render(Tray, { game });
+
+		expect(getByText('Level Complete! Replay or continue.')).toBeInTheDocument();
+	});
 });

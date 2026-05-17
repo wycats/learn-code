@@ -50,7 +50,7 @@ describe('CloudSyncService', () => {
 				json: async () => ({ synced: [] })
 			});
 
-			await CloudSyncService.push(updates);
+			const synced = await CloudSyncService.push(updates);
 
 			expect(globalFetch).toHaveBeenCalledWith(
 				'/api/sync',
@@ -59,6 +59,7 @@ describe('CloudSyncService', () => {
 					body: JSON.stringify({ updates })
 				})
 			);
+			expect(synced).toBe(true);
 		});
 
 		it('should handle server errors during push', async () => {
@@ -70,10 +71,24 @@ describe('CloudSyncService', () => {
 				status: 500
 			});
 
-			await CloudSyncService.push(updates);
+			const synced = await CloudSyncService.push(updates);
 
 			expect(globalFetch).toHaveBeenCalled();
 			expect(get(syncStatus)).toBe('error');
+			expect(synced).toBe(false);
+		});
+
+		it('should report fetch errors during push', async () => {
+			const updates: SyncUpdate[] = [
+				{ levelId: 'level-1', status: 'completed', stars: 3, updatedAt: new Date().toISOString() }
+			];
+			globalFetch.mockRejectedValueOnce(new Error('offline'));
+
+			const synced = await CloudSyncService.push(updates);
+
+			expect(globalFetch).toHaveBeenCalled();
+			expect(get(syncStatus)).toBe('error');
+			expect(synced).toBe(false);
 		});
 	});
 

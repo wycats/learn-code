@@ -274,6 +274,8 @@ export class StackInterpreter {
 				if (this.stack.length >= 50) {
 					console.error('Stack overflow');
 					this.game.lastEvent = { type: 'fail', timestamp: Date.now() };
+					this.game.recordFailure();
+					this.game.status = 'lost';
 					this.game.executionState.set(block.id, 'failure');
 					return false;
 				}
@@ -319,16 +321,7 @@ export class StackInterpreter {
 				this.game.executionState.set(block.id, 'success');
 			} else {
 				this.game.executionState.set(block.id, 'failure');
-				// Pause on error
-				this.game.status = 'planning'; // Or stay in 'running' but paused?
-				// If we go to planning, the user can edit.
-				// If we want to "pause", we need a 'paused' state or just stop stepping.
-				// The user asked to "pause the program".
-				// If we return false here, the run loop stops.
-				// But we should probably leave the status as 'running' or 'paused' so the UI shows the error state.
-				// Let's just return false to stop the loop, but keep status as running?
-				// No, if status is running, the UI might think it's still going.
-				// Let's set activeBlockId to the failed block so it stays highlighted red.
+				this.game.status = 'lost';
 				return false;
 			}
 
@@ -515,7 +508,7 @@ export class StackInterpreter {
 
 	finish() {
 		if (this.game.status !== 'won') {
-			this.game.status = 'planning';
+			this.game.status = 'lost';
 			this.game.recordFailure();
 		}
 		this.game.activeBlockId = null;

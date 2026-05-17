@@ -5,10 +5,11 @@
 	interface Props {
 		onReplay: () => void;
 		onNext: () => void;
+		onDismiss: () => void;
 		hasNextLevel: boolean;
 	}
 
-	let { onReplay, onNext, hasNextLevel }: Props = $props();
+	let { onReplay, onNext, onDismiss, hasNextLevel }: Props = $props();
 
 	let dialog: HTMLDialogElement;
 
@@ -17,16 +18,7 @@
 	});
 </script>
 
-<dialog
-	bind:this={dialog}
-	class="win-modal"
-	onclose={onReplay}
-	oncancel={(e) => {
-		e.preventDefault(); // Prevent closing on Esc if we want to force a choice?
-		// Actually, for WinModal, maybe Esc should just replay or do nothing?
-		// Let's allow Esc to close (replay) for now as "light dismissal"
-	}}
->
+<dialog bind:this={dialog} class="win-modal" oncancel={() => onDismiss()}>
 	<Stack gap="var(--size-4)" align="center">
 		<h2><PartyPopper size={32} /> Level Complete!</h2>
 		<p>Great job! You solved the puzzle.</p>
@@ -34,8 +26,9 @@
 			<button class="btn-secondary" onclick={onReplay}>
 				<RotateCcw size={16} /> Replay
 			</button>
+			<button class="btn-secondary" onclick={onDismiss}>Back to Planning</button>
 			{#if hasNextLevel}
-				<button class="btn-primary" onclick={onNext} autofocus>
+				<button class="btn-primary" onclick={onNext}>
 					Next Level <ChevronRight size={16} />
 				</button>
 			{:else}

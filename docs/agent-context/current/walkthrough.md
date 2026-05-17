@@ -1,37 +1,50 @@
-# Walkthrough: PR #5 Baseline Hardening
+# Walkthrough: Phase 43 — Kinetic Accessibility & Jonas Feedback
 
-## Why This Pass Exists
+## Current Status
 
-The curated PR #5 branch contains substantial real work, but targeted review found blockers before it could safely become the project baseline. This pass hardens the blocker areas without starting a new product feature phase.
+PER 1 Run / Replay behavior has been implemented. The remaining Phase 43 visual clarity and kinetic accessibility work is still open.
 
-## What Changed
+## Baseline
 
-### Local/Production DB Behavior
+The PR #5 baseline-hardening work is complete and merged. Kibi is now the confirmed product name.
 
-The hardening branch combines the PGlite local-development default from `main` with the curated branch's build-safe production behavior. Local dev can run without Docker or DB env vars, while production still fails explicitly if DB-backed code paths are used without `POSTGRES_URL` or `DATABASE_URL`.
+## Phase Intent
 
-### Auth and Cloud Safety
+This phase should make Kibi feel clearer and more physical in the places Jonas directly noticed friction:
 
-OAuth callbacks now use proper Arctic token accessors, validate provider payloads, require verified email ownership, and restrict redirect targets to local paths. Layout data now exposes only a sanitized session shape, including a boolean GitHub connection marker instead of the encrypted GitHub token.
+- the Run button should behave predictably after success or failure;
+- Edit/Run mode should be visually obvious;
+- the next kinetic interaction improvement should be small, testable, and grounded in real use.
 
-Profile deletion and device revocation are scoped to the current user. Device authorization now records the created session so connected devices can be revoked later.
+## Candidate Direction
 
-### Sync and GitHub Publishing
+The likely best shape is a focused phase that combines:
 
-Cloud sync payloads are validated before persistence. GitHub pack payloads are validated against the pack schema, generated repo/file names are sanitized, and new GitHub repositories default to private.
+1. deferred Phase 42 Jonas feedback;
+2. the first slice of Phase 43's Kinetic Language roadmap;
+3. enough tests and visual review to keep the new baseline stable.
 
-### Migration Safety
+## PER 1 Run / Replay Walkthrough
 
-The auth migration no longer drops the legacy singular `user` and `session` tables. That avoids destructive behavior during baseline adoption.
+- Interpreter failures now end in `lost`, while successful runs still end in `won`.
+- The main run button now follows a helper-defined state table: disabled in story/goal, `Play` from planning, `Stop` while running, `Try Again` from lost, and `Replay` from won.
+- `Try Again` and `Replay` both reset to the start and immediately rerun the same program.
+- Step-then-Play still resumes the paused interpreter instead of restarting.
+- The win modal's `Replay` button now reruns instead of reset-only, and closing the modal no longer implicitly replays.
+- The status panel has a distinct lost state, and the tray overlay now explains why editing is disabled for running/lost/won states.
+- The play route guards completion sync so replaying a won level does not repeatedly push progress/cloud completion for the same level instance.
 
-### Visual and CI Policy
+## PER 1 Validation
 
-Playwright once again manages its own local preview server using `pnpm`. CI no longer supplies fake Postgres env vars or treats E2E/visual failures as silently advisory. Argos screenshot names are unique, and the visual scripts now match the Argos workflow.
+- `PROTO_NODE_VERSION=24 pnpm check`
+- Targeted Vitest for run-control/interpreter/model/status panel
+- Targeted Playwright `e2e/run-replay.spec.ts`
+- `PROTO_NODE_VERSION=24 pnpm lint`
+- `PROTO_NODE_VERSION=24 pnpm build`
+- `git diff --check`
 
-## Remaining Decision
+## What To Review Next
 
-Kibi is coherent in the candidate baseline, but final merge should explicitly confirm that Kibi is the intended product name.
-
-## Validation
-
-The hardening branch should pass Node 24 install/check/lint/unit/build/E2E/visual validation before review.
+- Confirm the run/replay feel in the browser, especially whether terminal states should keep editing disabled until Reset.
+- Continue Phase 43 by choosing the kinetic slice: Ghost Replay or Snap-to-intent.
+- Mobile/touch visual validation remains open beyond the targeted desktop Playwright run/replay flow.

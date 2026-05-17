@@ -402,9 +402,15 @@
 - The toggle button cycles through three states.
 - We prioritize immediate visual feedback (forcing Dark/Light) over returning to "System" (which is the default state but might not change the visual appearance).
 
+### 47. Product Name: Kibi
+
+**Decision:** Lock in **Kibi** as the product name.
+**Context:** The PR #5 baseline introduced the Kibi name and accompanying product story. After baseline hardening and review, we accepted that naming direction rather than treating it as provisional.
+**Consequence:** Future docs, UI, roadmap language, and PR descriptions should refer to the product as Kibi. Historical Wonderblocks/Code Climber references may remain only when describing project history.
+
 ## Phase 28: Test Coverage & Quality Assurance
 
-### 47. Dependency Injection for Services
+### 48. Dependency Injection for Services
 
 **Decision:** Refactor `FileSystemService` and `PersistenceService` to use Dependency Injection (DI) via constructor arguments in models.
 **Context:** Previously, these services were imported directly as singletons or global objects. This made unit testing `BuilderModel` and `GameModel` difficult because we couldn't easily mock the file system or local storage.
@@ -414,7 +420,7 @@
 - We created `InMemoryFileSystemService` and `InMemoryPersistenceService` implementations for fast, isolated unit tests.
 - The production code uses default parameter values to inject the real services, maintaining ease of use.
 
-### 48. Strict Linting Enforcement
+### 49. Strict Linting Enforcement
 
 **Decision:** Enable and enforce strict ESLint rules, specifically `no-explicit-any` and `no-unused-vars`.
 **Context:** The codebase had accumulated "lazy" typing (`any`) and unused variables, which are potential sources of bugs and make refactoring harder.
@@ -424,7 +430,7 @@
 - `zod` schemas now use `z.preprocess` with safe casting instead of raw `any` casts where necessary.
 - Test files use `_` prefix for unused mock arguments to signal intent.
 
-### 49. Mocking Strategy for Browser APIs
+### 50. Mocking Strategy for Browser APIs
 
 **Decision:** Use `vi.stubGlobal` and custom mock classes for browser APIs like `AudioContext` and `FileSystemHandle`.
 **Context:** `jsdom` (our test environment) does not implement these modern APIs. We needed a way to test logic that depends on them without mocking the entire universe.
@@ -435,7 +441,7 @@
 
 ## Phase 30: Builder Polish & Undo/Redo
 
-### 50. Undo/Redo via State Snapshots
+### 51. Undo/Redo via State Snapshots
 
 **Decision:** Implement Undo/Redo by capturing full state snapshots using `$state.snapshot` rather than the Command Pattern.
 **Context:** The `BuilderModel` state is complex and deeply nested (grid, actors, logic, settings). Implementing a Command Pattern (reversible actions) for every possible mutation would be error-prone and verbose. Svelte 5's `$state.snapshot` allows us to cheaply serialize the reactive state.
@@ -466,14 +472,14 @@
 - **Context**: We need to implement user accounts to support cloud persistence. We evaluated Neon Auth (via Stack Auth) vs. a custom solution (using Oslo/Arctic).
 - **Decision**: Use **Custom Authentication** (based on the existing scaffolding in `src/lib/server/auth.ts`).
 - **Rationale**:
-  1.  **Control**: We want full control over the `user` schema and not rely on a read-only sync table.
-  2.  **Educational Value**: Implementing auth demonstrates core web concepts (sessions, cookies, OAuth).
-  3.  **Simplicity**: For our needs, a simple session-based auth with GitHub OAuth is sufficient. We avoid introducing a third-party identity provider dependency (Stack Auth) that might have its own pricing/limitations.
-  4.  **Offline-First**: We need to carefully manage the merge between local (offline) data and cloud data. Owning the auth flow gives us more hooks to handle this "post-login sync" gracefully.
+  1. **Control**: We want full control over the `user` schema and not rely on a read-only sync table.
+  2. **Educational Value**: Implementing auth demonstrates core web concepts (sessions, cookies, OAuth).
+  3. **Simplicity**: For our needs, a simple session-based auth with GitHub OAuth is sufficient. We avoid introducing a third-party identity provider dependency (Stack Auth) that might have its own pricing/limitations.
+  4. **Offline-First**: We need to carefully manage the merge between local (offline) data and cloud data. Owning the auth flow gives us more hooks to handle this "post-login sync" gracefully.
 
 ## Phase 32: Sync Optimization & Builder Polish
 
-### 51. Allocation-Free Vector Clocks
+### 52. Allocation-Free Vector Clocks
 
 **Decision:** Optimize `compareVectorClocks` to be allocation-free (O(N) single pass) instead of using `Set` operations.
 **Context:** Vector clock comparison is a hot path in the synchronization logic, potentially called thousands of times during a sync operation. The previous implementation created multiple intermediate `Set` and array objects.
@@ -482,7 +488,7 @@
 - Reduced garbage collection pressure during sync.
 - Slightly more verbose code, but significantly more performant for high-frequency calls.
 
-### 52. Programmatic Navigation for Safety
+### 53. Programmatic Navigation for Safety
 
 **Decision:** Use `goto()` with `onclick` handlers instead of `<a>` tags for internal navigation in Auth flows.
 **Context:** The `svelte/no-navigation-without-resolve` lint rule flags `<a>` tags with dynamic or external-looking URLs (even if they are internal routes like `/login/google`).
@@ -493,7 +499,7 @@
 
 ## Phase 33: Authentication & Cloud Foundation
 
-### 53. Parent/Child Profile Model
+### 54. Parent/Child Profile Model
 
 **Decision:** Implement a hierarchical "Parent Account -> Child Profiles" model.
 **Context:** Our target audience (children) cannot legally or practically own email accounts/OAuth credentials. Parents need to manage access.
@@ -503,7 +509,7 @@
 - The `Profile` table represents the Child (nickname, avatar, progress).
 - All game progress is linked to a `Profile`, not the `User`.
 
-### 54. Device Authorization via QR Code
+### 55. Device Authorization via QR Code
 
 **Decision:** Use a "QR Handshake" flow to authorize child devices without sharing parent credentials.
 **Context:** Parents don't want to type their Google password on a child's tablet. They want a quick, secure way to "log in" the child.
@@ -514,7 +520,7 @@
 
 ## Phase 34: Cloud Sync & Progress Tracking
 
-### 55. High Water Mark Sync Strategy
+### 56. High Water Mark Sync Strategy
 
 **Decision:** Use a "High Water Mark" strategy for merging progress (Best Score Wins).
 **Context:** In a game, "progress" is generally monotonic (you unlock a level, you get more stars). If a user plays offline on two devices, we want to merge the _best_ achievements from both, rather than overwriting with the "latest" timestamp (which might be a worse run).
@@ -523,7 +529,7 @@
 - We do not need complex CRDTs for this specific data type.
 - The merge logic is deterministic and user-friendly (no progress loss).
 
-### 56. Optimistic UI Updates
+### 57. Optimistic UI Updates
 
 **Decision:** Update the UI immediately upon level completion, regardless of network status.
 **Context:** The game must feel responsive. Waiting for a server round-trip to show the "Level Complete" screen is unacceptable.
@@ -534,7 +540,7 @@
 
 ## Phase 38: The Terrain Architect
 
-### 57. Terrain Registry
+### 58. Terrain Registry
 
 **Decision:** Centralize terrain behavior definitions in a `TerrainRegistry` rather than hardcoding checks in the interpreter.
 **Context:** As we add more terrain types (Ice, Mud, Magic Doors), `if/else` chains in the movement logic become unmanageable.
@@ -543,7 +549,7 @@
 - `TerrainRegistry` defines `passableBy`, `speed`, and `onEnter` properties for each terrain type.
 - The `StackInterpreter` queries this registry to determine movement validity.
 
-### 58. Kinetic Dial Input
+### 59. Kinetic Dial Input
 
 **Decision:** Use a "Dial" interaction (drag up/down) for numeric properties instead of a standard input or slider.
 **Context:** Standard inputs are hard to hit on touch screens. Sliders take up too much horizontal space. A "Dial" allows for precise adjustment with a large touch target and aligns with the "Tactile" axiom.
@@ -552,7 +558,7 @@
 - Implemented `DialInput.svelte`.
 - Used for rotation and other numeric properties in the Builder.
 
-### 59. Schema Backward Compatibility Strategy
+### 60. Schema Backward Compatibility Strategy
 
 **Decision:** Default missing `terrain` maps to an empty object and infer terrain from the legacy `layout` property where possible.
 **Context:** We introduced a new `terrain` layer to the `LevelDefinition`. Existing levels don't have this. We must ensure they still load and play correctly.
@@ -563,7 +569,7 @@
 
 ## Phase 39: Community & Sharing
 
-### 60. GitHub as the Backend (Real Tools)
+### 61. GitHub as the Backend (Real Tools)
 
 **Decision:** Use GitHub (via OAuth and API) as the primary backend for community sharing, rather than a custom database.
 **Context:** We want to teach "Real World" coding skills. Building a walled garden for sharing levels hides the reality of how software is built.
@@ -575,7 +581,7 @@
 
 ## Phase 41: Release & Deployment
 
-### 61. In-App Changelog Strategy
+### 62. In-App Changelog Strategy
 
 **Decision:** Use a static data file (`src/lib/data/changelog.ts`) generated from markdown to decouple the UI from the docs but keep a single source of truth for content.
 **Context:** We want users to see what's new without leaving the app. However, we don't want to maintain two separate changelogs manually.
@@ -585,7 +591,7 @@
 - The build process (or pre-commit hook) ensures the data file is up to date.
 - The UI is simple and fast, reading from a local TS file.
 
-### 62. Branding Finalization
+### 63. Branding Finalization
 
 **Decision:** Finalize "Kibi" renaming across the app.
 **Context:** "Code Climber" was a placeholder. "Kibi" is the final name.
@@ -596,7 +602,7 @@
 
 ## Phase 42: Fix loading hang and navigation crash
 
-### 63. Full Reloads for Critical Navigation
+### 64. Full Reloads for Critical Navigation
 
 **Decision:** Use `window.location.href` (full page reload) instead of SvelteKit's `goto` (client-side routing) for "Exit" and "Back" actions in the Game Player and Builder.
 **Context:** We encountered persistent 500 errors and state corruption when navigating back from deep routes (like the Game Player or Builder) to the main menu. This is likely due to complex state cleanup issues or memory leaks in the client-side router when handling heavy Svelte 5 runes state.
@@ -606,7 +612,7 @@
 - This ensures a completely clean slate for the application state, preventing "zombie" state from causing crashes.
 - The user experience impact is minimal (sub-second reload) compared to the stability gain.
 
-### 64. Safe Proxy Cloning with `$state.snapshot`
+### 65. Safe Proxy Cloning with `$state.snapshot`
 
 **Decision:** Always use `$state.snapshot(obj)` before passing Svelte 5 proxy objects to `structuredClone` or other serialization boundaries.
 **Context:** Svelte 5 wraps state objects in proxies. `structuredClone` throws an error when it encounters these proxies if they contain non-clonable internal state.

@@ -94,6 +94,14 @@
 	);
 
 	const isDisabled = $derived(game.status !== 'planning');
+	const disabledOverlayText = $derived.by(() => {
+		if (game.status === 'story') return 'Listen to the Guide...';
+		if (game.status === 'goal') return 'Start planning to edit blocks.';
+		if (game.status === 'running') return 'Program Running...';
+		if (game.status === 'lost') return 'Run stopped. Try Again, or Reset to edit.';
+		if (game.status === 'won') return 'Level Complete! Replay or continue.';
+		return null;
+	});
 
 	const hasFunctions = $derived(Object.keys(game.functions).length > 0);
 	const functionNames = $derived(Object.keys(game.functions));
@@ -520,13 +528,9 @@
 	<div class="palette">
 		<h3>Blocks</h3>
 		<div class="block-list" class:disabled={isDisabled}>
-			{#if isDisabled}
+			{#if isDisabled && disabledOverlayText}
 				<div class="disabled-overlay">
-					{#if game.status === 'story'}
-						<span>Listen to the Guide...</span>
-					{:else if game.status === 'running'}
-						<span>Program Running...</span>
-					{/if}
+					<span>{disabledOverlayText}</span>
 				</div>
 			{/if}
 
