@@ -9,7 +9,7 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
-	import { Hammer, FolderOpen, Share2, Settings } from 'lucide-svelte';
+	import { Hammer, FolderOpen, Share2, Settings, Upload } from 'lucide-svelte';
 	import { toast } from '$lib/stores/toast.svelte';
 	import P2PModal from '$lib/components/builder/P2PModal.svelte';
 	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
@@ -38,6 +38,11 @@
 	function handleBuilder() {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto(`${base}/builder/packs`);
+	}
+
+	function handleImport() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		goto(`${base}/import`);
 	}
 
 	async function handleOpenLocalFolder() {
@@ -136,6 +141,9 @@
 			{/if}
 			<button class="action-btn" onclick={handleReceivePack}>
 				<Share2 size={20} /> Receive Pack
+			</button>
+			<button class="action-btn" onclick={handleImport}>
+				<Upload size={20} /> Import Pack
 			</button>
 			<button class="action-btn primary" onclick={handleBuilder}>
 				<Hammer size={20} /> Pack Builder

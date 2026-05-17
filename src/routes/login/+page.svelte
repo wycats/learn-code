@@ -4,11 +4,18 @@
 	import QRCode from 'qrcode';
 	import { base } from '$app/paths';
 	import { goto } from '$app/navigation';
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
 
 	let handshakeCode = $state<string | null>(null);
 	let qrDataUrl = $state<string | null>(null);
 	let pollingInterval: ReturnType<typeof setInterval>;
 	let showParentLogin = $state(false);
+	const missingOAuthConfig = $derived.by(() => [
+		...data.oauth.google.missing,
+		...data.oauth.github.missing
+	]);
 
 	const googleLoginUrl = `${base}/login/google`;
 	const githubLoginUrl = `${base}/login/github`;
@@ -116,6 +123,16 @@
 				<p class="muted-text">Sign in to manage your family account.</p>
 			</div>
 			<div class="content">
+				{#if missingOAuthConfig.length > 0}
+					<div class="setup-alert" role="status">
+						<strong>Parent login needs local setup.</strong>
+						<span>Missing: {missingOAuthConfig.join(', ')}</span>
+						<span class="setup-hint">
+							Add these callback URLs to your OAuth apps, then add the values to .env.local: Google {data
+								.oauth.callbackUrls.google}; GitHub {data.oauth.callbackUrls.github}.
+						</span>
+					</div>
+				{/if}
 				<button onclick={goToGoogle} class="btn outline">
 					<!-- Google SVG -->
 					<svg class="icon" viewBox="0 0 24 24">
@@ -250,6 +267,28 @@
 		font-weight: var(--font-weight-7);
 		letter-spacing: 0.1em;
 		color: var(--text-1);
+	}
+
+	.setup-alert {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-1);
+		padding: var(--size-3);
+		border-radius: var(--radius-2);
+		border: 1px solid var(--orange-3);
+		background-color: light-dark(var(--orange-0), var(--orange-12));
+		color: light-dark(var(--orange-9), var(--orange-2));
+		font-size: var(--font-size-0);
+		line-height: 1.4;
+	}
+
+	.setup-alert strong {
+		color: light-dark(var(--orange-10), var(--orange-1));
+	}
+
+	.setup-hint {
+		color: var(--text-2);
 	}
 
 	.instructions {

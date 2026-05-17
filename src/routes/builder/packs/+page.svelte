@@ -6,7 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
-	import { ArrowLeft } from 'lucide-svelte';
+	import { ArrowLeft, Upload } from 'lucide-svelte';
 
 	let myCampaigns = $state<LevelPack[]>([]);
 
@@ -21,6 +21,11 @@
 		});
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		void goto(`${base}/builder/packs/${newPack.id}`);
+	}
+
+	function handleImport() {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		void goto(`${base}/import`);
 	}
 
 	function handleEdit(packId: string) {
@@ -52,9 +57,14 @@
 				</button>
 				<h1>Architect's Library</h1>
 			</div>
-			<button class="create-btn" onclick={handleCreate}>
-				<span class="icon">+</span> Create New Pack
-			</button>
+			<div class="header-actions">
+				<button class="import-btn" onclick={handleImport}>
+					<Upload size={18} /> Import Pack
+				</button>
+				<button class="create-btn" onclick={handleCreate}>
+					<span class="icon">+</span> Create New Pack
+				</button>
+			</div>
 		</div>
 	</header>
 
@@ -120,6 +130,12 @@
 		gap: var(--size-4);
 	}
 
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: var(--size-3);
+	}
+
 	.back-btn {
 		background: none;
 		border: none;
@@ -177,7 +193,8 @@
 		gap: var(--size-5);
 	}
 
-	.create-btn {
+	.create-btn,
+	.import-btn {
 		background-color: var(--brand);
 		color: white;
 		border: none;
@@ -191,8 +208,18 @@
 		transition: background-color 0.2s;
 	}
 
+	.import-btn {
+		background-color: var(--surface-2);
+		color: var(--text-1);
+		border: 1px solid var(--surface-3);
+	}
+
 	.create-btn:hover {
 		background-color: var(--brand-dark);
+	}
+
+	.import-btn:hover {
+		background-color: var(--surface-3);
 	}
 
 	.secondary-btn {
