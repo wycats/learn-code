@@ -402,9 +402,15 @@
 - The toggle button cycles through three states.
 - We prioritize immediate visual feedback (forcing Dark/Light) over returning to "System" (which is the default state but might not change the visual appearance).
 
+### 47. Product Name: Kibi
+
+**Decision:** Lock in **Kibi** as the product name.
+**Context:** The PR #5 baseline introduced the Kibi name and accompanying product story. After baseline hardening and review, we accepted that naming direction rather than treating it as provisional.
+**Consequence:** Future docs, UI, roadmap language, and PR descriptions should refer to the product as Kibi. Historical Wonderblocks/Code Climber references may remain only when describing project history.
+
 ## Phase 28: Test Coverage & Quality Assurance
 
-### 47. Dependency Injection for Services
+### 48. Dependency Injection for Services
 
 **Decision:** Refactor `FileSystemService` and `PersistenceService` to use Dependency Injection (DI) via constructor arguments in models.
 **Context:** Previously, these services were imported directly as singletons or global objects. This made unit testing `BuilderModel` and `GameModel` difficult because we couldn't easily mock the file system or local storage.
@@ -414,7 +420,7 @@
 - We created `InMemoryFileSystemService` and `InMemoryPersistenceService` implementations for fast, isolated unit tests.
 - The production code uses default parameter values to inject the real services, maintaining ease of use.
 
-### 48. Strict Linting Enforcement
+### 49. Strict Linting Enforcement
 
 **Decision:** Enable and enforce strict ESLint rules, specifically `no-explicit-any` and `no-unused-vars`.
 **Context:** The codebase had accumulated "lazy" typing (`any`) and unused variables, which are potential sources of bugs and make refactoring harder.
@@ -466,10 +472,10 @@
 - **Context**: We need to implement user accounts to support cloud persistence. We evaluated Neon Auth (via Stack Auth) vs. a custom solution (using Oslo/Arctic).
 - **Decision**: Use **Custom Authentication** (based on the existing scaffolding in `src/lib/server/auth.ts`).
 - **Rationale**:
-  1.  **Control**: We want full control over the `user` schema and not rely on a read-only sync table.
-  2.  **Educational Value**: Implementing auth demonstrates core web concepts (sessions, cookies, OAuth).
-  3.  **Simplicity**: For our needs, a simple session-based auth with GitHub OAuth is sufficient. We avoid introducing a third-party identity provider dependency (Stack Auth) that might have its own pricing/limitations.
-  4.  **Offline-First**: We need to carefully manage the merge between local (offline) data and cloud data. Owning the auth flow gives us more hooks to handle this "post-login sync" gracefully.
+  1. **Control**: We want full control over the `user` schema and not rely on a read-only sync table.
+  2. **Educational Value**: Implementing auth demonstrates core web concepts (sessions, cookies, OAuth).
+  3. **Simplicity**: For our needs, a simple session-based auth with GitHub OAuth is sufficient. We avoid introducing a third-party identity provider dependency (Stack Auth) that might have its own pricing/limitations.
+  4. **Offline-First**: We need to carefully manage the merge between local (offline) data and cloud data. Owning the auth flow gives us more hooks to handle this "post-login sync" gracefully.
 
 ## Phase 32: Sync Optimization & Builder Polish
 

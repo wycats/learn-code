@@ -7,6 +7,7 @@
 	import StatusPanel from '$lib/components/game/StatusPanel.svelte';
 	import WinModal from '$lib/components/game/WinModal.svelte';
 	import GoalModal from '$lib/components/game/GoalModal.svelte';
+	import { getRunControlState } from '$lib/game/run-control';
 	import { Cluster } from '$lib';
 	import {
 		Undo2,
@@ -52,6 +53,16 @@
 	let isRunning = $state(false);
 	let isPaused = $state(false);
 	let interpreter = $state<StackInterpreter | null>(null);
+	let runToken = 0;
+
+	const runControl = $derived(
+		getRunControlState({
+			status: game.status,
+			hasProgram: game.program.length > 0,
+			isExecuting: isRunning,
+			isPaused
+		})
+	);
 
 	function handleNextStory() {
 		if (game.activeHintId) {
@@ -62,6 +73,7 @@
 	}
 
 	function handleStartPlanning() {
+		stopInterpreter();
 		game.status = 'planning';
 	}
 
@@ -73,6 +85,15 @@
 		interpreter.start();
 	}
 
+	function finishExecution() {
+		isRunning = false;
+		isPaused = false;
+		interpreter = null;
+		if (game.status === 'won') {
+			soundManager.play('win');
+		}
+	}
+
 	async function handleStep() {
 		if (!isRunning || !interpreter) {
 			await startExecution();
@@ -82,14 +103,7 @@
 			isPaused = true;
 			const continueExecution = interpreter.step();
 			if (!continueExecution) {
-				if (game.status !== 'won') {
-					// Failed
-				} else {
-					isRunning = false;
-					isPaused = false;
-					interpreter = null;
-					soundManager.play('win');
-				}
+				finishExecution();
 			}
 		}
 	}
@@ -102,43 +116,15 @@
 		}
 	}
 
-	async function handlePlay() {
-		soundManager.play('click');
-		if (isRunning && !isPaused) {
-			handleStop();
-			return;
-		}
-
-		// If we are paused in a failure state, restart instead of resuming
-		if (
-			isRunning &&
-			isPaused &&
-			(game.lastEvent?.type === 'blocked' ||
-				game.lastEvent?.type === 'fail' ||
-				game.status === 'planning')
-		) {
-			handleStop();
-		}
-
-		if (!isRunning) {
-			game.checkTrigger('program-run');
-			await startExecution();
-		}
-
+	async function runToTerminal() {
+		const token = ++runToken;
 		isPaused = false;
 
 		try {
-			while (isRunning && !isPaused && interpreter) {
+			while (isRunning && !isPaused && interpreter && token === runToken) {
 				const continueExecution = interpreter.step();
 				if (!continueExecution) {
-					if (game.status !== 'won') {
-						isPaused = true;
-					} else {
-						isRunning = false;
-						isPaused = false;
-						interpreter = null;
-						soundManager.play('win');
-					}
+					finishExecution();
 					break;
 				}
 				await new Promise((r) => setTimeout(r, 500));
@@ -149,10 +135,43 @@
 		}
 	}
 
-	function handleStop() {
+	async function restartAndRun() {
+		if (isRunning || interpreter) {
+			stopInterpreter();
+		}
+		game.checkTrigger('program-run');
+		await startExecution();
+		await runToTerminal();
+	}
+
+	async function handleRunControl() {
+		soundManager.play('click');
+		switch (runControl.action) {
+			case 'stop':
+				handleStop();
+				return;
+			case 'resume':
+				await runToTerminal();
+				return;
+			case 'play':
+			case 'replay':
+			case 'try-again':
+				await restartAndRun();
+				return;
+			case 'none':
+				return;
+		}
+	}
+
+	function stopInterpreter() {
+		runToken++;
 		isRunning = false;
 		isPaused = false;
 		interpreter = null;
+	}
+
+	function handleStop() {
+		stopInterpreter();
 		game.status = 'planning';
 		game.activeBlockId = null;
 	}
@@ -161,6 +180,11 @@
 		soundManager.play('click');
 		handleStop();
 		game.reset();
+	}
+
+	async function handleReplay() {
+		soundManager.play('click');
+		await restartAndRun();
 	}
 
 	// Architect Controls
@@ -250,13 +274,15 @@
 				<div class="separator"></div>
 				<button
 					class="btn-primary"
-					class:stop={isRunning && !isPaused}
-					onclick={handlePlay}
-					disabled={!isRunning && game.program.length === 0}
-					aria-label={isRunning && !isPaused ? 'Stop' : 'Play'}
+					class:stop={runControl.action === 'stop'}
+					onclick={handleRunControl}
+					disabled={runControl.disabled}
+					aria-label={runControl.label}
 				>
-					{#if isRunning && !isPaused}
+					{#if runControl.action === 'stop'}
 						<Square size={16} fill="currentColor" /> <span class="btn-label">Stop</span>
+					{:else if runControl.action === 'replay' || runControl.action === 'try-again'}
+						<RotateCcw size={16} /> <span class="btn-label">{runControl.label}</span>
 					{:else}
 						<Play size={16} fill="currentColor" /> <span class="btn-label">Play</span>
 					{/if}
@@ -317,7 +343,7 @@
 				{/key}
 
 				{#if game.status === 'won'}
-					<WinModal onReplay={handleReset} onNext={onNextLevel || (() => {})} {hasNextLevel} />
+					<WinModal onReplay={handleReplay} onNext={onNextLevel || (() => {})} {hasNextLevel} />
 				{/if}
 
 				{#if game.status === 'goal'}

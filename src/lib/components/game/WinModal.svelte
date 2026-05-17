@@ -20,11 +20,8 @@
 <dialog
 	bind:this={dialog}
 	class="win-modal"
-	onclose={onReplay}
 	oncancel={(e) => {
-		e.preventDefault(); // Prevent closing on Esc if we want to force a choice?
-		// Actually, for WinModal, maybe Esc should just replay or do nothing?
-		// Let's allow Esc to close (replay) for now as "light dismissal"
+		e.preventDefault();
 	}}
 >
 	<Stack gap="var(--size-4)" align="center">

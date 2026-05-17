@@ -1,46 +1,73 @@
-# Implementation Plan: PR #5 Baseline Hardening
+# Implementation Plan: Phase 43 — Kinetic Accessibility & Jonas Feedback
 
 ## Status
 
-Hardening the curated PR #5 baseline before merge. The goal is to make the broad continuation branch safe enough to become the next project baseline, or to identify the parts that must be split out.
+Planning. Do not implement until this plan is reviewed and approved.
 
-## Context
+## Why This Phase
 
-`pr5-curated-baseline` already removed generated artifacts and passed Node 24 validation. A targeted review found blockers in auth/cloud safety, documentation/product truth, and visual/CI policy.
+The PR #5 baseline is now merged and Kibi is the locked-in product identity. The next useful product step is to improve the tactile feel and clarity of the player/builder loop before adding another large system.
 
-This hardening pass is based on `origin/main` after the PGlite local-dev PR and merges the curated PR #5 baseline on top.
+This combines the existing Phase 43 roadmap with the deferred Jonas feedback from Phase 42:
 
-## Goals
+- **Run Button Logic**: If the character is already at the goal or in a failure state, Run should restart/replay cleanly rather than feeling stuck.
+- **Visual Clarity**: Make Edit/Run/Failure/Win states visually distinct enough that Jonas and Zoey can understand what mode they are in without reading implementation details.
+- **Kinetic Accessibility**: Improve physical-feeling interaction affordances while keeping touch-first behavior central.
 
-1. Preserve local-first development with PGlite while keeping production DB failures lazy and explicit.
-2. Harden auth/cloud/server behavior enough for baseline review:
-   - OAuth callbacks use correct token accessors and validate provider payloads.
-   - Redirect targets are local-path only.
-   - Provider account linking requires verified email ownership.
-   - Full server sessions and encrypted GitHub tokens are not serialized to clients.
-   - Profile and device destructive actions are scoped to the current user.
-   - Device auth records remain revocable after authorization.
-   - Sync and GitHub pack payloads are validated.
-   - GitHub-created pack repositories default private.
-3. Remove destructive migration behavior that would drop legacy `user` and `session` tables.
-4. Make Playwright/Argos CI policy explicit and self-contained.
-5. Reconcile current docs so they describe baseline hardening rather than treating Phase 42 as the active truth.
+## Product Goals
+
+1. Make state transitions legible: editing, running, won, lost, and reset/replay should each have clear visual affordances.
+2. Make the Run button feel reliable and obvious in all terminal states.
+3. Improve tactile interaction without adding fragile novelty.
+4. Preserve local-first behavior and avoid adding new auth/cloud complexity in this phase.
+
+## Proposed Scope
+
+### 1. Run Button State Machine
+
+- Audit current `GameModel` status transitions and `Game.svelte` / toolbar controls.
+- Define expected behavior for Run in these states:
+  - planning → start execution
+  - running → probably disabled or pause/stop if already supported
+  - won/lost → reset to start and run again, or present a clear Replay action
+  - story/goal → do not run until user has entered planning
+- Add unit tests for model-level status behavior where possible.
+- Add or update E2E coverage for the reported Jonas flow.
+
+### 2. Edit / Run Visual Clarity
+
+- Audit the player and builder surfaces for mode indicators.
+- Improve labels, icon states, color/tone, and disabled affordances so mode is visually obvious.
+- Avoid relying on hover or tiny text.
+- Validate on mobile viewport.
+
+### 3. Kinetic Interaction Candidate Slice
+
+Pick a small, concrete slice from the Phase 43 roadmap rather than attempting all kinetic language ideas at once:
+
+- **Preferred first slice**: Ghost Replay / Staff Ghost planning affordance, if it directly supports solvability and debugging.
+- **Alternative first slice**: Snap-to-intent / magnetic drop targets, if current drag/drop feels unclear during review.
+- **Defer**: Kinetic deletion/flinging unless it clearly solves an existing usability problem.
+
+## Out of Scope
+
+- Full Syntax Bridge / code view.
+- New auth/cloud features.
+- Full feedback system.
+- Large redesign of the Builder.
+- New curriculum packs beyond small test fixtures if needed.
 
 ## Validation Plan
 
-- `PROTO_NODE_VERSION=24 pnpm install --frozen-lockfile`
 - `PROTO_NODE_VERSION=24 pnpm check`
 - `PROTO_NODE_VERSION=24 pnpm lint`
 - `PROTO_NODE_VERSION=24 pnpm test:unit`
 - `PROTO_NODE_VERSION=24 pnpm build`
-- `PROTO_NODE_VERSION=24 pnpm test:e2e`
-- `PROTO_NODE_VERSION=24 pnpm test:visual`
-- `git diff --check`
+- Targeted Playwright coverage for run/replay and mode clarity
+- Visual check for key affected screens
 
-## Review Gate
+## Open Questions
 
-After validation, review only the remediated blocker areas. If no blocker remains, the hardened branch can become the merge candidate for the PR #5 baseline.
-
-## Open Product Decision
-
-Kibi appears coherent in the candidate baseline, but final merge should still explicitly confirm that Kibi is the intended product name.
+1. Should Run from `won` immediately replay, or should the button label change to `Replay`?
+2. Should Run from `lost` reset and replay, or reset to planning only?
+3. Which kinetic slice should ship first: Ghost Replay or Snap-to-intent?

@@ -68,8 +68,22 @@ describe('StackInterpreter', () => {
 		const result = interpreter.step();
 
 		expect(result).toBe(false); // Should stop execution
+		expect(game.status).toBe('lost');
 		expect(game.executionState.get('1')).toBe('failure');
 		expect(game.lastEvent?.type).toBe('blocked');
+	});
+
+	it('should mark an incomplete program as lost when it finishes away from the goal', () => {
+		game.addBlock({ id: '1', type: 'move-forward' });
+		interpreter.start();
+
+		let result = true;
+		while (result) {
+			result = interpreter.step();
+		}
+
+		expect(game.characterPosition).toEqual({ x: 1, y: 0 });
+		expect(game.status).toBe('lost');
 	});
 
 	it('should clear error state on reset and restart', () => {
@@ -325,6 +339,7 @@ describe('StackInterpreter', () => {
 		// Should stop eventually due to stack limit
 		expect(interpreter.stack.length).toBeLessThan(1000);
 		expect(result).toBe(false);
+		expect(game.status).toBe('lost');
 	});
 
 	it('should step back correctly', () => {
