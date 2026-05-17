@@ -33,8 +33,8 @@ export class CloudSyncService {
 		}
 	}
 
-	static async push(updates: SyncUpdate[]) {
-		if (updates.length === 0) return;
+	static async push(updates: SyncUpdate[]): Promise<boolean> {
+		if (updates.length === 0) return true;
 
 		syncStatus.set('syncing');
 		try {
@@ -45,7 +45,7 @@ export class CloudSyncService {
 			});
 			if (!res.ok) {
 				syncStatus.set('error');
-				return;
+				return false;
 			}
 			const data = await res.json();
 
@@ -53,10 +53,12 @@ export class CloudSyncService {
 				this.mergeFromServer(data.synced);
 			}
 			syncStatus.set('idle');
+			return true;
 		} catch (e) {
 			console.error('Sync push failed', e);
 			syncStatus.set('error');
 			// TODO: Queue for offline
+			return false;
 		}
 	}
 

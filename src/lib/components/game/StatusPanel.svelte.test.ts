@@ -16,5 +16,6 @@ describe('StatusPanel', () => {
 
 		expect(getByText('Try Again')).toBeInTheDocument();
 		expect(getByText(/The run stopped before the goal/)).toBeInTheDocument();
+		expect(getByText(/Reset to edit/)).toBeInTheDocument();
 	});
 });

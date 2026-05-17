@@ -37,7 +37,7 @@
 			</div>
 			<div class="info">
 				<h3>Try Again</h3>
-				<p>The run stopped before the goal. Adjust your blocks or try the same program again.</p>
+				<p>The run stopped before the goal. Try the same program again, or Reset to edit.</p>
 			</div>
 		</div>
 	{:else}

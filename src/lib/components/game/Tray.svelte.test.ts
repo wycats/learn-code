@@ -150,7 +150,7 @@ describe('Tray Component', () => {
 
 		const { getByText } = render(Tray, { game });
 
-		expect(getByText('Run stopped. Try Again or edit after Reset.')).toBeInTheDocument();
+		expect(getByText('Run stopped. Try Again, or Reset to edit.')).toBeInTheDocument();
 	});
 
 	it('explains that the tray is disabled after a successful run', async () => {

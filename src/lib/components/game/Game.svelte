@@ -54,6 +54,7 @@
 	let isPaused = $state(false);
 	let interpreter = $state<StackInterpreter | null>(null);
 	let runToken = 0;
+	const canEdit = $derived(game.status === 'planning' && !isRunning);
 
 	const runControl = $derived(
 		getRunControlState({
@@ -183,6 +184,10 @@
 		game.reset();
 	}
 
+	function handleDismissWinModal() {
+		handleReset();
+	}
+
 	async function handleReplay() {
 		soundManager.play('click');
 		await restartAndRun();
@@ -259,7 +264,7 @@
 				<button
 					class="btn-icon"
 					onclick={() => game.undo()}
-					disabled={!game.canUndo || isRunning}
+					disabled={!game.canUndo || !canEdit}
 					title="Undo"
 				>
 					<Undo2 size={20} />
@@ -267,7 +272,7 @@
 				<button
 					class="btn-icon"
 					onclick={() => game.redo()}
-					disabled={!game.canRedo || isRunning}
+					disabled={!game.canRedo || !canEdit}
 					title="Redo"
 				>
 					<Redo2 size={20} />
@@ -344,7 +349,12 @@
 				{/key}
 
 				{#if game.status === 'won'}
-					<WinModal onReplay={handleReplay} onNext={onNextLevel || (() => {})} {hasNextLevel} />
+					<WinModal
+						onReplay={handleReplay}
+						onNext={onNextLevel || (() => {})}
+						onDismiss={handleDismissWinModal}
+						{hasNextLevel}
+					/>
 				{/if}
 
 				{#if game.status === 'goal'}

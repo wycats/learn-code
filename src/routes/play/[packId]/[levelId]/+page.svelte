@@ -11,6 +11,7 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { ArrowLeft } from 'lucide-svelte';
+	import { untrack } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageData } from './$types';
 
@@ -101,24 +102,35 @@
 	// Watch for win state to save progress
 	$effect(() => {
 		if (game && game.status === 'won') {
-			const completionKey = `${packId}:${levelId}`;
-			if (completedLevelIds.has(completionKey)) return;
-
-			const stars = calculateStars();
-			ProgressService.completeLevel(packId, levelId, stars);
-			completedLevelIds.add(completionKey);
-			if (data.user) {
-				void CloudSyncService.push([
-					{
-						levelId,
-						status: 'completed',
-						stars,
-						updatedAt: new Date().toISOString()
-					}
-				]).catch(() => completedLevelIds.delete(completionKey));
-			}
+			const currentPackId = packId;
+			const currentLevelId = levelId;
+			void untrack(() => completeCurrentLevel(currentPackId, currentLevelId));
 		}
 	});
+
+	async function completeCurrentLevel(currentPackId: string, currentLevelId: string) {
+		const completionKey = `${currentPackId}:${currentLevelId}`;
+		if (completedLevelIds.has(completionKey)) return;
+
+		const stars = calculateStars();
+		ProgressService.completeLevel(currentPackId, currentLevelId, stars);
+		completedLevelIds.add(completionKey);
+
+		if (!data.user) return;
+
+		const synced = await CloudSyncService.push([
+			{
+				levelId: currentLevelId,
+				status: 'completed',
+				stars,
+				updatedAt: new Date().toISOString()
+			}
+		]);
+
+		if (!synced) {
+			completedLevelIds.delete(completionKey);
+		}
+	}
 
 	function calculateStars(): number {
 		// Simple star logic for now: 3 stars for completion

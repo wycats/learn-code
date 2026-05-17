@@ -98,7 +98,7 @@
 		if (game.status === 'story') return 'Listen to the Guide...';
 		if (game.status === 'goal') return 'Start planning to edit blocks.';
 		if (game.status === 'running') return 'Program Running...';
-		if (game.status === 'lost') return 'Run stopped. Try Again or edit after Reset.';
+		if (game.status === 'lost') return 'Run stopped. Try Again, or Reset to edit.';
 		if (game.status === 'won') return 'Level Complete! Replay or continue.';
 		return null;
 	});
