@@ -2,7 +2,7 @@
 
 ## Status
 
-PER 1 Run / Replay behavior is implemented and under PR review. Broader visual clarity and the first kinetic accessibility slice remain open.
+PER 1 Run / Replay behavior is implemented. PER 2 Visual Clarity is implemented. The first kinetic accessibility slice remains open.
 
 ## Why This Phase
 
@@ -41,6 +41,15 @@ This combines the existing Phase 43 roadmap with the deferred Jonas feedback fro
 - Avoid relying on hover or tiny text.
 - Validate on mobile viewport.
 
+### PER 2 Implemented Visual Clarity Slice
+
+- Player mode chip covers story, goal, planning, running, local paused/step mode, won, and lost.
+- Step mode stays local to `Game.svelte`; no `GameStatus` schema or interpreter/run-control behavior changed.
+- Status panel and tray overlays now name the current non-editable mode visibly.
+- Builder toolbar now exposes edit, story editing, settings open, targeting active, test mode, and current level indicators.
+- Builder story bar now has a visible story/targeting ribbon.
+- Root and pack-level builder route wrappers now both show settings/targeting affordances consistently.
+
 ### 3. Kinetic Interaction Candidate Slice
 
 Pick a small, concrete slice from the Phase 43 roadmap rather than attempting all kinetic language ideas at once:
@@ -72,7 +81,13 @@ Pick a small, concrete slice from the Phase 43 roadmap rather than attempting al
 2. Run from `lost` is labeled `Try Again` and immediately reruns the same program from the start.
 3. Step-then-Play resumes the paused interpreter instead of restarting.
 
+## Resolved PER 2 Decisions
+
+1. Use persistent chips/ribbons instead of hover-only labels for mode clarity.
+2. Keep paused/step mode as local `Game.svelte` UI state rather than expanding `GameStatus`.
+3. Treat builder test mode as the existing game/architect path with a clearer `BUILDER TEST` label.
+
 ## Open Questions
 
 1. Which kinetic slice should ship first: Ghost Replay or Snap-to-intent?
-2. Should broader visual clarity focus first on player mode, builder mode, or both?
+2. Should the next visual pass include mobile-specific toolbar simplification beyond the current responsive chip compression?

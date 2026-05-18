@@ -4,13 +4,24 @@
 
 	interface Props {
 		game: GameModel;
+		isStepMode?: boolean;
 	}
 
-	let { game }: Props = $props();
+	let { game, isStepMode = false }: Props = $props();
 </script>
 
 <div class="status-panel">
-	{#if game.status === 'running'}
+	{#if game.status === 'running' && isStepMode}
+		<div class="status-content paused" data-testid="status-panel-step-mode">
+			<div class="icon-wrapper">
+				<BrainCircuit size={24} />
+			</div>
+			<div class="info">
+				<h3>Step Mode</h3>
+				<p>The program is paused. Step again or press Play to keep running.</p>
+			</div>
+		</div>
+	{:else if game.status === 'running'}
 		<div class="status-content running">
 			<div class="icon-wrapper">
 				<Play size={24} />
@@ -99,6 +110,10 @@
 	.lost .icon-wrapper {
 		color: light-dark(var(--red-6), var(--red-4));
 		background-color: light-dark(var(--red-0), var(--red-9));
+	}
+	.paused .icon-wrapper {
+		color: light-dark(var(--orange-6), var(--orange-4));
+		background-color: light-dark(var(--orange-0), var(--orange-9));
 	}
 	.planning .icon-wrapper {
 		color: light-dark(var(--blue-6), var(--blue-4));

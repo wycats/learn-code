@@ -12,7 +12,8 @@
 		Target,
 		Check,
 		Pencil,
-		Move
+		Move,
+		BookOpen
 	} from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
 	import {
@@ -210,6 +211,13 @@
 		isDragging: false,
 		targetId: null,
 		closestEdge: null
+	});
+	const storyModeLabel = $derived.by(() => {
+		if (builder.targetSelectionMode && builder.targetingState.contextName === 'Story Segment') {
+			return `Targeting ${builder.targetingState.currentCount}`;
+		}
+		if (isMoveMode) return 'Moving Segment';
+		return 'Story Editing';
 	});
 
 	function toggleMoveMode() {
@@ -432,6 +440,11 @@
 
 	{#if current}
 		<div class="instruction-bar-editor" transition:fly={{ y: -20, duration: 300 }}>
+			<div class="story-mode-ribbon" data-testid="builder-story-mode-indicator">
+				<BookOpen size={14} />
+				<span>{storyModeLabel}</span>
+			</div>
+
 			<div class="editor-controls left">
 				<button
 					class="nav-btn"
@@ -682,6 +695,11 @@
 		</div>
 	{:else}
 		<div class="instruction-bar-editor empty-state" transition:fly={{ y: -20, duration: 300 }}>
+			<div class="story-mode-ribbon" data-testid="builder-story-mode-indicator">
+				<BookOpen size={14} />
+				<span>Story Editing</span>
+			</div>
+
 			<div class="empty-content">
 				<p class="text-2">Start your story by adding an intro segment.</p>
 				<button class="btn-primary" onclick={() => addSegment('intro')}>
@@ -811,6 +829,28 @@
 		gap: var(--size-2);
 		position: relative;
 		anchor-name: --story-bar;
+	}
+
+	.story-mode-ribbon {
+		position: absolute;
+		top: var(--size-1);
+		left: 50%;
+		transform: translateX(-50%);
+		display: flex;
+		align-items: center;
+		gap: var(--size-1);
+		padding: 2px var(--size-3);
+		border-radius: var(--radius-pill);
+		border: 1px solid light-dark(var(--violet-2), var(--violet-7));
+		background-color: light-dark(var(--violet-0), var(--violet-9));
+		color: light-dark(var(--violet-7), var(--violet-3));
+		font-size: var(--font-size-00);
+		font-weight: 800;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		box-shadow: var(--shadow-1);
+		pointer-events: none;
+		z-index: 2;
 	}
 
 	.timeline-popover {

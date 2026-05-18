@@ -2,7 +2,7 @@
 
 ## Current Status
 
-PER 1 Run / Replay behavior has been implemented. The remaining Phase 43 visual clarity and kinetic accessibility work is still open.
+PER 1 Run / Replay behavior and PER 2 Visual Clarity have been implemented. The remaining Phase 43 kinetic accessibility work is still open.
 
 ## Baseline
 
@@ -43,8 +43,36 @@ The likely best shape is a focused phase that combines:
 - `PROTO_NODE_VERSION=24 pnpm build`
 - `git diff --check`
 
+## PER 2 Visual Clarity Walkthrough
+
+- The player header now has a persistent mode chip for `story`, `goal`, `planning`, `running`, local paused/step mode, `won`, and `lost` states.
+- Local step mode remains local to `Game.svelte`; it is surfaced visually without changing `GameStatus`, interpreter behavior, or run-control behavior.
+- The player status panel now distinguishes running from step mode, and the tray disabled overlay names the current non-editable mode instead of relying on hover or disabled styling alone.
+- Builder edit surfaces now show a persistent mode chip for edit, story editing, settings open, and targeting active states, plus a current-level chip.
+- Builder test mode uses the existing `architectMode` path but labels it as `BUILDER TEST` and keeps the player mode chip visible inside the test run.
+- Story editing has a visible ribbon that changes from `Story Editing` to `Targeting N` during story target selection.
+- The pack-level builder route was brought into parity with the root builder route for targeting overlays and target callbacks.
+
+## PER 2 Validation
+
+- `PROTO_NODE_VERSION=24 pnpm check` — passed with existing warnings in unrelated files.
+- `PROTO_NODE_VERSION=24 pnpm exec playwright test e2e/run-replay.spec.ts --project=chromium` — passed.
+- `PROTO_NODE_VERSION=24 pnpm exec playwright test e2e/builder-targets.spec.ts --project=chromium` — first run exposed a strict locator issue from duplicate transition elements; after scoping to the active story editor, passed.
+- `PROTO_NODE_VERSION=24 pnpm lint` — passed.
+- `PROTO_NODE_VERSION=24 pnpm build` — passed with existing warnings in unrelated files.
+- `PROTO_NODE_VERSION=24 pnpm test:unit` — passed.
+- `git diff --check` — passed.
+- Svelte MCP autofixer was run on the changed Svelte components. It reported no blocking issues; the remaining notes were existing advisory suggestions in larger components, and `svelte-check` stayed clean.
+
+## PER 2 Review
+
+- The implementation matched the prepare hypothesis: persistent player/builder mode chips and ribbons, no kinetic behavior changes, no run-control/interpreter/model scope creep.
+- Step mode remains local to `Game.svelte` and is surfaced only through local UI affordances.
+- The only meaningful residual risk is visual density on smaller player/builder headers, which should be checked before or during the next kinetic slice.
+
 ## What To Review Next
 
 - Confirm the run/replay feel in the browser, especially whether terminal states should keep editing disabled until Reset.
+- Review the PER 2 visual clarity layer in the browser, especially crowded toolbar behavior on smaller widths.
 - Continue Phase 43 by choosing the kinetic slice: Ghost Replay or Snap-to-intent.
-- Mobile/touch visual validation remains open beyond the targeted desktop Playwright run/replay flow.
+- Mobile/touch visual validation remains open beyond the targeted desktop Playwright coverage.

@@ -34,10 +34,22 @@
 		}}
 	/>
 {:else}
-	<div class="builder-interface" class:targeting-active={builder.targetingState.isActive}>
+	<div
+		class="builder-interface"
+		class:targeting-active={builder.targetingState.isActive}
+		class:settings-open={showSettings}
+	>
 		{#if builder.targetingState.isActive}
 			<div class="focus-overlay" transition:fade={{ duration: 200 }}></div>
 		{/if}
+
+		{#if showSettings}
+			<div class="settings-mode-banner" data-testid="builder-settings-mode-indicator">
+				<strong>Settings Open</strong>
+				<span>Editing {builder.level.name}</span>
+			</div>
+		{/if}
+
 		<BuilderToolbar
 			{builder}
 			{showSettings}
@@ -80,6 +92,36 @@
 		grid-template-rows: auto 1fr;
 		height: 100vh;
 		overflow: hidden;
+		position: relative;
+	}
+
+	.settings-mode-banner {
+		position: fixed;
+		top: calc(var(--size-2) + var(--touch-target-min));
+		left: 50%;
+		transform: translateX(-50%);
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		z-index: 35;
+		padding: var(--size-2) var(--size-4);
+		border-radius: var(--radius-pill);
+		border: 1px solid light-dark(var(--orange-2), var(--orange-7));
+		background-color: light-dark(var(--orange-0), var(--orange-9));
+		color: var(--text-1);
+		box-shadow: var(--shadow-3);
+		pointer-events: none;
+	}
+
+	.settings-mode-banner strong {
+		font-family: var(--font-heading);
+		font-size: var(--font-size-1);
+	}
+
+	.settings-mode-banner span {
+		font-size: var(--font-size-0);
+		font-weight: 700;
+		color: var(--text-2);
 	}
 
 	.workspace {
