@@ -311,11 +311,13 @@
 					aria-label={`Player mode: ${playerMode.label}. ${playerMode.detail}`}
 				>
 					<span class="mode-dot"></span>
-					<span class="mode-text">
+					<span class="mode-copy">
 						<span class="mode-kicker">Player</span>
-						<strong>{playerMode.label}</strong>
+						<span class="mode-line">
+							<strong>{playerMode.label}</strong>
+							<span class="mode-detail">{playerMode.detail}</span>
+						</span>
 					</span>
-					<span class="mode-detail">{playerMode.detail}</span>
 				</div>
 
 				{#if ghostPathDetail}
@@ -476,17 +478,19 @@
 	.player-mode-chip {
 		--mode-color: var(--brand);
 		--mode-bg: var(--brand-surface);
-		display: flex;
+		display: inline-grid;
+		grid-template-columns: auto minmax(0, auto);
 		align-items: center;
-		gap: var(--size-2);
+		column-gap: 0.75rem;
 		min-height: var(--touch-target-min);
-		padding: 0 var(--size-3);
+		padding: 0.42rem 0.95rem 0.46rem 0.8rem;
 		border-radius: var(--radius-pill);
 		border: 1px solid color-mix(in srgb, var(--mode-color), transparent 55%);
 		background-color: var(--mode-bg);
 		color: var(--text-1);
 		box-shadow: var(--shadow-1);
 		white-space: nowrap;
+		line-height: 1;
 	}
 
 	.player-mode-chip.story {
@@ -525,8 +529,8 @@
 	}
 
 	.mode-dot {
-		width: 0.75rem;
-		height: 0.75rem;
+		width: 0.85rem;
+		height: 0.85rem;
 		border-radius: 999px;
 		background-color: var(--mode-color);
 		box-shadow: 0 0 0 3px color-mix(in srgb, var(--mode-color), transparent 80%);
@@ -537,28 +541,41 @@
 		animation: mode-pulse 1.2s ease-in-out infinite;
 	}
 
-	.mode-text {
-		display: flex;
-		flex-direction: column;
-		line-height: 1.1;
+	.mode-copy {
+		display: grid;
+		row-gap: 0.14rem;
+		min-width: 0;
 	}
 
 	.mode-kicker {
 		font-size: var(--font-size-00);
 		font-weight: 800;
 		letter-spacing: 0.08em;
+		line-height: 1;
 		text-transform: uppercase;
 		color: var(--mode-color);
 	}
 
-	.mode-text strong {
+	.mode-line {
+		display: flex;
+		align-items: baseline;
+		gap: 0.7rem;
+		min-width: 0;
+	}
+
+	.mode-line strong {
 		font-size: var(--font-size-1);
 		font-family: var(--font-heading);
+		line-height: 1.05;
 	}
 
 	.mode-detail {
 		font-size: var(--font-size-0);
 		color: var(--text-2);
+		font-weight: 600;
+		line-height: 1.15;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.ghost-path-status {
