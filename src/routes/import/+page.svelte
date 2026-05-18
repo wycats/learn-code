@@ -34,7 +34,7 @@
 			console.error(e);
 			status = 'error';
 			error =
-				'Could not load pack. Make sure the repository is public and contains a valid pack.json.';
+				'Could not load pack. Make sure the URL is reachable, allows browser access, and points to a valid pack.json.';
 		}
 	}
 

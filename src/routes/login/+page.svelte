@@ -12,13 +12,22 @@
 	let qrDataUrl = $state<string | null>(null);
 	let pollingInterval: ReturnType<typeof setInterval>;
 	let showParentLogin = $state(false);
-	const missingOAuthConfig = $derived.by(() => [
-		...data.oauth.google.missing,
-		...data.oauth.github.missing
-	]);
+	const missingProviderConfig = $derived.by(() =>
+		[...data.oauth.google.missing, ...data.oauth.github.missing].filter(
+			(key) => key !== 'AUTH_TOKEN_SECRET'
+		)
+	);
+	const missingLocalSecrets = $derived.by(() =>
+		[...data.oauth.google.missing, ...data.oauth.github.missing].filter(
+			(key) => key === 'AUTH_TOKEN_SECRET'
+		)
+	);
 	const googleLoginAvailable = $derived(data.runtimeOAuth.google);
 	const githubLoginAvailable = $derived(data.runtimeOAuth.github);
 	const anyParentLoginAvailable = $derived(googleLoginAvailable || githubLoginAvailable);
+	const hasMissingLoginConfig = $derived(
+		missingProviderConfig.length > 0 || missingLocalSecrets.length > 0
+	);
 
 	const googleLoginUrl = `${base}/login/google`;
 	const githubLoginUrl = `${base}/login/github`;
@@ -139,7 +148,7 @@
 						</span>
 					</div>
 				{/if}
-				{#if missingOAuthConfig.length > 0}
+				{#if hasMissingLoginConfig}
 					<div class="setup-alert" role="status">
 						<strong>
 							{#if anyParentLoginAvailable}
@@ -148,11 +157,19 @@
 								Parent login needs local setup.
 							{/if}
 						</strong>
-						<span>Missing optional OAuth config: {missingOAuthConfig.join(', ')}</span>
-						<span class="setup-hint">
-							Add these callback URLs to your OAuth apps, then add the values to .env.local: Google {data
-								.oauth.callbackUrls.google}; GitHub {data.oauth.callbackUrls.github}.
-						</span>
+						{#if missingProviderConfig.length > 0}
+							<span>Missing provider credentials: {missingProviderConfig.join(', ')}</span>
+							<span class="setup-hint">
+								Add these callback URLs to your OAuth apps, then add the client IDs and secrets:
+								Google {data.oauth.callbackUrls.google}; GitHub {data.oauth.callbackUrls.github}.
+							</span>
+						{/if}
+						{#if missingLocalSecrets.length > 0}
+							<span>Missing local app secrets: {missingLocalSecrets.join(', ')}</span>
+							<span class="setup-hint">
+								Generate a long random value for token encryption before enabling parent login.
+							</span>
+						{/if}
 					</div>
 				{/if}
 				<button onclick={goToGoogle} class="btn outline" disabled={!googleLoginAvailable}>
