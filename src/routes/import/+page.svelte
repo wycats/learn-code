@@ -99,19 +99,20 @@
 				<h2>Import Pack</h2>
 				<p>Paste a GitHub repository URL, a raw pack.json URL, or choose a local pack file.</p>
 
-				<form class="url-form" onsubmit={(e) => e.preventDefault()}>
+				<form
+					class="url-form"
+					onsubmit={(e) => {
+						e.preventDefault();
+						void handleUrlImport();
+					}}
+				>
 					<label for="import-url">Pack URL</label>
 					<input
 						id="import-url"
 						bind:value={importUrl}
 						placeholder="https://github.com/you/kibi-pack"
 					/>
-					<button
-						class="btn-primary"
-						type="button"
-						onclick={handleUrlImport}
-						disabled={!importUrl.trim()}
-					>
+					<button class="btn-primary" type="submit" disabled={!importUrl.trim()}>
 						Load from URL
 					</button>
 				</form>

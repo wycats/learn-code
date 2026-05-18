@@ -233,8 +233,8 @@
 				<div class="level-select-wrapper">
 					<button
 						class="level-trigger"
-						command="toggle-popover"
-						commandfor={levelPopoverId}
+						popovertarget={levelPopoverId}
+						popovertargetaction="toggle"
 						title="Switch Level"
 					>
 						<span class="level-name">{builder.level.name}</span>
