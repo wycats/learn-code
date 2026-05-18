@@ -1,50 +1,48 @@
-# Task List: Phase 43 — Kinetic Accessibility & Jonas Feedback
+# Task List: Phase 37 — The Lost Fleet
 
-## Phase Setup
+## Execute Slice
 
-- [x] Confirm Kibi as the product name.
-- [x] Archive PR #5 baseline-hardening current docs.
-- [x] Review and approve this Phase 43 plan.
+- [x] Confirm Phase 37 is already partially implemented.
+- [x] Keep scope to validation, polish, and visibility.
+- [x] Leave untracked `.logs/`, `.vscode/settings.json`, and `locald.toml` untouched.
 
-## Discovery
+## Pack and Content Assertions
 
-- [x] Audit current Run button behavior across `planning`, `running`, `won`, `lost`, `story`, and `goal` states.
-- [x] Audit player and builder visual mode indicators.
-- [x] Identify the smallest useful kinetic interaction slice for this phase.
+- [x] Assert The Lost Fleet / `VEHICLES_PACK` is registered in `PACKS`.
+- [x] Assert the vehicles pack has exactly 3 levels.
+- [x] Assert the level names are Set Sail, Island Hopping, and Row Your Boat.
+- [x] Assert built-in level ids are unique across registered packs.
 
-## Run Button Logic
+## E2E Coverage
 
-- [x] Define desired Run/Replay/Reset behavior for terminal states.
-- [x] Implement model/UI changes.
-- [x] Add model/unit tests where possible.
-- [x] Add targeted E2E coverage for Jonas's reported flow.
+- [x] Add targeted Lost Fleet Playwright spec.
+- [x] Prove The Lost Fleet appears in Library.
+- [x] Prove `/library/vehicles` loads.
+- [x] Prove Set Sail, Island Hopping, and Row Your Boat appear.
+- [x] Prove first Lost Fleet level route is playable.
+- [x] Prove Set Sail can be won by boarding the boat and crossing water.
 
-## Visual Clarity
+## Content Polish
 
-- [x] Improve edit/run/won/lost mode affordances for the run/replay slice.
-- [x] Verify run/replay behavior in Playwright Chromium; broader mobile visual clarity remains for the next PER.
-- [x] Capture targeted Playwright evidence for run/replay behavior.
-- [x] PER 2: Add non-hover player mode indicators for story, goal, planning, running, step mode, won, and lost.
-- [x] PER 2: Add non-hover builder mode indicators for edit, story editing, settings open, targeting active, test mode, and current level.
-- [x] PER 2: Add targeted Playwright coverage for player and builder mode indicators.
-
-## Kinetic Accessibility Slice
-
-- [x] Choose Ghost Replay or Snap-to-intent as the first slice.
-- [x] Write a small implementation plan for the chosen slice.
-- [x] Implement only the approved slice.
-- [x] Validate with focused automated tests.
-- [x] Manual visual review of Ghost Path on the local dev server.
+- [x] Update Set Sail description to name `Board`.
+- [x] Add intro targets for the boat, `Board`, and the water crossing.
+- [x] Avoid new boat mechanics, disembark rules, broad builder redesign, new vehicle types, and schema/cloud work.
 
 ## Validation
 
+- [x] `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/game/packs/validate.test.ts`
+- [x] `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/game/packs/validate.test.ts src/lib/game/interpreter.test.ts src/lib/game/ghost-path.test.ts`
+- [x] `PROTO_NODE_VERSION=24 pnpm exec playwright test e2e/lost-fleet.spec.ts --project=chromium`
 - [x] `PROTO_NODE_VERSION=24 pnpm check`
 - [x] `PROTO_NODE_VERSION=24 pnpm lint`
-- [x] `PROTO_NODE_VERSION=24 pnpm test:unit`
 - [x] `PROTO_NODE_VERSION=24 pnpm build`
-- [x] Targeted Vitest coverage for run-control/interpreter/model/status panel
-- [x] Targeted Playwright coverage for run/replay
-- [x] PER 2 targeted Playwright `e2e/run-replay.spec.ts --project=chromium`
-- [x] PER 2 targeted Playwright `e2e/builder-targets.spec.ts --project=chromium`
-- [x] PER 3 targeted Vitest `src/lib/game/ghost-path.test.ts` and `src/lib/components/game/Grid.svelte.spec.ts`
-- [x] PER 3 targeted Playwright `e2e/run-replay.spec.ts --project=chromium --grep "Ghost Path"`
+- [x] `git diff --check`
+
+## Manual Visual Review Checklist
+
+- [ ] Library card for The Lost Fleet is visible and visually coherent.
+- [ ] `/library/vehicles` shows the three boat levels in the intended order.
+- [ ] Set Sail story highlights the boat, `Board`, and the water crossing clearly.
+- [ ] During Set Sail run, Zoey visibly boards/carries the boat affordance while crossing water.
+- [ ] Win modal appears after the Step → Board → Step → Step solution.
+- [x] Manual local visual review accepted the Lost Fleet slice.

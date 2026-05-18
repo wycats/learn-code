@@ -1,63 +1,22 @@
-# In-App Changelog Plan
+# Changelog Plan: Phase 37 — The Lost Fleet
 
-## Goal
+## Candidate User-Facing Summary
 
-Provide users (especially "Architects" like Jonas) with a visible history of updates, new features, and bug fixes directly within the application.
+The Lost Fleet is now visible and validated as Kibi's boat-themed pack. Players can find it in the Library, open the Vehicles pack directly, and complete Set Sail by boarding a boat and crossing water.
 
-## Implementation Strategy
+## Candidate Highlights
 
-### 1. Data Source (`src/lib/data/changelog.ts`)
+- Added targeted validation for the built-in Vehicles pack.
+- Added E2E coverage proving The Lost Fleet is visible, routable, and playable.
+- Polished Set Sail's intro guidance so `Board` and the boat crossing are highlighted.
 
-We will create a structured data file to serve as the source of truth for the in-app changelog. This decouples the user-facing copy from the internal `docs/agent-context/changelog.md`.
+## Non-User-Facing Notes
 
-```typescript
-export interface ChangelogEntry {
-	version: string; // e.g., "Phase 40" or "v0.9.0"
-	date: string;
-	title: string;
-	summary: string;
-	features: string[]; // Bullet points
-	fixes?: string[]; // Optional bullet points
-	type: 'major' | 'minor' | 'patch';
-}
+- This was a stabilization slice, not a new mechanic slice.
+- No boat mechanics, vehicle types, builder redesign, or persistence/schema work were introduced.
 
-export const CHANGELOG: ChangelogEntry[] = [
-	{
-		version: 'Phase 40',
-		date: '2025-12-06',
-		title: 'Lives & Survival Mechanics',
-		summary: 'Introduced a health system, hazards, and game over states.',
-		features: [
-			'Lives System: Players now have 3 hearts.',
-			'Hazards: Spikes and Fire tiles deal damage.',
-			'Tile Editor: Configure hazard damage and effects.',
-			"Audio: New 'Hurt' sound effect."
-		],
-		fixes: ['Fixed type errors in Tile Editor.', 'Improved sound test coverage.'],
-		type: 'major'
-	}
-	// ... previous phases
-];
-```
+## Validation Notes To Include Internally
 
-### 2. UI Route (`src/routes/changelog/+page.svelte`)
-
-A dedicated page to display the timeline.
-
-- **Layout**: Vertical timeline or card list.
-- **Styling**: Use existing "Modern Matte" design system (Surface cards, Brand accents).
-- **Components**: Reuse `Box`, `Stack`, or standard HTML/CSS.
-
-### 3. Entry Point
-
-Add a link to the Changelog from:
-
-- **Settings Page**: A new "About" section.
-- **Home Screen**: A small "v0.9" badge or link in the footer.
-
-## Tasks
-
-- [ ] Create `src/lib/data/changelog.ts`.
-- [ ] Populate with recent phases (40, 38, 36, 35).
-- [ ] Create `src/routes/changelog/+page.svelte`.
-- [ ] Add link to `src/routes/settings/+page.svelte`.
+- Focused unit validation passed.
+- Targeted Lost Fleet Playwright coverage passed.
+- Broader check, lint, build, and diff whitespace validation passed.

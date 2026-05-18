@@ -1,44 +1,32 @@
-# Technical Architecture: Phase 11
+# Technical Architecture: Phase 37 — The Lost Fleet
 
-## Data Storage
+## Architecture Summary
 
-We will continue to use `localStorage` for this phase, but structure the data to allow for easy migration to IndexedDB or OPFS later.
+Phase 37 uses the existing level-pack architecture. No schema, cloud, storage, or interpreter architecture changes were required.
 
-### Schema Extensions
+## Existing Pack Flow
 
-```typescript
-// src/lib/game/schema.ts
+- Built-in levels are parsed through `LevelDefinitionSchema` in the level registry.
+- Built-in packs are parsed through `LevelPackSchema`.
+- `VEHICLES_PACK` is included in `PACKS`.
+- Library routes resolve built-in packs through `getPack(id)`.
+- Play routes load levels from the resolved pack and instantiate `GameModel`.
 
-// Existing
-export interface LevelPack {
-	id: string;
-	name: string;
-	description: string;
-	coverImage?: string;
-	difficulty: 'beginner' | 'intermediate' | 'advanced';
-	levels: LevelDefinition[]; // Or LevelReference?
-}
+## Boat Mechanic Flow
 
-// New: UserCampaign
-// We might need to separate "Level Definition" from "Level Reference" to avoid duplicating huge level blobs in the pack definition if we want to re-use levels.
-// For now, to keep it simple, we might just store the full level definitions inside the pack, OR store a list of IDs and look them up.
-// Given the current "Level Builder" saves levels individually, a "Pack" should probably just be a list of Level IDs + Metadata.
-```
+- Boat is an existing item with vehicle behavior.
+- `Board` is an existing block type.
+- Water is already passable by boat.
+- The interpreter and Ghost Path simulation already support boarding and crossing water.
 
-## Component Architecture
+## Phase 37 Constraints
 
-### `PackEditor`
+- Keep vehicles as content exposure, not new mechanics.
+- Use tests to lock the pack and content shape.
+- Keep Set Sail content polish data-only.
+- Do not introduce disembark, vehicle variants, builder redesign, schema migration, or cloud work in this slice.
 
-- **State**: Local state for the form (title, description).
-- **Sync**: Saves to `CampaignService` on blur or explicit save.
+## Validation Coverage Added
 
-### `LevelOrganizer`
-
-- **Interaction**: Uses `svelte-dnd-action` (or similar, or custom) for reordering.
-- **Visuals**: Uses `LevelMap` nodes but in a linear or grid list with "Edit" controls.
-
-## Routing Strategy
-
-- **Standard Play**: `/library/[packId]` -> `/play/[packId]/[levelId]`
-- **Builder**: `/builder/packs/[packId]` -> (Edit Level) -> `/builder/packs/[packId]/[levelId]`
-  - We need to ensure the Builder knows where to return to.
+- Unit coverage for pack registration, vehicles level count/order, and duplicate built-in level ids.
+- E2E coverage for Library visibility, direct pack route loading, first-level playability, and Set Sail win flow.
