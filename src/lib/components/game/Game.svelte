@@ -102,10 +102,10 @@
 		game.reset();
 	}
 
-	async function startExecution() {
+	async function startExecution({ startPaused = true }: { startPaused?: boolean } = {}) {
 		game.reset();
 		isRunning = true;
-		isPaused = true;
+		isPaused = startPaused;
 		interpreter = new StackInterpreter(game);
 		interpreter.start();
 	}
@@ -165,7 +165,7 @@
 			stopInterpreter();
 		}
 		game.checkTrigger('program-run');
-		await startExecution();
+		await startExecution({ startPaused: false });
 		await runToTerminal();
 	}
 

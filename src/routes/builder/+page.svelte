@@ -34,11 +34,7 @@
 		}}
 	/>
 {:else}
-	<div
-		class="builder-interface"
-		class:targeting-active={builder.targetingState.isActive}
-		class:settings-open={showSettings}
-	>
+	<div class="builder-interface" class:targeting-active={builder.targetingState.isActive}>
 		{#if builder.targetingState.isActive}
 			<div class="focus-overlay" transition:fade={{ duration: 200 }}></div>
 		{/if}
