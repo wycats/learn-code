@@ -41,6 +41,16 @@ describe('getOAuthConfigStatus', () => {
 		);
 	});
 
+	it('normalizes trailing slashes in the base URL', () => {
+		expect(getOAuthConfigStatus({ BASE_URL: 'https://example.test/' }).baseUrl).toBe(
+			'https://example.test'
+		);
+		expect(getOAuthCallbackUrls('https://example.test/')).toEqual({
+			google: 'https://example.test/login/google/callback',
+			github: 'https://example.test/login/github/callback'
+		});
+	});
+
 	it('includes provider callback URLs', () => {
 		expect(getOAuthCallbackUrls('https://example.test')).toEqual({
 			google: 'https://example.test/login/google/callback',

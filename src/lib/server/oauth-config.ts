@@ -14,13 +14,18 @@ const REQUIRED_ENV: Record<OAuthProvider, string[]> = {
 };
 
 export function getBaseUrl() {
-	return env.BASE_URL || 'http://localhost:5173';
+	return normalizeBaseUrl(env.BASE_URL || 'http://localhost:5173');
+}
+
+function normalizeBaseUrl(baseUrl: string) {
+	return baseUrl.replace(/\/+$/, '');
 }
 
 export function getOAuthCallbackUrls(baseUrl = getBaseUrl()) {
+	const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
 	return {
-		google: `${baseUrl}/login/google/callback`,
-		github: `${baseUrl}/login/github/callback`
+		google: `${normalizedBaseUrl}/login/google/callback`,
+		github: `${normalizedBaseUrl}/login/github/callback`
 	};
 }
 
@@ -37,7 +42,7 @@ export function getOAuthProviderConfigStatus(
 }
 
 export function getOAuthConfigStatus(values: Record<string, string | undefined> = env) {
-	const baseUrl = values.BASE_URL || getBaseUrl();
+	const baseUrl = normalizeBaseUrl(values.BASE_URL || getBaseUrl());
 	return {
 		baseUrl,
 		callbackUrls: getOAuthCallbackUrls(baseUrl),

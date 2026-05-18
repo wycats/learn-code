@@ -14,6 +14,18 @@ describe('getRawPackUrl', () => {
 		);
 	});
 
+	it('converts a GitHub branch URL to the branch pack.json URL', () => {
+		expect(getRawPackUrl('https://github.com/wycats/kibi-pack/tree/december')).toBe(
+			'https://raw.githubusercontent.com/wycats/kibi-pack/december/pack.json'
+		);
+	});
+
+	it('converts a GitHub branch folder URL to a raw pack.json URL in that folder', () => {
+		expect(getRawPackUrl('https://github.com/wycats/kibi-pack/tree/december/packs/jonas')).toBe(
+			'https://raw.githubusercontent.com/wycats/kibi-pack/december/packs/jonas/pack.json'
+		);
+	});
+
 	it('leaves raw URLs untouched', () => {
 		const raw = 'https://example.com/pack.json';
 		expect(getRawPackUrl(raw)).toBe(raw);

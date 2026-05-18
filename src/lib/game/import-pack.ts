@@ -16,13 +16,27 @@ export function getRawPackUrl(url: string): string {
 	if (parsed.hostname === 'github.com') {
 		const [, owner, repo, treeOrBlob, branch, ...pathParts] = parsed.pathname.split('/');
 		if (owner && repo) {
-			const filePath = pathParts.length > 0 ? pathParts.join('/') : 'pack.json';
-			const ref = treeOrBlob === 'blob' && branch ? branch : 'main';
+			const ref = (treeOrBlob === 'blob' || treeOrBlob === 'tree') && branch ? branch : 'main';
+			const filePath = getGitHubPackPath(treeOrBlob, pathParts);
 			return `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${filePath}`;
 		}
 	}
 
 	return url;
+}
+
+function getGitHubPackPath(treeOrBlob: string | undefined, pathParts: string[]) {
+	const path = pathParts.filter(Boolean).join('/');
+
+	if (treeOrBlob === 'blob') {
+		return path || 'pack.json';
+	}
+
+	if (treeOrBlob === 'tree') {
+		return path ? `${path}/pack.json` : 'pack.json';
+	}
+
+	return 'pack.json';
 }
 
 export async function fetchPackFromUrl(url: string): Promise<LevelPack> {
