@@ -114,6 +114,42 @@ describe('simulateGhostPath', () => {
 		]);
 	});
 
+	it('mirrors interpreter loop behavior when count resolves to zero', () => {
+		const preview = simulateGhostPath({
+			level: {
+				...baseLevel,
+				goal: { x: 1, y: 0 }
+			},
+			program: [
+				block('loop-zero', 'loop', {
+					count: 0,
+					children: [block('move-once', 'move-forward')]
+				})
+			]
+		});
+
+		expect(preview.outcome).toBe('won');
+		expect(preview.path.map((entry) => entry.blockId).filter(Boolean)).toEqual(['move-once']);
+	});
+
+	it('mirrors interpreter loop behavior when a variable count resolves to zero', () => {
+		const preview = simulateGhostPath({
+			level: {
+				...baseLevel,
+				goal: { x: 1, y: 0 }
+			},
+			program: [
+				block('loop-variable-zero', 'loop', {
+					count: { type: 'variable', variableId: 'heldItem' },
+					children: [block('move-once', 'move-forward')]
+				})
+			]
+		});
+
+		expect(preview.outcome).toBe('won');
+		expect(preview.path.map((entry) => entry.blockId).filter(Boolean)).toEqual(['move-once']);
+	});
+
 	it('caps runaway loops', () => {
 		const preview = simulateGhostPath({
 			level: {

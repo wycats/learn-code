@@ -2,7 +2,7 @@
 
 ## Current Status
 
-PER 1 Run / Replay behavior, PER 2 Visual Clarity, and PER 3 Ghost Replay have been implemented. The Ghost Replay slice is ready for manual visual review.
+PER 1 Run / Replay behavior, PER 2 Visual Clarity, and PER 3 Ghost Replay have been implemented. Local visual review accepted the Ghost Replay slice as decent for this slice.
 
 ## Baseline
 

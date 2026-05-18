@@ -124,14 +124,12 @@ export function simulateGhostPath({
 		if (block.type === 'loop') {
 			frame.index++;
 			const loopMax = resolveValue(level, state, block.count) ?? Infinity;
-			if (loopMax > 0) {
-				stack.push({
-					blocks: block.children ?? [],
-					index: 0,
-					loopCounter: 0,
-					loopMax
-				});
-			}
+			stack.push({
+				blocks: block.children ?? [],
+				index: 0,
+				loopCounter: 0,
+				loopMax
+			});
 			continue;
 		}
 
