@@ -1,12 +1,22 @@
 import { generateState, generateCodeVerifier } from 'arctic';
-import { google } from '$lib/server/auth';
+import { createGoogleOAuthClient } from '$lib/server/auth';
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { sanitizeRedirectPath } from '$lib/server/security';
+import { getBaseUrl, getOAuthProviderConfigStatus } from '$lib/server/oauth-config';
 
 export const GET: RequestHandler = async ({ cookies, url }) => {
+	const config = getOAuthProviderConfigStatus('google');
+	if (!config.configured) {
+		return new Response(
+			`Google login is not configured. Missing: ${config.missing.join(', ')}. See .env.example.`,
+			{ status: 503 }
+		);
+	}
+
 	const state = generateState();
 	const codeVerifier = generateCodeVerifier();
+	const google = createGoogleOAuthClient(getBaseUrl(url.origin));
 	const authorizationUrl = await google.createAuthorizationURL(state, codeVerifier, [
 		'profile',
 		'email'

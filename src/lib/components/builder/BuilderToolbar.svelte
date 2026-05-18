@@ -20,7 +20,7 @@
 	} from 'lucide-svelte';
 	import PackManagerModal from './PackManagerModal.svelte';
 	import ShareModal from './ShareModal.svelte';
-	import { fade, slide } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
 	import DevConnectionStatus from '$lib/components/common/DevConnectionStatus.svelte';
 	import { fileSystem } from '$lib/services/file-system';
@@ -36,9 +36,9 @@
 
 	let showPackManager = $state(false);
 	let showShareModal = $state(false);
-	let showLevelList = $state(false);
 	let statusMessage = $state<string | null>(null);
 	let statusType = $state<'success' | 'error'>('success');
+	const levelPopoverId = 'builder-level-popover';
 
 	function showStatus(msg: string, type: 'success' | 'error' = 'success') {
 		statusMessage = msg;
@@ -138,6 +138,13 @@
 			builder.redo();
 		}
 	}
+
+	function handleLevelSelect(event: MouseEvent, levelId: string) {
+		builder.switchLevel(levelId);
+		(
+			(event.currentTarget as HTMLElement).closest('[popover]') as HTMLElement | null
+		)?.hidePopover();
+	}
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -226,29 +233,25 @@
 				<div class="level-select-wrapper">
 					<button
 						class="level-trigger"
-						onclick={() => (showLevelList = !showLevelList)}
+						popovertarget={levelPopoverId}
+						popovertargetaction="toggle"
 						title="Switch Level"
 					>
 						<span class="level-name">{builder.level.name}</span>
 						<ChevronDown size={14} />
 					</button>
 
-					{#if showLevelList}
-						<div class="level-popover" transition:slide={{ duration: 200 }}>
-							{#each builder.pack.levels as level (level.id)}
-								<button
-									class="level-option"
-									class:active={builder.level.id === level.id}
-									onclick={() => {
-										builder.switchLevel(level.id);
-										showLevelList = false;
-									}}
-								>
-									{level.name}
-								</button>
-							{/each}
-						</div>
-					{/if}
+					<div id={levelPopoverId} class="level-popover" popover="auto">
+						{#each builder.pack.levels as level (level.id)}
+							<button
+								class="level-option"
+								class:active={builder.level.id === level.id}
+								onclick={(event) => handleLevelSelect(event, level.id)}
+							>
+								{level.name}
+							</button>
+						{/each}
+					</div>
 				</div>
 				<button class="action-btn" onclick={() => builder.createNewLevel()} title="New Level">
 					<Plus size={18} />
@@ -503,6 +506,7 @@
 		min-width: 150px;
 		justify-content: space-between;
 		transition: all 0.2s;
+		anchor-name: --level-trigger;
 	}
 
 	.level-trigger:hover {
@@ -518,21 +522,28 @@
 	}
 
 	.level-popover {
-		position: absolute;
-		top: calc(100% + 4px);
-		left: 0;
-		width: 100%;
+		margin: 0;
+		inset: auto;
+		position: fixed;
+		position-anchor: --level-trigger;
+		top: anchor(bottom);
+		left: anchor(left);
+		translate: 0 var(--size-1);
+		width: max-content;
 		min-width: 180px;
 		background-color: var(--surface-1);
 		border: 1px solid var(--surface-3);
 		border-radius: var(--radius-2);
 		box-shadow: var(--shadow-3);
-		z-index: 20;
 		max-height: 300px;
 		overflow-y: auto;
-		display: flex;
+		display: none;
 		flex-direction: column;
 		padding: 4px;
+	}
+
+	.level-popover:popover-open {
+		display: flex;
 	}
 
 	.level-option {

@@ -4,11 +4,30 @@
 	import QRCode from 'qrcode';
 	import { base } from '$app/paths';
 	import { goto } from '$app/navigation';
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
 
 	let handshakeCode = $state<string | null>(null);
 	let qrDataUrl = $state<string | null>(null);
 	let pollingInterval: ReturnType<typeof setInterval>;
 	let showParentLogin = $state(false);
+	const missingProviderConfig = $derived.by(() =>
+		[...data.oauth.google.missing, ...data.oauth.github.missing].filter(
+			(key) => key !== 'AUTH_TOKEN_SECRET'
+		)
+	);
+	const missingLocalSecrets = $derived.by(() =>
+		[...data.oauth.google.missing, ...data.oauth.github.missing].filter(
+			(key) => key === 'AUTH_TOKEN_SECRET'
+		)
+	);
+	const googleLoginAvailable = $derived(data.runtimeOAuth.google);
+	const githubLoginAvailable = $derived(data.runtimeOAuth.github);
+	const anyParentLoginAvailable = $derived(googleLoginAvailable || githubLoginAvailable);
+	const hasMissingLoginConfig = $derived(
+		missingProviderConfig.length > 0 || missingLocalSecrets.length > 0
+	);
 
 	const googleLoginUrl = `${base}/login/google`;
 	const githubLoginUrl = `${base}/login/github`;
@@ -116,7 +135,44 @@
 				<p class="muted-text">Sign in to manage your family account.</p>
 			</div>
 			<div class="content">
-				<button onclick={goToGoogle} class="btn outline">
+				{#if !data.oauth.callbackOriginMatchesRequest}
+					<div class="setup-alert" role="status">
+						<strong>Parent login is configured for another origin.</strong>
+						<span>
+							This page is running at {data.oauth.requestOrigin}, but OAuth callbacks are configured
+							for {data.oauth.baseUrl}.
+						</span>
+						<span class="setup-hint">
+							Use the canonical site for parent login, or configure provider callback URLs for this
+							environment.
+						</span>
+					</div>
+				{/if}
+				{#if hasMissingLoginConfig}
+					<div class="setup-alert" role="status">
+						<strong>
+							{#if anyParentLoginAvailable}
+								Some login providers need setup.
+							{:else}
+								Parent login needs local setup.
+							{/if}
+						</strong>
+						{#if missingProviderConfig.length > 0}
+							<span>Missing provider credentials: {missingProviderConfig.join(', ')}</span>
+							<span class="setup-hint">
+								Add these callback URLs to your OAuth apps, then add the client IDs and secrets:
+								Google {data.oauth.callbackUrls.google}; GitHub {data.oauth.callbackUrls.github}.
+							</span>
+						{/if}
+						{#if missingLocalSecrets.length > 0}
+							<span>Missing local app secrets: {missingLocalSecrets.join(', ')}</span>
+							<span class="setup-hint">
+								Generate a long random value for token encryption before enabling parent login.
+							</span>
+						{/if}
+					</div>
+				{/if}
+				<button onclick={goToGoogle} class="btn outline" disabled={!googleLoginAvailable}>
 					<!-- Google SVG -->
 					<svg class="icon" viewBox="0 0 24 24">
 						<path
@@ -138,7 +194,7 @@
 					</svg>
 					Sign in with Google
 				</button>
-				<button onclick={goToGithub} class="btn outline">
+				<button onclick={goToGithub} class="btn outline" disabled={!githubLoginAvailable}>
 					<Github class="icon" />
 					Sign in with GitHub
 				</button>
@@ -252,6 +308,28 @@
 		color: var(--text-1);
 	}
 
+	.setup-alert {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-1);
+		padding: var(--size-3);
+		border-radius: var(--radius-2);
+		border: 1px solid var(--orange-3);
+		background-color: light-dark(var(--orange-0), var(--orange-12));
+		color: light-dark(var(--orange-9), var(--orange-2));
+		font-size: var(--font-size-0);
+		line-height: 1.4;
+	}
+
+	.setup-alert strong {
+		color: light-dark(var(--orange-10), var(--orange-1));
+	}
+
+	.setup-hint {
+		color: var(--text-2);
+	}
+
 	.instructions {
 		text-align: center;
 		font-size: var(--font-size-1);
@@ -334,6 +412,15 @@
 
 	.btn.outline:hover {
 		background-color: var(--surface-3);
+	}
+
+	.btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.btn:disabled:hover {
+		background-color: var(--surface-1);
 	}
 
 	.btn.secondary {

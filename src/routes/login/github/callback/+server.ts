@@ -1,5 +1,5 @@
 import {
-	github,
+	createGitHubOAuthClient,
 	createSession,
 	generateSessionToken,
 	setSessionTokenCookie,
@@ -13,6 +13,8 @@ import { eq } from 'drizzle-orm';
 import { encryptToken } from '$lib/server/crypto';
 import { GitHubEmailSchema, GitHubUserSchema, selectVerifiedGitHubEmail } from '$lib/server/oauth';
 import { sanitizeRedirectPath } from '$lib/server/security';
+import { getBaseUrl } from '$lib/server/oauth-config';
+import { OAuth2RequestError } from 'arctic';
 
 export const GET: RequestHandler = async (event) => {
 	const { url, cookies, locals } = event;
@@ -28,6 +30,7 @@ export const GET: RequestHandler = async (event) => {
 	}
 
 	try {
+		const github = createGitHubOAuthClient(getBaseUrl(url.origin));
 		const tokens = await github.validateAuthorizationCode(code);
 		const accessToken = tokens.accessToken();
 		const githubUserResponse = await fetch('https://api.github.com/user', {
@@ -116,7 +119,13 @@ export const GET: RequestHandler = async (event) => {
 		cookies.delete('auth_redirect_to', { path: '/' });
 		return redirect(302, redirectTo);
 	} catch (e) {
-		console.error(e);
+		if (e instanceof OAuth2RequestError) {
+			console.error('GitHub OAuth callback failed', e.code, e.description);
+		} else if (e instanceof Error) {
+			console.error('GitHub OAuth callback failed', e.name, e.message);
+		} else {
+			console.error('GitHub OAuth callback failed', e);
+		}
 		return new Response(null, {
 			status: 500
 		});

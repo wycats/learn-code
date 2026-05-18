@@ -6,21 +6,27 @@ import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
 import { Google, GitHub } from 'arctic';
 import { env } from '$env/dynamic/private';
+import { getOAuthCallbackUrls } from '$lib/server/oauth-config';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
 export const sessionCookieName = 'auth-session';
 
-// TODO: Make this configurable for production
-const BASE_URL = env.BASE_URL || 'http://localhost:5173';
+export function createGoogleOAuthClient(baseUrl: string) {
+	return new Google(
+		env.GOOGLE_CLIENT_ID ?? '',
+		env.GOOGLE_CLIENT_SECRET ?? '',
+		getOAuthCallbackUrls(baseUrl).google
+	);
+}
 
-export const google = new Google(
-	env.GOOGLE_CLIENT_ID ?? '',
-	env.GOOGLE_CLIENT_SECRET ?? '',
-	`${BASE_URL}/login/google/callback`
-);
-
-export const github = new GitHub(env.GITHUB_CLIENT_ID ?? '', env.GITHUB_CLIENT_SECRET ?? '', null);
+export function createGitHubOAuthClient(baseUrl: string) {
+	return new GitHub(
+		env.GITHUB_CLIENT_ID ?? '',
+		env.GITHUB_CLIENT_SECRET ?? '',
+		getOAuthCallbackUrls(baseUrl).github
+	);
+}
 
 export function generateSessionToken() {
 	const bytes = crypto.getRandomValues(new Uint8Array(18));
