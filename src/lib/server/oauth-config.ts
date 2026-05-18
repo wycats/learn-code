@@ -21,6 +21,14 @@ function normalizeBaseUrl(baseUrl: string) {
 	return baseUrl.replace(/\/+$/, '');
 }
 
+function originsMatch(left: string, right: string) {
+	try {
+		return new URL(left).origin === new URL(right).origin;
+	} catch {
+		return false;
+	}
+}
+
 export function getOAuthCallbackUrls(baseUrl = getBaseUrl()) {
 	const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
 	return {
@@ -43,11 +51,13 @@ export function getOAuthProviderConfigStatus(
 
 export function getOAuthConfigStatus(
 	values: Record<string, string | undefined> = env,
-	fallbackBaseUrl = 'http://localhost:5173'
+	requestOrigin = 'http://localhost:5173'
 ) {
-	const baseUrl = normalizeBaseUrl(values.BASE_URL || fallbackBaseUrl);
+	const baseUrl = normalizeBaseUrl(values.BASE_URL || requestOrigin);
 	return {
 		baseUrl,
+		requestOrigin: normalizeBaseUrl(requestOrigin),
+		callbackOriginMatchesRequest: originsMatch(baseUrl, requestOrigin),
 		callbackUrls: getOAuthCallbackUrls(baseUrl),
 		google: getOAuthProviderConfigStatus('google', values),
 		github: getOAuthProviderConfigStatus('github', values)
@@ -55,10 +65,18 @@ export function getOAuthConfigStatus(
 }
 
 export function getRuntimeConfiguredOAuthProviders(
-	values: Record<string, string | undefined> = env
+	values: Record<string, string | undefined> = env,
+	requestOrigin = 'http://localhost:5173'
 ) {
+	const callbackOriginMatchesRequest = getOAuthConfigStatus(
+		values,
+		requestOrigin
+	).callbackOriginMatchesRequest;
+
 	return {
-		google: getOAuthProviderConfigStatus('google', values).configured,
-		github: getOAuthProviderConfigStatus('github', values).configured
+		google:
+			callbackOriginMatchesRequest && getOAuthProviderConfigStatus('google', values).configured,
+		github:
+			callbackOriginMatchesRequest && getOAuthProviderConfigStatus('github', values).configured
 	};
 }

@@ -37,19 +37,28 @@ describe('getOAuthProviderConfigStatus', () => {
 
 describe('getOAuthConfigStatus', () => {
 	it('includes the base URL used for callback setup', () => {
-		expect(getOAuthConfigStatus({ BASE_URL: 'https://example.test' }).baseUrl).toBe(
-			'https://example.test'
-		);
+		expect(
+			getOAuthConfigStatus({ BASE_URL: 'https://example.test' }, 'https://example.test').baseUrl
+		).toBe('https://example.test');
 	});
 
 	it('normalizes trailing slashes in the base URL', () => {
-		expect(getOAuthConfigStatus({ BASE_URL: 'https://example.test/' }).baseUrl).toBe(
-			'https://example.test'
-		);
+		expect(
+			getOAuthConfigStatus({ BASE_URL: 'https://example.test/' }, 'https://example.test').baseUrl
+		).toBe('https://example.test');
 		expect(getOAuthCallbackUrls('https://example.test/')).toEqual({
 			google: 'https://example.test/login/google/callback',
 			github: 'https://example.test/login/github/callback'
 		});
+	});
+
+	it('marks configured callback origins that do not match the request origin', () => {
+		expect(
+			getOAuthConfigStatus(
+				{ BASE_URL: 'https://kibi.wycats.dev' },
+				'https://learn-code-git-feature.vercel.app'
+			).callbackOriginMatchesRequest
+		).toBe(false);
 	});
 
 	it('includes provider callback URLs', () => {
@@ -70,6 +79,23 @@ describe('getRuntimeConfiguredOAuthProviders', () => {
 			})
 		).toEqual({
 			google: true,
+			github: false
+		});
+	});
+
+	it('disables providers when the configured callback origin differs from the request origin', () => {
+		expect(
+			getRuntimeConfiguredOAuthProviders(
+				{
+					BASE_URL: 'https://kibi.wycats.dev',
+					GITHUB_CLIENT_ID: 'github-client',
+					GITHUB_CLIENT_SECRET: 'github-secret',
+					AUTH_TOKEN_SECRET: 'token-secret'
+				},
+				'https://learn-code-git-feature.vercel.app'
+			)
+		).toEqual({
+			google: false,
 			github: false
 		});
 	});

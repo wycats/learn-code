@@ -8,6 +8,6 @@ export const load: PageServerLoad = async (event) => {
 	}
 	return {
 		oauth: getOAuthConfigStatus(undefined, event.url.origin),
-		runtimeOAuth: getRuntimeConfiguredOAuthProviders()
+		runtimeOAuth: getRuntimeConfiguredOAuthProviders(undefined, event.url.origin)
 	};
 };

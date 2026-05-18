@@ -126,6 +126,19 @@
 				<p class="muted-text">Sign in to manage your family account.</p>
 			</div>
 			<div class="content">
+				{#if !data.oauth.callbackOriginMatchesRequest}
+					<div class="setup-alert" role="status">
+						<strong>Parent login is configured for another origin.</strong>
+						<span>
+							This page is running at {data.oauth.requestOrigin}, but OAuth callbacks are configured
+							for {data.oauth.baseUrl}.
+						</span>
+						<span class="setup-hint">
+							Use the canonical site for parent login, or configure provider callback URLs for this
+							environment.
+						</span>
+					</div>
+				{/if}
 				{#if missingOAuthConfig.length > 0}
 					<div class="setup-alert" role="status">
 						<strong>
