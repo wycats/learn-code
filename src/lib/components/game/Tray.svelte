@@ -24,9 +24,10 @@
 	interface Props {
 		game: GameModel;
 		onTarget?: (target: string) => void;
+		isStepMode?: boolean;
 	}
 
-	let { game, onTarget }: Props = $props();
+	let { game, onTarget, isStepMode = false }: Props = $props();
 
 	// Palette items (derived from game level)
 	const paletteItems = $derived.by(() => {
@@ -97,9 +98,19 @@
 	const disabledOverlayText = $derived.by(() => {
 		if (game.status === 'story') return 'Listen to the Guide...';
 		if (game.status === 'goal') return 'Start planning to edit blocks.';
+		if (game.status === 'running' && isStepMode) return 'Step Mode: paused to inspect the program.';
 		if (game.status === 'running') return 'Program Running...';
 		if (game.status === 'lost') return 'Run stopped. Try Again, or Reset to edit.';
 		if (game.status === 'won') return 'Level Complete! Replay or continue.';
+		return null;
+	});
+	const disabledModeLabel = $derived.by(() => {
+		if (game.status === 'story') return 'Story Mode';
+		if (game.status === 'goal') return 'Goal Mode';
+		if (game.status === 'running' && isStepMode) return 'Step Mode';
+		if (game.status === 'running') return 'Running';
+		if (game.status === 'lost') return 'Lost';
+		if (game.status === 'won') return 'Won';
 		return null;
 	});
 
@@ -530,6 +541,9 @@
 		<div class="block-list" class:disabled={isDisabled}>
 			{#if isDisabled && disabledOverlayText}
 				<div class="disabled-overlay">
+					{#if disabledModeLabel}
+						<strong>{disabledModeLabel}</strong>
+					{/if}
 					<span>{disabledOverlayText}</span>
 				</div>
 			{/if}
@@ -1240,14 +1254,25 @@
 		backdrop-filter: blur(2px);
 		z-index: 20;
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+		gap: 2px;
 		border-radius: var(--radius-2);
-		font-weight: bold;
 		color: var(--text-2);
 		font-size: var(--font-size-1);
 		text-align: center;
 		padding: var(--size-2);
+	}
+
+	.disabled-overlay strong {
+		font-family: var(--font-heading);
+		font-size: var(--font-size-2);
+		color: var(--text-1);
+	}
+
+	.disabled-overlay span {
+		font-weight: 700;
 	}
 
 	.opacity-50 {

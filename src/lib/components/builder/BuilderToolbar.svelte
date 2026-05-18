@@ -39,6 +39,27 @@
 	let statusMessage = $state<string | null>(null);
 	let statusType = $state<'success' | 'error'>('success');
 	const levelPopoverId = 'builder-level-popover';
+	const builderMode = $derived.by(() => {
+		if (builder.targetingState.isActive) {
+			const targetCount = builder.targetingState.currentCount;
+			return {
+				label: 'Targeting Active',
+				detail: `${targetCount} selected`,
+				tone: 'targeting'
+			};
+		}
+		if (showSettings) {
+			return { label: 'Settings Open', detail: 'Editing level details', tone: 'settings' };
+		}
+		if (builder.mode === 'story') {
+			return { label: 'Story Editing', detail: 'Writing guidance', tone: 'story' };
+		}
+		if (builder.mode === 'test') {
+			return { label: 'Test', detail: 'Playing the draft', tone: 'test' };
+		}
+
+		return { label: 'Edit', detail: 'Painting the level', tone: 'edit' };
+	});
 
 	function showStatus(msg: string, type: 'success' | 'error' = 'success') {
 		statusMessage = msg;
@@ -256,6 +277,33 @@
 				<button class="action-btn" onclick={() => builder.createNewLevel()} title="New Level">
 					<Plus size={18} />
 				</button>
+			</div>
+
+			<div class="builder-mode-group">
+				<div
+					class="builder-mode-chip {builderMode.tone}"
+					data-testid="builder-mode-indicator"
+					data-mode={builderMode.tone}
+					role="status"
+					aria-live="polite"
+					aria-label={`Builder mode: ${builderMode.label}. ${builderMode.detail}`}
+				>
+					<span class="mode-dot"></span>
+					<span class="mode-copy">
+						<span class="mode-kicker">Builder</span>
+						<strong>{builderMode.label}</strong>
+					</span>
+					<span class="mode-detail">{builderMode.detail}</span>
+				</div>
+
+				<div
+					class="current-level-chip"
+					data-testid="builder-current-level-indicator"
+					aria-label={`Current level: ${builder.level.name}`}
+				>
+					<span class="mode-kicker">Level</span>
+					<strong>{builder.level.name}</strong>
+				</div>
 			</div>
 
 			<div class="separator"></div>
@@ -481,6 +529,127 @@
 		gap: var(--size-1);
 	}
 
+	.builder-mode-group {
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+	}
+
+	.builder-mode-chip,
+	.current-level-chip {
+		display: flex;
+		align-items: center;
+		min-height: var(--touch-target-min);
+		border-radius: var(--radius-pill);
+		border: 1px solid var(--surface-3);
+		background-color: var(--surface-1);
+		box-shadow: var(--shadow-1);
+	}
+
+	.builder-mode-chip {
+		--mode-color: var(--brand);
+		--mode-bg: var(--brand-surface);
+		gap: var(--size-2);
+		padding: 0 var(--size-3);
+		border-color: color-mix(in srgb, var(--mode-color), transparent 55%);
+		background-color: var(--mode-bg);
+	}
+
+	.builder-mode-chip.edit {
+		--mode-color: light-dark(var(--blue-6), var(--blue-4));
+		--mode-bg: light-dark(var(--blue-0), var(--blue-9));
+	}
+
+	.builder-mode-chip.story {
+		--mode-color: light-dark(var(--violet-6), var(--violet-4));
+		--mode-bg: light-dark(var(--violet-0), var(--violet-9));
+	}
+
+	.builder-mode-chip.test {
+		--mode-color: light-dark(var(--green-6), var(--green-4));
+		--mode-bg: light-dark(var(--green-0), var(--green-9));
+	}
+
+	.builder-mode-chip.settings {
+		--mode-color: light-dark(var(--orange-6), var(--orange-4));
+		--mode-bg: light-dark(var(--orange-0), var(--orange-9));
+	}
+
+	.builder-mode-chip.targeting {
+		--mode-color: light-dark(var(--pink-6), var(--pink-4));
+		--mode-bg: light-dark(var(--pink-0), var(--pink-9));
+	}
+
+	.mode-dot {
+		width: 0.75rem;
+		height: 0.75rem;
+		border-radius: 999px;
+		background-color: var(--mode-color);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--mode-color), transparent 80%);
+		flex-shrink: 0;
+	}
+
+	.builder-mode-chip.targeting .mode-dot {
+		animation: builder-mode-pulse 1.2s ease-in-out infinite;
+	}
+
+	.mode-copy,
+	.current-level-chip {
+		min-width: 0;
+	}
+
+	.mode-copy {
+		display: flex;
+		flex-direction: column;
+		line-height: 1.1;
+	}
+
+	.mode-kicker {
+		font-size: var(--font-size-00);
+		font-weight: 800;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--mode-color, var(--text-3));
+	}
+
+	.mode-copy strong,
+	.current-level-chip strong {
+		font-family: var(--font-heading);
+		font-size: var(--font-size-1);
+		color: var(--text-1);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.mode-detail {
+		font-size: var(--font-size-0);
+		font-weight: 600;
+		color: var(--text-2);
+		white-space: nowrap;
+	}
+
+	.current-level-chip {
+		flex-direction: column;
+		justify-content: center;
+		align-items: flex-start;
+		padding: 0 var(--size-3);
+		max-width: 180px;
+		line-height: 1.1;
+	}
+
+	@keyframes builder-mode-pulse {
+		0%,
+		100% {
+			transform: scale(1);
+			opacity: 1;
+		}
+		50% {
+			transform: scale(1.2);
+			opacity: 0.75;
+		}
+	}
+
 	.level-select-wrapper {
 		position: relative;
 	}
@@ -488,6 +657,15 @@
 	@media (max-width: 600px) {
 		.level-select-wrapper {
 			display: none;
+		}
+
+		.mode-detail,
+		.builder-mode-chip .mode-kicker {
+			display: none;
+		}
+
+		.current-level-chip {
+			max-width: 130px;
 		}
 	}
 

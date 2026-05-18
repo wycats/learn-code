@@ -55,6 +55,29 @@
 	let interpreter = $state<StackInterpreter | null>(null);
 	let runToken = 0;
 	const canEdit = $derived(game.status === 'planning' && !isRunning);
+	const isStepMode = $derived(game.status === 'running' && isRunning && isPaused);
+	const playerMode = $derived.by(() => {
+		if (game.status === 'story') {
+			return { label: 'Story', detail: 'Guide is speaking', tone: 'story' };
+		}
+		if (game.status === 'goal') {
+			return { label: 'Goal', detail: 'Read the mission', tone: 'goal' };
+		}
+		if (game.status === 'running') {
+			if (isStepMode) {
+				return { label: 'Step Mode', detail: 'Paused between steps', tone: 'paused' };
+			}
+			return { label: 'Running', detail: 'Program is moving', tone: 'running' };
+		}
+		if (game.status === 'won') {
+			return { label: 'Won', detail: 'Level complete', tone: 'won' };
+		}
+		if (game.status === 'lost') {
+			return { label: 'Lost', detail: 'Run stopped before the goal', tone: 'lost' };
+		}
+
+		return { label: 'Planning', detail: 'Build and edit blocks', tone: 'planning' };
+	});
 
 	const runControl = $derived(
 		getRunControlState({
@@ -79,10 +102,10 @@
 		game.reset();
 	}
 
-	async function startExecution() {
+	async function startExecution({ startPaused = true }: { startPaused?: boolean } = {}) {
 		game.reset();
 		isRunning = true;
-		isPaused = true;
+		isPaused = startPaused;
 		interpreter = new StackInterpreter(game);
 		interpreter.start();
 	}
@@ -142,7 +165,7 @@
 			stopInterpreter();
 		}
 		game.checkTrigger('program-run');
-		await startExecution();
+		await startExecution({ startPaused: false });
 		await runToTerminal();
 	}
 
@@ -238,7 +261,7 @@
 				</button>
 
 				{#if architectMode}
-					<div class="architect-badge">ARCHITECT</div>
+					<div class="architect-badge" data-testid="builder-test-mode-indicator">BUILDER TEST</div>
 					<div class="architect-controls">
 						<button class="btn-icon" onclick={rotateCharacter} title="Rotate Character">
 							<RotateCw size={18} />
@@ -258,6 +281,22 @@
 					<div class="separator"></div>
 					<HealthDisplay lives={game.lives} maxLives={game.maxLives} />
 				{/if}
+
+				<div
+					class="player-mode-chip {playerMode.tone}"
+					data-testid="player-mode-indicator"
+					data-mode={playerMode.tone}
+					role="status"
+					aria-live="polite"
+					aria-label={`Player mode: ${playerMode.label}. ${playerMode.detail}`}
+				>
+					<span class="mode-dot"></span>
+					<span class="mode-text">
+						<span class="mode-kicker">Player</span>
+						<strong>{playerMode.label}</strong>
+					</span>
+					<span class="mode-detail">{playerMode.detail}</span>
+				</div>
 			</div>
 
 			<div class="controls">
@@ -338,7 +377,7 @@
 					</div>
 				{:else if game.status !== 'goal'}
 					<div class="dashboard-layer" transition:fade={{ duration: 200 }}>
-						<StatusPanel {game} />
+						<StatusPanel {game} {isStepMode} />
 					</div>
 				{/if}
 			</div>
@@ -369,7 +408,7 @@
 
 		<div class="tray-area">
 			{#key game.level.id}
-				<Tray {game} {onTarget} />
+				<Tray {game} {onTarget} {isStepMode} />
 			{/key}
 		</div>
 	</div>
@@ -405,6 +444,106 @@
 		padding: 2px var(--size-2);
 		background-color: var(--surface-3);
 		border-radius: var(--radius-1);
+	}
+
+	.player-mode-chip {
+		--mode-color: var(--brand);
+		--mode-bg: var(--brand-surface);
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		min-height: var(--touch-target-min);
+		padding: 0 var(--size-3);
+		border-radius: var(--radius-pill);
+		border: 1px solid color-mix(in srgb, var(--mode-color), transparent 55%);
+		background-color: var(--mode-bg);
+		color: var(--text-1);
+		box-shadow: var(--shadow-1);
+		white-space: nowrap;
+	}
+
+	.player-mode-chip.story {
+		--mode-color: light-dark(var(--violet-6), var(--violet-4));
+		--mode-bg: light-dark(var(--violet-0), var(--violet-9));
+	}
+
+	.player-mode-chip.goal {
+		--mode-color: light-dark(var(--indigo-6), var(--indigo-4));
+		--mode-bg: var(--brand-surface);
+	}
+
+	.player-mode-chip.planning {
+		--mode-color: light-dark(var(--blue-6), var(--blue-4));
+		--mode-bg: light-dark(var(--blue-0), var(--blue-9));
+	}
+
+	.player-mode-chip.running {
+		--mode-color: light-dark(var(--green-6), var(--green-4));
+		--mode-bg: light-dark(var(--green-0), var(--green-9));
+	}
+
+	.player-mode-chip.paused {
+		--mode-color: light-dark(var(--orange-6), var(--orange-4));
+		--mode-bg: light-dark(var(--orange-0), var(--orange-9));
+	}
+
+	.player-mode-chip.won {
+		--mode-color: light-dark(var(--yellow-6), var(--yellow-4));
+		--mode-bg: light-dark(var(--yellow-0), var(--yellow-9));
+	}
+
+	.player-mode-chip.lost {
+		--mode-color: light-dark(var(--red-6), var(--red-4));
+		--mode-bg: light-dark(var(--red-0), var(--red-9));
+	}
+
+	.mode-dot {
+		width: 0.75rem;
+		height: 0.75rem;
+		border-radius: 999px;
+		background-color: var(--mode-color);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--mode-color), transparent 80%);
+		flex-shrink: 0;
+	}
+
+	.player-mode-chip.running .mode-dot {
+		animation: mode-pulse 1.2s ease-in-out infinite;
+	}
+
+	.mode-text {
+		display: flex;
+		flex-direction: column;
+		line-height: 1.1;
+	}
+
+	.mode-kicker {
+		font-size: var(--font-size-00);
+		font-weight: 800;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--mode-color);
+	}
+
+	.mode-text strong {
+		font-size: var(--font-size-1);
+		font-family: var(--font-heading);
+	}
+
+	.mode-detail {
+		font-size: var(--font-size-0);
+		color: var(--text-2);
+	}
+
+	@keyframes mode-pulse {
+		0%,
+		100% {
+			transform: scale(1);
+			opacity: 1;
+		}
+		50% {
+			transform: scale(1.2);
+			opacity: 0.75;
+		}
 	}
 
 	.architect-controls {
@@ -558,6 +697,15 @@
 	}
 
 	@media (max-width: 600px) {
+		.mode-detail,
+		.mode-kicker {
+			display: none;
+		}
+
+		.player-mode-chip {
+			padding: 0 var(--size-2);
+		}
+
 		.btn-label {
 			display: none;
 		}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 	import { page } from '$app/stores';
 	import { BuilderModel } from '$lib/game/builder-model.svelte';
 	import { CampaignService } from '$lib/game/campaigns';
@@ -64,9 +65,29 @@
 {:else if error}
 	<div class="error">{error}</div>
 {:else if builder.mode === 'test'}
-	<Game game={builder.game} architectMode={true} onExit={handleExit} />
+	<Game
+		game={builder.game}
+		architectMode={true}
+		onExit={handleExit}
+		onTarget={(target) => {
+			if (builder.targetingState.isActive) {
+				builder.targetingState.onToggle(target);
+			}
+		}}
+	/>
 {:else}
-	<div class="builder-interface">
+	<div class="builder-interface" class:targeting-active={builder.targetingState.isActive}>
+		{#if builder.targetingState.isActive}
+			<div class="focus-overlay" transition:fade={{ duration: 200 }}></div>
+		{/if}
+
+		{#if showSettings}
+			<div class="settings-mode-banner" data-testid="builder-settings-mode-indicator">
+				<strong>Settings Open</strong>
+				<span>Editing {builder.level.name}</span>
+			</div>
+		{/if}
+
 		<BuilderToolbar
 			{builder}
 			{showSettings}
@@ -99,11 +120,64 @@
 {/if}
 
 <style>
+	:global(.targeting-active) .dashboard-area {
+		z-index: 110;
+		position: relative;
+	}
+
+	:global(.targeting-active) .grid-container {
+		z-index: 100;
+		position: relative;
+	}
+
+	:global(.targeting-active) .tray-area {
+		z-index: 100;
+		position: relative;
+	}
+
 	.builder-interface {
 		display: grid;
 		grid-template-rows: auto 1fr;
 		height: 100vh;
 		overflow: hidden;
+		position: relative;
+	}
+
+	.focus-overlay {
+		position: fixed;
+		inset: 0;
+		background-color: rgba(0, 0, 0, 0.6);
+		z-index: 90;
+		pointer-events: auto;
+	}
+
+	.settings-mode-banner {
+		position: fixed;
+		top: calc(var(--size-2) + var(--touch-target-min));
+		left: 50%;
+		transform: translateX(-50%);
+		display: flex;
+		align-items: center;
+		gap: var(--size-2);
+		z-index: 35;
+		padding: var(--size-2) var(--size-4);
+		border-radius: var(--radius-pill);
+		border: 1px solid light-dark(var(--orange-2), var(--orange-7));
+		background-color: light-dark(var(--orange-0), var(--orange-9));
+		color: var(--text-1);
+		box-shadow: var(--shadow-3);
+		pointer-events: none;
+	}
+
+	.settings-mode-banner strong {
+		font-family: var(--font-heading);
+		font-size: var(--font-size-1);
+	}
+
+	.settings-mode-banner span {
+		font-size: var(--font-size-0);
+		font-weight: 700;
+		color: var(--text-2);
 	}
 
 	.workspace {
