@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { GameModel } from '$lib/game/model.svelte';
 	import { StackInterpreter } from '$lib/game/mimic';
+	import { simulateGhostPath } from '$lib/game/ghost-path';
 	import Grid from '$lib/components/game/Grid.svelte';
 	import Tray from '$lib/components/game/Tray.svelte';
 	import InstructionBar from '$lib/components/game/InstructionBar.svelte';
@@ -56,6 +57,25 @@
 	let runToken = 0;
 	const canEdit = $derived(game.status === 'planning' && !isRunning);
 	const isStepMode = $derived(game.status === 'running' && isRunning && isPaused);
+	const ghostPath = $derived.by(() => {
+		if (architectMode || game.status !== 'planning' || isRunning || game.program.length === 0) {
+			return null;
+		}
+
+		return simulateGhostPath({
+			level: game.level,
+			program: game.program,
+			functions: game.functions
+		});
+	});
+	const ghostPathDetail = $derived.by(() => {
+		if (!ghostPath) return null;
+		if (ghostPath.outcome === 'won') return 'Ghost Path: reaches the goal';
+		if (ghostPath.outcome === 'blocked') return 'Ghost Path: blocked before the goal';
+		if (ghostPath.outcome === 'failed') return 'Ghost Path: hits trouble';
+		if (ghostPath.outcome === 'capped') return 'Ghost Path: preview stopped early';
+		return 'Ghost Path: stops before the goal';
+	});
 	const playerMode = $derived.by(() => {
 		if (game.status === 'story') {
 			return { label: 'Story', detail: 'Guide is speaking', tone: 'story' };
@@ -297,6 +317,13 @@
 					</span>
 					<span class="mode-detail">{playerMode.detail}</span>
 				</div>
+
+				{#if ghostPathDetail}
+					<div class="ghost-path-status" data-testid="ghost-path-status" role="status">
+						<span class="ghost-path-status-dot"></span>
+						{ghostPathDetail}
+					</div>
+				{/if}
 			</div>
 
 			<div class="controls">
@@ -384,7 +411,7 @@
 
 			<div class="stage-container">
 				{#key game.level.id}
-					<Grid {game} />
+					<Grid {game} {ghostPath} />
 				{/key}
 
 				{#if game.status === 'won'}
@@ -532,6 +559,29 @@
 	.mode-detail {
 		font-size: var(--font-size-0);
 		color: var(--text-2);
+	}
+
+	.ghost-path-status {
+		display: flex;
+		align-items: center;
+		gap: var(--size-1);
+		min-height: var(--touch-target-min);
+		padding: 0 var(--size-2);
+		border-radius: var(--radius-pill);
+		border: 1px dashed color-mix(in srgb, var(--brand), transparent 45%);
+		background: color-mix(in srgb, var(--brand-surface), transparent 15%);
+		color: var(--text-2);
+		font-size: var(--font-size-0);
+		font-weight: 700;
+		white-space: nowrap;
+	}
+
+	.ghost-path-status-dot {
+		width: 0.65rem;
+		height: 0.65rem;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--brand), white 20%);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand), transparent 80%);
 	}
 
 	@keyframes mode-pulse {
@@ -698,7 +748,8 @@
 
 	@media (max-width: 600px) {
 		.mode-detail,
-		.mode-kicker {
+		.mode-kicker,
+		.ghost-path-status {
 			display: none;
 		}
 
