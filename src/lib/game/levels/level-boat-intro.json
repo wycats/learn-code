@@ -1,7 +1,7 @@
 {
 	"id": "level-boat-intro",
 	"name": "Set Sail",
-	"description": "Learn to use the boat to cross water.",
+	"description": "Use Board to climb into the boat and cross the water.",
 	"gridSize": { "width": 6, "height": 5 },
 	"start": { "x": 1, "y": 2 },
 	"startOrientation": "E",
@@ -27,13 +27,15 @@
 			"id": "intro-1",
 			"speaker": "Zoey",
 			"text": "Look, a boat! Can I drive it?",
-			"emotion": "happy"
+			"emotion": "happy",
+			"targets": ["cell:2,2"]
 		},
 		{
 			"id": "intro-2",
 			"speaker": "Guide",
-			"text": "Affirmative. Stand on the boat and use the 'Board' command.",
-			"emotion": "neutral"
+			"text": "Yes. Step onto the boat, then use the Board block before crossing water.",
+			"emotion": "neutral",
+			"targets": ["block:board", "cell:3,2"]
 		}
 	]
 }
