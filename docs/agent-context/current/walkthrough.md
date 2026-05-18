@@ -2,7 +2,7 @@
 
 ## Current Status
 
-PER 1 Run / Replay behavior and PER 2 Visual Clarity have been implemented. The remaining Phase 43 kinetic accessibility work is still open.
+PER 1 Run / Replay behavior, PER 2 Visual Clarity, and PER 3 Ghost Replay have been implemented. Local visual review accepted the Ghost Replay slice as decent for this slice.
 
 ## Baseline
 
@@ -70,9 +70,26 @@ The likely best shape is a focused phase that combines:
 - Step mode remains local to `Game.svelte` and is surfaced only through local UI affordances.
 - The only meaningful residual risk is visual density on smaller player/builder headers, which should be checked before or during the next kinetic slice.
 
+## PER 3 Ghost Replay Walkthrough
+
+- The first kinetic accessibility slice is Ghost Replay, not snap-to-intent.
+- `simulateGhostPath()` provides a pure planning preview from the level start, current main program, functions, terrain, and items. It returns immutable path entries, final position/orientation, and an outcome of `won`, `blocked`, `failed`, `stopped-short`, or `capped`.
+- The preview does not run `StackInterpreter`, does not touch the live `GameModel`, and does not play sounds.
+- `Game.svelte` computes the preview only when the learner is in `planning`, outside builder test mode, and the main program has at least one block.
+- `Grid.svelte` renders the path as a subtle non-interactive ghost trail beneath the live character, with `aria-hidden="true"`, `pointer-events: none`, and stable `data-testid` hooks.
+- A small Ghost Path status chip appears near the player mode chip while planning, naming whether the path reaches the goal, is blocked, fails, stops short, or hits the preview cap.
+
+## PER 3 Validation
+
+- `PROTO_NODE_VERSION=24 pnpm check` — passed with existing unrelated warnings.
+- `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/game/ghost-path.test.ts src/lib/components/game/Grid.svelte.spec.ts` — passed.
+- `PROTO_NODE_VERSION=24 pnpm exec playwright test e2e/run-replay.spec.ts --project=chromium --grep "Ghost Path"` — passed.
+- Focused TypeScript `tsc --noEmit --pretty false --skipLibCheck` still reports an existing unrelated `src/hooks.ts` implicit-any error; `pnpm check` remains the project-level validation source and passed.
+- Manual local visual review — accepted as decent for this slice.
+
 ## What To Review Next
 
 - Confirm the run/replay feel in the browser, especially whether terminal states should keep editing disabled until Reset.
 - Review the PER 2 visual clarity layer in the browser, especially crowded toolbar behavior on smaller widths.
-- Continue Phase 43 by choosing the kinetic slice: Ghost Replay or Snap-to-intent.
+- Review Ghost Path visually at `https://learn-coding.localhost/play/basics/level-1`: enter planning, add Step blocks one at a time, confirm the ghost trail appears only in planning, sits below Zoey, and disappears while running.
 - Mobile/touch visual validation remains open beyond the targeted desktop Playwright coverage.

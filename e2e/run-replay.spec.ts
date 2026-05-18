@@ -84,3 +84,21 @@ test('Step mode has a visible paused indicator without changing run controls', a
 	await expect(page.getByTestId('status-panel-step-mode')).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Play' })).toBeEnabled();
 });
+
+test('Ghost Path preview appears while planning and hides while running', async ({ page }) => {
+	await enterPlanning(page);
+	await expect(page.getByTestId('ghost-path-preview')).not.toBeVisible();
+
+	await addStepBlocks(page, 4);
+
+	await expect(page.getByTestId('ghost-path-preview')).toBeVisible();
+	await expect(page.getByTestId('ghost-path-preview')).toHaveAttribute('data-outcome', 'won');
+	await expect(page.getByTestId('ghost-path-status')).toContainText('Ghost Path: reaches the goal');
+	await expect(page.getByTestId('ghost-path-step')).toHaveCount(5);
+
+	await page.getByRole('button', { name: 'Play' }).click();
+
+	await expect(page.getByTestId('player-mode-indicator')).toHaveAttribute('data-mode', 'running');
+	await expect(page.getByTestId('ghost-path-preview')).not.toBeVisible();
+	await expect(page.getByTestId('ghost-path-status')).not.toBeVisible();
+});

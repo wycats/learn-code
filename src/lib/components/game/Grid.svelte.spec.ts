@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import Grid from './Grid.svelte';
 import { GameModel } from '$lib/game/model.svelte';
+import { simulateGhostPath } from '$lib/game/ghost-path';
 import type { LevelDefinition } from '$lib/game/types';
 
 const LEVEL_WITH_ITEMS: LevelDefinition = {
@@ -46,5 +47,28 @@ describe('Grid ThoughtBubble', () => {
 
 		const bubble = page.getByTestId('thought-bubble');
 		await expect.element(bubble).not.toBeInTheDocument();
+	});
+});
+
+describe('Grid ghost path overlay', () => {
+	it('renders optional ghost path markers below the live character', async () => {
+		const game = new GameModel({ ...LEVEL_WITHOUT_ITEMS, goal: { x: 2, y: 0 } });
+		const ghostPath = simulateGhostPath({
+			level: game.level,
+			program: [
+				{ id: 'move-1', type: 'move-forward' },
+				{ id: 'move-2', type: 'move-forward' }
+			]
+		});
+
+		render(Grid, { game, ghostPath });
+
+		const overlay = page.getByTestId('ghost-path-preview');
+		await expect.element(overlay).toBeInTheDocument();
+		await expect.element(overlay).toHaveAttribute('aria-hidden', 'true');
+		await expect.element(overlay).toHaveAttribute('data-outcome', 'won');
+		await expect
+			.element(page.getByTestId('ghost-path-step').nth(2))
+			.toHaveAttribute('data-event', 'won');
 	});
 });

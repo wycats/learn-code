@@ -2,7 +2,7 @@
 
 ## Status
 
-PER 1 Run / Replay behavior is implemented. PER 2 Visual Clarity is implemented. The first kinetic accessibility slice remains open.
+PER 1 Run / Replay behavior is implemented. PER 2 Visual Clarity is implemented. PER 3 Ghost Replay is implemented as the first kinetic accessibility slice, and local visual review has accepted it as decent for this slice.
 
 ## Why This Phase
 
@@ -58,6 +58,16 @@ Pick a small, concrete slice from the Phase 43 roadmap rather than attempting al
 - **Alternative first slice**: Snap-to-intent / magnetic drop targets, if current drag/drop feels unclear during review.
 - **Defer**: Kinetic deletion/flinging unless it clearly solves an existing usability problem.
 
+### PER 3 Implemented Ghost Replay Slice
+
+- Added a planning-only Ghost Path preview for the main program when the learner has at least one block.
+- The preview is Staff Ghost-shaped groundwork only: it does not add reference/staff solution schema or solution authoring.
+- Added a pure `simulateGhostPath()` helper that reads level/start/program/functions/terrain/items and returns immutable preview data with ordered path entries, final position/orientation, and outcomes (`won`, `blocked`, `failed`, `stopped-short`, `capped`).
+- The preview intentionally does not use `StackInterpreter` or mutate the live `GameModel`.
+- `Grid.svelte` renders a subtle non-interactive overlay under the live character with `pointer-events: none`, `aria-hidden="true"`, and stable Ghost Path test IDs.
+- `Game.svelte` computes/passes the preview only during non-builder `planning`, and hides it during running/story/goal/won/lost.
+- A small planning status chip names the Ghost Path outcome without changing run-control or interpreter semantics.
+
 ## Out of Scope
 
 - Full Syntax Bridge / code view.
@@ -87,7 +97,13 @@ Pick a small, concrete slice from the Phase 43 roadmap rather than attempting al
 2. Keep paused/step mode as local `Game.svelte` UI state rather than expanding `GameStatus`.
 3. Treat builder test mode as the existing game/architect path with a clearer `BUILDER TEST` label.
 
+## Resolved PER 3 Decisions
+
+1. Ship Ghost Replay first; defer snap-to-intent and kinetic deletion/flinging.
+2. Keep Ghost Path tied to the learner's current main program, not hidden state or a reference solution.
+3. Keep builder/test mode out of this slice so the overlay cannot interfere with builder grid editing.
+
 ## Open Questions
 
-1. Which kinetic slice should ship first: Ghost Replay or Snap-to-intent?
-2. Should the next visual pass include mobile-specific toolbar simplification beyond the current responsive chip compression?
+1. Should the next visual pass include mobile-specific toolbar simplification beyond the current responsive chip compression?
+2. Should a later Staff Ghost system introduce explicit reference-solution schema, or continue deriving previews only from learner-authored code?

@@ -10,7 +10,7 @@
 
 - [x] Audit current Run button behavior across `planning`, `running`, `won`, `lost`, `story`, and `goal` states.
 - [x] Audit player and builder visual mode indicators.
-- [ ] Identify the smallest useful kinetic interaction slice for this phase.
+- [x] Identify the smallest useful kinetic interaction slice for this phase.
 
 ## Run Button Logic
 
@@ -30,10 +30,11 @@
 
 ## Kinetic Accessibility Slice
 
-- [ ] Choose Ghost Replay or Snap-to-intent as the first slice.
-- [ ] Write a small implementation plan for the chosen slice.
-- [ ] Implement only the approved slice.
-- [ ] Validate with tests/visual checks.
+- [x] Choose Ghost Replay or Snap-to-intent as the first slice.
+- [x] Write a small implementation plan for the chosen slice.
+- [x] Implement only the approved slice.
+- [x] Validate with focused automated tests.
+- [x] Manual visual review of Ghost Path on the local dev server.
 
 ## Validation
 
@@ -45,3 +46,5 @@
 - [x] Targeted Playwright coverage for run/replay
 - [x] PER 2 targeted Playwright `e2e/run-replay.spec.ts --project=chromium`
 - [x] PER 2 targeted Playwright `e2e/builder-targets.spec.ts --project=chromium`
+- [x] PER 3 targeted Vitest `src/lib/game/ghost-path.test.ts` and `src/lib/components/game/Grid.svelte.spec.ts`
+- [x] PER 3 targeted Playwright `e2e/run-replay.spec.ts --project=chromium --grep "Ghost Path"`

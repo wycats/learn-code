@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { GameModel } from '$lib/game/model.svelte';
 	import { StackInterpreter } from '$lib/game/mimic';
+	import { simulateGhostPath } from '$lib/game/ghost-path';
 	import Grid from '$lib/components/game/Grid.svelte';
 	import Tray from '$lib/components/game/Tray.svelte';
 	import InstructionBar from '$lib/components/game/InstructionBar.svelte';
@@ -56,6 +57,25 @@
 	let runToken = 0;
 	const canEdit = $derived(game.status === 'planning' && !isRunning);
 	const isStepMode = $derived(game.status === 'running' && isRunning && isPaused);
+	const ghostPath = $derived.by(() => {
+		if (architectMode || game.status !== 'planning' || isRunning || game.program.length === 0) {
+			return null;
+		}
+
+		return simulateGhostPath({
+			level: game.level,
+			program: game.program,
+			functions: game.functions
+		});
+	});
+	const ghostPathDetail = $derived.by(() => {
+		if (!ghostPath) return null;
+		if (ghostPath.outcome === 'won') return 'Ghost Path: reaches the goal';
+		if (ghostPath.outcome === 'blocked') return 'Ghost Path: blocked before the goal';
+		if (ghostPath.outcome === 'failed') return 'Ghost Path: hits trouble';
+		if (ghostPath.outcome === 'capped') return 'Ghost Path: preview stopped early';
+		return 'Ghost Path: stops before the goal';
+	});
 	const playerMode = $derived.by(() => {
 		if (game.status === 'story') {
 			return { label: 'Story', detail: 'Guide is speaking', tone: 'story' };
@@ -291,12 +311,21 @@
 					aria-label={`Player mode: ${playerMode.label}. ${playerMode.detail}`}
 				>
 					<span class="mode-dot"></span>
-					<span class="mode-text">
+					<span class="mode-copy">
 						<span class="mode-kicker">Player</span>
-						<strong>{playerMode.label}</strong>
+						<span class="mode-line">
+							<strong>{playerMode.label}</strong>
+							<span class="mode-detail">{playerMode.detail}</span>
+						</span>
 					</span>
-					<span class="mode-detail">{playerMode.detail}</span>
 				</div>
+
+				{#if ghostPathDetail}
+					<div class="ghost-path-status" data-testid="ghost-path-status" role="status">
+						<span class="ghost-path-status-dot"></span>
+						{ghostPathDetail}
+					</div>
+				{/if}
 			</div>
 
 			<div class="controls">
@@ -384,7 +413,7 @@
 
 			<div class="stage-container">
 				{#key game.level.id}
-					<Grid {game} />
+					<Grid {game} {ghostPath} />
 				{/key}
 
 				{#if game.status === 'won'}
@@ -449,17 +478,19 @@
 	.player-mode-chip {
 		--mode-color: var(--brand);
 		--mode-bg: var(--brand-surface);
-		display: flex;
+		display: inline-grid;
+		grid-template-columns: auto minmax(0, auto);
 		align-items: center;
-		gap: var(--size-2);
+		column-gap: 0.75rem;
 		min-height: var(--touch-target-min);
-		padding: 0 var(--size-3);
+		padding: 0.42rem 0.95rem 0.46rem 0.8rem;
 		border-radius: var(--radius-pill);
 		border: 1px solid color-mix(in srgb, var(--mode-color), transparent 55%);
 		background-color: var(--mode-bg);
 		color: var(--text-1);
 		box-shadow: var(--shadow-1);
 		white-space: nowrap;
+		line-height: 1;
 	}
 
 	.player-mode-chip.story {
@@ -498,8 +529,8 @@
 	}
 
 	.mode-dot {
-		width: 0.75rem;
-		height: 0.75rem;
+		width: 0.85rem;
+		height: 0.85rem;
 		border-radius: 999px;
 		background-color: var(--mode-color);
 		box-shadow: 0 0 0 3px color-mix(in srgb, var(--mode-color), transparent 80%);
@@ -510,28 +541,64 @@
 		animation: mode-pulse 1.2s ease-in-out infinite;
 	}
 
-	.mode-text {
-		display: flex;
-		flex-direction: column;
-		line-height: 1.1;
+	.mode-copy {
+		display: grid;
+		row-gap: 0.14rem;
+		min-width: 0;
 	}
 
 	.mode-kicker {
 		font-size: var(--font-size-00);
 		font-weight: 800;
 		letter-spacing: 0.08em;
+		line-height: 1;
 		text-transform: uppercase;
 		color: var(--mode-color);
 	}
 
-	.mode-text strong {
+	.mode-line {
+		display: flex;
+		align-items: baseline;
+		gap: 0.7rem;
+		min-width: 0;
+	}
+
+	.mode-line strong {
 		font-size: var(--font-size-1);
 		font-family: var(--font-heading);
+		line-height: 1.05;
 	}
 
 	.mode-detail {
 		font-size: var(--font-size-0);
 		color: var(--text-2);
+		font-weight: 600;
+		line-height: 1.15;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.ghost-path-status {
+		display: flex;
+		align-items: center;
+		gap: var(--size-1);
+		min-height: var(--touch-target-min);
+		padding: 0 var(--size-2);
+		border-radius: var(--radius-pill);
+		border: 1px dashed color-mix(in srgb, var(--brand), transparent 45%);
+		background: color-mix(in srgb, var(--brand-surface), transparent 15%);
+		color: var(--text-2);
+		font-size: var(--font-size-0);
+		font-weight: 700;
+		white-space: nowrap;
+	}
+
+	.ghost-path-status-dot {
+		width: 0.65rem;
+		height: 0.65rem;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--brand), white 20%);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand), transparent 80%);
 	}
 
 	@keyframes mode-pulse {
@@ -698,7 +765,8 @@
 
 	@media (max-width: 600px) {
 		.mode-detail,
-		.mode-kicker {
+		.mode-kicker,
+		.ghost-path-status {
 			display: none;
 		}
 

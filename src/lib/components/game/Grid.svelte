@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { GameModel } from '$lib/game/model.svelte';
+	import type { GhostPathPreview } from '$lib/game/ghost-path';
 	import type { GridPosition } from '$lib/game/types';
 	import Cell from './Cell.svelte';
 	import Character from './Character.svelte';
@@ -19,6 +20,7 @@
 		onActorDrop?: () => void;
 		onRotateStart?: () => void;
 		onInteractionEnd?: () => void;
+		ghostPath?: GhostPathPreview | null;
 	}
 
 	let {
@@ -30,7 +32,8 @@
 		onActorSelect,
 		onActorDrop,
 		onRotateStart,
-		onInteractionEnd
+		onInteractionEnd,
+		ghostPath = null
 	}: Props = $props();
 
 	const [send, receive] = crossfade({
@@ -166,6 +169,9 @@
 			return true;
 		});
 	});
+
+	const ghostEntries = $derived(ghostPath?.path ?? []);
+	const ghostOutcome = $derived(ghostPath?.outcome ?? null);
 </script>
 
 <div
@@ -205,6 +211,33 @@
 			/>
 		</div>
 	{/each}
+
+	{#if ghostEntries.length > 1}
+		<div
+			class="ghost-path-layer"
+			data-testid="ghost-path-preview"
+			data-outcome={ghostOutcome}
+			aria-hidden="true"
+		>
+			{#each ghostEntries as entry (entry.step)}
+				{@const isStart = entry.step === 0}
+				<div
+					class="ghost-path-marker"
+					class:start={isStart}
+					class:terminal={entry.step === ghostEntries.length - 1}
+					class:blocked={entry.event === 'blocked'}
+					class:failed={entry.event === 'failed'}
+					class:won={entry.event === 'won'}
+					style:grid-column={entry.position.x + 1}
+					style:grid-row={entry.position.y + 1}
+					style:--ghost-index={entry.step}
+					data-testid="ghost-path-step"
+					data-step={entry.step}
+					data-event={entry.event}
+				></div>
+			{/each}
+		</div>
+	{/if}
 
 	<div
 		class="character-container"
@@ -318,6 +351,58 @@
 
 	.grid-cell-wrapper.cover {
 		z-index: 20;
+	}
+
+	.ghost-path-layer {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		grid-template-columns: repeat(var(--grid-width), 1fr);
+		grid-template-rows: repeat(var(--grid-height), 1fr);
+		gap: var(--size-2);
+		padding: var(--size-3);
+		pointer-events: none;
+		z-index: 8;
+	}
+
+	.ghost-path-marker {
+		place-self: center;
+		width: 34%;
+		aspect-ratio: 1;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--brand), transparent 34%);
+		border: 2px solid color-mix(in srgb, white, var(--brand) 35%);
+		box-shadow:
+			0 0 0 4px color-mix(in srgb, var(--brand), transparent 80%),
+			0 0 16px color-mix(in srgb, var(--brand), transparent 60%);
+		opacity: calc(0.3 + min(var(--ghost-index), 6) * 0.08);
+	}
+
+	.ghost-path-marker.start {
+		width: 24%;
+		opacity: 0.28;
+	}
+
+	.ghost-path-marker.terminal {
+		width: 46%;
+		background: transparent;
+		border-style: dashed;
+		opacity: 0.88;
+	}
+
+	.ghost-path-marker.blocked {
+		background: color-mix(in srgb, var(--orange-5), transparent 30%);
+		border-color: color-mix(in srgb, var(--orange-5), white 35%);
+	}
+
+	.ghost-path-marker.failed {
+		background: color-mix(in srgb, var(--red-5), transparent 30%);
+		border-color: color-mix(in srgb, var(--red-5), white 35%);
+	}
+
+	.ghost-path-marker.won {
+		background: color-mix(in srgb, var(--green-5), transparent 35%);
+		border-color: color-mix(in srgb, var(--green-5), white 35%);
 	}
 
 	.rotate-handle {
