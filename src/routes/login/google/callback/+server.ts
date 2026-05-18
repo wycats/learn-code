@@ -1,5 +1,5 @@
 import {
-	google,
+	createGoogleOAuthClient,
 	createSession,
 	generateSessionToken,
 	setSessionTokenCookie,
@@ -12,6 +12,7 @@ import * as table from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { GoogleUserInfoSchema, normalizeVerifiedEmail } from '$lib/server/oauth';
 import { sanitizeRedirectPath } from '$lib/server/security';
+import { getBaseUrl } from '$lib/server/oauth-config';
 
 export const GET: RequestHandler = async (event) => {
 	const { url, cookies, locals } = event;
@@ -28,6 +29,7 @@ export const GET: RequestHandler = async (event) => {
 	}
 
 	try {
+		const google = createGoogleOAuthClient(getBaseUrl(url.origin));
 		const tokens = await google.validateAuthorizationCode(code, codeVerifier);
 		const response = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
 			headers: {

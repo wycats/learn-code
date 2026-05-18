@@ -1,9 +1,9 @@
 import { generateState } from 'arctic';
-import { github } from '$lib/server/auth';
+import { createGitHubOAuthClient } from '$lib/server/auth';
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { sanitizeRedirectPath } from '$lib/server/security';
-import { getOAuthProviderConfigStatus } from '$lib/server/oauth-config';
+import { getBaseUrl, getOAuthProviderConfigStatus } from '$lib/server/oauth-config';
 
 export const GET: RequestHandler = async ({ cookies, url }) => {
 	const config = getOAuthProviderConfigStatus('github');
@@ -15,6 +15,7 @@ export const GET: RequestHandler = async ({ cookies, url }) => {
 	}
 
 	const state = generateState();
+	const github = createGitHubOAuthClient(getBaseUrl(url.origin));
 	const authorizationUrl = await github.createAuthorizationURL(state, ['user:email']);
 
 	cookies.set('github_oauth_state', state, {

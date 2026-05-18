@@ -13,8 +13,8 @@ const REQUIRED_ENV: Record<OAuthProvider, string[]> = {
 	github: ['GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET', 'AUTH_TOKEN_SECRET']
 };
 
-export function getBaseUrl() {
-	return normalizeBaseUrl(env.BASE_URL || 'http://localhost:5173');
+export function getBaseUrl(fallbackBaseUrl = 'http://localhost:5173') {
+	return normalizeBaseUrl(env.BASE_URL || fallbackBaseUrl);
 }
 
 function normalizeBaseUrl(baseUrl: string) {
@@ -41,12 +41,24 @@ export function getOAuthProviderConfigStatus(
 	};
 }
 
-export function getOAuthConfigStatus(values: Record<string, string | undefined> = env) {
-	const baseUrl = normalizeBaseUrl(values.BASE_URL || getBaseUrl());
+export function getOAuthConfigStatus(
+	values: Record<string, string | undefined> = env,
+	fallbackBaseUrl = 'http://localhost:5173'
+) {
+	const baseUrl = normalizeBaseUrl(values.BASE_URL || fallbackBaseUrl);
 	return {
 		baseUrl,
 		callbackUrls: getOAuthCallbackUrls(baseUrl),
 		google: getOAuthProviderConfigStatus('google', values),
 		github: getOAuthProviderConfigStatus('github', values)
+	};
+}
+
+export function getRuntimeConfiguredOAuthProviders(
+	values: Record<string, string | undefined> = env
+) {
+	return {
+		google: getOAuthProviderConfigStatus('google', values).configured,
+		github: getOAuthProviderConfigStatus('github', values).configured
 	};
 }

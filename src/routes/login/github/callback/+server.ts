@@ -1,5 +1,5 @@
 import {
-	github,
+	createGitHubOAuthClient,
 	createSession,
 	generateSessionToken,
 	setSessionTokenCookie,
@@ -13,6 +13,7 @@ import { eq } from 'drizzle-orm';
 import { encryptToken } from '$lib/server/crypto';
 import { GitHubEmailSchema, GitHubUserSchema, selectVerifiedGitHubEmail } from '$lib/server/oauth';
 import { sanitizeRedirectPath } from '$lib/server/security';
+import { getBaseUrl } from '$lib/server/oauth-config';
 
 export const GET: RequestHandler = async (event) => {
 	const { url, cookies, locals } = event;
@@ -28,6 +29,7 @@ export const GET: RequestHandler = async (event) => {
 	}
 
 	try {
+		const github = createGitHubOAuthClient(getBaseUrl(url.origin));
 		const tokens = await github.validateAuthorizationCode(code);
 		const accessToken = tokens.accessToken();
 		const githubUserResponse = await fetch('https://api.github.com/user', {

@@ -16,6 +16,9 @@
 		...data.oauth.google.missing,
 		...data.oauth.github.missing
 	]);
+	const googleLoginAvailable = $derived(data.runtimeOAuth.google);
+	const githubLoginAvailable = $derived(data.runtimeOAuth.github);
+	const anyParentLoginAvailable = $derived(googleLoginAvailable || githubLoginAvailable);
 
 	const googleLoginUrl = `${base}/login/google`;
 	const githubLoginUrl = `${base}/login/github`;
@@ -125,15 +128,21 @@
 			<div class="content">
 				{#if missingOAuthConfig.length > 0}
 					<div class="setup-alert" role="status">
-						<strong>Parent login needs local setup.</strong>
-						<span>Missing: {missingOAuthConfig.join(', ')}</span>
+						<strong>
+							{#if anyParentLoginAvailable}
+								Some login providers need setup.
+							{:else}
+								Parent login needs local setup.
+							{/if}
+						</strong>
+						<span>Missing optional OAuth config: {missingOAuthConfig.join(', ')}</span>
 						<span class="setup-hint">
 							Add these callback URLs to your OAuth apps, then add the values to .env.local: Google {data
 								.oauth.callbackUrls.google}; GitHub {data.oauth.callbackUrls.github}.
 						</span>
 					</div>
 				{/if}
-				<button onclick={goToGoogle} class="btn outline">
+				<button onclick={goToGoogle} class="btn outline" disabled={!googleLoginAvailable}>
 					<!-- Google SVG -->
 					<svg class="icon" viewBox="0 0 24 24">
 						<path
@@ -155,7 +164,7 @@
 					</svg>
 					Sign in with Google
 				</button>
-				<button onclick={goToGithub} class="btn outline">
+				<button onclick={goToGithub} class="btn outline" disabled={!githubLoginAvailable}>
 					<Github class="icon" />
 					Sign in with GitHub
 				</button>
@@ -373,6 +382,15 @@
 
 	.btn.outline:hover {
 		background-color: var(--surface-3);
+	}
+
+	.btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.btn:disabled:hover {
+		background-color: var(--surface-1);
 	}
 
 	.btn.secondary {

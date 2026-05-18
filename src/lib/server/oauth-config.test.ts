@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
 	getOAuthCallbackUrls,
 	getOAuthConfigStatus,
-	getOAuthProviderConfigStatus
+	getOAuthProviderConfigStatus,
+	getRuntimeConfiguredOAuthProviders
 } from './oauth-config';
 
 describe('getOAuthProviderConfigStatus', () => {
@@ -55,6 +56,21 @@ describe('getOAuthConfigStatus', () => {
 		expect(getOAuthCallbackUrls('https://example.test')).toEqual({
 			google: 'https://example.test/login/google/callback',
 			github: 'https://example.test/login/github/callback'
+		});
+	});
+});
+
+describe('getRuntimeConfiguredOAuthProviders', () => {
+	it('reports only providers with complete runtime config', () => {
+		expect(
+			getRuntimeConfiguredOAuthProviders({
+				GOOGLE_CLIENT_ID: 'google-client',
+				GOOGLE_CLIENT_SECRET: 'google-secret',
+				GITHUB_CLIENT_ID: 'github-client'
+			})
+		).toEqual({
+			google: true,
+			github: false
 		});
 	});
 });
