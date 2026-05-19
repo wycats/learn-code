@@ -126,8 +126,8 @@
 		<div class="logo">
 			<h1>Kibi</h1>
 		</div>
-		<div class="actions" aria-label="Library actions">
-			<div class="utility-actions" aria-label="Library utilities">
+		<div class="actions" role="toolbar" aria-label="Library actions">
+			<div class="utility-actions" role="group" aria-label="Library utilities">
 				{#if data.user}
 					<SyncStatus />
 				{/if}
