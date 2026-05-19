@@ -161,7 +161,7 @@
 			{game}
 			{hasNextLevel}
 			onNextLevel={handleNextLevel}
-			feedbackContext={{ source: 'pack', packId, levelId }}
+			feedbackRouteContext={{ source: 'pack', packId, levelId }}
 		>
 			{#snippet headerLeft()}
 				<button class="back-button" onclick={handleExit} title="Back to Pack">

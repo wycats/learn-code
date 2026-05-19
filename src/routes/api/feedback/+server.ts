@@ -8,7 +8,8 @@ const MAX_FEEDBACK_BYTES = 200_000;
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const raw = await request.text();
-	if (raw.length > MAX_FEEDBACK_BYTES) {
+	const byteLength = new TextEncoder().encode(raw).byteLength;
+	if (byteLength > MAX_FEEDBACK_BYTES) {
 		return json({ error: 'Feedback payload is too large' }, { status: 413 });
 	}
 

@@ -43,7 +43,7 @@
 		onExit?: () => void; // For builder to exit test mode
 		headerLeft?: import('svelte').Snippet;
 		onTarget?: (target: string) => void;
-		feedbackContext?: FeedbackRouteContext;
+		feedbackRouteContext?: FeedbackRouteContext;
 	}
 
 	let {
@@ -54,7 +54,7 @@
 		onExit,
 		headerLeft,
 		onTarget,
-		feedbackContext = { source: 'shared' }
+		feedbackRouteContext = { source: 'shared' }
 	}: Props = $props();
 
 	let isRunning = $state(false);
@@ -257,7 +257,7 @@
 	function handleOpenFeedback() {
 		activeFeedbackContext = createFeedbackContext({
 			game,
-			route: feedbackContext,
+			route: feedbackRouteContext,
 			interpreter,
 			url: window.location.href,
 			navigatorInfo: navigator,

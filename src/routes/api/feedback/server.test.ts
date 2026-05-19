@@ -90,11 +90,11 @@ describe('POST /api/feedback', () => {
 		expect(response.status).toBe(400);
 	});
 
-	it('rejects oversized feedback', async () => {
+	it('rejects oversized feedback by byte size', async () => {
 		const response = await POST({
 			request: new Request('https://example.test/api/feedback', {
 				method: 'POST',
-				body: 'x'.repeat(200_001)
+				body: JSON.stringify(makePayload({ message: '🚢'.repeat(70_000) }))
 			}),
 			locals: { user: null, profile: null }
 		} as never);

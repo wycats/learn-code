@@ -66,7 +66,7 @@
 			{game}
 			hasNextLevel={false}
 			onNextLevel={handleExit}
-			feedbackContext={{ source: 'shared' }}
+			feedbackRouteContext={{ source: 'shared' }}
 		>
 			{#snippet headerLeft()}
 				<button class="back-button" onclick={handleExit} title="Exit">
