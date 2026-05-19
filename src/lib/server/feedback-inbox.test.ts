@@ -136,4 +136,17 @@ describe('toFeedbackInboxReport', () => {
 		expect(report.email).toBe('parent@example.test');
 		expect(report.context.status).toBe('valid');
 	});
+
+	it('falls back to context route metadata when row columns are empty', () => {
+		const report = toFeedbackInboxReport(
+			makeFeedback({
+				packId: null,
+				levelId: null
+			})
+		);
+
+		expect(report.packId).toBe('basics');
+		expect(report.levelId).toBe(LEVEL_1.id);
+		expect(report.primaryLocation).toBe(`basics / ${LEVEL_1.id}`);
+	});
 });

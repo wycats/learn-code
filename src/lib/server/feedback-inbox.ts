@@ -62,9 +62,9 @@ export type FeedbackInboxGroup = {
 
 export function toFeedbackInboxReport(row: Feedback): FeedbackInboxReport {
 	const context = summarizeFeedbackContext(row.context);
-	const title = context.level?.name ?? row.levelId ?? context.route?.levelId ?? null;
 	const packId = row.packId ?? context.route?.packId ?? null;
 	const levelId = row.levelId ?? context.route?.levelId ?? context.level?.id ?? null;
+	const title = context.level?.name ?? levelId;
 
 	return {
 		id: row.id,
@@ -73,8 +73,8 @@ export function toFeedbackInboxReport(row: Feedback): FeedbackInboxReport {
 		messagePreview: previewMessage(row.message),
 		email: row.email,
 		url: row.url,
-		packId: row.packId,
-		levelId: row.levelId,
+		packId,
+		levelId,
 		userId: row.userId,
 		profileId: row.profileId,
 		context,

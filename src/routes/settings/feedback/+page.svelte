@@ -22,6 +22,11 @@
 		return value === null || value === undefined || value === '' ? '—' : value;
 	}
 
+	function countWithUnit(value: number | null | undefined, singularUnit: string) {
+		if (typeof value !== 'number') return '—';
+		return `${value} ${value === 1 ? singularUnit : `${singularUnit}s`}`;
+	}
+
 	function contextStatusLabel(status: PageData['reports'][number]['context']['status']) {
 		if (status === 'valid') return 'Context parsed';
 		if (status === 'empty') return 'Legacy empty context';
@@ -105,7 +110,7 @@
 								</div>
 								<div>
 									<span>Program</span>
-									<strong>{valueOrDash(report.context.programCount)} blocks</strong>
+									<strong>{countWithUnit(report.context.programCount, 'block')}</strong>
 								</div>
 								<div>
 									<span>Contact</span>
