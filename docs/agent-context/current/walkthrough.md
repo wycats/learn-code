@@ -2,7 +2,7 @@
 
 ## Current Status
 
-PER 1 State Dump Feedback is implemented and awaiting validation/review. This first slice intentionally focuses on a working feedback loop with attached state, not screenshots or an admin dashboard.
+PER 1 State Dump Feedback is implemented, validated, reviewed, and merged. This first slice intentionally focuses on a working feedback loop with attached state, not screenshots or an admin dashboard.
 
 ## What Changed
 
@@ -57,7 +57,7 @@ The feedback context captures enough information to reproduce the current game s
 - `PROTO_NODE_VERSION=24 pnpm build` — passed with existing unrelated warnings and the adapter-auto notice.
 - `git diff --check` — passed.
 
-## Manual Visual Review Checklist
+## Manual Visual Review
 
 - Open any playable level.
 - Click `Report Issue` in the game header.
@@ -70,3 +70,4 @@ The feedback context captures enough information to reproduce the current game s
 ## Manual Visual Review Result
 
 - Local review accepted the feedback UI as reasonable for this slice.
+- Offline queue, screenshot capture, and admin triage remain follow-up topics rather than blockers for PER 1.
