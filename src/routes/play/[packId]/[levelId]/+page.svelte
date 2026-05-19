@@ -157,7 +157,12 @@
 
 {#if game}
 	<div class="play-container">
-		<Game {game} {hasNextLevel} onNextLevel={handleNextLevel}>
+		<Game
+			{game}
+			{hasNextLevel}
+			onNextLevel={handleNextLevel}
+			feedbackRouteContext={{ source: 'pack', packId, levelId }}
+		>
 			{#snippet headerLeft()}
 				<button class="back-button" onclick={handleExit} title="Back to Pack">
 					<ArrowLeft size={20} />

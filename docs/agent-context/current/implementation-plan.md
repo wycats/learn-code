@@ -1,58 +1,66 @@
-# Implementation Plan: Phase 37 — The Lost Fleet
+# Implementation Plan: Phase 44 — Feedback System
 
 ## Status
 
-Execution slice is implemented. Phase 37 was not a from-scratch pack build: `VEHICLES_PACK` already existed, was registered in `PACKS`, and already contained the three boat levels.
-
-This slice therefore focused on validation, small Set Sail content polish, and visibility coverage.
+PER 1 State Dump Feedback is implemented as the first Phase 44 slice. It adds a visible in-game report flow, captures current level/program/runtime context, submits to a real API endpoint, and preserves local-first queueing for offline or failed sends. Screenshot capture remains deferred.
 
 ## Phase Goal
 
-Expose and stabilize the existing boat mechanic by proving that The Lost Fleet is visible, routable, playable, and backed by content assertions.
+Create a robust feedback loop that helps Jonas, Zoey, parents, and maintainers report issues with enough context to reproduce them.
 
 ## Implemented Scope
 
-### Pack and Content Validation
+### In-Game Report Flow
 
-- Added targeted assertions that `VEHICLES_PACK` is registered in `PACKS`.
-- Asserted the pack id/name and its three-level sequence:
-  - Set Sail
-  - Island Hopping
-  - Row Your Boat
-- Added a uniqueness assertion for built-in level ids across all registered packs.
+- Added a `Report Issue` action to the game header.
+- Added a feedback modal with a required message, optional email, and explicit copy that the current level, blocks, and runtime state are attached.
+- Uses existing toast notifications for sent and queued states.
 
-### Lost Fleet Playwright Coverage
+### State Dump Context
 
-- Added a focused `lost-fleet` E2E spec covering:
-  - The Lost Fleet appears in Library.
-  - `/library/vehicles` loads directly.
-  - Set Sail, Island Hopping, and Row Your Boat appear on the pack page.
-  - The first level route loads as a playable game surface.
-  - Set Sail can be won with the intended Step → Board → Step → Step flow.
+- Added a serializable feedback context helper for `GameModel` state.
+- Captures route metadata, level JSON, current program/functions, game status, character state, held item/vehicle, collected items, execution maps, hint/story state, browser context, and interpreter stack/phase when available.
+- Passes pack/level context from canonical play routes and shared-level context from the QR/shared play route.
 
-### Content Polish
+### Local-First Feedback Service
 
-- Updated Set Sail's description to call out `Board` explicitly.
-- Added intro targets that highlight the boat cell and the `Board` block/water crossing.
-- No boat mechanics, disembark rules, builder redesign, new vehicle types, or schema/cloud work were added.
+- Updated `FeedbackService` to accept full payloads instead of only message/email.
+- Preserves localStorage queueing for offline or failed sends.
+- Flushes queued items when online.
+- Drops invalid 4xx queued submissions instead of retrying forever.
+- Keeps queue size bounded.
+
+### Server Endpoint and Persistence
+
+- Added `/api/feedback` with payload validation and request-size limit.
+- Stores message, optional email, URL, pack/level ids, serialized context, and optional user/profile ids.
+- Added a migration and schema fields for feedback context.
+- Uses idempotent insert behavior for repeated feedback IDs.
+
+## Out of Scope
+
+- Screenshot capture and image/blob storage.
+- Admin dashboard or triage workflow.
+- GitHub issue creation.
+- Comment threads or feedback resolution states.
+- True service-worker background flush after app close.
+- Broad cloud sync or analytics changes.
 
 ## Validation Plan
 
-- `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/game/packs/validate.test.ts src/lib/game/interpreter.test.ts src/lib/game/ghost-path.test.ts`
-- `PROTO_NODE_VERSION=24 pnpm exec playwright test e2e/lost-fleet.spec.ts --project=chromium`
+- `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/game/feedback-context.test.ts src/lib/services/feedback.test.ts src/routes/api/feedback/server.test.ts`
+- `PROTO_NODE_VERSION=24 pnpm exec playwright test e2e/feedback.spec.ts --project=chromium`
 - `PROTO_NODE_VERSION=24 pnpm check`
 - `PROTO_NODE_VERSION=24 pnpm lint`
+- `PROTO_NODE_VERSION=24 pnpm build`
 - `git diff --check`
 
 ## Validation State
 
-- Focused unit tests: passed.
-- Targeted Playwright Lost Fleet spec: passed after correcting the playability assertion to match the current play UI.
-- `PROTO_NODE_VERSION=24 pnpm check`: passed with existing unrelated warnings.
-- `PROTO_NODE_VERSION=24 pnpm lint`: passed.
-- `PROTO_NODE_VERSION=24 pnpm build`: passed with existing unrelated warnings and the adapter-auto notice.
-- `git diff --check`: passed.
-
-## Known Validation Note
-
-The first two normal Playwright attempts hit the configured 60s web server timeout while the production build was still warming. Running the build step separately showed the production build succeeds but can take about 1m45s. After warm-up, the normal targeted Playwright command passed.
+- Focused feedback unit/component/API tests passed.
+- Targeted feedback Playwright coverage passed after warming the production preview build.
+- `PROTO_NODE_VERSION=24 pnpm check` passed with existing unrelated warnings.
+- `PROTO_NODE_VERSION=24 pnpm lint` passed.
+- `PROTO_NODE_VERSION=24 pnpm build` passed with existing unrelated warnings and the adapter-auto notice.
+- `git diff --check` passed.
+- Local visual review accepted the feedback UI as reasonable for this slice.

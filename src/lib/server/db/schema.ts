@@ -51,6 +51,12 @@ export const feedback = pgTable('feedback', {
 	id: text('id').primaryKey(),
 	message: text('message').notNull(),
 	email: text('email'),
+	url: text('url'),
+	packId: text('pack_id'),
+	levelId: text('level_id'),
+	context: text('context').notNull().default('{}'),
+	userId: text('user_id').references(() => user.id, { onDelete: 'set null' }),
+	profileId: text('profile_id').references(() => profile.id, { onDelete: 'set null' }),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow()
 });
 

@@ -62,7 +62,12 @@
 
 {#if game}
 	<div class="play-container">
-		<Game {game} hasNextLevel={false} onNextLevel={handleExit}>
+		<Game
+			{game}
+			hasNextLevel={false}
+			onNextLevel={handleExit}
+			feedbackRouteContext={{ source: 'shared' }}
+		>
 			{#snippet headerLeft()}
 				<button class="back-button" onclick={handleExit} title="Exit">
 					<ArrowLeft size={20} />

@@ -1,66 +1,72 @@
-# Walkthrough: Phase 37 — The Lost Fleet
+# Walkthrough: Phase 44 — Feedback System
 
 ## Current Status
 
-Phase 37 execute is a bounded validation-and-polish slice. The pack itself was already present before execution: `VEHICLES_PACK` existed, was exported through `PACKS`, and contained Set Sail, Island Hopping, and Row Your Boat.
+PER 1 State Dump Feedback is implemented and awaiting validation/review. This first slice intentionally focuses on a working feedback loop with attached state, not screenshots or an admin dashboard.
 
 ## What Changed
 
-### Pack Validation
+### Report Issue Flow
 
-- `validate.test.ts` now proves The Lost Fleet is registered as the `vehicles` pack.
-- It asserts the three expected boat levels and their order.
-- It adds a duplicate built-in level id check across registered packs.
+- The game header now includes a `Report Issue` action.
+- The feedback modal asks for a required message and optional email.
+- The modal explains that the current level, blocks, and runtime state are attached.
+- Sent and queued outcomes use the existing toast system.
 
-### Set Sail Content Polish
+### Attached Context
 
-- Set Sail's description now explicitly names `Board`.
-- The first intro segment targets the boat tile.
-- The second intro segment targets the `Board` block and the water crossing tile.
-- The copy is now more direct: step onto the boat, then use `Board` before crossing water.
+The feedback context captures enough information to reproduce the current game state:
 
-### Lost Fleet E2E Coverage
+- route/source metadata;
+- level JSON;
+- current main program and functions;
+- game status, position, orientation, lives, held item, vehicle, collected items;
+- execution and loop progress maps;
+- failure/story/hint state;
+- interpreter phase and stack when available;
+- browser online state and viewport.
 
-The new targeted Playwright spec covers the user-facing slice:
+### Local-First Queue
 
-- Library visibility for The Lost Fleet.
-- Direct routing to `/library/vehicles`.
-- Pack page visibility for Set Sail, Island Hopping, and Row Your Boat.
-- First level play route loading.
-- Winning Set Sail with Step → Board → Step → Step.
+- Online submissions post to `/api/feedback` immediately.
+- Offline or failed submissions are queued in localStorage.
+- Queued feedback flushes when the app is online again.
+- Invalid 4xx feedback is dropped on flush so it does not retry forever.
 
-## Validation Results So Far
+### Server Persistence
 
-- `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/game/packs/validate.test.ts` — passed.
-- `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/game/packs/validate.test.ts src/lib/game/interpreter.test.ts src/lib/game/ghost-path.test.ts` — passed.
-- `PROTO_NODE_VERSION=24 pnpm exec playwright test e2e/lost-fleet.spec.ts --project=chromium` — passed after one test assertion was corrected.
+- `/api/feedback` validates payloads and enforces a payload-size limit.
+- Accepted reports are persisted to the `feedback` table.
+- The table now stores route metadata and serialized context in addition to message/email.
+- Submissions are idempotent by feedback id.
+
+## Out of Scope Preserved
+
+- No screenshots yet.
+- No admin dashboard.
+- No GitHub issue creation.
+- No feedback thread/resolution workflow.
+- No true service-worker background flush after app close.
+
+## Validation Results
+
+- `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/game/feedback-context.test.ts src/lib/services/feedback.test.ts src/routes/api/feedback/server.test.ts src/lib/components/game/FeedbackModal.svelte.test.ts` — passed.
+- `PROTO_NODE_VERSION=24 pnpm exec playwright test e2e/feedback.spec.ts --project=chromium` — passed after warming the production preview build.
 - `PROTO_NODE_VERSION=24 pnpm check` — passed with existing unrelated warnings.
 - `PROTO_NODE_VERSION=24 pnpm lint` — passed.
 - `PROTO_NODE_VERSION=24 pnpm build` — passed with existing unrelated warnings and the adapter-auto notice.
 - `git diff --check` — passed.
 
-## Playwright Startup Note
-
-The initial targeted Playwright attempts timed out waiting for the configured web server because the production build can exceed the config's 60s startup window. Running the build step directly succeeded, and the targeted Playwright command passed normally after warm-up.
-
-The final targeted Playwright run passed without needing any additional workaround.
-
-## Out of Scope Preserved
-
-- No new boat mechanics.
-- No disembark rules.
-- No new vehicle types.
-- No builder redesign.
-- No cloud/schema work.
-
 ## Manual Visual Review Checklist
 
-- Open Library and confirm The Lost Fleet card feels visually consistent with other packs.
-- Open `/library/vehicles` and confirm the three boat levels are visible in order.
-- Open `/play/vehicles/level-boat-intro`, advance the story, and confirm the boat/Board highlights are clear.
-- Build Step → Board → Step → Step and confirm the boat crossing is visually understandable.
-- Confirm the win modal appears and no unexpected replay/progress behavior is introduced.
+- Open any playable level.
+- Click `Report Issue` in the game header.
+- Confirm the modal explains that current level, blocks, and runtime state are attached.
+- Confirm submit is disabled until a message is entered.
+- Submit online and confirm success toast.
+- Simulate failed/offline submit and confirm queued toast.
+- Confirm modal layout in mobile width and dark mode.
 
 ## Manual Visual Review Result
 
-- Local review accepted the Lost Fleet slice as working and visually good enough for this pass.
+- Local review accepted the feedback UI as reasonable for this slice.

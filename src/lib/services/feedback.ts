@@ -1,25 +1,37 @@
-import { z } from 'zod';
-
-export const FeedbackSchema = z.object({
-	message: z.string().min(1),
-	email: z.string().email().optional().or(z.literal('')),
-	timestamp: z.number(),
-	id: z.string()
-});
-
-type FeedbackItem = z.infer<typeof FeedbackSchema>;
+import {
+	FeedbackPayloadSchema,
+	FeedbackSubmitInputSchema,
+	type FeedbackPayload,
+	type FeedbackSubmitInput
+} from './feedback-schema';
 
 const STORAGE_KEY = 'pending_feedback';
+const QUEUE_VERSION = 1;
+const MAX_QUEUE_ITEMS = 25;
+
+export type FeedbackSubmitResult = {
+	status: 'sent' | 'queued';
+	item: FeedbackPayload;
+};
+
+type QueuedFeedbackItem = FeedbackPayload & {
+	queueVersion: number;
+	retryCount: number;
+	queuedAt: number;
+};
 
 export class FeedbackService {
 	private static instance: FeedbackService;
 
 	private constructor() {
 		if (typeof window !== 'undefined') {
-			window.addEventListener('online', () => this.flushQueue());
-			// Try to flush on load too
-			this.flushQueue();
+			window.addEventListener('online', () => void this.flushQueue());
+			void this.flushQueue();
 		}
+	}
+
+	static createForTesting(): FeedbackService {
+		return new FeedbackService();
 	}
 
 	static getInstance(): FeedbackService {
@@ -29,87 +41,135 @@ export class FeedbackService {
 		return FeedbackService.instance;
 	}
 
-	async submit(message: string, email?: string) {
-		const item: FeedbackItem = {
+	async submit(input: FeedbackSubmitInput): Promise<FeedbackSubmitResult> {
+		const parsed = FeedbackSubmitInputSchema.parse(input);
+		const item: FeedbackPayload = {
 			id: crypto.randomUUID(),
-			message,
-			email,
-			timestamp: Date.now()
+			createdAt: Date.now(),
+			...parsed
 		};
 
-		if (navigator.onLine) {
+		if (this.isOnline()) {
 			try {
 				await this.sendToServer(item);
-				return;
+				return { status: 'sent', item };
 			} catch (e) {
 				console.warn('Feedback submission failed, queuing...', e);
 			}
 		}
 
-		// Queue it
 		this.enqueue(item);
-
-		// Register Background Sync if available
-		if ('serviceWorker' in navigator && 'SyncManager' in window) {
-			const registration = await navigator.serviceWorker.ready;
-			try {
-				// @ts-expect-error - SyncManager is not in all TS definitions yet
-				await registration.sync.register('sync-feedback');
-			} catch (e) {
-				console.log('Background sync registration failed', e);
-			}
-		}
+		await this.registerBackgroundSync();
+		return { status: 'queued', item };
 	}
 
-	private enqueue(item: FeedbackItem) {
+	getPendingCount() {
+		return this.getQueue().length;
+	}
+
+	private enqueue(item: FeedbackPayload, retryCount = 0) {
 		const queue = this.getQueue();
-		queue.push(item);
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
+		const queuedItem: QueuedFeedbackItem = {
+			...item,
+			queueVersion: QUEUE_VERSION,
+			retryCount,
+			queuedAt: Date.now()
+		};
+
+		queue.push(queuedItem);
+		const trimmed = queue.slice(-MAX_QUEUE_ITEMS);
+		this.setQueue(trimmed);
 	}
 
-	private getQueue(): FeedbackItem[] {
+	private getQueue(): QueuedFeedbackItem[] {
+		if (typeof localStorage === 'undefined') return [];
+
 		try {
 			const stored = localStorage.getItem(STORAGE_KEY);
-			return stored ? JSON.parse(stored) : [];
+			if (!stored) return [];
+			const raw = JSON.parse(stored);
+			if (!Array.isArray(raw)) return [];
+
+			return raw.flatMap((item) => {
+				const parsed = FeedbackPayloadSchema.safeParse(item);
+				if (!parsed.success) return [];
+				return [
+					{
+						...parsed.data,
+						queueVersion: Number(item.queueVersion) || QUEUE_VERSION,
+						retryCount: Number(item.retryCount) || 0,
+						queuedAt: Number(item.queuedAt) || parsed.data.createdAt
+					}
+				];
+			});
 		} catch {
 			return [];
 		}
 	}
 
+	private setQueue(queue: QueuedFeedbackItem[]) {
+		if (typeof localStorage === 'undefined') return;
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
+	}
+
 	async flushQueue() {
-		if (!navigator.onLine) return;
+		if (!this.isOnline()) return;
 
 		const queue = this.getQueue();
 		if (queue.length === 0) return;
 
-		console.log(`Flushing ${queue.length} feedback items...`);
-
-		const remaining: FeedbackItem[] = [];
+		const remaining: QueuedFeedbackItem[] = [];
 
 		for (const item of queue) {
 			try {
 				await this.sendToServer(item);
 			} catch (e) {
-				console.error('Failed to sync feedback item', item.id, e);
-				// If it's a server error (5xx), keep it. If 4xx, maybe drop it?
-				// For now, we keep it to be safe, but we should have a retry limit in a real app.
-				remaining.push(item);
+				if (e instanceof FeedbackRequestError && e.status >= 400 && e.status < 500) {
+					console.warn('Dropping invalid feedback item', item.id, e);
+					continue;
+				}
+
+				remaining.push({ ...item, retryCount: item.retryCount + 1 });
 			}
 		}
 
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(remaining));
+		this.setQueue(remaining);
 	}
 
-	private async sendToServer(item: FeedbackItem) {
+	private async sendToServer(item: FeedbackPayload) {
+		const payload = FeedbackPayloadSchema.parse(item);
 		const res = await fetch('/api/feedback', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(item)
+			body: JSON.stringify(payload)
 		});
 
 		if (!res.ok) {
-			throw new Error(`Server responded with ${res.status}`);
+			throw new FeedbackRequestError(res.status);
 		}
+	}
+
+	private isOnline() {
+		return typeof navigator === 'undefined' ? true : navigator.onLine;
+	}
+
+	private async registerBackgroundSync() {
+		if (typeof navigator === 'undefined') return;
+		if (!('serviceWorker' in navigator) || !('SyncManager' in window)) return;
+
+		try {
+			const registration = await navigator.serviceWorker.ready;
+			// @ts-expect-error - SyncManager is not in all TS definitions yet
+			await registration.sync.register('sync-feedback');
+		} catch (e) {
+			console.log('Background sync registration failed', e);
+		}
+	}
+}
+
+class FeedbackRequestError extends Error {
+	constructor(readonly status: number) {
+		super(`Server responded with ${status}`);
 	}
 }
 

@@ -1,22 +1,23 @@
-# Changelog Plan: Phase 37 — The Lost Fleet
+# Changelog Plan: Phase 44 — Feedback System
 
 ## Candidate User-Facing Summary
 
-The Lost Fleet is now visible and validated as Kibi's boat-themed pack. Players can find it in the Library, open the Vehicles pack directly, and complete Set Sail by boarding a boat and crossing water.
+Players can now report an issue from inside a level. Reports include the current level, blocks, and runtime state so maintainers can reproduce problems more easily, and reports queue locally if sending fails.
 
 ## Candidate Highlights
 
-- Added targeted validation for the built-in Vehicles pack.
-- Added E2E coverage proving The Lost Fleet is visible, routable, and playable.
-- Polished Set Sail's intro guidance so `Board` and the boat crossing are highlighted.
+- Added an in-game Report Issue flow.
+- Attached current game state and route context to feedback reports.
+- Added a real `/api/feedback` endpoint and persistence for feedback context.
+- Preserved local-first queueing for offline or failed submissions.
 
 ## Non-User-Facing Notes
 
-- This was a stabilization slice, not a new mechanic slice.
-- No boat mechanics, vehicle types, builder redesign, or persistence/schema work were introduced.
+- Screenshot capture remains deferred.
+- Admin dashboard and triage workflows remain deferred.
+- The feedback queue still uses localStorage because this first slice is state/text only.
 
 ## Validation Notes To Include Internally
 
-- Focused unit validation passed.
-- Targeted Lost Fleet Playwright coverage passed.
-- Broader check, lint, build, and diff whitespace validation passed.
+- Feedback context, queue behavior, API validation, and modal behavior have focused test coverage.
+- Targeted Playwright coverage verifies a report from a playable level includes route/program/state context.

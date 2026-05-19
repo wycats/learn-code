@@ -8,7 +8,10 @@
 	import StatusPanel from '$lib/components/game/StatusPanel.svelte';
 	import WinModal from '$lib/components/game/WinModal.svelte';
 	import GoalModal from '$lib/components/game/GoalModal.svelte';
+	import FeedbackModal from '$lib/components/game/FeedbackModal.svelte';
 	import { getRunControlState } from '$lib/game/run-control';
+	import { createFeedbackContext } from '$lib/game/feedback-context.svelte';
+	import type { FeedbackContext, FeedbackRouteContext } from '$lib/services/feedback-schema';
 	import { Cluster } from '$lib';
 	import {
 		Undo2,
@@ -21,7 +24,8 @@
 		StepBack,
 		RotateCw,
 		RefreshCcw,
-		BookOpen
+		BookOpen,
+		MessageCircle
 	} from 'lucide-svelte';
 	import { soundManager } from '$lib/game/sound';
 	import { fade } from 'svelte/transition';
@@ -39,6 +43,7 @@
 		onExit?: () => void; // For builder to exit test mode
 		headerLeft?: import('svelte').Snippet;
 		onTarget?: (target: string) => void;
+		feedbackRouteContext?: FeedbackRouteContext;
 	}
 
 	let {
@@ -48,12 +53,14 @@
 		hasNextLevel = false,
 		onExit,
 		headerLeft,
-		onTarget
+		onTarget,
+		feedbackRouteContext = { source: 'shared' }
 	}: Props = $props();
 
 	let isRunning = $state(false);
 	let isPaused = $state(false);
 	let interpreter = $state<StackInterpreter | null>(null);
+	let activeFeedbackContext = $state<FeedbackContext | null>(null);
 	let runToken = 0;
 	const canEdit = $derived(game.status === 'planning' && !isRunning);
 	const isStepMode = $derived(game.status === 'running' && isRunning && isPaused);
@@ -247,6 +254,17 @@
 		game.reset();
 	}
 
+	function handleOpenFeedback() {
+		activeFeedbackContext = createFeedbackContext({
+			game,
+			route: feedbackRouteContext,
+			interpreter,
+			url: window.location.href,
+			navigatorInfo: navigator,
+			viewport: { width: window.innerWidth, height: window.innerHeight }
+		});
+	}
+
 	$effect(() => {
 		if (game.level.ambientSoundId) {
 			soundManager.playAmbient(game.level.ambientSoundId);
@@ -384,6 +402,9 @@
 
 			<div class="right-controls">
 				<DevConnectionStatus />
+				<button class="btn-icon" onclick={handleOpenFeedback} title="Report Issue">
+					<MessageCircle size={20} />
+				</button>
 				<ThemeToggle />
 				{#if onExit}
 					<div class="separator"></div>
@@ -441,6 +462,10 @@
 			{/key}
 		</div>
 	</div>
+
+	{#if activeFeedbackContext}
+		<FeedbackModal context={activeFeedbackContext} onClose={() => (activeFeedbackContext = null)} />
+	{/if}
 </div>
 
 <style>
