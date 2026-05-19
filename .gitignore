@@ -2,6 +2,7 @@ test-results
 playwright-report
 screenshots/
 node_modules
+.logs/
 
 # Output
 .output
