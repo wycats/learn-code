@@ -1,56 +1,53 @@
 # Task List: Phase 44 — Feedback System
 
-## Execute Slice
+## PER 1 — State Dump Feedback
 
 - [x] Keep first slice to state dump + queue + endpoint.
 - [x] Defer screenshot capture.
-- [x] Leave local `.vscode/settings.json` and `locald.toml` untouched.
-
-## Feedback UI
-
 - [x] Add in-game `Report Issue` entry point.
-- [x] Add feedback modal.
-- [x] Require message.
-- [x] Allow optional email.
+- [x] Add feedback modal with required message and optional email.
 - [x] Explain attached level, blocks, and runtime state.
-- [x] Notify users when feedback is sent or queued.
-
-## Context Capture
-
-- [x] Capture route metadata.
-- [x] Capture level JSON.
-- [x] Capture current program/functions.
-- [x] Capture game runtime state.
-- [x] Capture interpreter stack/phase when available.
-- [x] Capture browser online/viewport metadata.
-
-## Service and API
-
+- [x] Capture route metadata, level JSON, program/functions, game runtime state, interpreter stack/phase, and browser metadata.
 - [x] Update feedback service to submit full payloads.
-- [x] Preserve localStorage queueing.
-- [x] Flush queue when online.
-- [x] Add `/api/feedback` endpoint.
-- [x] Validate payloads and enforce a size limit.
-- [x] Persist context metadata and serialized context.
-- [x] Add database migration for context fields.
+- [x] Preserve localStorage queueing and online flush.
+- [x] Add `/api/feedback` endpoint and persistence fields.
+- [x] Validate with focused tests, Playwright, check, lint, build, and diff check.
+- [x] Manual local visual review accepted the feedback UI as reasonable.
 
-## Validation
+## PER 2 — Feedback Triage
 
-- [x] `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/game/feedback-context.test.ts src/lib/services/feedback.test.ts src/routes/api/feedback/server.test.ts src/lib/components/game/FeedbackModal.svelte.test.ts`
-- [x] `PROTO_NODE_VERSION=24 pnpm exec playwright test e2e/feedback.spec.ts --project=chromium`
+- [x] Add signed-in feedback inbox at `/settings/feedback`.
+- [x] Redirect anonymous visitors to `/login`.
+- [x] Avoid new roles/admin schema for this slice.
+- [x] Add Settings entry point for signed-in users.
+- [x] Query newest 50 feedback reports.
+- [x] Summarize valid feedback context.
+- [x] Safely handle empty, malformed, or invalid legacy context.
+- [x] Show message, route metadata, level summary, game status, failed attempts, active block, program/function counts, browser metadata, interpreter summary, and raw JSON/context text.
+
+## PER 2 Validation
+
+- [x] `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/server/feedback-inbox.test.ts src/routes/settings/feedback/server.test.ts src/routes/settings/feedback/route-smoke.test.ts src/routes/api/feedback/server.test.ts`
 - [x] `PROTO_NODE_VERSION=24 pnpm check`
 - [x] `PROTO_NODE_VERSION=24 pnpm lint`
-- [x] `PROTO_NODE_VERSION=24 pnpm build`
 - [x] `git diff --check`
+- [x] `PROTO_NODE_VERSION=24 pnpm build`
 
-## Manual Visual Review
+## PER 2 Manual Visual Review Checklist
 
-- [ ] `Report Issue` button does not crowd the game header.
-- [ ] Modal copy clearly explains attached context.
-- [ ] Required message behavior is clear.
-- [ ] Optional email field is understandable.
-- [ ] Online submit shows success toast.
-- [ ] Failed/offline submit shows queued toast.
-- [ ] Modal works in light/dark mode and mobile viewport.
-- [x] Manual local visual review accepted the feedback UI as reasonable for this slice.
-- [ ] Carry offline queue, screenshot capture, and admin triage into follow-up prioritization.
+- [x] Settings shows Feedback Inbox only when signed in.
+- [ ] Anonymous `/settings/feedback` redirects to login.
+- [ ] Empty inbox is clear and calm.
+- [ ] Long report messages wrap safely.
+- [x] Valid context shows useful level/game/browser/interpreter summary.
+- [ ] Invalid or legacy context shows a fallback without crashing.
+- [x] Raw context remains behind `<details>` and is readable.
+- [x] Mobile and dark mode remain usable.
+
+## Follow-Up Topics
+
+- [ ] Screenshot capture and storage.
+- [ ] Feedback status/resolution workflow.
+- [ ] Feedback filters/search/pagination.
+- [ ] Admin role or allowlist model if feedback becomes sensitive beyond parent-only access.
+- [ ] Creator-facing lightweight feedback separate from maintainer issue reports.

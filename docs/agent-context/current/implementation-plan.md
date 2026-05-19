@@ -2,13 +2,13 @@
 
 ## Status
 
-PER 1 State Dump Feedback is implemented as the first Phase 44 slice. It adds a visible in-game report flow, captures current level/program/runtime context, submits to a real API endpoint, and preserves local-first queueing for offline or failed sends. Screenshot capture remains deferred.
+PER 1 State Dump Feedback is implemented and merged. PER 2 Feedback Triage is implemented, visually reviewed, and ready for PR. Screenshot capture remains deferred.
 
 ## Phase Goal
 
-Create a robust feedback loop that helps Jonas, Zoey, parents, and maintainers report issues with enough context to reproduce them.
+Create a robust feedback loop that helps Jonas, Zoey, parents, and maintainers report issues with enough context to reproduce them, then inspect those reports without needing direct database access.
 
-## Implemented Scope
+## Completed PER 1 Scope
 
 ### In-Game Report Flow
 
@@ -37,19 +37,39 @@ Create a robust feedback loop that helps Jonas, Zoey, parents, and maintainers r
 - Added a migration and schema fields for feedback context.
 - Uses idempotent insert behavior for repeated feedback IDs.
 
+## Implemented PER 2 Scope
+
+### Feedback Inbox Route
+
+- Added `/settings/feedback` as a signed-in parent/user feedback inbox.
+- Anonymous users redirect to `/login`.
+- Selected child profile is not required.
+- The route lists the newest 50 reports.
+
+### Triage Display
+
+- Shows report cards with timestamp, message preview, context parse status, pack/level/url, optional email, and optional user/profile ids.
+- Expands each report to show the full message, level summary, game status, failed attempts, active block, program/function counts, browser metadata, interpreter summary, and raw JSON/context text.
+- Handles empty, malformed, or structurally invalid legacy context without crashing.
+
+### Settings Entry Point
+
+- Adds a Feedback Inbox link to Settings for signed-in users.
+
 ## Out of Scope
 
 - Screenshot capture and image/blob storage.
-- Admin dashboard or triage workflow.
+- Feedback status/resolution workflow.
+- Delete/archive/mutate feedback rows.
+- Pagination, filters, search, assignment, or comments.
 - GitHub issue creation.
-- Comment threads or feedback resolution states.
+- New admin role schema or allowlist system.
 - True service-worker background flush after app close.
 - Broad cloud sync or analytics changes.
 
 ## Validation Plan
 
-- `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/game/feedback-context.test.ts src/lib/services/feedback.test.ts src/routes/api/feedback/server.test.ts`
-- `PROTO_NODE_VERSION=24 pnpm exec playwright test e2e/feedback.spec.ts --project=chromium`
+- `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/server/feedback-inbox.test.ts src/routes/settings/feedback/server.test.ts src/routes/settings/feedback/route-smoke.test.ts src/routes/api/feedback/server.test.ts`
 - `PROTO_NODE_VERSION=24 pnpm check`
 - `PROTO_NODE_VERSION=24 pnpm lint`
 - `PROTO_NODE_VERSION=24 pnpm build`
@@ -57,10 +77,9 @@ Create a robust feedback loop that helps Jonas, Zoey, parents, and maintainers r
 
 ## Validation State
 
-- Focused feedback unit/component/API tests passed.
-- Targeted feedback Playwright coverage passed after warming the production preview build.
+- Focused triage unit/server tests passed.
 - `PROTO_NODE_VERSION=24 pnpm check` passed with existing unrelated warnings.
 - `PROTO_NODE_VERSION=24 pnpm lint` passed.
 - `PROTO_NODE_VERSION=24 pnpm build` passed with existing unrelated warnings and the adapter-auto notice.
 - `git diff --check` passed.
-- Local visual review accepted the feedback UI as reasonable for this slice.
+- Manual visual review accepted the Settings entry point, the Feedback Inbox report layout, raw context disclosure, and responsive/dark-mode polish. Anonymous redirect and empty/invalid-state browser checks remain good follow-up targets.

@@ -2,13 +2,13 @@
 
 ## Current Status
 
-PER 1 State Dump Feedback is implemented, validated, reviewed, and merged. This first slice intentionally focuses on a working feedback loop with attached state, not screenshots or an admin dashboard.
+PER 1 State Dump Feedback is implemented, validated, reviewed, and merged. PER 2 Feedback Triage is implemented, visually reviewed, and ready for PR. Screenshots and admin workflow remain follow-up topics.
 
-## What Changed
+## PER 1: State Dump Feedback
 
 ### Report Issue Flow
 
-- The game header now includes a `Report Issue` action.
+- The game header includes a `Report Issue` action.
 - The feedback modal asks for a required message and optional email.
 - The modal explains that the current level, blocks, and runtime state are attached.
 - Sent and queued outcomes use the existing toast system.
@@ -26,48 +26,77 @@ The feedback context captures enough information to reproduce the current game s
 - interpreter phase and stack when available;
 - browser online state and viewport.
 
-### Local-First Queue
+### Local-First Queue and Persistence
 
 - Online submissions post to `/api/feedback` immediately.
 - Offline or failed submissions are queued in localStorage.
 - Queued feedback flushes when the app is online again.
 - Invalid 4xx feedback is dropped on flush so it does not retry forever.
+- Accepted reports are persisted to the `feedback` table with route metadata and serialized context.
 
-### Server Persistence
+## PER 2: Feedback Triage
 
-- `/api/feedback` validates payloads and enforces a payload-size limit.
-- Accepted reports are persisted to the `feedback` table.
-- The table now stores route metadata and serialized context in addition to message/email.
-- Submissions are idempotent by feedback id.
+### Inbox Route
 
-## Out of Scope Preserved
+- `/settings/feedback` is the first triage surface.
+- Anonymous visitors are redirected to `/login`.
+- Signed-in parents/users can open the inbox without selecting a child profile.
+- Settings now links to Feedback Inbox for signed-in users.
 
-- No screenshots yet.
-- No admin dashboard.
-- No GitHub issue creation.
-- No feedback thread/resolution workflow.
-- No true service-worker background flush after app close.
+### Report Cards
+
+Each feedback card shows:
+
+- created time;
+- message preview;
+- context parse status;
+- pack and level id;
+- optional email;
+- optional user/profile ids;
+- route URL when present.
+
+### Captured Context Detail
+
+Expanded report detail shows:
+
+- full message;
+- level name/id;
+- game status;
+- failed attempts;
+- active block;
+- program and function counts;
+- browser online/language/viewport/user-agent metadata;
+- interpreter phase, stack depth, current block/context/frame size when present;
+- raw JSON/context text behind `<details>`.
+
+### Legacy/Invalid Context Handling
+
+- Empty `{}` contexts are labeled as legacy empty context.
+- Malformed JSON is labeled as malformed.
+- Unexpected shapes are labeled as unexpected context shape.
+- The page still renders top-level report fields when context cannot be parsed.
 
 ## Validation Results
 
-- `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/game/feedback-context.test.ts src/lib/services/feedback.test.ts src/routes/api/feedback/server.test.ts src/lib/components/game/FeedbackModal.svelte.test.ts` — passed.
-- `PROTO_NODE_VERSION=24 pnpm exec playwright test e2e/feedback.spec.ts --project=chromium` — passed after warming the production preview build.
+- `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/server/feedback-inbox.test.ts src/routes/settings/feedback/server.test.ts src/routes/settings/feedback/route-smoke.test.ts src/routes/api/feedback/server.test.ts` — passed.
 - `PROTO_NODE_VERSION=24 pnpm check` — passed with existing unrelated warnings.
 - `PROTO_NODE_VERSION=24 pnpm lint` — passed.
 - `PROTO_NODE_VERSION=24 pnpm build` — passed with existing unrelated warnings and the adapter-auto notice.
 - `git diff --check` — passed.
 
-## Manual Visual Review
+## Visual Review Results
 
-- Open any playable level.
-- Click `Report Issue` in the game header.
-- Confirm the modal explains that current level, blocks, and runtime state are attached.
-- Confirm submit is disabled until a message is entered.
-- Submit online and confirm success toast.
-- Simulate failed/offline submit and confirm queued toast.
-- Confirm modal layout in mobile width and dark mode.
+- Settings shows the Feedback Inbox entry for the signed-in local parent account.
+- The inbox report layout was simplified from a raw database-like view into grouped cards with a title, location, quick summary, and expandable details.
+- Captured context remains readable without exposing raw JSON by default; raw context stays behind a disclosure.
+- Untrusted feedback URLs are rendered as plain text instead of clickable links.
+- Responsive and dark-mode styling were polished for the report list.
 
-## Manual Visual Review Result
+## Manual Visual Review Checklist
 
-- Local review accepted the feedback UI as reasonable for this slice.
-- Offline queue, screenshot capture, and admin triage remain follow-up topics rather than blockers for PER 1.
+- [x] Open Settings while signed in and confirm Feedback Inbox appears.
+- [x] Open `/settings/feedback` and confirm the report list is clear.
+- [x] Open a valid report and confirm the summary is useful.
+- [x] Confirm raw JSON stays behind a disclosure.
+- [ ] Confirm invalid/legacy contexts are understandable and non-crashy in browser.
+- [x] Check mobile width and dark mode.
