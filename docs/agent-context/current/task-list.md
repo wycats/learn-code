@@ -43,7 +43,7 @@
 - [x] `PROTO_NODE_VERSION=24 pnpm build`
 - [x] `git diff --check`
 
-## Manual Visual Review Checklist
+## Manual Visual Review
 
 - [ ] `Report Issue` button does not crowd the game header.
 - [ ] Modal copy clearly explains attached context.
@@ -53,3 +53,4 @@
 - [ ] Failed/offline submit shows queued toast.
 - [ ] Modal works in light/dark mode and mobile viewport.
 - [x] Manual local visual review accepted the feedback UI as reasonable for this slice.
+- [ ] Carry offline queue, screenshot capture, and admin triage into follow-up prioritization.

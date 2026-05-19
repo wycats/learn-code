@@ -11,5 +11,5 @@
 
 ## Phase 42 (Jonas' Feedback)
 
-- **Run Button Logic**: Update the "Run" button to restart the level if the character is already at the goal or in a failure state.
-- **Visual Clarity**: Improve the visual distinction between "Edit" and "Run" modes.
+- **Run Button Logic**: Completed in Phase 43 PER 1. Run now supports Play, Stop, Try Again, and Replay behavior across planning/running/terminal states.
+- **Visual Clarity**: Completed in Phase 43 PER 2. Player and builder modes now have persistent chips/ribbons/affordances.

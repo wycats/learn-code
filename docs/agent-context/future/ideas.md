@@ -23,7 +23,7 @@
 ## Jonas's Wishlist (Nov 2025)
 
 - [x] **Publishing**: A way to share levels through GitHub-backed pack publishing. (Candidate baseline; product/security review remains required)
-- [ ] **Feedback Button**: A way for players to send feedback to level creators (e.g., "Too hard", "Fun!", "Broken"). (Partially addressed in Phase 16 via mailto; future phase TBD)
+- [ ] **Feedback Button to Level Creators**: A way for players to send creator-facing feedback (e.g., "Too hard", "Fun!", "Broken"). Phase 44 PER 1 added maintainer-facing issue reports with state dumps; creator-facing lightweight reactions remain future work.
 - [ ] **Local Network Sharing**: If on the same Wi-Fi, perhaps a direct IP connection (harder with HTTPS requirements).
 - [ ] **Story/Tutorial Control**: (Future; phase number TBD)
   - **Unmask Blocks**: Allow the Architect to specify a point in the dialogue where the block tray becomes interactive (unmasked). Currently, it's either all hidden or all shown.
@@ -80,8 +80,8 @@
 ## Field Guide Improvements
 
 - [ ] **The Origin of Kibi**: Add a "Secret Chapter" or easter egg in the Field Guide that explains the "Kibibyte" origin story. This should be a jumping-off point for explaining binary numbers and powers of two to curious kids.
-- [ ] **Context-Aware Manual**: The Field Guide should be customized for the level the user is on, showing relevant chapters or highlighting concepts used in the current level. (Planned Phase 44)
-- [ ] **Architect Control**: Give the Architect control over the Field Guide content for their levels. (Planned Phase 44)
+- [ ] **Context-Aware Manual**: The Field Guide should be customized for the level the user is on, showing relevant chapters or highlighting concepts used in the current level. (Planned Phase 45)
+- [ ] **Architect Control**: Give the Architect control over the Field Guide content for their levels. (Planned Phase 45)
 - [ ] - [ ] **"Just-in-Time" vs. "Library"**: Avoid the "unread dot" fatigue. Instead of a manual that accumulates unread content, integrate the information directly into the user flow (e.g., context-sensitive help) or structure it as a reference library that doesn't demand to be "read" linearly.
 - [ ] **Custom Field Guide Entries**: Allow Architects to write their own Field Guide entries for their custom packs.
   - **Rationale**: Just as we provide documentation for built-in blocks, users creating complex levels or mechanics should be able to explain them to players.
