@@ -43,7 +43,7 @@
 								{#if profile.avatar === 'robot'}🤖
 								{:else if profile.avatar === 'cat'}🐱
 								{:else if profile.avatar === 'dog'}🐶
-								{:else}��{/if}
+								{:else}👤{/if}
 							</div>
 							<span class="profile-name">{profile.nickname}</span>
 						</div>

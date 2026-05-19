@@ -80,8 +80,8 @@
 						<input type="text" name="nickname" id="nickname" required placeholder="e.g. Zoey" />
 					</div>
 
-					<div class="form-group">
-						<label>Avatar</label>
+					<fieldset class="form-group choice-group">
+						<legend>Avatar</legend>
 						<div class="radio-group">
 							{#each ['robot', 'cat', 'dog', 'person'] as avatar (avatar)}
 								<label class="radio-label">
@@ -90,17 +90,17 @@
 										<span class="emoji">
 											{#if avatar === 'robot'}🤖
 											{:else if avatar === 'cat'}🐱
-											{:else if avatar === 'dog'}��
+											{:else if avatar === 'dog'}🐶
 											{:else}👤{/if}
 										</span>
 									</div>
 								</label>
 							{/each}
 						</div>
-					</div>
+					</fieldset>
 
-					<div class="form-group">
-						<label>Color</label>
+					<fieldset class="form-group choice-group">
+						<legend>Color</legend>
 						<div class="radio-group">
 							{#each ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'] as color (color)}
 								<label class="radio-label">
@@ -109,7 +109,7 @@
 								</label>
 							{/each}
 						</div>
-					</div>
+					</fieldset>
 
 					<div class="form-actions">
 						<button type="button" class="btn secondary" onclick={() => (showAddForm = false)}>
@@ -234,11 +234,17 @@
 		margin-bottom: var(--size-4);
 	}
 
-	label {
+	label,
+	legend {
 		display: block;
 		font-size: var(--font-size-1);
 		font-weight: 600;
 		margin-bottom: var(--size-2);
+	}
+
+	.choice-group {
+		border: 0;
+		padding: 0;
 	}
 
 	input[type='text'] {
