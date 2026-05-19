@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Trash2, LogOut, Smartphone, Info, LogIn } from 'lucide-svelte';
+	import { Trash2, LogOut, Smartphone, Info, LogIn, Inbox } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import { base } from '$app/paths';
 
@@ -84,6 +84,20 @@
 					<p class="empty-state">No other devices connected.</p>
 				{/if}
 			</div>
+		</section>
+
+		<section class="section">
+			<h2>Feedback</h2>
+			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+			<a href="{base}/settings/feedback" class="about-link">
+				<div class="about-icon">
+					<Inbox size={20} />
+				</div>
+				<div class="about-content">
+					<span class="about-title">Feedback Inbox</span>
+					<span class="about-desc">Review recent player reports and captured context</span>
+				</div>
+			</a>
 		</section>
 	{/if}
 
