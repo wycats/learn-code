@@ -126,28 +126,57 @@
 		<div class="logo">
 			<h1>Kibi</h1>
 		</div>
-		<div class="actions">
-			{#if data.user}
-				<SyncStatus />
-			{/if}
-			<ThemeToggle />
-			<button class="action-btn" onclick={handleSettings} aria-label="Settings">
-				<Settings size={20} />
-			</button>
-			{#if isFileSystemSupported}
-				<button class="action-btn" onclick={handleOpenLocalFolder}>
-					<FolderOpen size={20} /> Open Local Folder
+		<div class="actions" role="toolbar" aria-label="Library actions">
+			<div class="utility-actions" role="group" aria-label="Library utilities">
+				{#if data.user}
+					<SyncStatus />
+				{/if}
+				<ThemeToggle variant="toolbar" />
+				<button
+					class="action-btn icon-btn"
+					onclick={handleSettings}
+					aria-label="Settings"
+					title="Settings"
+				>
+					<Settings size={20} />
 				</button>
-			{/if}
-			<button class="action-btn" onclick={handleReceivePack}>
-				<Share2 size={20} /> Receive Pack
-			</button>
-			<button class="action-btn" onclick={handleImport}>
-				<Upload size={20} /> Import Pack
-			</button>
-			<button class="action-btn primary" onclick={handleBuilder}>
-				<Hammer size={20} /> Pack Builder
-			</button>
+			</div>
+
+			<nav class="pack-actions" aria-label="Pack actions">
+				{#if isFileSystemSupported}
+					<button
+						class="action-btn secondary-action"
+						onclick={handleOpenLocalFolder}
+						aria-label="Open local folder"
+						title="Open local folder"
+					>
+						<FolderOpen size={18} />
+						<span>Open Folder</span>
+					</button>
+				{/if}
+				<button
+					class="action-btn secondary-action"
+					onclick={handleReceivePack}
+					aria-label="Receive pack"
+					title="Receive pack"
+				>
+					<Share2 size={18} />
+					<span>Receive</span>
+				</button>
+				<button
+					class="action-btn secondary-action"
+					onclick={handleImport}
+					aria-label="Import pack"
+					title="Import pack"
+				>
+					<Upload size={18} />
+					<span>Import</span>
+				</button>
+				<button class="action-btn primary" onclick={handleBuilder}>
+					<Hammer size={18} />
+					<span>Pack Builder</span>
+				</button>
+			</nav>
 		</div>
 	</header>
 
@@ -205,79 +234,164 @@
 	}
 
 	.library-header {
-		padding: var(--size-4) var(--size-6);
+		padding: var(--size-4) clamp(var(--size-4), 4vw, var(--size-8));
 		border-bottom: 1px solid var(--surface-2);
 		background-color: var(--surface-1);
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		flex-wrap: wrap;
-		gap: var(--size-3);
-	}
-
-	@media (max-width: 600px) {
-		.library-header {
-			flex-direction: column;
-			align-items: stretch;
-			padding: var(--size-3);
-		}
-
-		.logo {
-			text-align: center;
-		}
-
-		.actions {
-			justify-content: center;
-			flex-wrap: wrap;
-		}
-
-		.library-content {
-			padding: var(--size-3);
-		}
+		gap: var(--size-4);
 	}
 
 	.logo h1 {
-		font-size: var(--font-size-4);
+		font-size: clamp(var(--font-size-4), 3vw, var(--font-size-6));
+		line-height: 1;
 		font-weight: 900;
 		margin: 0;
 		background: linear-gradient(to right, var(--brand), var(--brand-light));
+		background-clip: text;
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 	}
 
 	.actions {
 		display: flex;
-		gap: var(--size-3);
 		align-items: center;
+		justify-content: flex-end;
+		gap: var(--size-3);
+		min-width: 0;
+		flex: 1 1 auto;
 	}
 
-	.action-btn {
-		background-color: var(--surface-2);
-		color: var(--text-1);
-		border: 1px solid var(--surface-3);
-		padding: var(--size-2) var(--size-4);
-		border-radius: var(--radius-2);
-		font-weight: 600;
-		cursor: pointer;
+	.utility-actions,
+	.pack-actions {
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
-		transition: all 0.2s;
+	}
+
+	.utility-actions {
+		flex: 0 0 auto;
+	}
+
+	.pack-actions {
+		justify-content: flex-end;
+		flex-wrap: nowrap;
+		min-width: 0;
+	}
+
+	.action-btn {
+		min-height: var(--touch-target-min);
+		background-color: var(--surface-2);
+		color: var(--text-1);
+		border: 1px solid var(--surface-3);
+		padding: 0 var(--size-3);
+		border-radius: var(--radius-2);
+		font-size: var(--font-size-1);
+		font-weight: 700;
+		line-height: 1;
+		cursor: pointer;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--size-2);
+		white-space: nowrap;
+		transition:
+			background-color 0.2s,
+			border-color 0.2s,
+			color 0.2s,
+			transform 0.2s;
 	}
 
 	.action-btn:hover {
 		background-color: var(--surface-3);
 		border-color: var(--brand);
+		transform: translateY(-1px);
+	}
+
+	.action-btn:focus-visible {
+		outline: 3px solid var(--brand-light);
+		outline-offset: 2px;
+	}
+
+	.icon-btn {
+		width: var(--touch-target-min);
+		padding: 0;
+	}
+
+	.secondary-action {
+		color: var(--text-2);
+	}
+
+	.secondary-action:hover {
+		color: var(--text-1);
 	}
 
 	.action-btn.primary {
 		background-color: var(--brand);
 		color: white;
 		border-color: var(--brand);
+		box-shadow: var(--shadow-2);
 	}
 
 	.action-btn.primary:hover {
 		background-color: var(--brand-dark);
+	}
+
+	@media (max-width: 900px) {
+		.actions {
+			gap: var(--size-2);
+		}
+
+		.secondary-action {
+			width: var(--touch-target-min);
+			padding: 0;
+		}
+
+		.secondary-action span {
+			display: none;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.library-header {
+			padding: var(--size-3);
+			gap: var(--size-3);
+			align-items: flex-start;
+		}
+
+		.library-content {
+			padding: var(--size-3);
+		}
+
+		.actions {
+			width: 100%;
+			align-items: stretch;
+			flex-direction: column;
+		}
+
+		.utility-actions {
+			justify-content: flex-end;
+		}
+
+		.pack-actions {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: var(--size-2);
+		}
+
+		.pack-actions .action-btn {
+			width: 100%;
+			padding: 0 var(--size-3);
+		}
+
+		.secondary-action span {
+			display: inline;
+		}
+
+		.pack-actions .primary {
+			grid-column: 1 / -1;
+		}
 	}
 
 	.library-content {
