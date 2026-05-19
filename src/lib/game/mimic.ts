@@ -118,7 +118,7 @@ type ExecutionSnapshot = {
 	phase: 'before' | 'after';
 };
 
-type StackFrame = {
+export type StackFrame = {
 	blocks: Block[];
 	index: number;
 	loopCounter?: number;

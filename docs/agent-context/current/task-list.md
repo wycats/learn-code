@@ -1,38 +1,43 @@
-# Task List: Phase 37 — The Lost Fleet
+# Task List: Phase 44 — Feedback System
 
 ## Execute Slice
 
-- [x] Confirm Phase 37 is already partially implemented.
-- [x] Keep scope to validation, polish, and visibility.
-- [x] Leave untracked `.logs/`, `.vscode/settings.json`, and `locald.toml` untouched.
+- [x] Keep first slice to state dump + queue + endpoint.
+- [x] Defer screenshot capture.
+- [x] Leave local `.vscode/settings.json` and `locald.toml` untouched.
 
-## Pack and Content Assertions
+## Feedback UI
 
-- [x] Assert The Lost Fleet / `VEHICLES_PACK` is registered in `PACKS`.
-- [x] Assert the vehicles pack has exactly 3 levels.
-- [x] Assert the level names are Set Sail, Island Hopping, and Row Your Boat.
-- [x] Assert built-in level ids are unique across registered packs.
+- [x] Add in-game `Report Issue` entry point.
+- [x] Add feedback modal.
+- [x] Require message.
+- [x] Allow optional email.
+- [x] Explain attached level, blocks, and runtime state.
+- [x] Notify users when feedback is sent or queued.
 
-## E2E Coverage
+## Context Capture
 
-- [x] Add targeted Lost Fleet Playwright spec.
-- [x] Prove The Lost Fleet appears in Library.
-- [x] Prove `/library/vehicles` loads.
-- [x] Prove Set Sail, Island Hopping, and Row Your Boat appear.
-- [x] Prove first Lost Fleet level route is playable.
-- [x] Prove Set Sail can be won by boarding the boat and crossing water.
+- [x] Capture route metadata.
+- [x] Capture level JSON.
+- [x] Capture current program/functions.
+- [x] Capture game runtime state.
+- [x] Capture interpreter stack/phase when available.
+- [x] Capture browser online/viewport metadata.
 
-## Content Polish
+## Service and API
 
-- [x] Update Set Sail description to name `Board`.
-- [x] Add intro targets for the boat, `Board`, and the water crossing.
-- [x] Avoid new boat mechanics, disembark rules, broad builder redesign, new vehicle types, and schema/cloud work.
+- [x] Update feedback service to submit full payloads.
+- [x] Preserve localStorage queueing.
+- [x] Flush queue when online.
+- [x] Add `/api/feedback` endpoint.
+- [x] Validate payloads and enforce a size limit.
+- [x] Persist context metadata and serialized context.
+- [x] Add database migration for context fields.
 
 ## Validation
 
-- [x] `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/game/packs/validate.test.ts`
-- [x] `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/game/packs/validate.test.ts src/lib/game/interpreter.test.ts src/lib/game/ghost-path.test.ts`
-- [x] `PROTO_NODE_VERSION=24 pnpm exec playwright test e2e/lost-fleet.spec.ts --project=chromium`
+- [x] `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/game/feedback-context.test.ts src/lib/services/feedback.test.ts src/routes/api/feedback/server.test.ts src/lib/components/game/FeedbackModal.svelte.test.ts`
+- [x] `PROTO_NODE_VERSION=24 pnpm exec playwright test e2e/feedback.spec.ts --project=chromium`
 - [x] `PROTO_NODE_VERSION=24 pnpm check`
 - [x] `PROTO_NODE_VERSION=24 pnpm lint`
 - [x] `PROTO_NODE_VERSION=24 pnpm build`
@@ -40,9 +45,11 @@
 
 ## Manual Visual Review Checklist
 
-- [ ] Library card for The Lost Fleet is visible and visually coherent.
-- [ ] `/library/vehicles` shows the three boat levels in the intended order.
-- [ ] Set Sail story highlights the boat, `Board`, and the water crossing clearly.
-- [ ] During Set Sail run, Zoey visibly boards/carries the boat affordance while crossing water.
-- [ ] Win modal appears after the Step → Board → Step → Step solution.
-- [x] Manual local visual review accepted the Lost Fleet slice.
+- [ ] `Report Issue` button does not crowd the game header.
+- [ ] Modal copy clearly explains attached context.
+- [ ] Required message behavior is clear.
+- [ ] Optional email field is understandable.
+- [ ] Online submit shows success toast.
+- [ ] Failed/offline submit shows queued toast.
+- [ ] Modal works in light/dark mode and mobile viewport.
+- [x] Manual local visual review accepted the feedback UI as reasonable for this slice.
