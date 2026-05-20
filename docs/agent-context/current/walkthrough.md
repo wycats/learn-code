@@ -37,11 +37,20 @@ Then, use level/pack signals to make the guide feel relevant without adding noti
 
 ### Minimal Authoring
 
-Finally, give Jonas a small text/voice guide authoring surface in the Pack Builder. Rich authoring can wait until the basic loop is proven.
+Finally, give Jonas a small text/voice guide authoring surface in the Pack Builder. The first version should feel like writing “How this pack works” designer notes, not like editing a book schema. Rich authoring can wait until the basic loop is proven.
+
+The visible Jonas loop should be:
+
+1. Jonas writes a short designer note in Builder.
+2. Builder previews the note as it will appear in the Field Guide.
+3. Jonas playtests the pack.
+4. The Field Guide shows that note in the context of his pack.
+5. Jonas can share the pack knowing players will see his explanation.
 
 ## Important Constraints
 
 - Do not start with a full CMS-like authoring studio.
+- Do not make Jonas manage raw chapters, page ids, tags, or schema fields for the first authoring slice.
 - Do not introduce unread-dot fatigue.
 - Do not rely on `unlockedBy` until unlock semantics are explicitly designed.
 - Do not expose unsupported rich content blocks in builder authoring until rendering support exists.

@@ -9,7 +9,8 @@ The Field Guide becomes aware of the pack and level being played, and custom pac
 - Prepare the Field Guide to use dynamic guide content instead of only the built-in book.
 - Add support for pack-authored guide content.
 - Make the guide open or prioritize content relevant to the current play context.
-- Lay the foundation for Jonas-style creator-authored guide pages in custom packs.
+- Lay the foundation for Jonas-style “How this pack works” notes in custom packs.
+- Later slices can let creators add simple guide notes that appear when players open the Field Guide for their packs.
 
 ## Non-User-Facing Notes
 

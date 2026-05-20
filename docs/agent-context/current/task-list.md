@@ -25,10 +25,14 @@
 
 ## PER 3 — Minimal Creator Authoring
 
-- [ ] Add a simple Pack Builder guide section.
-- [ ] Allow text/voice chapter/page authoring.
+- [ ] Add a simple Pack Builder guide section around “How this pack works.”
+- [ ] Add starter prompts/templates: “Special rules,” “Tricky part,” “Designer tip,” and “What I want players to notice.”
+- [ ] Let Jonas write text/voice notes without touching guide ids, tags, schemas, or chapter/page structure.
+- [ ] Compile those notes into pack guide pages.
 - [ ] Preview authored guide content in builder.
+- [ ] Let the creator playtest the pack and see authored guide content in context.
 - [ ] Persist authored guide content in custom pack JSON.
+- [ ] Jonas acceptance check: he can add one useful guide note in under a minute without opening advanced settings.
 - [ ] Keep image, component, mini-playground, unlock, and interactive tutorial authoring deferred.
 
 ## Validation Checklist

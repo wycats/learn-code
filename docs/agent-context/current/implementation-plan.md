@@ -19,7 +19,9 @@ Empower players and young creators with a Field Guide that explains the current 
 ### Jonas
 
 - Wants to create his own things and explain how they work.
-- Needs a creator surface that feels like authoring notes for his pack, not maintaining a complex documentation system.
+- Needs a creator surface that feels like writing designer notes for his pack, not maintaining a complex documentation system.
+- Should not need to manage IDs, schemas, tags, or book structure to get a useful first result.
+- Benefits from a short loop: write a note, preview it, play the pack, then share the pack with someone else.
 - Benefits from seeing his guide content appear when someone plays his levels.
 
 ## Recon Findings
@@ -52,8 +54,9 @@ See `field-guide-recon.md` for details. The short version:
 
 ### PER 3 — Jonas-Centered Minimal Authoring
 
-- Add a simple Pack Builder Guide section.
-- Allow text/voice pages first.
+- Add a simple Pack Builder guide section around a “How this pack works” model.
+- Start with creator prompts such as “Special rules,” “Tricky part,” “Designer tip,” and “What I want players to notice.”
+- Compile those notes into text/voice Field Guide pages instead of making Jonas manage chapters and pages directly.
 - Preview the guide content in the builder.
 - Save guide content inside custom pack JSON.
 - Defer image, component, mini-playground, unlock, and interactive tutorial editing.
@@ -82,3 +85,4 @@ See `field-guide-recon.md` for details. The short version:
 - Should the guide open automatically to relevant pages, or simply prioritize them when the user opens the book?
 - Should Jonas-authored guide pages use the book voices (`guide`, `zoey`, `jonas`) or arbitrary pack characters?
 - Should imported pack guide content appear by default, or should there be safety controls before surfacing shared text?
+- What is the smallest Jonas-friendly authoring flow that lets him add one useful guide note in under a minute?

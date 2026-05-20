@@ -24,7 +24,8 @@ Phase 45 should evolve the Field Guide from a static singleton into a dynamic gu
 
 Add optional pack-level guide content:
 
-- `LevelPackSchema.guide?: BookSchema`
+- `LevelPackSchema` adds `guide?: Book`, validated with `BookSchema`.
+- In Zod, this likely means adding `guide: BookSchema.optional()` to the pack schema.
 
 Keep level-level relevance metadata separate until context-aware surfacing is designed. Candidate future fields:
 
@@ -36,6 +37,15 @@ Keep level-level relevance metadata separate until context-aware surfacing is de
 ## Builder Boundary
 
 The first runtime/schema slice should not require builder UI. A later slice can add a Pack Builder Guide section that writes into `pack.guide`.
+
+The builder should not expose the full `BookSchema` directly to Jonas. It should write a constrained Jonas-friendly authoring model and compile that model into `pack.guide`.
+
+The likely first authoring model is “How this pack works” notes:
+
+- special rules;
+- tricky parts;
+- designer tips;
+- what the creator wants players to notice.
 
 Initial authoring should support only safe, simple content:
 
