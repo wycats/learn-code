@@ -1,7 +1,10 @@
 import { z } from 'zod';
+import { BookSchema } from './book/schema';
+import { BlockTypeSchema, DirectionSchema, GridPositionSchema } from './primitives';
+import type { BlockType, Direction, GridPosition } from './primitives';
 
-export const DirectionSchema = z.enum(['N', 'E', 'S', 'W']);
-export type Direction = z.infer<typeof DirectionSchema>;
+export { BlockTypeSchema, DirectionSchema, GridPositionSchema };
+export type { BlockType, Direction, GridPosition };
 
 export const ItemBehaviorSchema = z.enum(['collectible', 'vehicle', 'value']);
 export type ItemBehavior = z.infer<typeof ItemBehaviorSchema>;
@@ -35,17 +38,6 @@ export const VariableRefSchema = z.object({
 });
 export type VariableRef = z.infer<typeof VariableRefSchema>;
 
-export const BlockTypeSchema = z.enum([
-	'move-forward',
-	'turn-left',
-	'turn-right',
-	'loop',
-	'call',
-	'pick-up',
-	'board'
-]);
-export type BlockType = z.infer<typeof BlockTypeSchema>;
-
 // Recursive schema for Block needs lazy evaluation if we want full validation,
 // but for simple JSON storage, we can define the base structure.
 // Zod recursive types are a bit verbose, let's start simple.
@@ -68,12 +60,6 @@ export const BlockSchema: z.ZodType<Block> = z.lazy(() =>
 		functionName: z.string().optional()
 	})
 );
-
-export const GridPositionSchema = z.object({
-	x: z.number(),
-	y: z.number()
-});
-export type GridPosition = z.infer<typeof GridPositionSchema>;
 
 export const TileTypeSchema = z.enum(['wall', 'floor', 'hazard', 'water', 'ice']);
 export type TileType = z.infer<typeof TileTypeSchema>;
@@ -278,6 +264,7 @@ export const LevelPackSchema = z.object({
 	levels: z.array(LevelDefinitionSchema),
 	characters: z.array(CharacterSchema).optional(),
 	emotions: z.array(EmotionSchema).optional(),
+	guide: BookSchema.optional(),
 	customTiles: z.record(z.string(), TileDefinitionSchema).optional(),
 	customItems: z.record(z.string(), ItemDefinitionSchema).optional(),
 	// User-created pack metadata

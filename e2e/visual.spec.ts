@@ -52,6 +52,20 @@ async function advanceStory(page: Page) {
 		await expect(goalModal).not.toBeVisible();
 	}
 
+	// Re-check story mode in case the first loop observed the goal overlay before
+	// the current story segment finished hydrating.
+	while ((await overlay.isVisible()) && Date.now() - startTime < 10000) {
+		const storyText = overlay.locator('span', { hasText: 'Listen to the Guide...' });
+		if (!(await storyText.isVisible())) break;
+
+		if (await nextBtn.isVisible()) {
+			await nextBtn.click();
+			await page.waitForTimeout(500);
+		} else {
+			await page.waitForTimeout(200);
+		}
+	}
+
 	// 3. Ensure overlay is gone
 	await expect(overlay).not.toBeVisible();
 }

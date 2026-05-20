@@ -2,7 +2,7 @@
 
 ## Architecture Summary
 
-Phase 45 should evolve the Field Guide from a static singleton into a dynamic guide system. The runtime should be able to render a book assembled from the built-in Field Guide plus optional pack-authored chapters.
+Phase 45 evolves the Field Guide from a static singleton into a dynamic guide system. The runtime can render a book assembled from the built-in Field Guide plus optional pack-authored chapters.
 
 ## Current Architecture
 
@@ -12,13 +12,14 @@ Phase 45 should evolve the Field Guide from a static singleton into a dynamic gu
 - `BookPage` renders pages from the active store but supports only some schema block types.
 - `Game.svelte` opens the Field Guide without pack or level context.
 
-## Target PER 1 Architecture
+## PER 1 Architecture
 
 1. A guide source is assembled for the current play context.
 2. The source starts with built-in Field Guide chapters.
 3. If the current pack has guide content, pack-authored chapters are appended or grouped after built-in content.
-4. `BookStore` navigates the active guide source and exposes `open()`, `openTo()`, `close()`, `nextPage()`, `prevPage()`, and `goToChapter()`.
-5. `BookModal` renders the active guide source without importing built-in content directly.
+4. Pack-authored chapter/page ids are namespaced and deduplicated to avoid collisions with built-in guide ids and Svelte keyed each blocks.
+5. `BookStore` navigates the active guide source and exposes `open()`, `openTo()`, `close()`, `nextPage()`, `prevPage()`, and `goToChapter()`.
+6. `BookModal` renders the active guide source without importing built-in content directly.
 
 ## Proposed Data Boundary
 

@@ -2,7 +2,6 @@
 	import { bookStore } from '$lib/game/book/store.svelte';
 	import BookPage from './BookPage.svelte';
 	import { X, ChevronLeft, ChevronRight, BookOpen } from 'lucide-svelte';
-	import { THE_FIELD_GUIDE } from '$lib/game/book/content';
 
 	let dialog: HTMLDialogElement;
 
@@ -46,7 +45,7 @@
 			</div>
 
 			<nav class="toc">
-				{#each THE_FIELD_GUIDE.chapters as chapter (chapter.id)}
+				{#each bookStore.book.chapters as chapter (chapter.id)}
 					<button
 						class="toc-item"
 						class:active={bookStore.currentChapterId === chapter.id}
@@ -65,7 +64,11 @@
 			</button>
 
 			<div class="page-container">
-				<BookPage page={bookStore.currentPage} />
+				{#if bookStore.currentPage}
+					<BookPage page={bookStore.currentPage} />
+				{:else}
+					<div class="empty-book-message">This guide does not have any pages yet.</div>
+				{/if}
 			</div>
 
 			<!-- Navigation Footer -->
@@ -73,23 +76,24 @@
 				<button
 					class="nav-btn"
 					onclick={() => bookStore.prevPage()}
-					disabled={!bookStore.hasPrevPage &&
-						bookStore.currentChapterId === THE_FIELD_GUIDE.chapters[0].id}
+					disabled={bookStore.isAtFirstPage}
 				>
 					<ChevronLeft size={16} />
 					Previous
 				</button>
 
 				<span class="page-indicator">
-					Page {bookStore.currentPageIndex + 1} of {bookStore.currentChapter.pages.length}
+					{#if bookStore.currentChapter}
+						Page {bookStore.currentPageIndex + 1} of {bookStore.currentChapter.pages.length}
+					{:else}
+						No pages
+					{/if}
 				</span>
 
 				<button
 					class="nav-btn"
 					onclick={() => bookStore.nextPage()}
-					disabled={!bookStore.hasNextPage &&
-						bookStore.currentChapterId ===
-							THE_FIELD_GUIDE.chapters[THE_FIELD_GUIDE.chapters.length - 1].id}
+					disabled={bookStore.isAtLastPage}
 				>
 					Next
 					<ChevronRight size={16} />
@@ -267,5 +271,14 @@
 	.page-indicator {
 		font-size: var(--font-size-0);
 		color: var(--text-3);
+	}
+
+	.empty-book-message {
+		display: grid;
+		place-items: center;
+		min-height: 100%;
+		color: var(--text-2);
+		font-size: var(--font-size-2);
+		text-align: center;
 	}
 </style>

@@ -28,10 +28,13 @@
 		MessageCircle
 	} from 'lucide-svelte';
 	import { soundManager } from '$lib/game/sound';
+	import { untrack } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
 	import DevConnectionStatus from '$lib/components/common/DevConnectionStatus.svelte';
 	import { bookStore } from '$lib/game/book/store.svelte';
+	import { THE_FIELD_GUIDE } from '$lib/game/book/content';
+	import type { Book } from '$lib/game/book/schema';
 	import BookModal from '$lib/components/game/book/BookModal.svelte';
 	import HealthDisplay from '$lib/components/game/HealthDisplay.svelte';
 
@@ -44,6 +47,7 @@
 		headerLeft?: import('svelte').Snippet;
 		onTarget?: (target: string) => void;
 		feedbackRouteContext?: FeedbackRouteContext;
+		fieldGuide?: Book;
 	}
 
 	let {
@@ -54,7 +58,8 @@
 		onExit,
 		headerLeft,
 		onTarget,
-		feedbackRouteContext = { source: 'shared' }
+		feedbackRouteContext = { source: 'shared' },
+		fieldGuide = THE_FIELD_GUIDE
 	}: Props = $props();
 
 	let isRunning = $state(false);
@@ -264,6 +269,10 @@
 			viewport: { width: window.innerWidth, height: window.innerHeight }
 		});
 	}
+
+	$effect(() => {
+		untrack(() => bookStore.setBook(fieldGuide));
+	});
 
 	$effect(() => {
 		if (game.level.ambientSoundId) {

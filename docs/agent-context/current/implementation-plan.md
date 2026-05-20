@@ -2,7 +2,7 @@
 
 ## Status
 
-Planning and recon are underway. The current Field Guide is static and global; Phase 45 will make it context-aware and pack-extensible before adding a full creator authoring studio.
+PER 1 runtime/schema foundation is implemented and under review. The current Field Guide can now be supplied dynamically, and packs can include optional guide content. Context-aware surfacing and creator authoring remain later slices.
 
 ## Phase Goal
 
@@ -38,12 +38,20 @@ See `field-guide-recon.md` for details. The short version:
 
 ### PER 1 — Runtime and Schema Foundation
 
-- Refactor Field Guide runtime to accept a dynamic `Book` source.
-- Add `bookStore.openTo(chapterId, pageId?)` with safe fallback behavior.
-- Add optional pack-level guide content to `LevelPackSchema`.
-- Merge built-in guide chapters with pack-authored guide chapters in play mode.
-- Keep unsupported rich book blocks out of the authoring path for now.
-- Add tests for dynamic book navigation and pack guide schema parsing.
+- Refactored Field Guide runtime to accept a dynamic `Book` source.
+- Added `bookStore.openTo(chapterId, pageId?)` with safe fallback behavior.
+- Added optional pack-level guide content to `LevelPackSchema`.
+- Merged built-in guide chapters with pack-authored guide chapters in play mode.
+- Namespaced and deduplicated pack-authored chapter/page ids during merge.
+- Kept unsupported rich book blocks out of the authoring path for now.
+- Added tests for dynamic book navigation, pack guide schema parsing, and guide merging.
+
+## PER 1 Validation State
+
+- Focused Field Guide/store/schema/import tests passed.
+- `PROTO_NODE_VERSION=24 pnpm check` passed with existing unrelated warnings.
+- `PROTO_NODE_VERSION=24 pnpm lint` passed.
+- `git diff --check` passed.
 
 ### PER 2 — Context-Aware Surfacing
 

@@ -2,7 +2,7 @@
 
 ## Current Status
 
-Phase 45 planning has started with a recon of the existing Field Guide runtime, pack schemas, and builder authoring surfaces. The recommended first implementation slice is a runtime/schema foundation that makes the Field Guide dynamic and pack-extensible before adding a full Jonas-facing authoring UI.
+PER 1 runtime/schema foundation is implemented and under review. The Field Guide runtime can now navigate a dynamic book source, packs can carry optional guide content, and play mode merges built-in guide chapters with pack-authored chapters. Jonas-facing authoring UI remains the next major slice.
 
 ## Why This Phase Matters
 
@@ -25,11 +25,11 @@ The current Field Guide is useful but static:
 
 ### Runtime Foundation
 
-First, make the guide runtime accept a dynamic book and support targeted opening. This gives the rest of the phase a stable boundary.
+The guide runtime now accepts a dynamic book and supports targeted opening. This gives the rest of the phase a stable boundary.
 
 ### Pack Extensibility
 
-Next, allow packs to carry optional guide content and merge that with the built-in guide when playing a pack. This is the core unlock for Jonas-created explanations.
+Packs can carry optional guide content, validated with the shared book schema. Play mode merges pack guide chapters with the built-in guide, and pack-authored ids are namespaced/deduplicated to avoid collisions.
 
 ### Context Awareness
 
@@ -58,10 +58,12 @@ The visible Jonas loop should be:
 
 ## Next Implementation Target
 
-PER 1 should change as little product UX as possible while creating the runtime/schema foundation:
+PER 1 changed as little product UX as possible while creating the runtime/schema foundation:
 
 1. Dynamic `BookStore`/`BookModal`.
 2. `openTo(chapterId, pageId?)`.
 3. Optional `guide` on packs.
 4. Play-mode merge of built-in plus pack guide.
 5. Focused tests.
+
+Next implementation target: PER 2 context-aware surfacing.
