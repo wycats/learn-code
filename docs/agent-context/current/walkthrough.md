@@ -1,102 +1,67 @@
-# Walkthrough: Phase 44 — Feedback System
+# Walkthrough: Phase 45 — Context-Aware Field Guide
 
 ## Current Status
 
-PER 1 State Dump Feedback is implemented, validated, reviewed, and merged. PER 2 Feedback Triage is implemented, visually reviewed, and ready for PR. Screenshots and admin workflow remain follow-up topics.
+Phase 45 planning has started with a recon of the existing Field Guide runtime, pack schemas, and builder authoring surfaces. The recommended first implementation slice is a runtime/schema foundation that makes the Field Guide dynamic and pack-extensible before adding a full Jonas-facing authoring UI.
 
-## PER 1: State Dump Feedback
+## Why This Phase Matters
 
-### Report Issue Flow
+The Field Guide is already the project’s diegetic manual. It should become the place where:
 
-- The game header includes a `Report Issue` action.
-- The feedback modal asks for a required message and optional email.
-- The modal explains that the current level, blocks, and runtime state are attached.
-- Sent and queued outcomes use the existing toast system.
+- Zoey can get help that is relevant to the level she is playing;
+- Jonas can explain the special rules and ideas in packs he creates;
+- parents/maintainers can distinguish reference material from story/hints without adding intrusive popups.
 
-### Attached Context
+## Recon Summary
 
-The feedback context captures enough information to reproduce the current game state:
+The current Field Guide is useful but static:
 
-- route/source metadata;
-- level JSON;
-- current main program and functions;
-- game status, position, orientation, lives, held item, vehicle, collected items;
-- execution and loop progress maps;
-- failure/story/hint state;
-- interpreter phase and stack when available;
-- browser online state and viewport.
+- the store and modal read from a singleton built-in guide;
+- play mode does not pass current pack/level context into the guide;
+- packs cannot include their own guide content;
+- builder story and hint editors already demonstrate authoring patterns that could later support guide editing.
 
-### Local-First Queue and Persistence
+## Planned Shape
 
-- Online submissions post to `/api/feedback` immediately.
-- Offline or failed submissions are queued in localStorage.
-- Queued feedback flushes when the app is online again.
-- Invalid 4xx feedback is dropped on flush so it does not retry forever.
-- Accepted reports are persisted to the `feedback` table with route metadata and serialized context.
+### Runtime Foundation
 
-## PER 2: Feedback Triage
+First, make the guide runtime accept a dynamic book and support targeted opening. This gives the rest of the phase a stable boundary.
 
-### Inbox Route
+### Pack Extensibility
 
-- `/settings/feedback` is the first triage surface.
-- Anonymous visitors are redirected to `/login`.
-- Signed-in parents/users can open the inbox without selecting a child profile.
-- Settings now links to Feedback Inbox for signed-in users.
+Next, allow packs to carry optional guide content and merge that with the built-in guide when playing a pack. This is the core unlock for Jonas-created explanations.
 
-### Report Cards
+### Context Awareness
 
-Each feedback card shows:
+Then, use level/pack signals to make the guide feel relevant without adding notification pressure. The book should feel helpful when opened, not nagging when closed.
 
-- created time;
-- message preview;
-- context parse status;
-- pack and level id;
-- optional email;
-- optional user/profile ids;
-- route URL when present.
+### Minimal Authoring
 
-### Captured Context Detail
+Finally, give Jonas a small text/voice guide authoring surface in the Pack Builder. The first version should feel like writing “How this pack works” designer notes, not like editing a book schema. Rich authoring can wait until the basic loop is proven.
 
-Expanded report detail shows:
+The visible Jonas loop should be:
 
-- full message;
-- level name/id;
-- game status;
-- failed attempts;
-- active block;
-- program and function counts;
-- browser online/language/viewport/user-agent metadata;
-- interpreter phase, stack depth, current block/context/frame size when present;
-- raw JSON/context text behind `<details>`.
+1. Jonas writes a short designer note in Builder.
+2. Builder previews the note as it will appear in the Field Guide.
+3. Jonas playtests the pack.
+4. The Field Guide shows that note in the context of his pack.
+5. Jonas can share the pack knowing players will see his explanation.
 
-### Legacy/Invalid Context Handling
+## Important Constraints
 
-- Empty `{}` contexts are labeled as legacy empty context.
-- Malformed JSON is labeled as malformed.
-- Unexpected shapes are labeled as unexpected context shape.
-- The page still renders top-level report fields when context cannot be parsed.
+- Do not start with a full CMS-like authoring studio.
+- Do not make Jonas manage raw chapters, page ids, tags, or schema fields for the first authoring slice.
+- Do not introduce unread-dot fatigue.
+- Do not rely on `unlockedBy` until unlock semantics are explicitly designed.
+- Do not expose unsupported rich content blocks in builder authoring until rendering support exists.
+- Treat shared/imported guide text as a future safety and moderation question.
 
-## Validation Results
+## Next Implementation Target
 
-- `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/server/feedback-inbox.test.ts src/routes/settings/feedback/server.test.ts src/routes/settings/feedback/route-smoke.test.ts src/routes/api/feedback/server.test.ts` — passed.
-- `PROTO_NODE_VERSION=24 pnpm check` — passed with existing unrelated warnings.
-- `PROTO_NODE_VERSION=24 pnpm lint` — passed.
-- `PROTO_NODE_VERSION=24 pnpm build` — passed with existing unrelated warnings and the adapter-auto notice.
-- `git diff --check` — passed.
+PER 1 should change as little product UX as possible while creating the runtime/schema foundation:
 
-## Visual Review Results
-
-- Settings shows the Feedback Inbox entry for the signed-in local parent account.
-- The inbox report layout was simplified from a raw database-like view into grouped cards with a title, location, quick summary, and expandable details.
-- Captured context remains readable without exposing raw JSON by default; raw context stays behind a disclosure.
-- Untrusted feedback URLs are rendered as plain text instead of clickable links.
-- Responsive and dark-mode styling were polished for the report list.
-
-## Manual Visual Review Checklist
-
-- [x] Open Settings while signed in and confirm Feedback Inbox appears.
-- [x] Open `/settings/feedback` and confirm the report list is clear.
-- [x] Open a valid report and confirm the summary is useful.
-- [x] Confirm raw JSON stays behind a disclosure.
-- [ ] Confirm invalid/legacy contexts are understandable and non-crashy in browser.
-- [x] Check mobile width and dark mode.
+1. Dynamic `BookStore`/`BookModal`.
+2. `openTo(chapterId, pageId?)`.
+3. Optional `guide` on packs.
+4. Play-mode merge of built-in plus pack guide.
+5. Focused tests.
