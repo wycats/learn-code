@@ -1,51 +1,67 @@
-# Technical Architecture: Phase 44 — Feedback System
+# Technical Architecture: Phase 45 — Context-Aware Field Guide
 
 ## Architecture Summary
 
-Phase 44 now has a submission path and a first triage path. The system captures structured feedback context from gameplay, persists it server-side, and exposes recent reports to signed-in parents/users from Settings.
+Phase 45 should evolve the Field Guide from a static singleton into a dynamic guide system. The runtime should be able to render a book assembled from the built-in Field Guide plus optional pack-authored chapters.
 
-## Submission Flow
+## Current Architecture
 
-1. `Game.svelte` owns the `Report Issue` action because it has access to the current `GameModel` and local `StackInterpreter`.
-2. `createFeedbackContext()` converts live game/interpreter state into a serializable payload.
-3. `FeedbackModal.svelte` collects a message and optional email and explains the attached context.
-4. `FeedbackService.submit()` sends immediately when online or queues locally on failure/offline.
-5. `FeedbackService.flushQueue()` retries queued feedback on future online events.
-6. `/api/feedback` validates, limits, and persists accepted feedback.
+- Built-in content lives in `THE_FIELD_GUIDE`.
+- `BookStore` imports that singleton directly for current chapter/page state and navigation.
+- `BookModal` imports the singleton directly for table-of-contents and navigation bounds.
+- `BookPage` renders pages from the active store but supports only some schema block types.
+- `Game.svelte` opens the Field Guide without pack or level context.
 
-## Triage Flow
+## Target PER 1 Architecture
 
-1. `/settings/feedback` requires `locals.user` and redirects anonymous visitors to `/login`.
-2. The server load queries the newest 50 reports from the `feedback` table.
-3. `toFeedbackInboxReport()` converts rows into render-safe report summaries.
-4. `summarizeFeedbackContext()` parses and validates serialized context using `FeedbackContextSchema`.
-5. The Svelte page renders list/detail cards and keeps raw context behind a disclosure.
+1. A guide source is assembled for the current play context.
+2. The source starts with built-in Field Guide chapters.
+3. If the current pack has guide content, pack-authored chapters are appended or grouped after built-in content.
+4. `BookStore` navigates the active guide source and exposes `open()`, `openTo()`, `close()`, `nextPage()`, `prevPage()`, and `goToChapter()`.
+5. `BookModal` renders the active guide source without importing built-in content directly.
 
-## Context Boundary
+## Proposed Data Boundary
 
-The context deliberately includes game reproduction state but excludes sensitive account/session data:
+Add optional pack-level guide content:
 
-- includes route, level, program/functions, runtime state, interpreter stack/phase, and browser online/viewport metadata;
-- excludes auth tokens, cookies, local file-system handles, and screenshots.
+- `LevelPackSchema.guide?: BookSchema`
 
-## Safety and Compatibility
+Keep level-level relevance metadata separate until context-aware surfacing is designed. Candidate future fields:
 
-- Context is rendered through Svelte text interpolation, not `{@html}`.
-- Empty legacy contexts and malformed context strings are rendered as safe fallback states.
-- Feedback rows remain useful even when serialized context cannot be parsed.
-- No triage mutations are available in this slice.
+- `LevelDefinition.guideEntryIds?: string[]`
+- `LevelDefinition.concepts?: string[]`
+- `BookChapter.tags?: string[]`
+- `BookPage.tags?: string[]`
 
-## Persistence Flow
+## Builder Boundary
 
-- Feedback rows store searchable route metadata plus serialized context JSON.
-- `onConflictDoNothing()` makes repeated feedback ids idempotent.
-- The first slice keeps localStorage queueing because screenshot/blob storage is deferred.
+The first runtime/schema slice should not require builder UI. A later slice can add a Pack Builder Guide section that writes into `pack.guide`.
 
-## Test Coverage
+Initial authoring should support only safe, simple content:
 
-- Unit coverage for context serialization.
-- Unit coverage for queue/send/flush behavior.
-- API route coverage for valid, invalid, and oversized payloads.
-- Component coverage for feedback modal consent copy and submit path.
-- E2E coverage for submitting feedback from a playable level.
-- Unit/server coverage for inbox parsing and `/settings/feedback` loading.
+- chapters;
+- pages;
+- text blocks;
+- voice blocks.
+
+Rich content remains deferred:
+
+- image upload/selection;
+- mini-playground authoring;
+- arbitrary component blocks;
+- unlock semantics;
+- interactive tutorial validation.
+
+## Compatibility Notes
+
+- Optional guide content should not break existing packs.
+- Imported packs with no guide should behave exactly as they do today.
+- Unsupported guide block types should either render with a clear fallback or be excluded from creator authoring until supported.
+- If custom guide text is shared through packs, future safety/moderation work may be needed.
+
+## Testing Strategy
+
+- Unit-test `BookStore` against a custom book fixture.
+- Unit-test `openTo` fallback behavior for missing chapters/pages.
+- Schema-test pack guide parsing.
+- Add a focused play-mode/component test for built-in plus pack guide merging.

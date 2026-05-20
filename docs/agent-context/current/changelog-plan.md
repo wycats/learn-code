@@ -1,25 +1,23 @@
-# Changelog Plan: Phase 44 — Feedback System
+# Changelog Plan: Phase 45 — Context-Aware Field Guide
 
 ## Candidate User-Facing Summary
 
-Players can report an issue from inside a level, and signed-in parents/maintainers can review recent reports from Settings. Reports include the current level, blocks, and runtime state so problems are easier to reproduce.
+The Field Guide becomes aware of the pack and level being played, and custom packs gain a path toward carrying their own guide material.
 
 ## Candidate Highlights
 
-- Added an in-game Report Issue flow.
-- Attached current game state and route context to feedback reports.
-- Added a real `/api/feedback` endpoint and persistence for feedback context.
-- Added a Feedback Inbox under Settings for signed-in users.
-- Added safe parsing and display of feedback context, including legacy/invalid fallback states.
+- Prepare the Field Guide to use dynamic guide content instead of only the built-in book.
+- Add support for pack-authored guide content.
+- Make the guide open or prioritize content relevant to the current play context.
+- Lay the foundation for Jonas-style creator-authored guide pages in custom packs.
 
 ## Non-User-Facing Notes
 
-- Screenshot capture remains deferred.
-- Feedback status/resolution workflow remains deferred.
-- Creator-facing lightweight feedback remains separate future work.
-- The feedback queue still uses localStorage because this phase is state/text only.
+- Full guide authoring UI remains a later slice.
+- Rich guide blocks, mini-playground authoring, and unlock semantics remain deferred.
+- Shared/imported guide text may require future safety and moderation decisions.
 
 ## Validation Notes To Include Internally
 
-- Feedback context, queue behavior, API validation, modal behavior, and inbox parsing/loading have focused test coverage.
-- Targeted Playwright coverage verifies a report from a playable level includes route/program/state context.
+- Dynamic guide navigation and pack guide schema support should have focused tests.
+- Existing packs without guide content should continue to parse and play unchanged.

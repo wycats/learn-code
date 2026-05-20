@@ -1,85 +1,84 @@
-# Implementation Plan: Phase 44 — Feedback System
+# Implementation Plan: Phase 45 — Context-Aware Field Guide
 
 ## Status
 
-PER 1 State Dump Feedback is implemented and merged. PER 2 Feedback Triage is implemented, visually reviewed, and ready for PR. Screenshot capture remains deferred.
+Planning and recon are underway. The current Field Guide is static and global; Phase 45 will make it context-aware and pack-extensible before adding a full creator authoring studio.
 
 ## Phase Goal
 
-Create a robust feedback loop that helps Jonas, Zoey, parents, and maintainers report issues with enough context to reproduce them, then inspect those reports without needing direct database access.
+Empower players and young creators with a Field Guide that explains the current level/pack in context, while giving Architects like Jonas a path to write guide material for their own packs.
 
-## Completed PER 1 Scope
+## Persona Goals
 
-### In-Game Report Flow
+### Zoey
 
-- Added a `Report Issue` action to the game header.
-- Added a feedback modal with a required message, optional email, and explicit copy that the current level, blocks, and runtime state are attached.
-- Uses existing toast notifications for sent and queued states.
+- Needs help that appears near the moment of confusion.
+- Benefits from voice, character framing, and concrete examples.
+- Should not be overwhelmed by unread badges, long documentation lists, or abstract reference material.
 
-### State Dump Context
+### Jonas
 
-- Added a serializable feedback context helper for `GameModel` state.
-- Captures route metadata, level JSON, current program/functions, game status, character state, held item/vehicle, collected items, execution maps, hint/story state, browser context, and interpreter stack/phase when available.
-- Passes pack/level context from canonical play routes and shared-level context from the QR/shared play route.
+- Wants to create his own things and explain how they work.
+- Needs a creator surface that feels like authoring notes for his pack, not maintaining a complex documentation system.
+- Benefits from seeing his guide content appear when someone plays his levels.
 
-### Local-First Feedback Service
+## Recon Findings
 
-- Updated `FeedbackService` to accept full payloads instead of only message/email.
-- Preserves localStorage queueing for offline or failed sends.
-- Flushes queued items when online.
-- Drops invalid 4xx queued submissions instead of retrying forever.
-- Keeps queue size bounded.
+See `field-guide-recon.md` for details. The short version:
 
-### Server Endpoint and Persistence
+- `BookStore` and `BookModal` are coupled to the singleton `THE_FIELD_GUIDE`.
+- Play mode does not pass pack/level context to the Field Guide.
+- `BookSchema` already exists and can likely be reused for pack-authored guide content.
+- `LevelPackSchema` does not yet include guide content.
+- Builder has story and hint authoring patterns that can inspire a future guide authoring UI.
 
-- Added `/api/feedback` with payload validation and request-size limit.
-- Stores message, optional email, URL, pack/level ids, serialized context, and optional user/profile ids.
-- Added a migration and schema fields for feedback context.
-- Uses idempotent insert behavior for repeated feedback IDs.
+## Proposed Phase 45 Shape
 
-## Implemented PER 2 Scope
+### PER 1 — Runtime and Schema Foundation
 
-### Feedback Inbox Route
+- Refactor Field Guide runtime to accept a dynamic `Book` source.
+- Add `bookStore.openTo(chapterId, pageId?)` with safe fallback behavior.
+- Add optional pack-level guide content to `LevelPackSchema`.
+- Merge built-in guide chapters with pack-authored guide chapters in play mode.
+- Keep unsupported rich book blocks out of the authoring path for now.
+- Add tests for dynamic book navigation and pack guide schema parsing.
 
-- Added `/settings/feedback` as a signed-in parent/user feedback inbox.
-- Anonymous users redirect to `/login`.
-- Selected child profile is not required.
-- The route lists the newest 50 reports.
+### PER 2 — Context-Aware Surfacing
 
-### Triage Display
+- Use current pack and level data to prioritize or open relevant guide pages.
+- Start with simple signals: `availableBlocks`, custom tiles/items, pack tags, and optional guide metadata.
+- Add a lightweight “related Field Guide” affordance from the book button or story/hints.
+- Avoid unread-dot mechanics.
 
-- Shows report cards with timestamp, message preview, context parse status, pack/level/url, optional email, and optional user/profile ids.
-- Expands each report to show the full message, level summary, game status, failed attempts, active block, program/function counts, browser metadata, interpreter summary, and raw JSON/context text.
-- Handles empty, malformed, or structurally invalid legacy context without crashing.
+### PER 3 — Jonas-Centered Minimal Authoring
 
-### Settings Entry Point
+- Add a simple Pack Builder Guide section.
+- Allow text/voice pages first.
+- Preview the guide content in the builder.
+- Save guide content inside custom pack JSON.
+- Defer image, component, mini-playground, unlock, and interactive tutorial editing.
 
-- Adds a Feedback Inbox link to Settings for signed-in users.
+## Out of Scope for First Slice
 
-## Out of Scope
+- Full Field Guide authoring studio.
+- Rich image/component/playground authoring UI.
+- Interactive tutorial validation.
+- Unlock/progress gating.
+- Moderation workflow for shared custom guide content.
+- Replacing story/hint systems.
 
-- Screenshot capture and image/blob storage.
-- Feedback status/resolution workflow.
-- Delete/archive/mutate feedback rows.
-- Pagination, filters, search, assignment, or comments.
-- GitHub issue creation.
-- New admin role schema or allowlist system.
-- True service-worker background flush after app close.
-- Broad cloud sync or analytics changes.
+## Validation Plan for PER 1
 
-## Validation Plan
+- Unit tests for `BookStore` dynamic book navigation and `openTo` behavior.
+- Schema tests for optional pack guide content.
+- Play-mode test or component test proving pack guide chapters appear with the built-in guide.
+- `PROTO_NODE_VERSION=24 pnpm check`.
+- `PROTO_NODE_VERSION=24 pnpm lint`.
+- `git diff --check`.
 
-- `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/server/feedback-inbox.test.ts src/routes/settings/feedback/server.test.ts src/routes/settings/feedback/route-smoke.test.ts src/routes/api/feedback/server.test.ts`
-- `PROTO_NODE_VERSION=24 pnpm check`
-- `PROTO_NODE_VERSION=24 pnpm lint`
-- `PROTO_NODE_VERSION=24 pnpm build`
-- `git diff --check`
+## Open Product Questions
 
-## Validation State
-
-- Focused triage unit/server tests passed.
-- `PROTO_NODE_VERSION=24 pnpm check` passed with existing unrelated warnings.
-- `PROTO_NODE_VERSION=24 pnpm lint` passed.
-- `PROTO_NODE_VERSION=24 pnpm build` passed with existing unrelated warnings and the adapter-auto notice.
-- `git diff --check` passed.
-- Manual visual review accepted the Settings entry point, the Feedback Inbox report layout, raw context disclosure, and responsive/dark-mode polish. Anonymous redirect and empty/invalid-state browser checks remain good follow-up targets.
+- Should guide content live only at pack level first, or should levels also declare related guide entries?
+- Should the guide open automatically to relevant pages, or simply prioritize them when the user opens the book?
+- Should Jonas-authored guide pages use the book voices (`guide`, `zoey`, `jonas`) or arbitrary pack characters?
+- Should imported pack guide content appear by default, or should there be safety controls before surfacing shared text?

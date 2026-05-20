@@ -1,53 +1,41 @@
-# Task List: Phase 44 — Feedback System
+# Task List: Phase 45 — Context-Aware Field Guide
 
-## PER 1 — State Dump Feedback
+## Recon and Planning
 
-- [x] Keep first slice to state dump + queue + endpoint.
-- [x] Defer screenshot capture.
-- [x] Add in-game `Report Issue` entry point.
-- [x] Add feedback modal with required message and optional email.
-- [x] Explain attached level, blocks, and runtime state.
-- [x] Capture route metadata, level JSON, program/functions, game runtime state, interpreter stack/phase, and browser metadata.
-- [x] Update feedback service to submit full payloads.
-- [x] Preserve localStorage queueing and online flush.
-- [x] Add `/api/feedback` endpoint and persistence fields.
-- [x] Validate with focused tests, Playwright, check, lint, build, and diff check.
-- [x] Manual local visual review accepted the feedback UI as reasonable.
+- [x] Investigate current Field Guide runtime, schema, and builder surfaces.
+- [x] Identify Jonas-centered custom pack guide needs.
+- [x] Document runtime/schema constraints and phased implementation plan.
 
-## PER 2 — Feedback Triage
+## PER 1 — Runtime and Schema Foundation
 
-- [x] Add signed-in feedback inbox at `/settings/feedback`.
-- [x] Redirect anonymous visitors to `/login`.
-- [x] Avoid new roles/admin schema for this slice.
-- [x] Add Settings entry point for signed-in users.
-- [x] Query newest 50 feedback reports.
-- [x] Summarize valid feedback context.
-- [x] Safely handle empty, malformed, or invalid legacy context.
-- [x] Show message, route metadata, level summary, game status, failed attempts, active block, program/function counts, browser metadata, interpreter summary, and raw JSON/context text.
+- [ ] Refactor `BookStore` so it can navigate a supplied `Book`, not only `THE_FIELD_GUIDE`.
+- [ ] Refactor `BookModal` so table-of-contents and navigation use the active book source.
+- [ ] Add `bookStore.openTo(chapterId, pageId?)` with safe fallback behavior.
+- [ ] Add optional pack-level guide content to `LevelPackSchema`.
+- [ ] Merge built-in Field Guide chapters with pack-authored guide chapters in play mode.
+- [ ] Decide how to render or explicitly ignore currently unsupported book block types.
+- [ ] Add tests for dynamic guide navigation and pack guide schema parsing.
 
-## PER 2 Validation
+## PER 2 — Context-Aware Surfacing
 
-- [x] `PROTO_NODE_VERSION=24 pnpm exec vitest --run src/lib/server/feedback-inbox.test.ts src/routes/settings/feedback/server.test.ts src/routes/settings/feedback/route-smoke.test.ts src/routes/api/feedback/server.test.ts`
-- [x] `PROTO_NODE_VERSION=24 pnpm check`
-- [x] `PROTO_NODE_VERSION=24 pnpm lint`
-- [x] `git diff --check`
-- [x] `PROTO_NODE_VERSION=24 pnpm build`
+- [ ] Define concept/relevance signals from current level and pack data.
+- [ ] Prioritize relevant built-in and pack-authored guide pages when opening the guide.
+- [ ] Add a lightweight related-guide affordance from the game UI or story/hints.
+- [ ] Avoid unread indicators and notification pressure.
 
-## PER 2 Manual Visual Review Checklist
+## PER 3 — Minimal Creator Authoring
 
-- [x] Settings shows Feedback Inbox only when signed in.
-- [ ] Anonymous `/settings/feedback` redirects to login.
-- [ ] Empty inbox is clear and calm.
-- [ ] Long report messages wrap safely.
-- [x] Valid context shows useful level/game/browser/interpreter summary.
-- [ ] Invalid or legacy context shows a fallback without crashing.
-- [x] Raw context remains behind `<details>` and is readable.
-- [x] Mobile and dark mode remain usable.
+- [ ] Add a simple Pack Builder guide section.
+- [ ] Allow text/voice chapter/page authoring.
+- [ ] Preview authored guide content in builder.
+- [ ] Persist authored guide content in custom pack JSON.
+- [ ] Keep image, component, mini-playground, unlock, and interactive tutorial authoring deferred.
 
-## Follow-Up Topics
+## Validation Checklist
 
-- [ ] Screenshot capture and storage.
-- [ ] Feedback status/resolution workflow.
-- [ ] Feedback filters/search/pagination.
-- [ ] Admin role or allowlist model if feedback becomes sensitive beyond parent-only access.
-- [ ] Creator-facing lightweight feedback separate from maintainer issue reports.
+- [ ] Dynamic book/store unit tests pass.
+- [ ] Pack guide schema tests pass.
+- [ ] Play-mode guide merge test passes.
+- [ ] `PROTO_NODE_VERSION=24 pnpm check`.
+- [ ] `PROTO_NODE_VERSION=24 pnpm lint`.
+- [ ] `git diff --check`.
