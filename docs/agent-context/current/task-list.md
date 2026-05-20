@@ -8,13 +8,14 @@
 
 ## PER 1 — Runtime and Schema Foundation
 
-- [ ] Refactor `BookStore` so it can navigate a supplied `Book`, not only `THE_FIELD_GUIDE`.
-- [ ] Refactor `BookModal` so table-of-contents and navigation use the active book source.
-- [ ] Add `bookStore.openTo(chapterId, pageId?)` with safe fallback behavior.
-- [ ] Add optional pack-level guide content to `LevelPackSchema`.
-- [ ] Merge built-in Field Guide chapters with pack-authored guide chapters in play mode.
-- [ ] Decide how to render or explicitly ignore currently unsupported book block types.
-- [ ] Add tests for dynamic guide navigation and pack guide schema parsing.
+- [x] Refactor `BookStore` so it can navigate a supplied `Book`, not only `THE_FIELD_GUIDE`.
+- [x] Refactor `BookModal` so table-of-contents and navigation use the active book source.
+- [x] Add `bookStore.openTo(chapterId, pageId?)` with safe fallback behavior.
+- [x] Add optional pack-level guide content to `LevelPackSchema`.
+- [x] Merge built-in Field Guide chapters with pack-authored guide chapters in play mode.
+- [x] Namespace and deduplicate pack-authored chapter/page ids during merge.
+- [x] Keep rich unsupported book block authoring deferred; accepted schema blocks remain existing runtime behavior.
+- [x] Add tests for dynamic guide navigation and pack guide schema parsing.
 
 ## PER 2 — Context-Aware Surfacing
 
@@ -37,9 +38,9 @@
 
 ## Validation Checklist
 
-- [ ] Dynamic book/store unit tests pass.
-- [ ] Pack guide schema tests pass.
-- [ ] Play-mode guide merge test passes.
-- [ ] `PROTO_NODE_VERSION=24 pnpm check`.
-- [ ] `PROTO_NODE_VERSION=24 pnpm lint`.
-- [ ] `git diff --check`.
+- [x] Dynamic book/store unit tests pass.
+- [x] Pack guide schema tests pass.
+- [x] Field Guide merge helper tests pass.
+- [x] `PROTO_NODE_VERSION=24 pnpm check`.
+- [x] `PROTO_NODE_VERSION=24 pnpm lint`.
+- [x] `git diff --check`.

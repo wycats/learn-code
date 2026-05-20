@@ -6,6 +6,7 @@
 	import { ProgressService } from '$lib/game/progress';
 	import { CloudSyncService } from '$lib/services/cloud-sync';
 	import { GameModel } from '$lib/game/model.svelte';
+	import { mergeFieldGuide } from '$lib/game/book/merge';
 	import type { Character, Emotion, LevelPack, LevelDefinition } from '$lib/game/types';
 	import Game from '$lib/components/game/Game.svelte';
 	import { goto } from '$app/navigation';
@@ -24,6 +25,7 @@
 	let game = $state<GameModel | null>(null);
 	let hasNextLevel = $state(false);
 	let nextLevelId = $state<string | null>(null);
+	const fieldGuide = $derived(mergeFieldGuide(pack?.guide));
 	const completedLevelIds = new SvelteSet<string>();
 
 	// Load pack
@@ -159,6 +161,7 @@
 	<div class="play-container">
 		<Game
 			{game}
+			{fieldGuide}
 			{hasNextLevel}
 			onNextLevel={handleNextLevel}
 			feedbackRouteContext={{ source: 'pack', packId, levelId }}

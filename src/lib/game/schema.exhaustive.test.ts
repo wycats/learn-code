@@ -247,6 +247,14 @@ describe('Exhaustive Schema Validation', () => {
 		expect(roundTripResult.success).toBe(true);
 	});
 
+	it('rejects book chapters without pages', () => {
+		const result = BookSchema.safeParse({
+			chapters: [{ id: 'empty', title: 'Empty', pages: [] }]
+		});
+
+		expect(result.success).toBe(false);
+	});
+
 	it('validates a comprehensive Level Pack', () => {
 		const kitchenSinkPack = {
 			id: 'pack-1',
@@ -259,6 +267,27 @@ describe('Exhaustive Schema Validation', () => {
 			levels: [], // Can be empty or contain levels, we tested LevelDefinition above
 			characters: [],
 			emotions: [],
+			guide: {
+				chapters: [
+					{
+						id: 'pack-guide',
+						title: 'Pack Guide',
+						pages: [
+							{
+								id: 'pack-guide-page',
+								title: 'How This Pack Works',
+								content: [
+									{
+										type: 'text',
+										content: 'Custom guide content travels with the pack.',
+										voice: 'jonas'
+									}
+								]
+							}
+						]
+					}
+				]
+			},
 			customTiles: {},
 			customItems: {},
 			isCustom: true,
@@ -275,5 +304,8 @@ describe('Exhaustive Schema Validation', () => {
 			console.error('Pack Validation Failed:', JSON.stringify(result.error.format(), null, 2));
 		}
 		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data.guide?.chapters[0].pages[0].content[0].type).toBe('text');
+		}
 	});
 });

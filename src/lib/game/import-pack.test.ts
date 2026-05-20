@@ -43,4 +43,36 @@ describe('parseImportedPack', () => {
 		expect(pack.name).toBe('Imported Pack');
 		expect(pack.difficulty).toBe('beginner');
 	});
+
+	it('parses optional pack-authored guide content', () => {
+		const pack = parseImportedPack({
+			id: 'pack-with-guide',
+			name: 'Imported Pack With Guide',
+			levels: [],
+			guide: {
+				chapters: [
+					{
+						id: 'creator-notes',
+						title: 'Creator Notes',
+						pages: [
+							{
+								id: 'tricky-part',
+								title: 'The Tricky Part',
+								content: [
+									{
+										type: 'text',
+										content: 'The bridge only works if you pick up the boat first.',
+										voice: 'jonas'
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		});
+
+		expect(pack.guide?.chapters[0].id).toBe('creator-notes');
+		expect(pack.guide?.chapters[0].pages[0].id).toBe('tricky-part');
+	});
 });

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BlockTypeSchema, DirectionSchema, GridPositionSchema } from '../schema';
+import { BlockTypeSchema, DirectionSchema, GridPositionSchema } from '../primitives';
 
 const TextBlock = z.object({
 	type: z.literal('text'),
@@ -66,7 +66,7 @@ export const BookPageSchema = z.object({
 export const BookChapterSchema = z.object({
 	id: z.string(),
 	title: z.string(),
-	pages: z.array(BookPageSchema),
+	pages: z.array(BookPageSchema).min(1),
 	unlockedBy: z.string().optional()
 });
 
