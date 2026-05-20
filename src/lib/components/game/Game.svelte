@@ -656,13 +656,14 @@
 		display: grid;
 		grid-template-columns: 1fr 400px; /* Stage | Tray */
 		height: 100%;
+		min-height: 0;
 		overflow: hidden;
 	}
 
 	@media (max-width: 768px) {
 		.workspace {
 			grid-template-columns: 1fr;
-			grid-template-rows: 1fr 1fr;
+			grid-template-rows: minmax(0, 3fr) minmax(0, 2fr);
 		}
 	}
 
@@ -673,6 +674,7 @@
 		padding: 0;
 		background-color: var(--surface-1);
 		overflow: hidden;
+		min-height: 0;
 	}
 
 	.dashboard-area {
@@ -703,6 +705,8 @@
 		background-color: var(--surface-2);
 		position: relative;
 		z-index: 10;
+		min-height: 0;
+		overflow: hidden;
 	}
 
 	.stage-container {
@@ -717,6 +721,7 @@
 		flex: 1;
 		padding: var(--size-5);
 		overflow: hidden;
+		min-height: 0;
 	}
 
 	.btn-primary {
@@ -797,7 +802,7 @@
 		margin: 0 var(--size-2);
 	}
 
-	@media (max-width: 600px) {
+	@media (max-width: 600px), (max-width: 768px) and (max-height: 700px) {
 		.mode-detail,
 		.mode-kicker,
 		.ghost-path-status {
@@ -840,7 +845,16 @@
 		}
 
 		.dashboard-area {
-			min-height: 90px;
+			min-height: clamp(72px, 14dvh, 96px);
+		}
+
+		.stage-container {
+			padding: clamp(var(--size-2), 2vw, var(--size-4));
+		}
+
+		.tray-area {
+			border-left: none;
+			border-top: 1px solid var(--surface-3);
 		}
 	}
 </style>
