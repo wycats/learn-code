@@ -28,6 +28,7 @@
 		MessageCircle
 	} from 'lucide-svelte';
 	import { soundManager } from '$lib/game/sound';
+	import { untrack } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import ThemeToggle from '$lib/components/common/ThemeToggle.svelte';
 	import DevConnectionStatus from '$lib/components/common/DevConnectionStatus.svelte';
@@ -270,7 +271,7 @@
 	}
 
 	$effect(() => {
-		bookStore.setBook(fieldGuide);
+		untrack(() => bookStore.setBook(fieldGuide));
 	});
 
 	$effect(() => {
