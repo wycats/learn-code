@@ -3,8 +3,8 @@ import { parseMarkdown } from './markdown';
 
 describe('parseMarkdown', () => {
 	it('renders basic emphasis and safe https links', () => {
-		expect(parseMarkdown('Read **this** [guide](https://example.test/path?q=1).')).toBe(
-			'Read <strong>this</strong> <a href="https://example.test/path?q=1" target="_blank" rel="noopener noreferrer">guide</a>.'
+		expect(parseMarkdown('Read **this** [guide](https://example.test/path?q=1&next=2).')).toBe(
+			'Read <strong>this</strong> <a href="https://example.test/path?q=1&amp;next=2" target="_blank" rel="noopener noreferrer">guide</a>.'
 		);
 	});
 

@@ -1,5 +1,23 @@
 export function parseMarkdown(text: string) {
-	// Escape HTML first to prevent XSS (basic)
+	let html = '';
+	let lastIndex = 0;
+	const linkPattern = /\[(.*?)\]\((.*?)\)/g;
+
+	for (const match of text.matchAll(linkPattern)) {
+		const [fullMatch, label, url] = match;
+		const matchIndex = match.index ?? 0;
+
+		html += parseInlineText(text.slice(lastIndex, matchIndex));
+		html += renderLink(label, url);
+		lastIndex = matchIndex + fullMatch.length;
+	}
+
+	html += parseInlineText(text.slice(lastIndex));
+
+	return html;
+}
+
+function parseInlineText(text: string) {
 	let html = escapeHtml(text);
 
 	// Bold
@@ -11,15 +29,16 @@ export function parseMarkdown(text: string) {
 	// Code
 	html = html.replace(/`(.*?)`/g, '<code>$1</code>');
 
-	// Links
-	html = html.replace(/\[(.*?)\]\((.*?)\)/g, (_match, label: string, url: string) => {
-		const href = sanitizeHref(url);
-		return href
-			? `<a href="${href}" target="_blank" rel="noopener noreferrer">${label}</a>`
-			: label;
-	});
-
 	return html;
+}
+
+function renderLink(label: string, url: string) {
+	const href = sanitizeHref(url);
+	const labelHtml = parseInlineText(label);
+
+	return href
+		? `<a href="${href}" target="_blank" rel="noopener noreferrer">${labelHtml}</a>`
+		: labelHtml;
 }
 
 function escapeHtml(text: string) {

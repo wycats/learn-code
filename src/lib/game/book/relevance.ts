@@ -1,4 +1,4 @@
-import { isPackGuideId } from './merge';
+import { isPackGuideId, toPackGuideId } from './merge';
 import { MANAGED_PACK_GUIDE_CHAPTER_ID } from './pack-guide-authoring';
 import type { Book } from './schema';
 import type { BlockType, LevelDefinition, LevelPack } from '$lib/game/types';
@@ -65,7 +65,7 @@ export function findFirstPackAuthoredGuideTarget(book: Book): FieldGuideTarget |
 }
 
 function findPreferredPackAuthoredGuideTarget(book: Book): FieldGuideTarget | null {
-	return findPackAuthoredGuideTarget(book, `pack:${MANAGED_PACK_GUIDE_CHAPTER_ID}`);
+	return findPackAuthoredGuideTarget(book, toPackGuideId(MANAGED_PACK_GUIDE_CHAPTER_ID));
 }
 
 function findPackAuthoredGuideTarget(
