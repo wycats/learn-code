@@ -2,7 +2,7 @@
 
 ## Candidate User-Facing Summary
 
-The Field Guide becomes aware of the pack and level being played, and custom packs gain a path toward carrying their own guide material.
+The Field Guide is now aware of the pack and level being played, and custom pack creators can add simple “How this pack works” notes that travel with their packs.
 
 ## Candidate Highlights
 
@@ -10,15 +10,18 @@ The Field Guide becomes aware of the pack and level being played, and custom pac
 - Add support for pack-authored guide content.
 - Make the guide open or prioritize content relevant to the current play context.
 - Lay the foundation for Jonas-style “How this pack works” notes in custom packs.
-- Later slices can let creators add simple guide notes that appear when players open the Field Guide for their packs.
+- Let creators add simple guide notes that appear when players open the Field Guide for their packs.
+- Sanitize authored/imported Markdown links in guide text.
 
 ## Non-User-Facing Notes
 
-- Full guide authoring UI remains a later slice.
+- Full rich guide authoring UI remains a later slice.
 - Rich guide blocks, mini-playground authoring, and unlock semantics remain deferred.
 - Shared/imported guide text may require future safety and moderation decisions.
+- Original Master Teacher story/tutorial control remains deferred.
 
 ## Validation Notes To Include Internally
 
 - Dynamic guide navigation and pack guide schema support should have focused tests.
 - Existing packs without guide content should continue to parse and play unchanged.
+- Pack guide authoring, relevance, and Markdown sanitization should have focused tests.

@@ -80,14 +80,19 @@
 ## Field Guide Improvements
 
 - [ ] **The Origin of Kibi**: Add a "Secret Chapter" or easter egg in the Field Guide that explains the "Kibibyte" origin story. This should be a jumping-off point for explaining binary numbers and powers of two to curious kids.
-- [ ] **Context-Aware Manual**: The Field Guide should be customized for the level the user is on, showing relevant chapters or highlighting concepts used in the current level. (Planned Phase 45)
-- [ ] **Architect Control**: Give the Architect control over the Field Guide content for their levels. (Planned Phase 45)
-- [ ] - [ ] **"Just-in-Time" vs. "Library"**: Avoid the "unread dot" fatigue. Instead of a manual that accumulates unread content, integrate the information directly into the user flow (e.g., context-sensitive help) or structure it as a reference library that doesn't demand to be "read" linearly.
-- [ ] **Custom Field Guide Entries**: Allow Architects to write their own Field Guide entries for their custom packs.
+- [x] **Context-Aware Manual**: The Field Guide should be customized for the level the user is on, showing relevant chapters or highlighting concepts used in the current level. (Phase 45 first slice complete; richer metadata remains future)
+- [x] **Architect Control**: Give the Architect control over the Field Guide content for their levels. (Phase 45 pack-level “How this pack works” notes complete; level-specific attachments remain future)
+- [x] **"Just-in-Time" vs. "Library"**: Avoid the "unread dot" fatigue. Instead of a manual that accumulates unread content, integrate the information directly into the user flow (e.g., context-sensitive help) or structure it as a reference library that doesn't demand to be "read" linearly. (Phase 45 uses passive relevant opening, no unread dots)
+- [x] **Custom Field Guide Entries**: Allow Architects to write their own Field Guide entries for their custom packs. (Phase 45 minimal pack guide notes complete; rich authoring remains future)
   - **Rationale**: Just as we provide documentation for built-in blocks, users creating complex levels or mechanics should be able to explain them to players.
   - **Implementation**: Add a `guide` section to the Pack JSON schema.
   - **Pedagogy**: Teaches the importance of documentation alongside code.
 
-```
+### Deferred Field Guide Polish
 
-```
+- [ ] **Related-guide affordance**: Give the Field Guide button a gentle “relevant help available” affordance without unread-dot pressure.
+- [ ] **Jonas voice styling**: Add distinct visual treatment for Jonas-authored voice blocks.
+- [ ] **Mobile Field Guide TOC**: Improve table-of-contents behavior on phone-sized screens.
+- [ ] **Guide authoring save coalescing**: Debounce or coalesce guide note saves so undo/history is not per keystroke.
+- [ ] **Guide metadata**: Let creators attach guide entries to specific levels/concepts without exposing raw ids/tags.
+- [ ] **Rich guide authoring**: Add images, mini-playgrounds, component blocks, unlock semantics, and interactive tutorial validation later.
