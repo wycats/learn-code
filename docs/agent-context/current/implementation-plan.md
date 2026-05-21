@@ -107,9 +107,9 @@ PER 3 is implemented.
 - Mobile-specific Field Guide table-of-contents polish.
 - Debounced/coalesced guide note save history.
 
-## Validation Commands Used
+## Validation Summary
 
-- Focused tests for Field Guide store, merge, relevance, authoring helpers, PackGuideEditor, and Markdown sanitization.
+- Focused tests passed for Field Guide store, merge, relevance, authoring helpers, PackGuideEditor, and Markdown sanitization.
 - `PROTO_NODE_VERSION=24 pnpm check`.
 - `PROTO_NODE_VERSION=24 pnpm lint`.
 - `git diff --check`.

@@ -60,7 +60,7 @@
 
 ## Follow-Up Topics
 
-- [ ] Related-guide affordance on the Field Guide button without unread-dot pressure.
+- [ ] Stronger related-guide affordance on the Field Guide button without unread-dot pressure.
 - [ ] Jonas-specific visual treatment for authored voice blocks.
 - [ ] Collapsible preview or prompt cards on narrow screens.
 - [ ] Debounced/coalesced guide note saves to reduce undo/history noise.

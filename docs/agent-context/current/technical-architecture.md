@@ -84,7 +84,7 @@ Rich content remains deferred:
 
 ## Testing Strategy
 
-- Unit-test `BookStore` against a custom book fixture.
-- Unit-test `openTo` fallback behavior for missing chapters/pages.
-- Schema-test pack guide parsing.
-- Add focused tests for built-in plus pack guide merging, relevance, guide authoring, and Markdown sanitization.
+- `BookStore` is covered against a custom book fixture.
+- `openTo` fallback behavior is covered for missing chapters/pages.
+- Pack guide schema parsing is covered.
+- Built-in plus pack guide merging, relevance, guide authoring, and Markdown sanitization are covered by focused tests.

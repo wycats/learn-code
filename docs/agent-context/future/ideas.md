@@ -84,9 +84,9 @@
 - [x] **Architect Control**: Give the Architect control over the Field Guide content for their levels. (Phase 45 pack-level “How this pack works” notes complete; level-specific attachments remain future)
 - [x] **"Just-in-Time" vs. "Library"**: Avoid the "unread dot" fatigue. Instead of a manual that accumulates unread content, integrate the information directly into the user flow (e.g., context-sensitive help) or structure it as a reference library that doesn't demand to be "read" linearly. (Phase 45 uses passive relevant opening, no unread dots)
 - [x] **Custom Field Guide Entries**: Allow Architects to write their own Field Guide entries for their custom packs. (Phase 45 minimal pack guide notes complete; rich authoring remains future)
-  - **Rationale**: Just as we provide documentation for built-in blocks, users creating complex levels or mechanics should be able to explain them to players.
-  - **Implementation**: Add a `guide` section to the Pack JSON schema.
-  - **Pedagogy**: Teaches the importance of documentation alongside code.
+  - **Implemented slice**: Packs now support `guide` content, and the Pack Builder exposes a constrained “How this pack works” authoring surface.
+  - **Pedagogy**: This teaches the importance of documentation alongside code without exposing raw guide schema details.
+  - **Remaining work**: Rich authoring, level-specific guide attachments, and stronger guide metadata are tracked below as deferred polish.
 
 ### Deferred Field Guide Polish
 
