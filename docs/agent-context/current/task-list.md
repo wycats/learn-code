@@ -49,3 +49,22 @@
 - [x] `PROTO_NODE_VERSION=24 pnpm check`.
 - [x] `PROTO_NODE_VERSION=24 pnpm lint`.
 - [x] `git diff --check`.
+
+## Visual/Product Review Checklist
+
+- [x] Jonas creator loop reviewed: write note, preview note, playtest pack, open Field Guide, see authored note.
+- [x] Zoey player loop reviewed: relevant guide opening remains passive and non-intrusive.
+- [x] Desktop pack authoring reviewed as comfortable.
+- [x] Tablet/phone considerations reviewed and captured as future polish.
+- [x] Original Master Teacher story/tutorial control scope deferred.
+
+## Follow-Up Topics
+
+- [ ] Stronger related-guide affordance on the Field Guide button without unread-dot pressure.
+- [ ] Jonas-specific visual treatment for authored voice blocks.
+- [ ] Collapsible preview or prompt cards on narrow screens.
+- [ ] Debounced/coalesced guide note saves to reduce undo/history noise.
+- [ ] Explicit guide metadata for level/concept attachment.
+- [ ] Mobile Field Guide table-of-contents polish.
+- [ ] Rich guide authoring: images, components, playgrounds, unlocks, and interactive tutorials.
+- [ ] Imported/shared pack text moderation and safety workflow.

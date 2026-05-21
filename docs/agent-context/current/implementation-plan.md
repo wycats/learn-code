@@ -2,7 +2,7 @@
 
 ## Status
 
-PER 1 runtime/schema foundation, PER 2 context-aware surfacing, and PER 3 minimal Jonas-centered authoring are implemented. The current Field Guide can be supplied dynamically, packs can include optional guide content, the existing Field Guide button passively opens the most relevant known page when the current play context has a clear signal, and custom pack creators can write “How this pack works” notes in the Pack Builder.
+Phase 45 is implemented and ready to close as the first Context-Aware Field Guide slice. PER 1 runtime/schema foundation, PER 2 context-aware surfacing, and PER 3 minimal Jonas-centered authoring are complete. The current Field Guide can be supplied dynamically, packs can include optional guide content, the existing Field Guide button passively opens the most relevant known page when the current play context has a clear signal, and custom pack creators can write “How this pack works” notes in the Pack Builder.
 
 ## Phase Goal
 
@@ -88,6 +88,13 @@ PER 3 is implemented.
 - `PROTO_NODE_VERSION=24 pnpm lint` passed.
 - `git diff --check` passed.
 
+## Visual/Product Review State
+
+- Jonas review accepted the write → preview → playtest → Field Guide loop as satisfying and appropriately creator-centered.
+- Zoey review accepted passive context-aware opening because it adds help without popups, unread dots, or pressure mechanics.
+- Desktop layout is comfortable for pack guide authoring.
+- Tablet and phone layouts are usable for the first slice but should receive future polish around guide editor height and Field Guide table-of-contents behavior.
+
 ## Out of Scope for First Slice
 
 - Full Field Guide authoring studio.
@@ -96,12 +103,13 @@ PER 3 is implemented.
 - Unlock/progress gating.
 - Moderation workflow for shared custom guide content.
 - Replacing story/hint systems.
+- Story/tutorial control from the original “Master Teacher” outline.
+- Mobile-specific Field Guide table-of-contents polish.
+- Debounced/coalesced guide note save history.
 
-## Validation Plan for PER 1
+## Validation Summary
 
-- Unit tests for `BookStore` dynamic book navigation and `openTo` behavior.
-- Schema tests for optional pack guide content.
-- Play-mode test or component test proving pack guide chapters appear with the built-in guide.
+- Focused tests passed for Field Guide store, merge, relevance, authoring helpers, PackGuideEditor, and Markdown sanitization.
 - `PROTO_NODE_VERSION=24 pnpm check`.
 - `PROTO_NODE_VERSION=24 pnpm lint`.
 - `git diff --check`.

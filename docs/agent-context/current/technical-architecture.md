@@ -48,9 +48,9 @@ Keep level-level relevance metadata separate until context-aware surfacing is de
 
 ## Builder Boundary
 
-The first runtime/schema slice should not require builder UI. A later slice can add a Pack Builder Guide section that writes into `pack.guide`.
+The Pack Builder now includes a constrained guide authoring section that writes into `pack.guide`.
 
-The builder should not expose the full `BookSchema` directly to Jonas. It should write a constrained Jonas-friendly authoring model and compile that model into `pack.guide`.
+The builder does not expose the full `BookSchema` directly to Jonas. It writes a constrained Jonas-friendly authoring model and compiles that model into `pack.guide`.
 
 The likely first authoring model is “How this pack works” notes:
 
@@ -59,7 +59,7 @@ The likely first authoring model is “How this pack works” notes:
 - designer tips;
 - what the creator wants players to notice.
 
-Initial authoring should support only safe, simple content:
+Initial authoring supports only safe, simple content:
 
 - chapters;
 - pages;
@@ -80,10 +80,11 @@ Rich content remains deferred:
 - Imported packs with no guide should behave exactly as they do today.
 - Unsupported guide block types should either render with a clear fallback or be excluded from creator authoring until supported.
 - If custom guide text is shared through packs, future safety/moderation work may be needed.
+- Authored/imported Markdown links are sanitized before rendering.
 
 ## Testing Strategy
 
-- Unit-test `BookStore` against a custom book fixture.
-- Unit-test `openTo` fallback behavior for missing chapters/pages.
-- Schema-test pack guide parsing.
-- Add a focused play-mode/component test for built-in plus pack guide merging.
+- `BookStore` is covered against a custom book fixture.
+- `openTo` fallback behavior is covered for missing chapters/pages.
+- Pack guide schema parsing is covered.
+- Built-in plus pack guide merging, relevance, guide authoring, and Markdown sanitization are covered by focused tests.
