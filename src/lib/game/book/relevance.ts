@@ -34,15 +34,15 @@ export function findRelatedFieldGuideTarget({
 
 	if (!level) return null;
 
-	if (hasTag(pack, 'loops')) {
-		const target = { chapterId: 'automation', pageId: 'loops' };
-		if (hasGuideTarget(book, target)) return target;
-	}
-
 	for (const target of BUILT_IN_BLOCK_TARGETS) {
 		if (hasAvailableBlock(level, target.signal) && hasGuideTarget(book, target)) {
 			return { chapterId: target.chapterId, pageId: target.pageId };
 		}
+	}
+
+	if (hasTag(pack, 'loops')) {
+		const target = { chapterId: 'automation', pageId: 'loops' };
+		if (hasGuideTarget(book, target)) return target;
 	}
 
 	return null;

@@ -114,6 +114,16 @@ describe('findRelatedFieldGuideTarget', () => {
 		expect(target).toEqual({ chapterId: 'automation', pageId: 'loops' });
 	});
 
+	it('uses the loops pack tag only after level block signals', () => {
+		const target = findRelatedFieldGuideTarget({
+			book: THE_FIELD_GUIDE,
+			level: createLevel({ availableBlocks: { 'move-forward': 'unlimited' } }),
+			pack: createPack({ tags: ['loops'] })
+		});
+
+		expect(target).toEqual({ chapterId: 'basics', pageId: 'movement' });
+	});
+
 	it('prioritizes the first pack-authored guide page for custom pack tile context', () => {
 		const target = findRelatedFieldGuideTarget({
 			book: mergeFieldGuide(PACK_GUIDE),
