@@ -2,6 +2,8 @@
 	import { page } from '$app/stores';
 	import { ShareService } from '$lib/services/share';
 	import { GameModel } from '$lib/game/model.svelte';
+	import { findRelatedFieldGuideTarget } from '$lib/game/book/relevance';
+	import { THE_FIELD_GUIDE } from '$lib/game/book/content';
 	import Game from '$lib/components/game/Game.svelte';
 	import QRScanner from '$lib/components/common/QRScanner.svelte';
 	import { goto } from '$app/navigation';
@@ -11,6 +13,9 @@
 	let game = $state<GameModel | null>(null);
 	let error = $state<string | null>(null);
 	let isScanning = $state(false);
+	const relatedFieldGuideTarget = $derived(
+		findRelatedFieldGuideTarget({ book: THE_FIELD_GUIDE, level: game?.level })
+	);
 
 	$effect(() => {
 		const levelData = $page.url.searchParams.get('level');
@@ -64,6 +69,7 @@
 	<div class="play-container">
 		<Game
 			{game}
+			{relatedFieldGuideTarget}
 			hasNextLevel={false}
 			onNextLevel={handleExit}
 			feedbackRouteContext={{ source: 'shared' }}

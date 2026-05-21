@@ -2,7 +2,7 @@
 
 ## Status
 
-PER 1 runtime/schema foundation is implemented and under review. The current Field Guide can now be supplied dynamically, and packs can include optional guide content. Context-aware surfacing and creator authoring remain later slices.
+PER 1 runtime/schema foundation and PER 2 context-aware surfacing are implemented. The current Field Guide can be supplied dynamically, packs can include optional guide content, and the existing Field Guide button passively opens the most relevant known page when the current play context has a clear signal. Creator authoring remains the next major slice.
 
 ## Phase Goal
 
@@ -55,10 +55,18 @@ See `field-guide-recon.md` for details. The short version:
 
 ### PER 2 — Context-Aware Surfacing
 
-- Use current pack and level data to prioritize or open relevant guide pages.
-- Start with simple signals: `availableBlocks`, custom tiles/items, pack tags, and optional guide metadata.
-- Add a lightweight “related Field Guide” affordance from the book button or story/hints.
-- Avoid unread-dot mechanics.
+- Uses current pack and level data to prioritize or open relevant guide pages.
+- Starts with simple signals: `availableBlocks`, custom tiles/items, and the `loops` pack tag.
+- Opens related pages through the existing Field Guide button.
+- Avoids unread-dot mechanics and automatic popups.
+- Defers explicit guide metadata and broader tag relevance.
+
+## PER 2 Validation State
+
+- Focused Field Guide relevance/store/merge tests passed.
+- `PROTO_NODE_VERSION=24 pnpm check` passed with existing unrelated warnings.
+- `PROTO_NODE_VERSION=24 pnpm lint` passed.
+- `git diff --check` passed.
 
 ### PER 3 — Jonas-Centered Minimal Authoring
 
