@@ -2,7 +2,7 @@
 
 ## Status
 
-PER 1 runtime/schema foundation and PER 2 context-aware surfacing are implemented. The current Field Guide can be supplied dynamically, packs can include optional guide content, and the existing Field Guide button passively opens the most relevant known page when the current play context has a clear signal. Creator authoring remains the next major slice.
+PER 1 runtime/schema foundation, PER 2 context-aware surfacing, and PER 3 minimal Jonas-centered authoring are implemented. The current Field Guide can be supplied dynamically, packs can include optional guide content, the existing Field Guide button passively opens the most relevant known page when the current play context has a clear signal, and custom pack creators can write “How this pack works” notes in the Pack Builder.
 
 ## Phase Goal
 
@@ -70,12 +70,23 @@ See `field-guide-recon.md` for details. The short version:
 
 ### PER 3 — Jonas-Centered Minimal Authoring
 
+PER 3 is implemented.
+
 - Add a simple Pack Builder guide section around a “How this pack works” model.
 - Start with creator prompts such as “Special rules,” “Tricky part,” “Designer tip,” and “What I want players to notice.”
 - Compile those notes into text/voice Field Guide pages instead of making Jonas manage chapters and pages directly.
 - Preview the guide content in the builder.
 - Save guide content inside custom pack JSON.
+- Sanitize Markdown links used by authored/imported guide text.
 - Defer image, component, mini-playground, unlock, and interactive tutorial editing.
+
+## PER 3 Validation State
+
+- Focused PackGuideEditor component, pack-guide authoring helper, and relevance tests passed: 23 tests across `PackGuideEditor.svelte.test.ts`, `pack-guide-authoring.test.ts`, and `relevance.test.ts`.
+- Markdown link sanitization tests passed.
+- `PROTO_NODE_VERSION=24 pnpm check` passed with existing unrelated warnings.
+- `PROTO_NODE_VERSION=24 pnpm lint` passed.
+- `git diff --check` passed.
 
 ## Out of Scope for First Slice
 
