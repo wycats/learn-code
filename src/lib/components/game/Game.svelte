@@ -706,7 +706,6 @@
 		position: relative;
 		z-index: 10;
 		min-height: 0;
-		overflow: hidden;
 	}
 
 	.stage-container {
@@ -855,6 +854,7 @@
 		.tray-area {
 			border-left: none;
 			border-top: 1px solid var(--surface-3);
+			overflow: hidden;
 		}
 	}
 </style>
