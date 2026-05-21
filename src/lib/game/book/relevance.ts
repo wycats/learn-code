@@ -1,4 +1,5 @@
 import { isPackGuideId } from './merge';
+import { MANAGED_PACK_GUIDE_CHAPTER_ID } from './pack-guide-authoring';
 import type { Book } from './schema';
 import type { BlockType, LevelDefinition, LevelPack } from '$lib/game/types';
 
@@ -27,8 +28,10 @@ export function findRelatedFieldGuideTarget({
 	level?: LevelDefinition | null;
 	pack?: LevelPack | null;
 }): FieldGuideTarget | null {
+	const packTarget = findPreferredPackAuthoredGuideTarget(book);
+	if (packTarget && pack?.guide && isCustomPack(pack)) return packTarget;
+
 	if (hasCustomPackContext(level, pack)) {
-		const packTarget = findFirstPackAuthoredGuideTarget(book);
 		if (packTarget) return packTarget;
 	}
 
@@ -61,6 +64,26 @@ export function findFirstPackAuthoredGuideTarget(book: Book): FieldGuideTarget |
 	return null;
 }
 
+function findPreferredPackAuthoredGuideTarget(book: Book): FieldGuideTarget | null {
+	return findPackAuthoredGuideTarget(book, `pack:${MANAGED_PACK_GUIDE_CHAPTER_ID}`);
+}
+
+function findPackAuthoredGuideTarget(
+	book: Book,
+	preferredChapterId?: string
+): FieldGuideTarget | null {
+	if (preferredChapterId) {
+		const preferredChapter = book.chapters.find((chapter) => chapter.id === preferredChapterId);
+		const preferredPage = preferredChapter?.pages.find((page) => isPackGuideId(page.id));
+
+		if (preferredChapter && preferredPage) {
+			return { chapterId: preferredChapter.id, pageId: preferredPage.id };
+		}
+	}
+
+	return findFirstPackAuthoredGuideTarget(book);
+}
+
 function hasGuideTarget(book: Book, target: FieldGuideTarget) {
 	const chapter = book.chapters.find((candidate) => candidate.id === target.chapterId);
 	return Boolean(chapter?.pages.some((page) => page.id === target.pageId));
@@ -85,4 +108,8 @@ function hasCustomPackContext(level?: LevelDefinition | null, pack?: LevelPack |
 
 function hasCustomDefinitions(definitions?: Record<string, unknown>) {
 	return Boolean(definitions && Object.keys(definitions).length > 0);
+}
+
+function isCustomPack(pack: LevelPack) {
+	return pack.isCustom === true;
 }

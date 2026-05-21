@@ -7,6 +7,8 @@
 	import BuilderStoryBar from '$lib/components/builder/BuilderStoryBar.svelte';
 	import BuilderGoalModal from '$lib/components/builder/BuilderGoalModal.svelte';
 	import BuilderToolbar from '$lib/components/builder/BuilderToolbar.svelte';
+	import { mergeFieldGuide } from '$lib/game/book/merge';
+	import { findRelatedFieldGuideTarget } from '$lib/game/book/relevance';
 	import Game from '$lib/components/game/Game.svelte';
 
 	// Initialize with a default empty level
@@ -20,11 +22,17 @@
 	// We need a GameModel to render the Grid.
 	// The BuilderModel will maintain a live GameModel instance that reflects the current edit state.
 	let game = $derived(builder.game);
+	const fieldGuide = $derived(mergeFieldGuide(builder.pack.guide));
+	const relatedFieldGuideTarget = $derived(
+		findRelatedFieldGuideTarget({ book: fieldGuide, level: builder.game.level, pack: builder.pack })
+	);
 </script>
 
 {#if builder.mode === 'test'}
 	<Game
 		game={builder.game}
+		{fieldGuide}
+		{relatedFieldGuideTarget}
 		architectMode={true}
 		onExit={() => builder.setMode('edit')}
 		onTarget={(target) => {

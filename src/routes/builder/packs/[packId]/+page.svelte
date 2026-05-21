@@ -2,9 +2,11 @@
 	import { page } from '$app/stores';
 	import { CampaignService } from '$lib/game/campaigns';
 	import { fileSystem } from '$lib/services/file-system';
-	import type { LevelPack, LevelDefinition } from '$lib/game/schema';
+	import type { LevelDefinition, LevelPack } from '$lib/game/schema';
 	import PackMetadataEditor from '$lib/components/builder/campaign/PackMetadataEditor.svelte';
+	import PackGuideEditor from '$lib/components/builder/campaign/PackGuideEditor.svelte';
 	import LevelOrganizer from '$lib/components/builder/campaign/LevelOrganizer.svelte';
+	import type { Book } from '$lib/game/book/schema';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
@@ -221,6 +223,17 @@
 		}
 	}
 
+	async function handleGuideChange(guide: Book | undefined) {
+		if (!pack) return;
+		saveToHistory();
+		pack = await CampaignService.update(pack.id, { guide });
+		if (isLinked && !needsPermission && pack) {
+			fileSystem
+				.syncPackToDisk(pack.id, $state.snapshot(pack))
+				.catch(() => (needsPermission = true));
+		}
+	}
+
 	function handleEditLevel(levelId: string) {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		void goto(`${base}/builder/packs/${packId}/${levelId}`);
@@ -326,6 +339,7 @@
 			<div class="editor-grid">
 				<div class="left-col">
 					<PackMetadataEditor {pack} onChange={handleMetadataChange} />
+					<PackGuideEditor {pack} onChange={handleGuideChange} />
 				</div>
 				<div class="right-col">
 					<LevelOrganizer
@@ -462,6 +476,12 @@
 		grid-template-columns: 1fr 2fr;
 		gap: var(--size-6);
 		align-items: start;
+	}
+
+	.left-col {
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-6);
 	}
 
 	@media (max-width: 800px) {

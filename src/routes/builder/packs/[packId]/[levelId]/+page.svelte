@@ -4,6 +4,8 @@
 	import { page } from '$app/stores';
 	import { BuilderModel } from '$lib/game/builder-model.svelte';
 	import { CampaignService } from '$lib/game/campaigns';
+	import { mergeFieldGuide } from '$lib/game/book/merge';
+	import { findRelatedFieldGuideTarget } from '$lib/game/book/relevance';
 	import BuilderTray from '$lib/components/builder/BuilderTray.svelte';
 	import BuilderStoryBar from '$lib/components/builder/BuilderStoryBar.svelte';
 	import BuilderGoalModal from '$lib/components/builder/BuilderGoalModal.svelte';
@@ -21,6 +23,10 @@
 	const packId = $derived($page.params.packId ?? '');
 	const levelId = $derived($page.params.levelId ?? '');
 	const mode = $derived($page.url.searchParams.get('mode'));
+	const fieldGuide = $derived(mergeFieldGuide(builder.pack.guide));
+	const relatedFieldGuideTarget = $derived(
+		findRelatedFieldGuideTarget({ book: fieldGuide, level: builder.game.level, pack: builder.pack })
+	);
 
 	onMount(async () => {
 		try {
@@ -67,6 +73,8 @@
 {:else if builder.mode === 'test'}
 	<Game
 		game={builder.game}
+		{fieldGuide}
+		{relatedFieldGuideTarget}
 		architectMode={true}
 		onExit={handleExit}
 		onTarget={(target) => {

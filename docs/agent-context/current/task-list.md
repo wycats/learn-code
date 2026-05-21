@@ -27,15 +27,16 @@
 
 ## PER 3 — Minimal Creator Authoring
 
-- [ ] Add a simple Pack Builder guide section around “How this pack works.”
-- [ ] Add starter prompts/templates: “Special rules,” “Tricky part,” “Designer tip,” and “What I want players to notice.”
-- [ ] Let Jonas write text/voice notes without touching guide ids, tags, schemas, or chapter/page structure.
-- [ ] Compile those notes into pack guide pages.
-- [ ] Preview authored guide content in builder.
-- [ ] Let the creator playtest the pack and see authored guide content in context.
-- [ ] Persist authored guide content in custom pack JSON.
-- [ ] Jonas acceptance check: he can add one useful guide note in under a minute without opening advanced settings.
-- [ ] Keep image, component, mini-playground, unlock, and interactive tutorial authoring deferred.
+- [x] Add a simple Pack Builder guide section around “How this pack works.”
+- [x] Add starter prompts/templates: “Special rules,” “Tricky part,” “Designer tip,” and “What I want players to notice.”
+- [x] Let Jonas write text/voice notes without touching guide ids, tags, schemas, or chapter/page structure.
+- [x] Compile those notes into pack guide pages.
+- [x] Preview authored guide content in builder.
+- [x] Let the creator playtest the pack and see authored guide content in context.
+- [x] Persist authored guide content in custom pack JSON.
+- [x] Jonas acceptance check: he can add one useful guide note in under a minute without opening advanced settings.
+- [x] Sanitize Markdown links used by authored/imported guide text.
+- [x] Keep image, component, mini-playground, unlock, and interactive tutorial authoring deferred.
 
 ## Validation Checklist
 
@@ -43,6 +44,8 @@
 - [x] Pack guide schema tests pass.
 - [x] Field Guide merge helper tests pass.
 - [x] Field Guide relevance helper tests pass.
+- [x] Pack guide authoring helper/component tests pass.
+- [x] Markdown link sanitization tests pass.
 - [x] `PROTO_NODE_VERSION=24 pnpm check`.
 - [x] `PROTO_NODE_VERSION=24 pnpm lint`.
 - [x] `git diff --check`.

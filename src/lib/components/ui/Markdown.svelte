@@ -1,31 +1,11 @@
 <script lang="ts">
+	import { parseMarkdown } from './markdown';
+
 	let { content }: { content: string } = $props();
-
-	function parse(text: string) {
-		// Escape HTML first to prevent XSS (basic)
-		let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-		// Bold
-		html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-		// Italic
-		html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-		// Code
-		html = html.replace(/`(.*?)`/g, '<code>$1</code>');
-
-		// Links
-		html = html.replace(
-			/\[(.*?)\]\((.*?)\)/g,
-			'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
-		);
-
-		return html;
-	}
 </script>
 
 <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-<span class="markdown">{@html parse(content)}</span>
+<span class="markdown">{@html parseMarkdown(content)}</span>
 
 <style>
 	.markdown :global(strong) {

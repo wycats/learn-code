@@ -39,7 +39,7 @@ There are no unread badges, notification dots, or automatic popups. The book sho
 
 ### Minimal Authoring
 
-Finally, give Jonas a small text/voice guide authoring surface in the Pack Builder. The first version should feel like writing “How this pack works” designer notes, not like editing a book schema. Rich authoring can wait until the basic loop is proven.
+Jonas now has a small text/voice guide authoring surface in the Pack Builder. The first version feels like writing “How this pack works” designer notes, not like editing a book schema. Authored note rendering uses sanitized Markdown links so shared/imported pack text cannot inject unsafe link attributes. Rich authoring can wait until the basic loop is proven.
 
 The visible Jonas loop should be:
 
@@ -68,4 +68,14 @@ PER 1 changed as little product UX as possible while creating the runtime/schema
 4. Play-mode merge of built-in plus pack guide.
 5. Focused tests.
 
-PER 2 context-aware surfacing is implemented as a passive opener. Next implementation target: PER 3 minimal Jonas-centered authoring.
+PER 2 context-aware surfacing is implemented as a passive opener.
+
+PER 3 minimal Jonas-centered authoring is implemented:
+
+1. Pack Builder “How this pack works” guide section.
+2. Four starter prompts for Jonas notes.
+3. Direct `pack.guide` persistence through the existing pack update flow.
+4. Preview through the real `BookPage` renderer.
+5. Builder playtest receives the merged guide and related target.
+
+Next implementation target: visual/product review of the authoring loop with Jonas-style custom packs.

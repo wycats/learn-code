@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { THE_FIELD_GUIDE } from './content';
 import { mergeFieldGuide } from './merge';
+import { MANAGED_PACK_GUIDE_CHAPTER_ID } from './pack-guide-authoring';
 import { findRelatedFieldGuideTarget } from './relevance';
 import type { Book } from './schema';
 import type { LevelDefinition, LevelPack } from '$lib/game/types';
@@ -200,6 +201,46 @@ describe('findRelatedFieldGuideTarget', () => {
 		});
 
 		expect(target).toEqual({ chapterId: 'basics', pageId: 'movement' });
+	});
+
+	it('prioritizes authored guide pages for custom packs even without custom tile context', () => {
+		const target = findRelatedFieldGuideTarget({
+			book: mergeFieldGuide(PACK_GUIDE),
+			level: createLevel({ availableBlocks: { 'move-forward': 'unlimited' } }),
+			pack: createPack({ guide: PACK_GUIDE, isCustom: true })
+		});
+
+		expect(target).toEqual({ chapterId: 'pack:designer-notes', pageId: 'pack:special-rules' });
+	});
+
+	it('prefers the managed Jonas guide chapter for custom packs when other pack guide chapters exist', () => {
+		const guide: Book = {
+			chapters: [
+				PACK_GUIDE.chapters[0],
+				{
+					id: MANAGED_PACK_GUIDE_CHAPTER_ID,
+					title: 'How This Pack Works',
+					pages: [
+						{
+							id: 'tricky-part',
+							title: 'Tricky Part',
+							content: [{ type: 'voice', speaker: 'Jonas', content: 'Watch the middle.' }]
+						}
+					]
+				}
+			]
+		};
+
+		const target = findRelatedFieldGuideTarget({
+			book: mergeFieldGuide(guide),
+			level: createLevel({ availableBlocks: { 'move-forward': 'unlimited' } }),
+			pack: createPack({ guide, isCustom: true })
+		});
+
+		expect(target).toEqual({
+			chapterId: `pack:${MANAGED_PACK_GUIDE_CHAPTER_ID}`,
+			pageId: 'pack:tricky-part'
+		});
 	});
 
 	it('filters built-in targets that do not exist in the active guide', () => {
