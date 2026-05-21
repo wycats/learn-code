@@ -35,6 +35,7 @@
 	import { bookStore } from '$lib/game/book/store.svelte';
 	import { THE_FIELD_GUIDE } from '$lib/game/book/content';
 	import type { Book } from '$lib/game/book/schema';
+	import type { FieldGuideTarget } from '$lib/game/book/relevance';
 	import BookModal from '$lib/components/game/book/BookModal.svelte';
 	import HealthDisplay from '$lib/components/game/HealthDisplay.svelte';
 
@@ -48,6 +49,7 @@
 		onTarget?: (target: string) => void;
 		feedbackRouteContext?: FeedbackRouteContext;
 		fieldGuide?: Book;
+		relatedFieldGuideTarget?: FieldGuideTarget | null;
 	}
 
 	let {
@@ -59,7 +61,8 @@
 		headerLeft,
 		onTarget,
 		feedbackRouteContext = { source: 'shared' },
-		fieldGuide = THE_FIELD_GUIDE
+		fieldGuide = THE_FIELD_GUIDE,
+		relatedFieldGuideTarget = null
 	}: Props = $props();
 
 	let isRunning = $state(false);
@@ -270,6 +273,15 @@
 		});
 	}
 
+	function handleOpenFieldGuide() {
+		if (relatedFieldGuideTarget) {
+			bookStore.openTo(relatedFieldGuideTarget.chapterId, relatedFieldGuideTarget.pageId);
+			return;
+		}
+
+		bookStore.open();
+	}
+
 	$effect(() => {
 		untrack(() => bookStore.setBook(fieldGuide));
 	});
@@ -303,7 +315,7 @@
 			<div class="left-controls">
 				{@render headerLeft?.()}
 
-				<button class="btn-icon" onclick={() => bookStore.open()} title="Field Guide">
+				<button class="btn-icon" onclick={handleOpenFieldGuide} title="Field Guide">
 					<BookOpen size={20} />
 				</button>
 

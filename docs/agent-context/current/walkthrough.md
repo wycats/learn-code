@@ -33,7 +33,9 @@ Packs can carry optional guide content, validated with the shared book schema. P
 
 ### Context Awareness
 
-Then, use level/pack signals to make the guide feel relevant without adding notification pressure. The book should feel helpful when opened, not nagging when closed.
+The existing Field Guide button now opens the most relevant known page when the current level/pack has a clear signal. The first-pass signals are intentionally small: available movement/turn/loop blocks, custom tile/item context paired with pack-authored guide pages, and a `loops` pack tag. Unknown or unsupported contexts still open the guide normally.
+
+There are no unread badges, notification dots, or automatic popups. The book should feel helpful when opened, not nagging when closed.
 
 ### Minimal Authoring
 
@@ -66,4 +68,4 @@ PER 1 changed as little product UX as possible while creating the runtime/schema
 4. Play-mode merge of built-in plus pack guide.
 5. Focused tests.
 
-Next implementation target: PER 2 context-aware surfacing.
+PER 2 context-aware surfacing is implemented as a passive opener. Next implementation target: PER 3 minimal Jonas-centered authoring.

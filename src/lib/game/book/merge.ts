@@ -3,6 +3,10 @@ import type { Book, BookChapter } from './schema';
 
 const PACK_GUIDE_PREFIX = 'pack';
 
+export function isPackGuideId(id: string) {
+	return id.startsWith(`${PACK_GUIDE_PREFIX}:`);
+}
+
 export function mergeFieldGuide(packGuide?: Book): Book {
 	if (!packGuide || packGuide.chapters.length === 0) {
 		return THE_FIELD_GUIDE;
@@ -34,7 +38,7 @@ function namespacePackChapters(chapters: BookChapter[]): BookChapter[] {
 }
 
 export function toPackGuideId(id: string) {
-	if (id.startsWith(`${PACK_GUIDE_PREFIX}:`)) return id;
+	if (isPackGuideId(id)) return id;
 
 	return `${PACK_GUIDE_PREFIX}:${id}`;
 }

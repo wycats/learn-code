@@ -21,6 +21,17 @@ Phase 45 evolves the Field Guide from a static singleton into a dynamic guide sy
 5. `BookStore` navigates the active guide source and exposes `open()`, `openTo()`, `close()`, `nextPage()`, `prevPage()`, and `goToChapter()`.
 6. `BookModal` renders the active guide source without importing built-in content directly.
 
+## PER 2 Architecture
+
+1. A pure relevance helper inspects the active `Book`, current `LevelDefinition`, and optional `LevelPack`.
+2. Built-in targets are limited to pages that exist today: movement, turning, and loops.
+3. Level `availableBlocks` drives movement, turning, and loop relevance.
+4. The `loops` pack tag can select the loops guide page when no level block signal exists.
+5. Custom tile/item context can prioritize the first pack-authored guide page in the merged guide.
+6. The existing Field Guide button calls `openTo()` only when the helper returns a safe target; otherwise it preserves normal `open()` behavior.
+
+Explicit guide metadata, broad tag mapping, and richer relevance rules remain deferred until creator authoring establishes what Jonas can intentionally attach.
+
 ## Proposed Data Boundary
 
 Add optional pack-level guide content:

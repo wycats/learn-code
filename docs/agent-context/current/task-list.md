@@ -19,10 +19,11 @@
 
 ## PER 2 — Context-Aware Surfacing
 
-- [ ] Define concept/relevance signals from current level and pack data.
-- [ ] Prioritize relevant built-in and pack-authored guide pages when opening the guide.
-- [ ] Add a lightweight related-guide affordance from the game UI or story/hints.
-- [ ] Avoid unread indicators and notification pressure.
+- [x] Define first-pass relevance signals from current level and pack data: available blocks, custom tiles/items, and the `loops` pack tag.
+- [x] Prioritize relevant built-in and pack-authored guide pages when opening the guide.
+- [x] Add a lightweight related-guide affordance through the existing Field Guide button.
+- [x] Avoid unread indicators and notification pressure.
+- [x] Keep explicit guide metadata and broader tag relevance deferred.
 
 ## PER 3 — Minimal Creator Authoring
 
@@ -41,6 +42,7 @@
 - [x] Dynamic book/store unit tests pass.
 - [x] Pack guide schema tests pass.
 - [x] Field Guide merge helper tests pass.
+- [x] Field Guide relevance helper tests pass.
 - [x] `PROTO_NODE_VERSION=24 pnpm check`.
 - [x] `PROTO_NODE_VERSION=24 pnpm lint`.
 - [x] `git diff --check`.
