@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { BuilderModel } from './builder-model.svelte';
 import { InMemoryPersistenceService } from '$lib/services/persistence.fake';
 import { InMemoryFileSystemService } from '$lib/services/file-system.fake';
+import { LOCKED_DOOR_TILE_ID } from './builder-presets';
 import type { LevelPack } from '$lib/game/types';
 
 // No mocks! Just fakes.
@@ -111,6 +112,72 @@ describe('BuilderModel', () => {
 		expect(builder.level.layout['1,1']).toBe('wall');
 	});
 
+	it('paints a key item with the built-in key icon', () => {
+		builder.activeTool = { type: 'item', value: 'key' };
+		builder.handleCellClick({ x: 1, y: 1 });
+
+		expect(builder.level.items?.['1,1']).toEqual({
+			type: 'key',
+			value: true,
+			icon: 'Key'
+		});
+	});
+
+	it('paints the locked door preset and persists its custom tile definition', () => {
+		builder.level.customTiles = undefined;
+		builder.activeTool = { type: 'terrain', value: LOCKED_DOOR_TILE_ID };
+
+		builder.handleCellClick({ x: 1, y: 1 });
+
+		expect(builder.level.layout['1,1']).toBe(LOCKED_DOOR_TILE_ID);
+		expect(builder.level.customTiles?.[LOCKED_DOOR_TILE_ID]).toMatchObject({
+			id: LOCKED_DOOR_TILE_ID,
+			name: 'Locked Door',
+			type: 'wall',
+			passableBy: 'key',
+			visuals: {
+				color: 'var(--amber-2)',
+				pattern: 'locked-door'
+			}
+		});
+		expect(builder.game.level.customTiles?.[LOCKED_DOOR_TILE_ID]).toMatchObject({
+			type: 'wall',
+			passableBy: 'key'
+		});
+	});
+
+	it('repairs a malformed locked door definition when painting the preset', () => {
+		builder.level.customTiles = {
+			[LOCKED_DOOR_TILE_ID]: {
+				id: LOCKED_DOOR_TILE_ID,
+				name: 'Broken Door',
+				type: 'floor',
+				visuals: {
+					color: 'hotpink',
+					pattern: 'plain'
+				}
+			}
+		};
+		builder.activeTool = { type: 'terrain', value: LOCKED_DOOR_TILE_ID };
+
+		builder.handleCellClick({ x: 1, y: 1 });
+
+		expect(builder.level.customTiles[LOCKED_DOOR_TILE_ID]).toMatchObject({
+			id: LOCKED_DOOR_TILE_ID,
+			name: 'Locked Door',
+			type: 'wall',
+			passableBy: 'key',
+			visuals: {
+				color: 'var(--amber-2)',
+				pattern: 'locked-door'
+			}
+		});
+		expect(builder.game.level.customTiles?.[LOCKED_DOOR_TILE_ID]).toMatchObject({
+			type: 'wall',
+			passableBy: 'key'
+		});
+	});
+
 	it('erases terrain', () => {
 		// First paint something
 		builder.activeTool = { type: 'terrain', value: 'wall' };
@@ -121,6 +188,22 @@ describe('BuilderModel', () => {
 		builder.activeTool = { type: 'erase' };
 		builder.handleCellClick({ x: 1, y: 1 });
 		expect(builder.level.layout['1,1']).toBeUndefined();
+	});
+
+	it('erases items and locked doors from a tile', () => {
+		builder.activeTool = { type: 'terrain', value: LOCKED_DOOR_TILE_ID };
+		builder.handleCellClick({ x: 1, y: 1 });
+		builder.activeTool = { type: 'item', value: 'key' };
+		builder.handleCellClick({ x: 1, y: 1 });
+
+		expect(builder.level.layout['1,1']).toBe(LOCKED_DOOR_TILE_ID);
+		expect(builder.level.items?.['1,1']).toMatchObject({ type: 'key' });
+
+		builder.activeTool = { type: 'erase' };
+		builder.handleCellClick({ x: 1, y: 1 });
+
+		expect(builder.level.layout['1,1']).toBeUndefined();
+		expect(builder.level.items?.['1,1']).toBeUndefined();
 	});
 
 	it('moves start actor', () => {

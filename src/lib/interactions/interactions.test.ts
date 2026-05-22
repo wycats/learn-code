@@ -76,17 +76,51 @@ describe('Interaction System', () => {
 				accepts: ['integer'],
 				data: {}
 			};
+			const trashTarget: InteractionNode = {
+				id: 'trash-zone',
+				role: 'root',
+				dataType: 'any',
+				accepts: ['any'],
+				data: {}
+			};
 
 			registry.registerNode(source);
 			registry.registerNode(target);
 			registry.registerNode(invalidTarget);
+			registry.registerNode(trashTarget);
 
 			manager.startSession('source');
 
 			expect(manager.session).toBeDefined();
 			expect(manager.session?.sourceId).toBe('source');
-			expect(manager.session?.candidates).toHaveLength(1);
-			expect(manager.session?.candidates[0].id).toBe('target');
+			expect(manager.session?.candidates).toHaveLength(2);
+			expect(manager.session?.candidates.map((candidate) => candidate.id)).toEqual([
+				'target',
+				'trash-zone'
+			]);
+		});
+
+		it('treats any-accepting targets as wildcard drop zones', () => {
+			const source: InteractionNode = {
+				id: 'source',
+				role: 'block',
+				dataType: 'statement',
+				data: {}
+			};
+			const trashTarget: InteractionNode = {
+				id: 'trash-zone',
+				role: 'root',
+				dataType: 'any',
+				accepts: ['any'],
+				data: {}
+			};
+
+			registry.registerNode(source);
+			registry.registerNode(trashTarget);
+
+			manager.startSession('source');
+
+			expect(manager.session?.candidates.map((candidate) => candidate.id)).toEqual(['trash-zone']);
 		});
 
 		it('calculates component state correctly', () => {

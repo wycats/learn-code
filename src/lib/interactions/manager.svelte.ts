@@ -41,7 +41,12 @@ export class InteractionManager {
 			if (target.id === sourceId) return false; // Can't drop on self
 
 			// If target is a slot/container, check if it accepts the source type
-			if (target.accepts && target.accepts.includes(sourceNode.dataType)) {
+			if (
+				target.accepts &&
+				(target.accepts.includes('any') ||
+					target.accepts.includes(sourceNode.dataType) ||
+					sourceNode.dataType === 'any')
+			) {
 				return true;
 			}
 

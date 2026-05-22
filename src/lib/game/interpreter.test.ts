@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { GameModel } from './model.svelte';
 import { StackInterpreter } from './mimic';
+import { LOCKED_DOOR_TILE_ID, createLockedDoorTileDefinition } from './builder-presets';
 import type { LevelDefinition } from './types';
 
 // Mock SoundManager
@@ -507,6 +508,33 @@ describe('StackInterpreter', () => {
 			// Check stack for loop count
 			const loopFrame = interpreter.stack[interpreter.stack.length - 1];
 			expect(loopFrame.loopMax).toBe(2);
+		});
+
+		it('should solve a key-door puzzle with Pick Up and Move', () => {
+			game.level.gridSize = { width: 4, height: 1 };
+			game.level.goal = { x: 3, y: 0 };
+			game.level.layout = { '2,0': LOCKED_DOOR_TILE_ID };
+			game.level.customTiles = {
+				[LOCKED_DOOR_TILE_ID]: createLockedDoorTileDefinition()
+			};
+			game.level.items = { '0,0': { type: 'key', value: true, icon: 'Key' } };
+
+			game.addBlock({ id: 'pick', type: 'pick-up' });
+			game.addBlock({ id: 'move-1', type: 'move-forward' });
+			game.addBlock({ id: 'move-2', type: 'move-forward' });
+			game.addBlock({ id: 'move-3', type: 'move-forward' });
+
+			interpreter.start();
+			let result = true;
+			let steps = 0;
+			while (result && steps < 20) {
+				result = interpreter.step();
+				steps++;
+			}
+
+			expect(game.status).toBe('won');
+			expect(game.heldItem?.type).toBe('key');
+			expect(game.characterPosition).toEqual({ x: 3, y: 0 });
 		});
 
 		describe('Boat Mechanics', () => {

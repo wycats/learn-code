@@ -13,6 +13,7 @@ import type {
 import { persistence, createDefaultPack, type PersistenceService } from './persistence';
 import { fileSystem, type FileSystemService } from '$lib/services/file-system';
 import { SYSTEM_CHARACTERS, SYSTEM_EMOTIONS } from './constants';
+import { LOCKED_DOOR_TILE_ID, createLockedDoorTileDefinition } from './builder-presets';
 
 export type BuilderTool =
 	| { type: 'terrain'; value: CellType }
@@ -587,6 +588,25 @@ export class BuilderModel {
 		}
 	}
 
+	ensureLockedDoorTileDefinition() {
+		const lockedDoor = createLockedDoorTileDefinition();
+		const existing = this.level.customTiles?.[LOCKED_DOOR_TILE_ID];
+		const existingIsValid =
+			existing?.id === lockedDoor.id &&
+			existing.name === lockedDoor.name &&
+			existing.type === lockedDoor.type &&
+			existing.passableBy === lockedDoor.passableBy &&
+			existing.visuals.color === lockedDoor.visuals.color &&
+			existing.visuals.pattern === lockedDoor.visuals.pattern;
+
+		if (existingIsValid) return;
+
+		this.level.customTiles = {
+			...(this.level.customTiles || {}),
+			[LOCKED_DOOR_TILE_ID]: lockedDoor
+		};
+	}
+
 	snapshotTray() {
 		// Save the current program from the game model to the level definition
 		// Since game.program is synced with currentProgram in Edit mode, this works.
@@ -871,6 +891,10 @@ export class BuilderModel {
 
 		if (this.activeTool.type === 'terrain') {
 			const defaultTerrain = this.level.defaultTerrain || 'grass';
+			if (this.activeTool.value === LOCKED_DOOR_TILE_ID) {
+				this.ensureLockedDoorTileDefinition();
+			}
+
 			// Update layout
 			if (this.activeTool.value === defaultTerrain) {
 				// If painting the default terrain, remove from layout map (optimization)

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { GameModel } from './model.svelte';
 import { LEVEL_1 } from './levels';
 import { simulateGhostPath } from './ghost-path';
+import { LOCKED_DOOR_TILE_ID, createLockedDoorTileDefinition } from './builder-presets';
 import type { Block, LevelDefinition } from './types';
 
 const baseLevel: LevelDefinition = {
@@ -169,5 +170,58 @@ describe('simulateGhostPath', () => {
 		expect(preview.finalPosition).toEqual({ x: 0, y: 0 });
 		expect(preview.path.length).toBeGreaterThan(1);
 		expect(preview.path.slice(1).every((entry) => entry.event === 'turn')).toBe(true);
+	});
+
+	it('predicts a key-door puzzle using Pick Up before the locked door', () => {
+		const preview = simulateGhostPath({
+			level: {
+				...baseLevel,
+				gridSize: { width: 4, height: 1 },
+				goal: { x: 3, y: 0 },
+				layout: { '2,0': LOCKED_DOOR_TILE_ID },
+				customTiles: {
+					[LOCKED_DOOR_TILE_ID]: createLockedDoorTileDefinition()
+				},
+				items: { '0,0': { type: 'key', value: true, icon: 'Key' } }
+			},
+			program: [
+				block('pick', 'pick-up'),
+				block('move-1', 'move-forward'),
+				block('move-2', 'move-forward'),
+				block('move-3', 'move-forward')
+			]
+		});
+
+		expect(preview.outcome).toBe('won');
+		expect(preview.finalPosition).toEqual({ x: 3, y: 0 });
+		expect(preview.path.map((entry) => entry.event)).toEqual([
+			'start',
+			'pick-up',
+			'move',
+			'move',
+			'won'
+		]);
+	});
+
+	it('predicts a blocked path when the locked door is reached without a key', () => {
+		const preview = simulateGhostPath({
+			level: {
+				...baseLevel,
+				gridSize: { width: 4, height: 1 },
+				goal: { x: 3, y: 0 },
+				layout: { '2,0': LOCKED_DOOR_TILE_ID },
+				customTiles: {
+					[LOCKED_DOOR_TILE_ID]: createLockedDoorTileDefinition()
+				}
+			},
+			program: [block('move-1', 'move-forward'), block('move-2', 'move-forward')]
+		});
+
+		expect(preview.outcome).toBe('blocked');
+		expect(preview.finalPosition).toEqual({ x: 1, y: 0 });
+		expect(preview.path.at(-1)).toMatchObject({
+			event: 'blocked',
+			attemptedPosition: { x: 2, y: 0 }
+		});
 	});
 });

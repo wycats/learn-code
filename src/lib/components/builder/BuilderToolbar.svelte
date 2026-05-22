@@ -73,8 +73,7 @@
 	const specialTools: {
 		id: string;
 		tool: BuilderTool;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		icon: any;
+		icon: typeof Grid3x3;
 		label: string;
 		color?: string;
 	}[] = [
@@ -279,35 +278,6 @@
 				</button>
 			</div>
 
-			<div class="builder-mode-group">
-				<div
-					class="builder-mode-chip {builderMode.tone}"
-					data-testid="builder-mode-indicator"
-					data-mode={builderMode.tone}
-					role="status"
-					aria-live="polite"
-					aria-label={`Builder mode: ${builderMode.label}. ${builderMode.detail}`}
-				>
-					<span class="mode-dot"></span>
-					<span class="mode-copy">
-						<span class="mode-kicker">Builder</span>
-						<strong>{builderMode.label}</strong>
-					</span>
-					<span class="mode-detail">{builderMode.detail}</span>
-				</div>
-
-				<div
-					class="current-level-chip"
-					data-testid="builder-current-level-indicator"
-					aria-label={`Current level: ${builder.level.name}`}
-				>
-					<span class="mode-kicker">Level</span>
-					<strong>{builder.level.name}</strong>
-				</div>
-			</div>
-
-			<div class="separator"></div>
-
 			<button
 				class="action-btn"
 				class:active={showSettings}
@@ -353,6 +323,35 @@
 		{/if}
 	</div>
 
+	<div class="center-group">
+		<div class="builder-mode-group">
+			<div
+				class="builder-mode-chip {builderMode.tone}"
+				data-testid="builder-mode-indicator"
+				data-mode={builderMode.tone}
+				role="status"
+				aria-live="polite"
+				aria-label={`Builder mode: ${builderMode.label}. ${builderMode.detail}`}
+			>
+				<span class="mode-dot"></span>
+				<span class="mode-copy">
+					<span class="mode-kicker">Builder</span>
+					<strong>{builderMode.label}</strong>
+				</span>
+				<span class="mode-detail">{builderMode.detail}</span>
+			</div>
+
+			<div
+				class="current-level-chip"
+				data-testid="builder-current-level-indicator"
+				aria-label={`Current level: ${builder.level.name}`}
+			>
+				<span class="mode-kicker">Level</span>
+				<strong>{builder.level.name}</strong>
+			</div>
+		</div>
+	</div>
+
 	<div class="right-group">
 		<DevConnectionStatus />
 		<ThemeToggle />
@@ -372,29 +371,41 @@
 		padding: var(--size-2) var(--size-3);
 		background-color: var(--surface-2);
 		border-bottom: 1px solid var(--surface-3);
-		display: flex;
-		justify-content: space-between;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto auto;
+		gap: var(--size-2);
 		align-items: center;
 		position: relative;
 		z-index: 100;
-		overflow-x: auto;
-		scrollbar-width: none;
-	}
-
-	.toolbar::-webkit-scrollbar {
-		display: none;
+		overflow: hidden;
 	}
 
 	.left-group,
+	.center-group,
 	.right-group {
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
+		min-width: 0;
+	}
+
+	.left-group {
+		overflow: hidden;
+	}
+
+	.center-group {
+		justify-content: center;
+	}
+
+	.right-group {
+		justify-content: flex-end;
 	}
 
 	.actions {
 		display: flex;
 		gap: var(--size-2);
+		align-items: center;
+		min-width: 0;
 	}
 
 	.action-btn {
@@ -442,6 +453,7 @@
 
 	.separator {
 		width: 1px;
+		min-width: 1px;
 		height: 24px;
 		background-color: var(--surface-3);
 		margin: 0 var(--size-1);
@@ -457,6 +469,7 @@
 		color: white;
 		border: none;
 		border-radius: var(--radius-2);
+		font-size: var(--builder-ui-label-size, 1rem);
 		font-weight: bold;
 		cursor: pointer;
 		transition: background-color 0.2s;
@@ -498,7 +511,7 @@
 
 	.tool-label {
 		font-weight: 500;
-		font-size: var(--font-size-1);
+		font-size: var(--builder-ui-label-size, var(--font-size-1));
 	}
 
 	.architect-section {
@@ -527,12 +540,14 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-1);
+		min-width: 0;
 	}
 
 	.builder-mode-group {
 		display: flex;
 		align-items: center;
 		gap: var(--size-2);
+		min-width: 0;
 	}
 
 	.builder-mode-chip,
@@ -615,7 +630,7 @@
 	.mode-copy strong,
 	.current-level-chip strong {
 		font-family: var(--font-heading);
-		font-size: var(--font-size-1);
+		font-size: var(--builder-ui-label-size, var(--font-size-1));
 		color: var(--text-1);
 		white-space: nowrap;
 		overflow: hidden;
@@ -634,8 +649,51 @@
 		justify-content: center;
 		align-items: flex-start;
 		padding: 0 var(--size-3);
-		max-width: 180px;
+		max-width: 160px;
 		line-height: 1.1;
+	}
+
+	@media (min-width: 769px) and (max-width: 1280px) {
+		.toolbar {
+			grid-template-columns: minmax(0, 1fr) auto;
+			padding-inline: var(--size-2);
+			gap: var(--size-1);
+		}
+
+		.center-group {
+			display: none;
+		}
+
+		.actions {
+			gap: var(--size-1);
+		}
+
+		.action-btn {
+			width: 38px;
+			height: 38px;
+			min-width: 38px;
+		}
+
+		.separator {
+			margin: 0;
+		}
+
+		.level-trigger {
+			min-width: 118px;
+			padding: 0 var(--size-2);
+		}
+
+		.level-name {
+			max-width: 86px;
+		}
+
+		.tools-group {
+			display: none;
+		}
+
+		.mode-btn {
+			padding: 0 var(--size-3);
+		}
 	}
 
 	@keyframes builder-mode-pulse {

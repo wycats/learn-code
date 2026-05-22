@@ -26,7 +26,7 @@
 				out:scale={{ duration: 200, start: 0.5 }}
 			>
 				{#if item.type === 'key'}
-					<Key size={20} color="var(--amber-7)" />
+					<Key size={20} color="var(--orange-8)" strokeWidth={2.6} />
 				{:else if item.type === 'number'}
 					<Brain size={20} color="var(--blue-7)" style="margin-right: 4px;" />
 					<span class="number">{item.value}</span>

@@ -14,6 +14,7 @@
 		Triangle,
 		Cloud,
 		Key,
+		DoorClosedLocked,
 		Ship,
 		Skull,
 		Flame
@@ -46,17 +47,13 @@
 		send = () => () => ({ duration: 0 })
 	}: Props = $props();
 
-	let lastItem = $state(item);
-	$effect(() => {
-		if (item) lastItem = item;
-	});
-
 	const isHighlighted = $derived(
 		highlight &&
 			((id && highlight.targets?.includes(id)) ||
 				(x !== undefined && y !== undefined && highlight.targets?.includes(`cell:${x},${y}`)))
 	);
 	const isFading = $derived(isHighlighted && highlight?.fading);
+	const visibleItems = $derived(item ? [item] : []);
 </script>
 
 <div
@@ -75,12 +72,16 @@
 			<div class="marker">
 				<Icon size={24} color="rgba(0,0,0,0.5)" />
 			</div>
+		{:else if customTile.visuals.pattern === 'locked-door'}
+			<div class="marker locked-door-marker">
+				<DoorClosedLocked size={24} color="var(--orange-8)" strokeWidth={2.4} />
+			</div>
 		{/if}
 
 		<!-- Property Overlays -->
 		{#if customTile.passableBy === 'key'}
 			<div class="property-overlay top-right" title="Requires Key">
-				<Key size={14} color="var(--amber-7)" fill="var(--amber-3)" />
+				<Key size={14} color="var(--orange-8)" strokeWidth={2.6} />
 			</div>
 		{:else if customTile.passableBy === 'boat'}
 			<div class="property-overlay top-right" title="Requires Boat">
@@ -143,26 +144,27 @@
 		</div>
 	{/if}
 
-	{#if item}
+	{#each visibleItems as visibleItem (`${visibleItem.type}-${visibleItem.value ?? 'item'}`)}
 		<div
 			class="item-marker"
 			class:docked={isCharacterHere}
-			out:send={{ key: `item-${lastItem?.type}-${lastItem?.value}` }}
+			data-item-type={visibleItem.type}
+			out:send={{ key: `item-${visibleItem.type}-${visibleItem.value ?? 'item'}` }}
 		>
-			{#if lastItem?.type === 'key'}
-				<Key size={24} color="var(--amber-7)" fill="var(--amber-3)" />
-			{:else if lastItem?.type === 'boat'}
+			{#if visibleItem.type === 'key'}
+				<Key size={22} color="var(--orange-8)" strokeWidth={2.8} />
+			{:else if visibleItem.type === 'boat'}
 				<Ship size={24} color="var(--blue-7)" fill="var(--blue-3)" />
-			{:else if lastItem?.type === 'number'}
-				<span class="number-item">{lastItem.value}</span>
-			{:else if lastItem?.type === 'color'}
-				<div class="color-item" style:background-color={lastItem.value}></div>
-			{:else if lastItem?.icon && lastItem.icon.toLowerCase() in AVATAR_ICONS}
-				{@const Icon = AVATAR_ICONS[lastItem.icon.toLowerCase() as keyof typeof AVATAR_ICONS]}
+			{:else if visibleItem.type === 'number'}
+				<span class="number-item">{visibleItem.value}</span>
+			{:else if visibleItem.type === 'color'}
+				<div class="color-item" style:background-color={visibleItem.value}></div>
+			{:else if visibleItem.icon && visibleItem.icon.toLowerCase() in AVATAR_ICONS}
+				{@const Icon = AVATAR_ICONS[visibleItem.icon.toLowerCase() as keyof typeof AVATAR_ICONS]}
 				<Icon size={24} color="var(--text-1)" />
 			{/if}
 		</div>
-	{/if}
+	{/each}
 </div>
 
 <style>
@@ -243,13 +245,43 @@
 	.item-marker {
 		position: absolute;
 		z-index: 5;
+		left: 50%;
+		bottom: clamp(4px, 7%, 10px);
+		width: clamp(22px, 30%, 34px);
+		aspect-ratio: 1;
+		border-radius: var(--radius-round);
+		background-color: color-mix(in srgb, var(--surface-1) 82%, transparent);
+		border: 2px solid color-mix(in srgb, var(--surface-4) 84%, white 16%);
+		color: var(--text-1);
+		display: grid;
+		place-items: center;
 		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+		transform: translateX(-50%);
 		transition: all 0.3s var(--ease-spring-3);
+	}
+
+	.item-marker[data-item-type='key'] {
+		background-color: var(--yellow-1);
+		border-color: var(--yellow-5);
+		color: var(--orange-8);
+	}
+
+	.item-marker[data-item-type='boat'] {
+		background-color: var(--blue-1);
+		border-color: var(--blue-5);
+		color: var(--blue-8);
+	}
+
+	.item-marker :global(svg) {
+		width: 72%;
+		height: 72%;
 	}
 
 	.item-marker.docked {
 		top: 4px;
 		right: 4px;
+		bottom: auto;
+		left: auto;
 		transform: scale(0.7);
 		z-index: 20;
 	}

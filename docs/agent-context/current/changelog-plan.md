@@ -1,27 +1,26 @@
-# Changelog Plan: Phase 45 — Context-Aware Field Guide
+# Changelog Plan: Phase 46 — Variables & Scoping / Engine Readiness
 
 ## Candidate User-Facing Summary
 
-The Field Guide is now aware of the pack and level being played, and custom pack creators can add simple “How this pack works” notes that travel with their packs.
+Creators can build simple locked-door puzzles by placing a key and a door in the Builder. Players pick up the key, carry it in the Thought Bubble, and use it to pass through the door.
 
 ## Candidate Highlights
 
-- Prepare the Field Guide to use dynamic guide content instead of only the built-in book.
-- Add support for pack-authored guide content.
-- Make the guide open or prioritize content relevant to the current play context.
-- Lay the foundation for Jonas-style “How this pack works” notes in custom packs.
-- Let creators add simple guide notes that appear when players open the Field Guide for their packs.
-- Sanitize authored/imported Markdown links in guide text.
+- Add Key as a Builder item tool.
+- Add Door as a Builder terrain preset.
+- Door behaves like a wall that opens when the character holds Key.
+- Reuse the existing Thought Bubble / held-item mechanic as the first visible variable concept.
+- Add interpreter and Ghost Path coverage for the key-door puzzle loop.
 
 ## Non-User-Facing Notes
 
-- Full rich guide authoring UI remains a later slice.
-- Rich guide blocks, mini-playground authoring, and unlock semantics remain deferred.
-- Shared/imported guide text may require future safety and moderation decisions.
-- Original Master Teacher story/tutorial control remains deferred.
+- No named variables, counters, lexical scoping, or PXT integration in this first slice.
+- Door is stored as a custom wall tile with `passableBy: 'key'`.
+- Runtime behavior uses existing held-item/passability semantics.
 
 ## Validation Notes To Include Internally
 
-- Dynamic guide navigation and pack guide schema support should have focused tests.
-- Existing packs without guide content should continue to parse and play unchanged.
-- Pack guide authoring, relevance, and Markdown sanitization should have focused tests.
+- BuilderModel key and door painting tests.
+- Interpreter key-door solve test.
+- Ghost Path key-door solve and blocked-path tests.
+- Integrated browser review of the Builder creation loop.

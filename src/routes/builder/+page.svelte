@@ -92,6 +92,10 @@
 
 <style>
 	.builder-interface {
+		--builder-ui-label-size: 1rem;
+		--builder-ui-tab-size: 0.95rem;
+		--builder-ui-small-size: 0.9rem;
+
 		display: grid;
 		grid-template-rows: auto 1fr;
 		height: 100vh;
@@ -139,6 +143,22 @@
 		.workspace {
 			grid-template-columns: 1fr;
 			grid-template-rows: 1.5fr 1fr;
+		}
+	}
+
+	@media (min-width: 769px) and (max-width: 1280px) {
+		.builder-interface {
+			--builder-ui-label-size: 1rem;
+			--builder-ui-tab-size: 0.95rem;
+			--builder-ui-small-size: 0.9rem;
+		}
+
+		.workspace {
+			grid-template-columns: minmax(0, 1fr) clamp(340px, 34vw, 400px);
+		}
+
+		.grid-container {
+			padding: var(--size-3);
 		}
 	}
 
