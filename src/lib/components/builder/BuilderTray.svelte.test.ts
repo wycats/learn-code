@@ -2,13 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import BuilderTray from './BuilderTray.svelte';
-import type { BuilderModel } from '$lib/game/builder-model.svelte';
+import type { BuilderModel, BuilderTool } from '$lib/game/builder-model.svelte';
 import { LOCKED_DOOR_TILE_ID, createLockedDoorTileDefinition } from '$lib/game/builder-presets';
 
 function createBuilder() {
-	const builder = $state({
-		activeTool: { type: 'terrain', value: 'wall' } as const
-	});
+	let activeTool: BuilderTool = { type: 'terrain', value: 'wall' };
 	const level = {
 		id: 'level-1',
 		name: 'Level 1',
@@ -36,10 +34,10 @@ function createBuilder() {
 		},
 		level,
 		get activeTool() {
-			return builder.activeTool;
+			return activeTool;
 		},
 		set activeTool(tool) {
-			builder.activeTool = tool;
+			activeTool = tool;
 		},
 		selectedActor: null,
 		targetingState: {

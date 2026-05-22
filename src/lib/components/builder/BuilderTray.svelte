@@ -2,6 +2,8 @@
 	import type { BuilderModel, BuilderTool } from '$lib/game/builder-model.svelte';
 	import type { BlockType, CellType } from '$lib/game/types';
 	import type { TileDefinition, ItemDefinition } from '$lib/game/schema';
+	import type { ComponentType, SvelteComponent } from 'svelte';
+	import type { IconProps } from 'lucide-svelte';
 	import BlockComponent from '$lib/components/game/Block.svelte';
 	import Cell from '$lib/components/game/Cell.svelte';
 	import HintEditor from './HintEditor.svelte';
@@ -26,15 +28,11 @@
 		Ship,
 		Key,
 		Box,
-		Eraser,
-		DoorClosedLocked
+		Eraser
 	} from 'lucide-svelte';
 	import { fade, scale } from 'svelte/transition';
 
-	type IconComponent =
-		| typeof Key
-		| typeof DoorClosedLocked
-		| (typeof AVATAR_ICONS)[keyof typeof AVATAR_ICONS];
+	type IconComponent = ComponentType<SvelteComponent<IconProps>>;
 
 	interface Props {
 		builder: BuilderModel;

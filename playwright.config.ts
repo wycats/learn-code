@@ -3,8 +3,9 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
 	webServer: {
 		command:
-			'DATABASE_URL=pglite:./.pglite-e2e pnpm run build && DATABASE_URL=pglite:./.pglite-e2e pnpm run preview -- --host localhost --port 4173',
+			'DATABASE_URL=pglite:./.pglite-e2e pnpm run build && DATABASE_URL=pglite:./.pglite-e2e pnpm exec vite preview --host localhost --port 4173',
 		url: 'http://localhost:4173/',
+		timeout: 180_000,
 		reuseExistingServer: !process.env.CI
 	},
 	testDir: 'e2e',

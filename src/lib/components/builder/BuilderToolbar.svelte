@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type { BuilderModel, BuilderTool } from '$lib/game/builder-model.svelte';
+	import type { ComponentType, SvelteComponent } from 'svelte';
+	import type { IconProps } from 'lucide-svelte';
 	import {
 		Play,
 		SquarePen,
@@ -70,10 +72,12 @@
 	}
 
 	// Special tools (top level)
+	type ToolbarIconComponent = ComponentType<SvelteComponent<IconProps>>;
+
 	const specialTools: {
 		id: string;
 		tool: BuilderTool;
-		icon: typeof Grid3x3;
+		icon: ToolbarIconComponent;
 		label: string;
 		color?: string;
 	}[] = [
@@ -186,20 +190,28 @@
 			<div class="separator"></div>
 		{/if}
 		<div class="actions">
-			<button class="action-btn" onclick={() => (showPackManager = true)} title="Open Pack Manager">
+			<button
+				class="action-btn compact-hidden"
+				onclick={() => (showPackManager = true)}
+				title="Open Pack Manager"
+			>
 				<FolderOpen size={20} />
 			</button>
-			<button class="action-btn" onclick={savePack} title="Save Pack">
+			<button class="action-btn compact-hidden" onclick={savePack} title="Save Pack">
 				<Save size={20} />
 			</button>
-			<button class="action-btn" onclick={() => (showShareModal = true)} title="Share Level">
+			<button
+				class="action-btn compact-hidden"
+				onclick={() => (showShareModal = true)}
+				title="Share Level"
+			>
 				<Share2 size={20} />
 			</button>
 
-			<div class="separator"></div>
+			<div class="separator compact-hidden"></div>
 
 			<button
-				class="action-btn"
+				class="action-btn compact-hidden"
 				onclick={() => builder.undo()}
 				disabled={!builder.canUndo}
 				title="Undo"
@@ -207,7 +219,7 @@
 				<Undo size={20} />
 			</button>
 			<button
-				class="action-btn"
+				class="action-btn compact-hidden"
 				onclick={() => builder.redo()}
 				disabled={!builder.canRedo}
 				title="Redo"
@@ -219,7 +231,7 @@
 				{#if builder.isLinked}
 					{#if builder.needsPermission}
 						<button
-							class="action-btn warning"
+							class="action-btn warning compact-hidden"
 							onclick={handleReconnect}
 							title="Permission Needed - Click to Reconnect"
 						>
@@ -227,7 +239,7 @@
 						</button>
 					{:else}
 						<button
-							class="action-btn success"
+							class="action-btn success compact-hidden"
 							onclick={handleLink}
 							title="Linked to Disk (Click to Change)"
 						>
@@ -235,7 +247,7 @@
 						</button>
 					{/if}
 				{:else}
-					<button class="action-btn" onclick={handleLink} title="Link to Disk">
+					<button class="action-btn compact-hidden" onclick={handleLink} title="Link to Disk">
 						<Link size={20} />
 					</button>
 				{/if}
@@ -247,9 +259,9 @@
 				</span>
 			{/if}
 
-			<div class="separator"></div>
+			<div class="separator compact-hidden"></div>
 
-			<div class="level-controls">
+			<div class="level-controls compact-hidden">
 				<div class="level-select-wrapper">
 					<button
 						class="level-trigger"
@@ -353,9 +365,11 @@
 	</div>
 
 	<div class="right-group">
-		<DevConnectionStatus />
-		<ThemeToggle />
-		<div class="separator"></div>
+		<div class="right-secondary compact-hidden">
+			<DevConnectionStatus />
+			<ThemeToggle />
+			<div class="separator"></div>
+		</div>
 		<button class="mode-btn primary" onclick={toggleMode}>
 			{#if builder.mode === 'edit' || builder.mode === 'story'}
 				<Play size={20} /> Play Level
@@ -399,6 +413,10 @@
 
 	.right-group {
 		justify-content: flex-end;
+	}
+
+	.right-secondary {
+		display: contents;
 	}
 
 	.actions {
@@ -713,8 +731,54 @@
 	}
 
 	@media (max-width: 600px) {
-		.level-select-wrapper {
+		.toolbar {
+			grid-template-columns: auto minmax(0, 1fr) auto;
+			gap: var(--size-1);
+			padding-inline: var(--size-2);
+			overflow: hidden;
+		}
+
+		.left-group {
+			overflow: visible;
+		}
+
+		.center-group {
+			justify-content: flex-start;
+		}
+
+		.compact-hidden {
 			display: none;
+		}
+
+		.actions {
+			gap: var(--size-1);
+		}
+
+		.tools-group {
+			display: none;
+		}
+
+		.action-btn {
+			width: 38px;
+			height: 38px;
+			min-width: 38px;
+		}
+
+		.mode-btn {
+			min-height: 38px;
+			padding: 0 var(--size-2);
+			font-size: var(--builder-ui-small-size, 0.9rem);
+			white-space: nowrap;
+		}
+
+		.builder-mode-group {
+			gap: var(--size-1);
+		}
+
+		.builder-mode-chip,
+		.current-level-chip {
+			min-height: 38px;
+			padding-inline: var(--size-2);
 		}
 
 		.mode-detail,
@@ -723,7 +787,7 @@
 		}
 
 		.current-level-chip {
-			max-width: 130px;
+			max-width: 110px;
 		}
 	}
 
