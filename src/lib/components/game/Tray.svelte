@@ -496,8 +496,8 @@
 				// Handle Trash
 				if (targetData.type === 'trash') {
 					if (!isPaletteItem) {
-						removeBlock(game.activeProgram, sourceBlock.id);
-						game.activeProgram = [...game.activeProgram]; // Trigger reactivity
+						game.deleteBlock(sourceBlock.id);
+						interactionManager.clearSelection();
 					}
 					return;
 				}

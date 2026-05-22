@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { Attachment } from 'svelte/attachments';
 	import { PartyPopper, ChevronRight, RotateCcw } from 'lucide-svelte';
 	import { Stack } from '$lib';
 
@@ -11,14 +12,16 @@
 
 	let { onReplay, onNext, onDismiss, hasNextLevel }: Props = $props();
 
-	let dialog: HTMLDialogElement;
-
-	$effect(() => {
+	const showModal: Attachment<HTMLDialogElement> = (dialog) => {
 		dialog?.showModal();
-	});
+
+		return () => {
+			if (dialog.open) dialog.close();
+		};
+	};
 </script>
 
-<dialog bind:this={dialog} class="win-modal" oncancel={() => onDismiss()}>
+<dialog {@attach showModal} class="win-modal" oncancel={() => onDismiss()}>
 	<Stack gap="var(--size-4)" align="center">
 		<h2><PartyPopper size={32} /> Level Complete!</h2>
 		<p>Great job! You solved the puzzle.</p>
@@ -72,11 +75,12 @@
 	}
 
 	.actions {
-		display: flex;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		align-items: center;
 		gap: var(--size-3);
-		justify-content: center;
 		margin-top: var(--size-2);
-		flex-wrap: wrap;
+		width: 100%;
 	}
 
 	.btn-primary {
@@ -111,6 +115,17 @@
 	.finished {
 		font-weight: bold;
 		color: light-dark(var(--indigo-6), var(--indigo-4));
+		margin: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: var(--touch-target-min);
+	}
+
+	@media (max-width: 640px) {
+		.actions {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	@keyframes fade-in {

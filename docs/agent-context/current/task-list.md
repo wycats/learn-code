@@ -1,70 +1,47 @@
-# Task List: Phase 45 — Context-Aware Field Guide
+# Task List: Phase 46 — Variables & Scoping / Engine Readiness
 
 ## Recon and Planning
 
-- [x] Investigate current Field Guide runtime, schema, and builder surfaces.
-- [x] Identify Jonas-centered custom pack guide needs.
-- [x] Document runtime/schema constraints and phased implementation plan.
+- [x] Investigate current held-item, variable reference, and Thought Bubble runtime.
+- [x] Identify Builder gaps for a Jonas key-door creator loop.
+- [x] Decide to defer PXT, named variables, counters, and lexical scope from the first slice.
 
-## PER 1 — Runtime and Schema Foundation
+## PER 1 — Jonas Key/Door Creator Loop
 
-- [x] Refactor `BookStore` so it can navigate a supplied `Book`, not only `THE_FIELD_GUIDE`.
-- [x] Refactor `BookModal` so table-of-contents and navigation use the active book source.
-- [x] Add `bookStore.openTo(chapterId, pageId?)` with safe fallback behavior.
-- [x] Add optional pack-level guide content to `LevelPackSchema`.
-- [x] Merge built-in Field Guide chapters with pack-authored guide chapters in play mode.
-- [x] Namespace and deduplicate pack-authored chapter/page ids during merge.
-- [x] Keep rich unsupported book block authoring deferred; accepted schema blocks remain existing runtime behavior.
-- [x] Add tests for dynamic guide navigation and pack guide schema parsing.
-
-## PER 2 — Context-Aware Surfacing
-
-- [x] Define first-pass relevance signals from current level and pack data: available blocks, custom tiles/items, and the `loops` pack tag.
-- [x] Prioritize relevant built-in and pack-authored guide pages when opening the guide.
-- [x] Add a lightweight related-guide affordance through the existing Field Guide button.
-- [x] Avoid unread indicators and notification pressure.
-- [x] Keep explicit guide metadata and broader tag relevance deferred.
-
-## PER 3 — Minimal Creator Authoring
-
-- [x] Add a simple Pack Builder guide section around “How this pack works.”
-- [x] Add starter prompts/templates: “Special rules,” “Tricky part,” “Designer tip,” and “What I want players to notice.”
-- [x] Let Jonas write text/voice notes without touching guide ids, tags, schemas, or chapter/page structure.
-- [x] Compile those notes into pack guide pages.
-- [x] Preview authored guide content in builder.
-- [x] Let the creator playtest the pack and see authored guide content in context.
-- [x] Persist authored guide content in custom pack JSON.
-- [x] Jonas acceptance check: he can add one useful guide note in under a minute without opening advanced settings.
-- [x] Sanitize Markdown links used by authored/imported guide text.
-- [x] Keep image, component, mini-playground, unlock, and interactive tutorial authoring deferred.
+- [x] Add Key to Builder item tools.
+- [x] Add Door to Builder terrain tools.
+- [x] Persist Door as a custom wall tile with `passableBy: 'key'`.
+- [x] Keep Move/Pick Up enabling in existing Logic tab.
+- [x] Add BuilderModel test coverage for painting Key.
+- [x] Add BuilderModel test coverage for painting Door and persisting its custom tile definition.
+- [x] Add interpreter key-door puzzle test.
+- [x] Add Ghost Path key-door success and blocked-path tests.
+- [x] Integrated browser review: create a key-door puzzle as Jonas.
+- [x] Separate item pickup tokens from terrain icons so the key no longer obscures the tile marker.
+- [x] Improve key color/weight in tray, grid, and Thought Bubble rendering.
+- [x] Restore drag-to-trash deletion by making `any` drop targets behave as wildcards.
+- [x] Add an Erase tool to the Terrain tray so removing Key/Door placements is discoverable.
+- [x] Polish tablet-width Builder tray spacing, icon sizing, and Door preview alignment.
+- [x] Keep the tablet Builder top bar contained without horizontal scrolling.
+- [x] Establish a tablet Builder typography floor instead of shrinking labels per component.
+- [x] Fix key erase crash caused by item outro transition reading a cleared item prop.
 
 ## Validation Checklist
 
-- [x] Dynamic book/store unit tests pass.
-- [x] Pack guide schema tests pass.
-- [x] Field Guide merge helper tests pass.
-- [x] Field Guide relevance helper tests pass.
-- [x] Pack guide authoring helper/component tests pass.
-- [x] Markdown link sanitization tests pass.
+- [x] Focused key-door tests pass.
 - [x] `PROTO_NODE_VERSION=24 pnpm check`.
 - [x] `PROTO_NODE_VERSION=24 pnpm lint`.
 - [x] `git diff --check`.
 
-## Visual/Product Review Checklist
-
-- [x] Jonas creator loop reviewed: write note, preview note, playtest pack, open Field Guide, see authored note.
-- [x] Zoey player loop reviewed: relevant guide opening remains passive and non-intrusive.
-- [x] Desktop pack authoring reviewed as comfortable.
-- [x] Tablet/phone considerations reviewed and captured as future polish.
-- [x] Original Master Teacher story/tutorial control scope deferred.
-
 ## Follow-Up Topics
 
-- [ ] Stronger related-guide affordance on the Field Guide button without unread-dot pressure.
-- [ ] Jonas-specific visual treatment for authored voice blocks.
-- [ ] Collapsible preview or prompt cards on narrow screens.
-- [ ] Debounced/coalesced guide note saves to reduce undo/history noise.
-- [ ] Explicit guide metadata for level/concept attachment.
-- [ ] Mobile Field Guide table-of-contents polish.
-- [ ] Rich guide authoring: images, components, playgrounds, unlocks, and interactive tutorials.
-- [ ] Imported/shared pack text moderation and safety workflow.
+- [ ] Decide whether pickup tokens should use the bottom badge treatment for all item types long term.
+- [ ] Broader regression pass for builder/player basics after each new creator mechanic.
+- [ ] Continue tablet/desktop visual review for toolbar, story bar, and grid spacing.
+- [ ] Extract Builder UI scale tokens into a shared design-system location if other Builder surfaces need them.
+- [ ] Number item creator tools and value editing.
+- [ ] Bubble-as-parameter polish for loops.
+- [ ] Thought Bubble pickup/open-door transition animation.
+- [ ] Runtime parity helper to reduce interpreter/Ghost Path duplication.
+- [ ] Lexical scoping / box metaphor.
+- [ ] PXT / MakeCode investigation.

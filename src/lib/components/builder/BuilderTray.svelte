@@ -2,6 +2,8 @@
 	import type { BuilderModel, BuilderTool } from '$lib/game/builder-model.svelte';
 	import type { BlockType, CellType } from '$lib/game/types';
 	import type { TileDefinition, ItemDefinition } from '$lib/game/schema';
+	import type { ComponentType, SvelteComponent } from 'svelte';
+	import type { IconProps } from 'lucide-svelte';
 	import BlockComponent from '$lib/components/game/Block.svelte';
 	import Cell from '$lib/components/game/Cell.svelte';
 	import HintEditor from './HintEditor.svelte';
@@ -10,6 +12,7 @@
 	import { draggableVariable } from '$lib/actions/dnd';
 	import { AVATAR_ICONS } from '$lib/game/icons';
 	import { resolveItemDefinition } from '$lib/game/utils';
+	import { LOCKED_DOOR_TILE_ID, createLockedDoorTileDefinition } from '$lib/game/builder-presets';
 
 	import {
 		Infinity as InfinityIcon,
@@ -23,9 +26,13 @@
 		Globe,
 		MessageCircle,
 		Ship,
-		Box
+		Key,
+		Box,
+		Eraser
 	} from 'lucide-svelte';
 	import { fade, scale } from 'svelte/transition';
+
+	type IconComponent = ComponentType<SvelteComponent<IconProps>>;
 
 	interface Props {
 		builder: BuilderModel;
@@ -47,8 +54,7 @@
 	type TerrainTool = {
 		id: string;
 		value: string;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		icon?: any;
+		icon?: IconComponent;
 		label: string;
 		type?: string;
 		color?: string;
@@ -60,6 +66,13 @@
 
 	const standardTerrainTools: TerrainTool[] = [
 		{ id: 'wall', value: 'wall', label: 'Wall' },
+		{
+			id: LOCKED_DOOR_TILE_ID,
+			value: LOCKED_DOOR_TILE_ID,
+			label: 'Door',
+			color: 'var(--orange-7)',
+			tileDef: createLockedDoorTileDefinition()
+		},
 		{ id: 'water', value: 'water', label: 'Water' },
 		{ id: 'grass', value: 'grass', label: 'Grass' },
 		{ id: 'forest', value: 'forest', label: 'Forest' },
@@ -70,36 +83,50 @@
 		{ id: 'cover', value: 'cover', label: 'Cover', color: 'var(--blue-3)' }
 	];
 
+	const standardUtilityTools: TerrainTool[] = [
+		{
+			id: 'erase',
+			value: 'erase',
+			label: 'Erase',
+			type: 'erase',
+			icon: Eraser,
+			color: 'var(--red-6)'
+		}
+	];
+
 	const standardItemTools: TerrainTool[] = [
-		{ id: 'boat', value: 'boat', label: 'Boat', type: 'item', icon: Ship }
+		{ id: 'key', value: 'key', label: 'Key', type: 'item', icon: Key, color: 'var(--orange-7)' },
+		{ id: 'boat', value: 'boat', label: 'Boat', type: 'item', icon: Ship, color: 'var(--blue-7)' }
 	];
 
 	let terrainTools = $derived.by(() => {
-		const packTools: TerrainTool[] = Object.values(builder.pack.customTiles || {}).map((tile) => {
-			return {
-				id: tile.id,
-				value: tile.id,
-				label: tile.name,
-				// Don't use tile color for UI selection state - keep it standard blue
-				// color: tile.visuals.color,
-				isCustom: true,
-				tileDef: tile,
-				scope: 'pack'
-			};
-		});
+		const packTools: TerrainTool[] = Object.values(builder.pack.customTiles || {})
+			.filter((tile) => tile.id !== LOCKED_DOOR_TILE_ID)
+			.map((tile) => {
+				// Don't use tile color for UI selection state - keep it standard blue.
+				return {
+					id: tile.id,
+					value: tile.id,
+					label: tile.name,
+					isCustom: true,
+					tileDef: tile,
+					scope: 'pack'
+				};
+			});
 
-		const levelTools: TerrainTool[] = Object.values(builder.level.customTiles || {}).map((tile) => {
-			return {
-				id: tile.id,
-				value: tile.id,
-				label: tile.name,
-				// Don't use tile color for UI selection state - keep it standard blue
-				// color: tile.visuals.color,
-				isCustom: true,
-				tileDef: tile,
-				scope: 'level'
-			};
-		});
+		const levelTools: TerrainTool[] = Object.values(builder.level.customTiles || {})
+			.filter((tile) => tile.id !== LOCKED_DOOR_TILE_ID)
+			.map((tile) => {
+				// Don't use tile color for UI selection state - keep it standard blue.
+				return {
+					id: tile.id,
+					value: tile.id,
+					label: tile.name,
+					isCustom: true,
+					tileDef: tile,
+					scope: 'level'
+				};
+			});
 
 		const packItems: TerrainTool[] = Object.values(builder.pack.customItems || {}).map((item) => {
 			return {
@@ -128,6 +155,7 @@
 		});
 
 		return [
+			...standardUtilityTools,
 			...standardTerrainTools,
 			...standardItemTools,
 			...packTools,
@@ -155,11 +183,9 @@
 		const highlight = builder.game.previewHighlight;
 		if (!highlight) return false;
 		const type = tool.type || 'terrain';
-		let target = `tool:${type}`;
-		if (type === 'terrain') {
-			target += `:${tool.value}`;
-		}
-		return highlight.targets.includes(target);
+		const baseTarget = `tool:${type}`;
+		const specificTarget = 'value' in tool ? `${baseTarget}:${tool.value}` : baseTarget;
+		return highlight.targets.includes(specificTarget) || highlight.targets.includes(baseTarget);
 	}
 
 	function isBlockHighlighted(type: BlockType) {
@@ -178,10 +204,19 @@
 
 	function isToolActive(type: string, value?: string) {
 		if (builder.activeTool.type !== type) return false;
-		if (type === 'terrain' && builder.activeTool.type === 'terrain') {
+		if ((type === 'terrain' || type === 'item') && 'value' in builder.activeTool) {
 			return builder.activeTool.value === value;
 		}
 		return true;
+	}
+
+	function selectTerrainTool(tool: TerrainTool) {
+		if (tool.type === 'erase') {
+			selectTool({ type: 'erase' });
+			return;
+		}
+
+		selectTool({ type: tool.type || 'terrain', value: tool.value } as BuilderTool);
 	}
 
 	const isFading = $derived(builder.game.previewHighlight?.fading);
@@ -365,12 +400,15 @@
 								class:active={isToolActive(tool.type || 'terrain', tool.value)}
 								class:highlighted={isToolHighlighted(tool)}
 								class:fading={isFading}
-								onclick={() =>
-									selectTool({ type: tool.type || 'terrain', value: tool.value } as BuilderTool)}
+								onclick={() => selectTerrainTool(tool)}
 								style:--tool-color={tool.color}
 							>
 								<div class="cell-preview">
-									{#if tool.type === 'item' && tool.icon}
+									{#if tool.type === 'erase' && tool.icon}
+										<div class="item-preview erase-preview">
+											<tool.icon size={32} />
+										</div>
+									{:else if tool.type === 'item' && tool.icon}
 										<div class="item-preview">
 											<tool.icon size={32} />
 										</div>
@@ -543,11 +581,18 @@
 
 <style>
 	.builder-tray-container {
+		container: builder-tray / inline-size;
+		--tray-tab-font-size: var(--builder-ui-tab-size, 0.95rem);
+		--tray-tool-label-size: var(--builder-ui-label-size, 1rem);
+		--tray-small-label-size: var(--builder-ui-small-size, 0.9rem);
+		--tray-preview-size: 54px;
+		--tray-tool-min-height: 96px;
+
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-		gap: var(--size-2);
-		padding: var(--size-3);
+		gap: var(--size-3);
+		padding: var(--size-3) var(--size-4);
 		overflow: hidden;
 	}
 
@@ -560,27 +605,21 @@
 	}
 
 	.tray-tabs {
-		display: flex;
-		gap: var(--size-2);
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: var(--size-1);
 		border-bottom: 1px solid var(--surface-3);
 		padding-bottom: var(--size-2);
 		flex-shrink: 0;
-		overflow-x: auto;
+		overflow: hidden;
 		max-width: 100%;
-		/* Hide scrollbar for cleaner look but keep functionality */
-		scrollbar-width: none;
-		-ms-overflow-style: none;
-	}
-
-	.tray-tabs::-webkit-scrollbar {
-		display: none;
 	}
 
 	.tab-btn {
-		flex: 1;
+		min-width: 0;
 		background: none;
 		border: none;
-		padding: 0 var(--size-2);
+		padding: 0 var(--size-1);
 		min-height: var(--touch-target-min);
 		border-radius: var(--radius-2);
 		cursor: pointer;
@@ -589,9 +628,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: var(--size-2);
+		gap: var(--size-1);
 		transition: all 0.2s;
 		white-space: nowrap;
+		font-size: var(--tray-tab-font-size);
 	}
 
 	.tab-btn:hover {
@@ -663,8 +703,9 @@
 	/* Terrain Tools */
 	.tools-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-		gap: var(--size-2);
+		grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+		gap: var(--size-3) var(--size-2);
+		align-items: start;
 	}
 
 	.tool-wrapper {
@@ -673,11 +714,11 @@
 
 	.tool-btn {
 		width: 100%;
-		aspect-ratio: 1;
+		min-height: var(--tray-tool-min-height);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		justify-content: center;
+		justify-content: flex-start;
 		gap: var(--size-2);
 		background-color: var(--surface-1);
 		border: 2px solid transparent;
@@ -685,15 +726,18 @@
 		cursor: pointer;
 		color: var(--tool-color, var(--text-2));
 		transition: all 0.2s;
-		padding: var(--size-2);
+		padding: var(--size-2) var(--size-1);
 	}
 
 	.cell-preview {
-		width: 48px;
-		height: 48px;
+		width: var(--tray-preview-size);
+		height: var(--tray-preview-size);
 		border-radius: var(--radius-2);
 		overflow: hidden;
 		box-shadow: var(--shadow-1);
+		background-color: var(--surface-2);
+		display: grid;
+		place-items: center;
 	}
 
 	.item-preview {
@@ -703,7 +747,27 @@
 		align-items: center;
 		justify-content: center;
 		background-color: var(--surface-2);
-		color: var(--text-1);
+		color: var(--tool-color, var(--text-1));
+	}
+
+	.cell-preview :global(.marker svg),
+	.cell-preview :global(.wall-marker svg),
+	.cell-preview :global(.cover-marker svg),
+	.cell-preview :global(.goal-marker svg),
+	.item-preview :global(svg) {
+		width: 30px;
+		height: 30px;
+	}
+
+	.cell-preview :global(.property-overlay svg) {
+		width: 13px;
+		height: 13px;
+	}
+
+	.erase-preview {
+		background:
+			linear-gradient(135deg, transparent 45%, var(--red-3) 45% 55%, transparent 55%),
+			var(--surface-2);
 	}
 
 	.tool-btn:hover {
@@ -748,8 +812,58 @@
 	}
 
 	.tool-label {
-		font-size: var(--font-size-00);
-		font-weight: 500;
+		font-size: var(--tray-tool-label-size);
+		font-weight: 700;
+		line-height: 1.1;
+		min-height: 1.1em;
+		text-align: center;
+	}
+
+	@media (min-width: 769px) and (max-width: 1280px) {
+		.builder-tray-container {
+			padding: var(--size-3);
+			gap: var(--size-2);
+		}
+
+		.tools-grid {
+			grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+			gap: var(--size-2);
+		}
+	}
+
+	@container builder-tray (max-width: 380px) {
+		.builder-tray-container {
+			--tray-preview-size: 58px;
+			--tray-tool-min-height: 112px;
+		}
+
+		.tray-tabs {
+			gap: var(--size-1);
+		}
+
+		.tab-btn {
+			min-height: 64px;
+			flex-direction: column;
+			gap: 2px;
+			padding: var(--size-1);
+			font-size: var(--tray-tab-font-size);
+			line-height: 1.1;
+		}
+
+		.tab-btn :global(svg) {
+			width: 24px;
+			height: 24px;
+		}
+
+		.tools-grid {
+			grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+			gap: var(--size-3) var(--size-2);
+		}
+
+		.tool-btn {
+			padding: var(--size-3) var(--size-1);
+			gap: var(--size-2);
+		}
 	}
 
 	.custom-actions {
