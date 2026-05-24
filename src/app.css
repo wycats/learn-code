@@ -11,7 +11,7 @@
 
 		/* Surface Colors */
 		--surface-1: light-dark(var(--gray-0), var(--gray-9));
-		--surface-2: light-dark(var(--white), var(--gray-8));
+		--surface-2: light-dark(white, var(--gray-8));
 		--surface-3: light-dark(var(--gray-1), var(--gray-7));
 		--surface-4: light-dark(var(--gray-2), var(--gray-6));
 

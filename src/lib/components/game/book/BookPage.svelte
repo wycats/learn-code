@@ -33,6 +33,8 @@
 	.book-page {
 		max-width: 65ch;
 		margin: 0 auto;
+		padding: var(--size-1);
+		background: var(--surface-2);
 	}
 
 	.page-title {

@@ -107,9 +107,9 @@ export function createManagedPackGuideChapter(notes: PackGuideNotes): BookChapte
 
 export function createManagedPackGuidePages(notes: PackGuideNotes): BookPage[] {
 	return PACK_GUIDE_NOTE_PROMPTS.map<BookPage | null>((prompt) => {
-		const content = notes[prompt.key].trim();
+		const content = notes[prompt.key];
 
-		if (!content) return null;
+		if (!content.trim()) return null;
 
 		const blocks: BookContentBlock[] = [{ type: 'voice', speaker: 'Jonas', content }];
 

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { LevelPack } from './schema';
 import { getPack } from './packs';
 
 export const LevelResultSchema = z.object({
@@ -75,13 +76,18 @@ export class ProgressService {
 		this.save(progress);
 	}
 
-	static isLevelUnlocked(progress: UserProgress, packId: string, levelIndex: number): boolean {
+	static isLevelUnlocked(
+		progress: UserProgress,
+		packId: string,
+		levelIndex: number,
+		pack?: LevelPack | null
+	): boolean {
 		if (levelIndex === 0) return true;
 
-		const pack = getPack(packId);
-		if (!pack) return false;
+		const resolvedPack = pack ?? getPack(packId);
+		if (!resolvedPack) return false;
 
-		const prevLevel = pack.levels[levelIndex - 1];
+		const prevLevel = resolvedPack.levels[levelIndex - 1];
 		if (!prevLevel) return false;
 
 		const prevResult = progress.packs[packId]?.levels[prevLevel.id];
