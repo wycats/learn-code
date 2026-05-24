@@ -70,7 +70,7 @@
 
 				// Check if unlocked
 				const progress = ProgressService.load();
-				const isUnlocked = ProgressService.isLevelUnlocked(progress, packId, levelIndex);
+				const isUnlocked = ProgressService.isLevelUnlocked(progress, packId, levelIndex, pack);
 
 				if (!isUnlocked) {
 					// Redirect to pack view if locked
@@ -108,6 +108,8 @@
 	// Watch for win state to save progress
 	$effect(() => {
 		if (game && game.status === 'won') {
+			if (game.level.id !== levelId) return;
+
 			const currentPackId = packId;
 			const currentLevelId = levelId;
 			void untrack(() => completeCurrentLevel(currentPackId, currentLevelId));

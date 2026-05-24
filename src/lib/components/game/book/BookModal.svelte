@@ -104,7 +104,7 @@
 </dialog>
 
 <style>
-	dialog {
+	.book-modal {
 		padding: 0;
 		border: none;
 		/* Dialog is now the card itself */
@@ -112,7 +112,7 @@
 		width: 90vw;
 		height: 90vh;
 		max-width: 1024px;
-		background-color: var(--surface-2);
+		background: var(--surface-2);
 		border-radius: var(--radius-3);
 		box-shadow: var(--shadow-6);
 		overflow: hidden;
@@ -126,6 +126,7 @@
 		flex-direction: column;
 		width: 100%;
 		height: 100%;
+		background: var(--surface-2);
 	}
 
 	dialog::backdrop {
@@ -202,7 +203,7 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		background-color: var(--surface-2);
+		background: var(--surface-2);
 		overflow: hidden;
 	}
 
@@ -228,6 +229,7 @@
 		flex: 1;
 		overflow-y: auto;
 		padding: var(--size-6) var(--size-8);
+		background: var(--surface-2);
 	}
 
 	@media (max-width: 768px) {

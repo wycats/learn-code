@@ -68,7 +68,24 @@ describe('pack guide authoring helpers', () => {
 			'designer-tip'
 		]);
 		expect(guide?.chapters[0].pages[0].content).toEqual([
-			{ type: 'voice', speaker: 'Jonas', content: 'Ice keeps sliding.' }
+			{ type: 'voice', speaker: 'Jonas', content: '  Ice keeps sliding.  ' }
+		]);
+	});
+
+	it('preserves in-progress whitespace while deciding whether a note is empty', () => {
+		const guide = compilePackGuideNotes({
+			specialRules: 'Use  two  spaces. ',
+			trickyPart: '   ',
+			designerTip: '',
+			whatToNotice: ''
+		});
+
+		expect(guide?.chapters[0].pages).toEqual([
+			{
+				id: 'special-rules',
+				title: 'Special Rules',
+				content: [{ type: 'voice', speaker: 'Jonas', content: 'Use  two  spaces. ' }]
+			}
 		]);
 	});
 
