@@ -1,54 +1,10 @@
 import type { GameModel } from './model.svelte';
-import type { Block, Direction, GridPosition, VariableRef } from './types';
+import type { Block, Direction, GridPosition } from './types';
 import { soundManager } from './sound';
 import { resolveItemDefinition } from './utils';
+import { canPassTile, resolveHeldValue, resolveTerrainTile } from './runtime-rules';
 
 const DIRECTIONS: Direction[] = ['N', 'E', 'S', 'W'];
-
-function resolveValue(
-	game: GameModel,
-	value: number | VariableRef | undefined
-): number | undefined {
-	if (value === undefined) return undefined;
-	if (typeof value === 'number') return value;
-	if (value.type === 'variable' && value.variableId === 'heldItem') {
-		if (game.heldItem) {
-			const def = resolveItemDefinition(game.level, game.heldItem.type);
-			if (def && def.behavior === 'value') {
-				const resolvedValue = Number(game.heldItem.value);
-				return Number.isFinite(resolvedValue) ? resolvedValue : 0;
-			}
-		}
-		return 0;
-	}
-	return 0;
-}
-
-function resolveTile(game: GameModel, x: number, y: number) {
-	const key = `${x},${y}`;
-	const typeId = game.level.layout[key] || game.level.defaultTerrain || 'grass';
-
-	// Check if it's a custom tile
-	if (game.level.customTiles && game.level.customTiles[typeId]) {
-		const custom = game.level.customTiles[typeId];
-		return {
-			type: custom.type,
-			passableBy: custom.passableBy,
-			onEnter: custom.onEnter
-		};
-	}
-
-	// Built-in defaults
-	if (typeId === 'water') return { type: 'water', passableBy: 'boat' };
-	if (typeId === 'void') return { type: 'hazard', onEnter: 'kill' };
-	if (typeId === 'spikes') return { type: 'hazard', onEnter: 'damage' };
-	if (typeId === 'fire') return { type: 'hazard', onEnter: 'damage' };
-	if (typeId === 'hazard') return { type: 'hazard', onEnter: 'kill' };
-	if (typeId === 'ice') return { type: 'ice', onEnter: 'slide' };
-	if (typeId === 'wall') return { type: 'wall' };
-
-	return { type: 'floor' };
-}
 
 function getNextPosition(pos: GridPosition, dir: Direction): GridPosition {
 	switch (dir) {
@@ -70,40 +26,6 @@ function rotate(dir: Direction, turn: 'left' | 'right'): Direction {
 	} else {
 		return DIRECTIONS[(idx - 1 + 4) % 4];
 	}
-}
-
-function isValidMove(pos: GridPosition, game: GameModel): boolean {
-	// Check bounds
-	if (
-		pos.x < 0 ||
-		pos.x >= game.level.gridSize.width ||
-		pos.y < 0 ||
-		pos.y >= game.level.gridSize.height
-	) {
-		return false;
-	}
-
-	// Check walls
-	const tile = resolveTile(game, pos.x, pos.y);
-	if (tile.type === 'wall') {
-		// Check if it's passable by held item
-		if (tile.passableBy && game.heldItem?.type === tile.passableBy) {
-			return true;
-		}
-		return false;
-	}
-
-	if (tile.type === 'water') {
-		// Check if it's passable by held item (boat)
-		// We use the generic passableBy if set, or default to boat for water
-		const requiredItem = tile.passableBy || 'boat';
-		// Check if we are riding the required vehicle
-		if (game.vehicle?.type === requiredItem) return true;
-		// Fallback: Check if we are holding the item (legacy support or magic items)
-		return game.heldItem?.type === requiredItem;
-	}
-
-	return true;
 }
 
 // --- Stack-based Interpreter ---
@@ -254,7 +176,8 @@ export class StackInterpreter {
 				}
 
 				// Enter loop
-				const count = resolveValue(this.game, block.count) ?? Infinity;
+				const count =
+					resolveHeldValue(this.game.level, this.game.heldItem, block.count) ?? Infinity;
 				this.stack.push({
 					blocks: block.children || [],
 					index: 0,
@@ -360,9 +283,14 @@ export class StackInterpreter {
 					this.game.characterPosition,
 					this.game.characterOrientation
 				);
-				if (isValidMove(nextPos, this.game)) {
+				if (
+					canPassTile(this.game.level, nextPos, {
+						heldItem: this.game.heldItem,
+						vehicle: this.game.vehicle
+					})
+				) {
 					// Check for Hazard or Ice
-					const tile = resolveTile(this.game, nextPos.x, nextPos.y);
+					const tile = resolveTerrainTile(this.game.level, nextPos.x, nextPos.y);
 
 					if (tile.onEnter === 'kill') {
 						this.game.characterPosition = nextPos;
@@ -401,10 +329,19 @@ export class StackInterpreter {
 						// Limit slide to prevent infinite loops (though unlikely with bounds)
 						for (let i = 0; i < 20; i++) {
 							const slideNext = getNextPosition(currentSlidePos, this.game.characterOrientation);
-							if (isValidMove(slideNext, this.game)) {
+							if (
+								canPassTile(this.game.level, slideNext, {
+									heldItem: this.game.heldItem,
+									vehicle: this.game.vehicle
+								})
+							) {
 								currentSlidePos = slideNext;
 								// Check if we slid into a hazard
-								const slideTile = resolveTile(this.game, currentSlidePos.x, currentSlidePos.y);
+								const slideTile = resolveTerrainTile(
+									this.game.level,
+									currentSlidePos.x,
+									currentSlidePos.y
+								);
 								if (slideTile.onEnter === 'kill') {
 									this.game.characterPosition = currentSlidePos;
 									soundManager.play('fail');

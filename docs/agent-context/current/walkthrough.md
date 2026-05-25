@@ -80,6 +80,28 @@ Zero remains deferred because current loop semantics mirror Interpreter and Ghos
 
 Runtime behavior stayed small: Pick Up already stores Number items in the Thought Bubble, and Repeat already reads held value items through `heldItem`. PER 2 adds parity tests for Pick Up Number 3 → Repeat Move in both Interpreter and Ghost Path.
 
+## PER 3 Progress
+
+PER 3 tightened the Key/Number slice without expanding it. The duplicated runtime rules in the live Interpreter and Ghost Path simulator now share one pure helper for:
+
+1. resolving `heldItem` variable values;
+2. resolving built-in and custom terrain behavior;
+3. checking passability from `{ heldItem, vehicle }`.
+
+The behavior was intentionally preserved. A locked Door still opens only while holding the matching Key; keys are not consumed; no door state is introduced. Boats still use the `vehicle` channel, and Number remains a held value for Repeat. The current zero-repeat parity also remains unchanged and deferred.
+
+The visible held-item treatment was also unified. `HeldItemToken` now renders the shared Key/Number/Boat/color token shape across the Thought Bubble, pickup badges, the player tray Held Item token, the Repeat variable badge, and the Builder logic Held Item token. This keeps “the thing I am carrying” visually consistent across the grid, bubble, and parameter surfaces.
+
+Locked doors now get visual-only passable feedback while the matching held item is present. The cell and requirement badge highlight as passable, but the runtime does not mutate the door or consume the held Key.
+
+PER 3 added/confirmed parity coverage for:
+
+- Key → locked Door success.
+- Locked Door without Key blocked.
+- Number 3 → Repeat Move reaches the goal.
+- Boat → Water still works through the vehicle path.
+- Zero repeat still mirrors current behavior.
+
 ## Deferred Work
 
 - Zero-valued Number tools and revised zero-repeat semantics.
@@ -90,3 +112,5 @@ Runtime behavior stayed small: Pick Up already stores Number items in the Though
 - Function parameters/returns.
 - Lexical scoping / box metaphor.
 - PXT / MakeCode integration.
+- Door consumption/unlocked state.
+- Zero-repeat redesign.

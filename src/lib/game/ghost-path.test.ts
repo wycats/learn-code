@@ -185,6 +185,27 @@ describe('simulateGhostPath', () => {
 		]);
 	});
 
+	it('predicts boarding a boat before crossing water', () => {
+		const preview = simulateGhostPath({
+			level: {
+				...baseLevel,
+				gridSize: { width: 3, height: 1 },
+				goal: { x: 2, y: 0 },
+				layout: { '1,0': 'water' },
+				items: { '0,0': { type: 'boat', value: true, icon: 'Ship' } }
+			},
+			program: [
+				block('board', 'board'),
+				block('move-water', 'move-forward'),
+				block('move-goal', 'move-forward')
+			]
+		});
+
+		expect(preview.outcome).toBe('won');
+		expect(preview.finalPosition).toEqual({ x: 2, y: 0 });
+		expect(preview.path.map((entry) => entry.event)).toEqual(['start', 'board', 'move', 'won']);
+	});
+
 	it('caps runaway loops', () => {
 		const preview = simulateGhostPath({
 			level: {

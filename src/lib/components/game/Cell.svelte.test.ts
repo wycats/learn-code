@@ -41,6 +41,52 @@ describe('Cell item rendering', () => {
 		expect(container.querySelector('.property-overlay.top-right')).toBeInTheDocument();
 	});
 
+	it('marks a locked door as visually passable while holding a key', () => {
+		const { container } = render(Cell, {
+			type: 'locked-door',
+			heldItem: { type: 'key', value: true, icon: 'Key' },
+			customTile: {
+				id: 'locked-door',
+				name: 'Locked Door',
+				type: 'wall',
+				passableBy: 'key',
+				visuals: {
+					color: 'var(--amber-2)',
+					pattern: 'locked-door'
+				}
+			}
+		});
+
+		expect(container.querySelector('.cell.passable')).toBeInTheDocument();
+		expect(container.querySelector('.property-overlay.top-right')).toHaveAttribute(
+			'title',
+			'Passable with Key'
+		);
+	});
+
+	it('marks boat-passable water as visually passable while riding a boat', () => {
+		const { container } = render(Cell, {
+			type: 'ferry-water',
+			vehicle: { type: 'boat', value: true, icon: 'Ship' },
+			customTile: {
+				id: 'ferry-water',
+				name: 'Ferry Water',
+				type: 'water',
+				passableBy: 'boat',
+				visuals: {
+					color: 'var(--blue-2)',
+					pattern: 'waves'
+				}
+			}
+		});
+
+		expect(container.querySelector('.cell.passable')).toBeInTheDocument();
+		expect(container.querySelector('.property-overlay.top-right')).toHaveAttribute(
+			'title',
+			'Passable with Boat'
+		);
+	});
+
 	it('removes a key cleanly when the item prop is cleared', async () => {
 		const rendered = render(Cell, {
 			type: 'grass',

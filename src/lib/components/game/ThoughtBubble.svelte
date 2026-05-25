@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HeldItem } from '$lib/game/types';
-	import { Key, Brain } from 'lucide-svelte';
+	import HeldItemToken from './HeldItemToken.svelte';
 	import { scale } from 'svelte/transition';
 	import type { CrossfadeParams, TransitionConfig } from 'svelte/transition';
 
@@ -25,17 +25,10 @@
 				in:receive={{ key: `item-${item.type}-${item.value}` }}
 				out:scale={{ duration: 200, start: 0.5 }}
 			>
-				{#if item.type === 'key'}
-					<Key size={20} color="var(--orange-8)" strokeWidth={2.6} />
-				{:else if item.type === 'number'}
-					<Brain size={20} color="var(--blue-7)" style="margin-right: 4px;" />
-					<span class="number">{item.value}</span>
-				{:else if item.type === 'color'}
-					<div class="color-swatch" style:background-color={item.value}></div>
-				{/if}
+				<HeldItemToken {item} variant="bubble" />
 			</div>
 		{:else}
-			<Brain size={20} color="var(--stone-4)" style="opacity: 0.5;" />
+			<HeldItemToken item={null} variant="bubble" />
 		{/if}
 	</div>
 	<div class="bubble-tail"></div>
@@ -122,19 +115,5 @@
 		border-color: var(--stone-4);
 		border-style: dashed;
 		box-shadow: none;
-	}
-
-	.number {
-		font-family: var(--font-mono);
-		font-weight: bold;
-		font-size: var(--font-size-2);
-		color: var(--text-1);
-	}
-
-	.color-swatch {
-		width: 20px;
-		height: 20px;
-		border-radius: 50%;
-		border: 1px solid var(--surface-4);
 	}
 </style>

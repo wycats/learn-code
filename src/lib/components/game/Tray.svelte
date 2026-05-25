@@ -10,12 +10,13 @@
 		type Edge
 	} from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 	import BlockComponent from './Block.svelte';
+	import HeldItemToken from './HeldItemToken.svelte';
 	import DropIndicator from './DropIndicator.svelte';
 	import DialInput from '$lib/components/builder/DialInput.svelte';
 	import type { Block, BlockType } from '$lib/game/types';
 	import type { GameModel } from '$lib/game/model.svelte';
 	import { resolveItemDefinition } from '$lib/game/utils';
-	import { Trash2, Move, ListChecks, Copy, Infinity as InfinityIcon, Brain } from 'lucide-svelte';
+	import { Trash2, Move, ListChecks, Copy, Infinity as InfinityIcon } from 'lucide-svelte';
 	import { Icon } from 'lucide-svelte';
 	import { broom } from '@lucide/lab';
 	import { soundManager } from '$lib/game/sound';
@@ -561,7 +562,7 @@
 					data-target="variable:heldItem"
 				>
 					<div class="token-icon">
-						<Brain size={20} />
+						<HeldItemToken item={null} variant="variable" />
 					</div>
 					<span class="token-label">Held Item</span>
 				</div>
@@ -755,7 +756,7 @@
 								title="Use Held Item"
 								data-value="variable"
 							>
-								<Brain size={20} />
+								<HeldItemToken item={null} variant="mini" />
 							</button>
 						{/if}
 						{#if game.level.allowInfiniteLoop !== false}
