@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { PACKS } from './index';
+import { VARIABLES_PACK } from './variables';
 import { VEHICLES_PACK } from './vehicles';
 
 describe('Pack Validation', () => {
@@ -21,6 +22,12 @@ describe('Pack Validation', () => {
 			'Island Hopping',
 			'Row Your Boat'
 		]);
+	});
+
+	it('registers the Number key teaching level in the variables pack', () => {
+		expect(PACKS).toContain(VARIABLES_PACK);
+		expect(VARIABLES_PACK.id).toBe('variables-pack');
+		expect(VARIABLES_PACK.levels.map((level) => level.id)).toContain('level-keys-1');
 	});
 
 	it('keeps built-in level ids unique across registered packs', () => {
