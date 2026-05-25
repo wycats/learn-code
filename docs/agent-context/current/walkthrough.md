@@ -72,9 +72,18 @@ Rather than continuing to whack-a-mole individual labels, the Builder route now 
 
 The first erase attempt exposed a Svelte outro-transition crash: `Cell` was reading the live `item` prop while the keyed item marker was leaving. The item marker now renders from a stable one-item array, so clearing the prop can animate/remove the marker without trying to read `undefined.type`.
 
+## PER 2 Progress
+
+Number pickup is now the second visible-memory slice. Builder exposes a Number item tool with a hash/value preview, paints Number items as numeric `value: 3` by default, and provides a small touch-friendly editor for selected Number items. The editor clamps values to `1..9` so Jonas only sees positive Repeat counts for now.
+
+Zero remains deferred because current loop semantics mirror Interpreter and Ghost Path by running a `0` repeat body once. Exposing `0` before redesigning that behavior would make the visible value teach the wrong expectation.
+
+Runtime behavior stayed small: Pick Up already stores Number items in the Thought Bubble, and Repeat already reads held value items through `heldItem`. PER 2 adds parity tests for Pick Up Number 3 → Repeat Move in both Interpreter and Ghost Path.
+
 ## Deferred Work
 
-- Number items and value editing.
+- Zero-valued Number tools and revised zero-repeat semantics.
+- Number values beyond the `1..9` Builder slice.
 - Counters and merge operations.
 - Multiple inventory slots.
 - Key colors.

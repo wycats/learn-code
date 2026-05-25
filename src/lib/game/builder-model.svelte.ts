@@ -8,12 +8,17 @@ import type {
 	LevelPack,
 	Block,
 	Character,
-	Emotion
+	Emotion,
+	HeldItem
 } from './types';
 import { persistence, createDefaultPack, type PersistenceService } from './persistence';
 import { fileSystem, type FileSystemService } from '$lib/services/file-system';
 import { SYSTEM_CHARACTERS, SYSTEM_EMOTIONS } from './constants';
 import { LOCKED_DOOR_TILE_ID, createLockedDoorTileDefinition } from './builder-presets';
+
+export const BUILDER_NUMBER_ITEM_MIN = 1;
+export const BUILDER_NUMBER_ITEM_MAX = 9;
+export const BUILDER_NUMBER_ITEM_DEFAULT = 3;
 
 export type BuilderTool =
 	| { type: 'terrain'; value: CellType }
@@ -80,6 +85,7 @@ export class BuilderModel {
 	targetSelectionContext = $state<string | null>(null);
 	hoveredGridPosition = $state<GridPosition | null>(null);
 	selectedGridPosition = $state<GridPosition | null>(null);
+	selectedNumberPosition = $state<GridPosition | null>(null);
 
 	// The working program (persisted across mode switches)
 	currentProgram = $state<Block[]>([]);
@@ -484,6 +490,7 @@ export class BuilderModel {
 
 		// Clear selections when switching modes
 		this.selectedGridPosition = null;
+		this.selectedNumberPosition = null;
 		this.selectedActor = null;
 		// Don't cancel targeting selection when switching modes, so we can target UI elements in Test mode
 		// this.cancelTargetSelection();
@@ -605,6 +612,76 @@ export class BuilderModel {
 			...(this.level.customTiles || {}),
 			[LOCKED_DOOR_TILE_ID]: lockedDoor
 		};
+	}
+
+	get selectedNumberItem(): HeldItem | null {
+		if (!this.selectedNumberPosition) return null;
+		return this.getNumberItemAt(this.selectedNumberPosition);
+	}
+
+	get selectedNumberItemValue(): number | null {
+		const item = this.selectedNumberItem;
+		if (!item) return null;
+		return clampBuilderNumberItemValue(item.value);
+	}
+
+	getNumberItemAt(pos: GridPosition): HeldItem | null {
+		const item = this.level.items?.[positionKey(pos)];
+		return item?.type === 'number' ? item : null;
+	}
+
+	selectNumberItem(pos: GridPosition): boolean {
+		const key = positionKey(pos);
+		const item = this.getNumberItemAt(pos);
+		if (!item) return false;
+
+		const nextValue = clampBuilderNumberItemValue(item.value);
+		const nextIcon = item.icon || 'Hash';
+		const needsNormalization = item.value !== nextValue || item.icon !== nextIcon;
+
+		if (needsNormalization) {
+			this.pushState();
+			this.level.items = {
+				...(this.level.items || {}),
+				[key]: {
+					...item,
+					value: nextValue,
+					icon: nextIcon
+				}
+			};
+			this.selectedNumberPosition = { ...pos };
+			this.markModified();
+			return true;
+		}
+
+		this.selectedNumberPosition = { ...pos };
+		return true;
+	}
+
+	setSelectedNumberItemValue(value: number) {
+		if (!this.selectedNumberPosition) return;
+		this.setNumberItemValue(this.selectedNumberPosition, value);
+	}
+
+	setNumberItemValue(pos: GridPosition, value: number) {
+		const key = positionKey(pos);
+		const item = this.getNumberItemAt(pos);
+		if (!item) return;
+
+		const nextValue = clampBuilderNumberItemValue(value);
+		if (item.value === nextValue && item.icon) return;
+
+		this.pushState();
+		this.level.items = {
+			...(this.level.items || {}),
+			[key]: {
+				...item,
+				value: nextValue,
+				icon: item.icon || 'Hash'
+			}
+		};
+		this.selectedNumberPosition = { ...pos };
+		this.markModified();
 	}
 
 	snapshotTray() {
@@ -850,11 +927,16 @@ export class BuilderModel {
 			return;
 		}
 
+		const key = `${pos.x},${pos.y}`;
+
+		if (this.activeTool.type === 'item' && this.activeTool.value === 'number') {
+			if (this.selectNumberItem(pos)) return;
+		}
+
 		this.startInteraction();
 
 		// If an actor is selected, move it to this position
 		if (this.selectedActor) {
-			const key = `${pos.x},${pos.y}`;
 			const cellType = this.level.layout[key] || 'grass';
 
 			// Prevent placing actors on walls or water
@@ -873,9 +955,8 @@ export class BuilderModel {
 			return;
 		}
 
-		const key = `${pos.x},${pos.y}`;
-
 		if (this.activeTool.type === 'grid') {
+			this.selectedNumberPosition = null;
 			// Toggle selection
 			if (
 				this.selectedGridPosition &&
@@ -890,6 +971,7 @@ export class BuilderModel {
 		}
 
 		if (this.activeTool.type === 'terrain') {
+			this.selectedNumberPosition = null;
 			const defaultTerrain = this.level.defaultTerrain || 'grass';
 			if (this.activeTool.value === LOCKED_DOOR_TILE_ID) {
 				this.ensureLockedDoorTileDefinition();
@@ -920,15 +1002,20 @@ export class BuilderModel {
 				if (this.activeTool.value === 'color') icon = 'Palette';
 			}
 
+			const item = createItemForType(this.activeTool.value, icon);
 			this.level.items[key] = {
+				...item,
 				type: this.activeTool.value,
-				value: true,
 				icon: icon
 			};
+			this.selectedNumberPosition = item.type === 'number' ? { ...pos } : null;
 		} else if (this.activeTool.type === 'erase') {
 			delete this.level.layout[key];
 			if (this.level.items) {
 				delete this.level.items[key];
+			}
+			if (this.selectedNumberPosition?.x === pos.x && this.selectedNumberPosition?.y === pos.y) {
+				this.selectedNumberPosition = null;
 			}
 		}
 
@@ -941,4 +1028,26 @@ export class BuilderModel {
 		// Optimization: Update the specific part of GameModel.
 		this.markModified();
 	}
+}
+
+export function clampBuilderNumberItemValue(value: unknown): number {
+	const numericValue = Number(value);
+	if (!Number.isFinite(numericValue)) return BUILDER_NUMBER_ITEM_DEFAULT;
+
+	return Math.min(
+		BUILDER_NUMBER_ITEM_MAX,
+		Math.max(BUILDER_NUMBER_ITEM_MIN, Math.round(numericValue))
+	);
+}
+
+function createItemForType(type: ItemType, icon: string): HeldItem {
+	return {
+		type,
+		value: type === 'number' ? BUILDER_NUMBER_ITEM_DEFAULT : true,
+		icon
+	};
+}
+
+function positionKey(pos: GridPosition): string {
+	return `${pos.x},${pos.y}`;
 }

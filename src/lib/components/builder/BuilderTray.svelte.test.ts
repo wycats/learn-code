@@ -60,15 +60,22 @@ describe('BuilderTray', () => {
 
 		await expect.element(page.getByText('Door')).toBeInTheDocument();
 		await expect.element(page.getByText('Key')).toBeInTheDocument();
+		await expect.element(page.getByText('Number')).toBeInTheDocument();
 		await expect.element(page.getByText('Boat')).toBeInTheDocument();
 		await expect.element(page.getByText('Erase')).toBeInTheDocument();
-		expect(document.querySelectorAll('.tool-label')).toHaveLength(13);
+		expect(document.querySelectorAll('.tool-label')).toHaveLength(14);
+		expect(document.querySelector('.number-tool-preview .item-preview-value')?.textContent).toBe(
+			'3'
+		);
 
 		await page.getByRole('button', { name: 'Erase', exact: true }).click();
 		expect(builder.activeTool).toEqual({ type: 'erase' });
 
 		await page.getByRole('button', { name: 'Key', exact: true }).click();
 		expect(builder.activeTool).toEqual({ type: 'item', value: 'key' });
+
+		await page.getByRole('button', { name: 'Number', exact: true }).click();
+		expect(builder.activeTool).toEqual({ type: 'item', value: 'number' });
 
 		await page.getByRole('button', { name: 'Door', exact: true }).click();
 		expect(builder.activeTool).toEqual({ type: 'terrain', value: LOCKED_DOOR_TILE_ID });
@@ -79,9 +86,9 @@ describe('BuilderTray', () => {
 
 		render(BuilderTray, { builder });
 
-		const toolMetrics = ['Erase', 'Wall', 'Door', 'Key'].map((label) => {
+		const toolMetrics = ['Erase', 'Wall', 'Door', 'Key', 'Number'].map((label) => {
 			const button = Array.from(document.querySelectorAll('.tool-btn')).find(
-				(element) => element.textContent?.trim() === label
+				(element) => element.querySelector('.tool-label')?.textContent?.trim() === label
 			) as HTMLElement | undefined;
 			const buttonRect = button?.getBoundingClientRect();
 			const previewRect = button?.querySelector('.cell-preview')?.getBoundingClientRect();
@@ -94,7 +101,7 @@ describe('BuilderTray', () => {
 			};
 		});
 
-		expect(toolMetrics).toHaveLength(4);
+		expect(toolMetrics).toHaveLength(5);
 		expect(new Set(toolMetrics.map((metric) => metric.previewWidth))).toEqual(new Set([54]));
 		expect(new Set(toolMetrics.map((metric) => metric.previewHeight))).toEqual(new Set([54]));
 

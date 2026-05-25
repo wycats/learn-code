@@ -26,6 +26,20 @@
 - [x] Establish a tablet Builder typography floor instead of shrinking labels per component.
 - [x] Fix key erase crash caused by item outro transition reading a cleared item prop.
 
+## PER 2 — Number Pickup as Visible Repeat Value
+
+- [x] Start PER 2 from the prepared hypothesis that runtime Number pickup and held-item Repeat already exist.
+- [x] Add Number to the Builder item tools with a visible hash/value preview.
+- [x] Persist Builder-created Number items as numeric `value: 3` items instead of `value: true`.
+- [x] Add a touch-friendly Builder value editor for selected Number items.
+- [x] Clamp Builder Number values to positive single digits (`1..9`) for this slice.
+- [x] Defer zero-valued Number items because current loop semantics make `0` repeat once.
+- [x] Keep Key, Door, and Boat item behavior intact while adding Number.
+- [x] Add BuilderModel coverage for Number painting, editing, clamping, history, and game sync.
+- [x] Add BuilderTray coverage for visible Number tooling and updated tool counts.
+- [x] Add interpreter parity coverage for Pick Up Number 3 → Repeat Move with held item.
+- [x] Add Ghost Path parity coverage for Pick Up Number 3 → Repeat Move with held item.
+
 ## Validation Checklist
 
 - [x] Focused key-door tests pass.
@@ -39,7 +53,8 @@
 - [ ] Broader regression pass for builder/player basics after each new creator mechanic.
 - [ ] Continue tablet/desktop visual review for toolbar, story bar, and grid spacing.
 - [ ] Extract Builder UI scale tokens into a shared design-system location if other Builder surfaces need them.
-- [ ] Number item creator tools and value editing.
+- [ ] Decide future zero semantics before exposing `0` as a Builder Number value.
+- [ ] Decide whether Number values should expand beyond `1..9` in a later creator slice.
 - [ ] Bubble-as-parameter polish for loops.
 - [ ] Thought Bubble pickup/open-door transition animation.
 - [ ] Runtime parity helper to reduce interpreter/Ghost Path duplication.
