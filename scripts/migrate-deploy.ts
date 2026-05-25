@@ -3,6 +3,17 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import pg from 'pg';
 import * as schema from '../src/lib/server/db/schema.ts';
 
+const isVercelDeploy =
+	process.env.VERCEL_ENV === 'production' || process.env.VERCEL_ENV === 'preview';
+const isForced = process.argv.includes('--force');
+
+if (!isVercelDeploy && !isForced) {
+	console.log(
+		'Not a Vercel production/preview build; skipping deploy migrations. Run `pnpm db:migrate:deploy` to migrate a configured Postgres database manually.'
+	);
+	process.exit(0);
+}
+
 const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL;
 
 if (!connectionString) {
