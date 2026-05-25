@@ -117,6 +117,39 @@ The Field Guide Automation/Loops page now adds the same concept in one concise n
 
 Pack validation now includes a focused assertion that `VARIABLES_PACK` continues to register `level-keys-1`, so the teaching level remains present in the built-in Variables pack.
 
+## How to Try It Out
+
+Use the user-managed dev server at `https://learn-coding.localhost/`. If it is stale, restart it yourself with `pnpm dev`.
+
+### Try the Jonas Key/Door Builder loop
+
+1. Open the Builder and create or open a level.
+2. In the Terrain tray, place a Door.
+3. In the same tray, place a Key before the Door.
+4. Use the Erase tool to confirm Key/Door placements can be removed from the tray where they were added.
+5. In the Logic tray, enable/use Pick Up.
+6. Switch to test/play mode.
+7. Build a program like `Step → Pick Up → Step → Step` so Zoey picks up the Key and walks through the Door.
+8. Confirm the Key appears in the Thought Bubble and the Door visually reads as passable while the Key is held.
+
+### Try the Number/Repeat Builder loop
+
+1. In the Builder, select the Number item tool.
+2. Place a Number on the grid.
+3. Select the placed Number and use the value editor to adjust it between `1` and `9`.
+4. Put the goal exactly that many steps after the Number pickup.
+5. In test/play mode, use `Pick Up`, then a `Repeat` whose count is set to Held Item / the Thought Bubble token.
+6. Put `Step` inside Repeat and run.
+7. Confirm Ghost Path and runtime agree, and Zoey reaches the goal when the path length matches the carried Number.
+
+### Try the built-in teaching level
+
+1. Open the Library.
+2. Open the Variables pack / “Keeper of Keys”.
+3. Start `The Number Key` (`level-keys-1`).
+4. Follow the level copy: pick up the Number, use Held Item as the Repeat count, and put Step inside Repeat.
+5. Open the Field Guide from the level and confirm the Loops page mentions Thought Bubble Numbers as Repeat counts.
+
 ## Deferred Work
 
 - Zero-valued Number tools and revised zero-repeat semantics.
