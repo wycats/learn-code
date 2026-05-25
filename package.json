@@ -10,7 +10,7 @@
 	},
 	"scripts": {
 		"dev": "vite dev",
-		"build": "pnpm run db:migrate:deploy && pnpm run generate:changelog && vite build",
+		"build": "node scripts/migrate-deploy.ts && pnpm run generate:changelog && vite build",
 		"generate:changelog": "node scripts/generate-changelog.ts",
 		"preview": "vite preview",
 		"paraglide:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide",
@@ -29,7 +29,7 @@
 		"db:push": "drizzle-kit push",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
-		"db:migrate:deploy": "node scripts/migrate-deploy.ts",
+		"db:migrate:deploy": "node scripts/migrate-deploy.ts --force",
 		"db:studio": "drizzle-kit studio",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build"
