@@ -5,7 +5,7 @@ import {
 	setSessionTokenCookie,
 	enableSudo
 } from '$lib/server/auth';
-import { redirect } from '@sveltejs/kit';
+import { isRedirect, redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
@@ -119,6 +119,8 @@ export const GET: RequestHandler = async (event) => {
 		cookies.delete('auth_redirect_to', { path: '/' });
 		return redirect(302, redirectTo);
 	} catch (e) {
+		if (isRedirect(e)) throw e;
+
 		if (e instanceof OAuth2RequestError) {
 			console.error('GitHub OAuth callback failed', e.code, e.description);
 		} else if (e instanceof Error) {
