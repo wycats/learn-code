@@ -19,6 +19,8 @@
 		Skull,
 		Flame
 	} from 'lucide-svelte';
+	import HeldItemToken from './HeldItemToken.svelte';
+	import { canPassResolvedTile } from '$lib/game/runtime-rules';
 	import type { CrossfadeParams, TransitionConfig } from 'svelte/transition';
 
 	interface Props {
@@ -32,6 +34,8 @@
 			| { targets: string[]; type?: 'pulse' | 'arrow' | 'dim' | 'selection'; fading?: boolean }
 			| undefined;
 		isCharacterHere?: boolean;
+		heldItem?: HeldItem | null;
+		vehicle?: HeldItem | null;
 		send?: (node: Element, params: CrossfadeParams & { key: unknown }) => () => TransitionConfig;
 	}
 
@@ -44,6 +48,8 @@
 		id,
 		highlight,
 		isCharacterHere = false,
+		heldItem = null,
+		vehicle = null,
 		send = () => () => ({ duration: 0 })
 	}: Props = $props();
 
@@ -53,6 +59,18 @@
 				(x !== undefined && y !== undefined && highlight.targets?.includes(`cell:${x},${y}`)))
 	);
 	const isFading = $derived(isHighlighted && highlight?.fading);
+	const isPassableWithInventory = $derived.by(() => {
+		if (!customTile?.passableBy) return false;
+
+		return canPassResolvedTile(
+			{
+				type: customTile.type,
+				passableBy: customTile.passableBy,
+				onEnter: customTile.onEnter
+			},
+			{ heldItem, vehicle }
+		);
+	});
 	const visibleItems = $derived(item ? [item] : []);
 </script>
 
@@ -61,6 +79,7 @@
 	data-type={type}
 	class:highlighted={isHighlighted}
 	class:fading={isFading}
+	class:passable={isPassableWithInventory}
 	style:background-color={customTile?.visuals.color}
 	style:border-color={customTile?.type === 'wall' ? 'rgba(0,0,0,0.2)' : undefined}
 	style:border-width={customTile?.type === 'wall' ? '2px' : undefined}
@@ -80,11 +99,19 @@
 
 		<!-- Property Overlays -->
 		{#if customTile.passableBy === 'key'}
-			<div class="property-overlay top-right" title="Requires Key">
+			<div
+				class="property-overlay top-right"
+				class:passable={isPassableWithInventory}
+				title={isPassableWithInventory ? 'Passable with Key' : 'Requires Key'}
+			>
 				<Key size={14} color="var(--orange-8)" strokeWidth={2.6} />
 			</div>
 		{:else if customTile.passableBy === 'boat'}
-			<div class="property-overlay top-right" title="Requires Boat">
+			<div
+				class="property-overlay top-right"
+				class:passable={isPassableWithInventory}
+				title={isPassableWithInventory ? 'Passable with Boat' : 'Requires Boat'}
+			>
 				<Ship size={14} color="var(--blue-7)" fill="var(--blue-3)" />
 			</div>
 		{/if}
@@ -151,18 +178,7 @@
 			data-item-type={visibleItem.type}
 			out:send={{ key: `item-${visibleItem.type}-${visibleItem.value ?? 'item'}` }}
 		>
-			{#if visibleItem.type === 'key'}
-				<Key size={22} color="var(--orange-8)" strokeWidth={2.8} />
-			{:else if visibleItem.type === 'boat'}
-				<Ship size={24} color="var(--blue-7)" fill="var(--blue-3)" />
-			{:else if visibleItem.type === 'number'}
-				<span class="number-item">{visibleItem.value}</span>
-			{:else if visibleItem.type === 'color'}
-				<div class="color-item" style:background-color={visibleItem.value}></div>
-			{:else if visibleItem.icon && visibleItem.icon.toLowerCase() in AVATAR_ICONS}
-				{@const Icon = AVATAR_ICONS[visibleItem.icon.toLowerCase() as keyof typeof AVATAR_ICONS]}
-				<Icon size={24} color="var(--text-1)" />
-			{/if}
+			<HeldItemToken item={visibleItem} variant="cell" />
 		</div>
 	{/each}
 </div>
@@ -233,6 +249,17 @@
 	.cell[data-type='goal'] {
 		background-color: var(--yellow-2);
 		border: 2px solid var(--yellow-5);
+	}
+
+	.cell.passable {
+		box-shadow:
+			inset 0 0 0 3px color-mix(in srgb, var(--green-5) 70%, transparent),
+			0 0 12px color-mix(in srgb, var(--green-5) 35%, transparent);
+	}
+
+	.cell.passable .locked-door-marker {
+		transform: scale(1.08);
+		filter: drop-shadow(0 0 5px color-mix(in srgb, var(--green-5) 70%, transparent));
 	}
 
 	.goal-marker,
@@ -313,20 +340,9 @@
 		right: 2px;
 	}
 
-	.number-item {
-		font-family: var(--font-mono);
-		font-weight: 900;
-		font-size: clamp(1rem, 58%, 1.35rem);
-		line-height: 1;
-		color: var(--blue-8);
-	}
-
-	.color-item {
-		width: 20px;
-		height: 20px;
-		border-radius: 50%;
-		border: 2px solid white;
-		box-shadow: var(--shadow-1);
+	.property-overlay.passable {
+		background-color: var(--green-1);
+		box-shadow: 0 0 0 2px var(--green-5);
 	}
 
 	.cell.highlighted {

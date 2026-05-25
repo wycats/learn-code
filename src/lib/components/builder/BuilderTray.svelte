@@ -7,6 +7,7 @@
 	import type { IconProps } from 'lucide-svelte';
 	import BlockComponent from '$lib/components/game/Block.svelte';
 	import Cell from '$lib/components/game/Cell.svelte';
+	import HeldItemToken from '$lib/components/game/HeldItemToken.svelte';
 	import HintEditor from './HintEditor.svelte';
 	import TileEditorModal from './TileEditorModal.svelte';
 	import FunctionManager from './FunctionManager.svelte';
@@ -25,7 +26,6 @@
 		Trash2,
 		FunctionSquare,
 		Globe,
-		MessageCircle,
 		Ship,
 		Key,
 		Hash,
@@ -473,7 +473,7 @@
 					<div class="variables-section" transition:scale={{ duration: 200 }}>
 						<div class="variable-token" use:draggableVariable title="Drag to use held item">
 							<div class="token-icon">
-								<MessageCircle size={20} />
+								<HeldItemToken item={null} variant="variable" />
 							</div>
 							<span class="token-label">Held Item</span>
 						</div>

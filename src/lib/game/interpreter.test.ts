@@ -573,6 +573,26 @@ describe('StackInterpreter', () => {
 			expect(game.characterPosition).toEqual({ x: 3, y: 0 });
 		});
 
+		it('should block a locked door when no key is held', () => {
+			game.level.gridSize = { width: 3, height: 1 };
+			game.level.goal = { x: 2, y: 0 };
+			game.level.layout = { '1,0': LOCKED_DOOR_TILE_ID };
+			game.level.customTiles = {
+				[LOCKED_DOOR_TILE_ID]: createLockedDoorTileDefinition()
+			};
+
+			game.addBlock({ id: 'move-into-door', type: 'move-forward' });
+
+			interpreter.start();
+			interpreter.step();
+			const result = interpreter.step();
+
+			expect(result).toBe(false);
+			expect(game.status).toBe('lost');
+			expect(game.lastEvent?.type).toBe('blocked');
+			expect(game.characterPosition).toEqual({ x: 0, y: 0 });
+		});
+
 		describe('Boat Mechanics', () => {
 			it('should fail to move into water without a boat', () => {
 				game.level.layout['1,0'] = 'water';

@@ -206,6 +206,8 @@
 				y={cell.y}
 				id={cell.id}
 				isCharacterHere={cell.isCharacterHere}
+				heldItem={game.heldItem}
+				vehicle={game.vehicle}
 				{highlight}
 				{send}
 			/>

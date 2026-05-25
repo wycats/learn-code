@@ -40,9 +40,22 @@
 - [x] Add interpreter parity coverage for Pick Up Number 3 → Repeat Move with held item.
 - [x] Add Ghost Path parity coverage for Pick Up Number 3 → Repeat Move with held item.
 
+## PER 3 — Runtime Parity + Visible Held-Value Polish
+
+- [x] Preserve existing zero-repeat behavior; `0` still mirrors the current “runs once” parity and remains deferred.
+- [x] Add/confirm interpreter parity coverage for locked Door with Key, locked Door without Key, Number 3 Repeat, and Boat over Water.
+- [x] Add/confirm Ghost Path parity coverage for locked Door with Key, locked Door without Key, Number 3 Repeat, zero repeat, and Boat over Water.
+- [x] Extract shared runtime helpers for held-value resolution, terrain/custom tile resolution, and passability checks.
+- [x] Update Interpreter and Ghost Path to use the shared runtime helpers while keeping mutation, sounds, status, and path-entry creation local.
+- [x] Preserve the runtime split between `heldItem` and `vehicle`.
+- [x] Add a shared `HeldItemToken` visual component for Thought Bubble, pickup tokens, Held Item tray token, Repeat variable badge, and Builder logic token.
+- [x] Add visual-only passable/unlocked feedback on locked doors while the matching held item is present.
+- [x] Keep Builder route structure unchanged.
+
 ## Validation Checklist
 
 - [x] Focused key-door tests pass.
+- [x] PER 3 focused runtime and touched component tests pass.
 - [x] `PROTO_NODE_VERSION=24 pnpm check`.
 - [x] `PROTO_NODE_VERSION=24 pnpm lint`.
 - [x] `git diff --check`.
@@ -55,8 +68,8 @@
 - [ ] Extract Builder UI scale tokens into a shared design-system location if other Builder surfaces need them.
 - [ ] Decide future zero semantics before exposing `0` as a Builder Number value.
 - [ ] Decide whether Number values should expand beyond `1..9` in a later creator slice.
-- [ ] Bubble-as-parameter polish for loops.
+- [x] Bubble-as-parameter polish for loops in the bounded Key/Number slice.
 - [ ] Thought Bubble pickup/open-door transition animation.
-- [ ] Runtime parity helper to reduce interpreter/Ghost Path duplication.
+- [x] Runtime parity helper to reduce interpreter/Ghost Path duplication.
 - [ ] Lexical scoping / box metaphor.
 - [ ] PXT / MakeCode investigation.

@@ -5,6 +5,7 @@
 	import { draggableSource, dropTarget } from '$lib/interactions/dnd';
 	import { dropTargetForVariable } from '$lib/actions/dnd';
 	import type { ComponentInterface } from '$lib/interactions/types';
+	import HeldItemToken from './HeldItemToken.svelte';
 	import BlockComponent from './Block.svelte';
 	import DropIndicator from './DropIndicator.svelte';
 	import {
@@ -16,7 +17,6 @@
 		XCircle,
 		Wand2,
 		Grab,
-		Brain,
 		Ship
 	} from 'lucide-svelte';
 
@@ -236,9 +236,7 @@
 					data-target={`block:${block.id}:count`}
 				>
 					{#if isVariable}
-						<div class="variable-token-mini">
-							<Brain size={14} />
-						</div>
+						<HeldItemToken item={null} variant="mini" />
 					{:else}
 						{block.count ? `${block.count}x` : '∞'}
 					{/if}
@@ -537,19 +535,6 @@
 	.loop-badge.variable {
 		padding: 0;
 		background: transparent;
-	}
-
-	.variable-token-mini {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 24px;
-		height: 24px;
-		background-color: var(--surface-1);
-		border: 2px solid var(--blue-3);
-		border-radius: 50%;
-		color: var(--blue-7);
-		box-shadow: var(--shadow-1);
 	}
 
 	.function-badge {

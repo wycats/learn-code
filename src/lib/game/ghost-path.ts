@@ -1,11 +1,5 @@
-import type {
-	Block,
-	Direction,
-	GridPosition,
-	HeldItem,
-	LevelDefinition,
-	VariableRef
-} from './types';
+import type { Block, Direction, GridPosition, HeldItem, LevelDefinition } from './types';
+import { canPassTile, resolveHeldValue, resolveTerrainTile } from './runtime-rules';
 import { resolveItemDefinition } from './utils';
 
 const DIRECTIONS: Direction[] = ['N', 'E', 'S', 'W'];
@@ -73,12 +67,6 @@ type SimulationFrame = {
 	loopMax?: number;
 };
 
-type ResolvedTile = {
-	type: 'floor' | 'wall' | 'water' | 'hazard' | 'ice';
-	passableBy?: string;
-	onEnter?: 'kill' | 'slide' | 'damage' | 'none';
-};
-
 export function simulateGhostPath({
 	level,
 	program,
@@ -123,7 +111,7 @@ export function simulateGhostPath({
 
 		if (block.type === 'loop') {
 			frame.index++;
-			const loopMax = resolveValue(level, state, block.count) ?? Infinity;
+			const loopMax = resolveHeldValue(level, state.heldItem, block.count) ?? Infinity;
 			stack.push({
 				blocks: block.children ?? [],
 				index: 0,
@@ -176,12 +164,12 @@ function executeAction(
 	switch (block.type) {
 		case 'move-forward': {
 			const nextPosition = getNextPosition(state.position, state.orientation);
-			if (!isValidMove(level, state, nextPosition)) {
+			if (!canPassTile(level, nextPosition, state)) {
 				appendEntry(entries, state, 'blocked', block.id, nextPosition);
 				return 'blocked';
 			}
 
-			const tile = resolveTile(level, nextPosition.x, nextPosition.y);
+			const tile = resolveTerrainTile(level, nextPosition.x, nextPosition.y);
 
 			if (tile.onEnter === 'kill') {
 				state.position = nextPosition;
@@ -200,7 +188,7 @@ function executeAction(
 				state.position = slide(level, state, nextPosition);
 				appendEntry(entries, state, 'slide', block.id);
 
-				const slideTile = resolveTile(level, state.position.x, state.position.y);
+				const slideTile = resolveTerrainTile(level, state.position.x, state.position.y);
 				if (slideTile.onEnter === 'kill') {
 					entries[entries.length - 1].event = 'failed';
 					return 'failed';
@@ -269,90 +257,18 @@ function slide(
 
 	for (let i = 0; i < MAX_SLIDE_STEPS; i++) {
 		const nextPosition = getNextPosition(currentPosition, state.orientation);
-		if (!isValidMove(level, state, nextPosition)) {
+		if (!canPassTile(level, nextPosition, state)) {
 			break;
 		}
 
 		currentPosition = nextPosition;
-		const tile = resolveTile(level, currentPosition.x, currentPosition.y);
+		const tile = resolveTerrainTile(level, currentPosition.x, currentPosition.y);
 		if (tile.onEnter !== 'slide') {
 			break;
 		}
 	}
 
 	return currentPosition;
-}
-
-function resolveValue(
-	level: LevelDefinition,
-	state: SimulationState,
-	value: number | VariableRef | undefined
-): number | undefined {
-	if (value === undefined) return undefined;
-	if (typeof value === 'number') return value;
-	if (value.type === 'variable' && value.variableId === 'heldItem') {
-		if (state.heldItem) {
-			const definition = resolveItemDefinition(level, state.heldItem.type);
-			if (definition?.behavior === 'value') {
-				const resolvedValue = Number(state.heldItem.value);
-				return Number.isFinite(resolvedValue) ? resolvedValue : 0;
-			}
-		}
-		return 0;
-	}
-	return 0;
-}
-
-function resolveTile(level: LevelDefinition, x: number, y: number): ResolvedTile {
-	const key = `${x},${y}`;
-	const typeId = level.layout[key] || level.defaultTerrain || 'grass';
-	const customTile = level.customTiles?.[typeId];
-
-	if (customTile) {
-		return {
-			type: customTile.type,
-			passableBy: customTile.passableBy,
-			onEnter: customTile.onEnter
-		};
-	}
-
-	if (typeId === 'water') return { type: 'water', passableBy: 'boat' };
-	if (typeId === 'void') return { type: 'hazard', onEnter: 'kill' };
-	if (typeId === 'spikes') return { type: 'hazard', onEnter: 'damage' };
-	if (typeId === 'fire') return { type: 'hazard', onEnter: 'damage' };
-	if (typeId === 'hazard') return { type: 'hazard', onEnter: 'kill' };
-	if (typeId === 'ice') return { type: 'ice', onEnter: 'slide' };
-	if (typeId === 'wall') return { type: 'wall' };
-
-	return { type: 'floor' };
-}
-
-function isValidMove(
-	level: LevelDefinition,
-	state: SimulationState,
-	position: GridPosition
-): boolean {
-	const isOutOfBounds =
-		position.x < 0 ||
-		position.x >= level.gridSize.width ||
-		position.y < 0 ||
-		position.y >= level.gridSize.height;
-
-	if (isOutOfBounds) {
-		return false;
-	}
-
-	const tile = resolveTile(level, position.x, position.y);
-	if (tile.type === 'wall') {
-		return Boolean(tile.passableBy && state.heldItem?.type === tile.passableBy);
-	}
-
-	if (tile.type === 'water') {
-		const requiredItem = tile.passableBy || 'boat';
-		return state.vehicle?.type === requiredItem || state.heldItem?.type === requiredItem;
-	}
-
-	return true;
 }
 
 function getNextPosition(position: GridPosition, direction: Direction): GridPosition {

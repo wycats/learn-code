@@ -2,7 +2,7 @@
 
 ## Status
 
-Recon and the first implementation slice are complete. PER 2 is underway to make Number pickup creator-accessible as a visible Repeat value, still prioritizing concrete carried state before named variables, lexical scoping, or PXT integration.
+Recon, PER 1, and PER 2 are complete. PER 3 is the bounded polish/parity slice after PR #31: it keeps visible carried values focused on Key and Number, extracts duplicated runtime rules, and improves the visual continuity of Thought Bubble / Held Item tokens without expanding the feature set.
 
 ## Phase Goal
 
@@ -72,6 +72,26 @@ See `variables-recon.md` for details. The short version:
 
 Do not expose `0` as a Builder value in this slice. Current Interpreter and Ghost Path loop semantics intentionally mirror each other by executing a `0` repeat body once, which would be confusing for Jonas. Builder Number values are clamped to `1..9` until zero semantics are redesigned.
 
+## PER 3 — Runtime Parity + Visible Held-Value Polish
+
+- Extract the duplicated Interpreter/Ghost Path runtime rules into a small pure helper module:
+  - held-value resolution for `heldItem` variable references;
+  - terrain/custom tile resolution;
+  - passability checks from `{ heldItem, vehicle }`.
+- Keep execution-local effects where they belong: sounds, mutation, status changes, failure recording, and Ghost Path entries stay in the Interpreter/Ghost Path modules.
+- Preserve all current semantics, including the intentionally deferred zero-repeat behavior where `0` currently runs the loop body once.
+- Preserve the `vehicle` vs. `heldItem` split. Boats still board into `vehicle`; Key/Number remain visible held items.
+- Add/confirm parity coverage for Key → Door success, locked Door blocked without Key, Number 3 → Repeat, Boat → Water, and zero-repeat behavior.
+- Introduce a shared held-item token visual for the Thought Bubble, cell pickup badge, player tray Held Item token, loop variable badge, and Builder logic Held Item token.
+- Add visual-only passable/unlocked feedback for locked doors when the matching held item is present. Do not consume keys or add door state.
+
+### PER 3 Deferrals
+
+- Do not redesign zero-repeat semantics.
+- Do not add key consumption, door-unlocked state, multiple inventory slots, or named variables.
+- Do not rewrite the Builder route; only touch the existing Builder logic token where the shared token is a bounded fit.
+- Keep broader E2E and visual regression coverage as follow-up unless a tiny focused component test naturally covers the touched UI.
+
 ## Out of Scope for PER 1
 
 - Named variables.
@@ -91,6 +111,13 @@ Do not expose `0` as a Builder value in this slice. Current Interpreter and Ghos
 - Named variables, multiple inventory slots, or scoped storage.
 - Runtime loop semantic changes for `0`.
 
+## Out of Scope for PER 3
+
+- Any runtime semantic change to repeat counts, key usage, doors, or vehicles.
+- Key consumption or persistent door state.
+- Builder route rewrite or pack/manual route parity refactor.
+- Broad E2E expansion.
+
 ## Validation Plan
 
 - Builder model tests for painting Key and Door.
@@ -101,6 +128,8 @@ Do not expose `0` as a Builder value in this slice. Current Interpreter and Ghos
 - Interpreter Pick Up Number 3 → Repeat Move parity test.
 - Ghost Path key-door prediction tests.
 - Ghost Path Pick Up Number 3 → Repeat Move parity test.
+- PER 3 focused Interpreter/Ghost Path parity tests for Key, Door, Number, Boat, and zero-repeat behavior.
+- Touched component tests for shared held-item token rendering and door passable affordance.
 - Integrated browser review of Jonas creating a key-door puzzle.
 - `PROTO_NODE_VERSION=24 pnpm check`.
 - `PROTO_NODE_VERSION=24 pnpm lint`.
@@ -114,5 +143,5 @@ Do not expose `0` as a Builder value in this slice. Current Interpreter and Ghos
 - Should the Builder UI typography tokens become global design tokens once more Builder screens adopt them?
 - Should Builder offer a one-click “locked door puzzle” starter later?
 - Should Field Guide relevance learn a key-door concept page in this phase or a follow-up?
-- What should zero-repeat mean before Builder exposes `0` as a Number value?
+- What should zero-repeat mean before Builder exposes `0` as a Number value? PER 3 intentionally preserved current behavior.
 - When should Number values expand beyond the single-digit `1..9` creator range?
