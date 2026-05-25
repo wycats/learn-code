@@ -455,10 +455,10 @@
 - [x] **Number Pickup as Visible Repeat Value**: Add a Builder Number tool, persist numeric values, add a bounded value editor, and verify Number → Held Item → Repeat parity.
 - [x] **Runtime Parity Cleanup**: Extract shared held-value, terrain resolution, and passability helpers for Interpreter and Ghost Path.
 - [x] **Held-Value Visual Polish**: Unify carried-item visuals across Thought Bubble, pickup tokens, tray tokens, Repeat badges, and Builder logic tokens.
-- [x] **Teaching Content**: Polish the existing Variables pack level and Field Guide copy to teach Pick Up Number → Thought Bubble → Held Item Repeat.
-- [ ] **PXT / MakeCode Integration**: Deferred.
-- [ ] **Zod Schema Diff**: Deferred.
-- [ ] **Lexical Scoping / Box Metaphor**: Deferred.
+- [x] **Teaching Content**: Polish the existing Variables pack level and Field Guide copy to teach Pick Up Number → Thought Bubble → Held Item → Repeat.
+- [ ] **PXT / MakeCode Integration**: Investigate using Microsoft's PXT as the underlying engine. (Deferred)
+- [ ] **Zod Schema Diff**: Implement "Spec-ulation" rules for Zod schemas to prevent breaking changes. (Deferred)
+- [ ] **Lexical Scoping / Box Metaphor**: Refine the variable system with lexical scoping and the box metaphor. (Deferred)
 
 ## Phase 47: The Syntax Bridge
 
