@@ -36,7 +36,7 @@ export const actions: Actions = {
 		}
 
 		setActiveProfileCookie(event, profileId);
-		throw redirect(302, '/');
+		throw redirect(303, '/');
 	},
 	createProfile: async (event) => {
 		if (!event.locals.user) return fail(401);
@@ -59,6 +59,6 @@ export const actions: Actions = {
 		});
 
 		setActiveProfileCookie(event, id);
-		throw redirect(302, '/');
+		throw redirect(303, '/');
 	}
 };
