@@ -52,10 +52,20 @@
 - [x] Add visual-only passable/unlocked feedback on locked doors while the matching held item is present.
 - [x] Keep Builder route structure unchanged.
 
+## PER 4 — Number/Repeat Teaching Content
+
+- [x] Polish the existing `level-keys-1` built-in level copy instead of adding a near-duplicate level.
+- [x] Keep the level id, geometry, Number value `3`, available blocks, and runtime semantics stable.
+- [x] Teach the player-facing sequence: Pick Up Number → Thought Bubble holds Number → Held Item powers Repeat → Step goes inside Repeat.
+- [x] Add level intro targets and hints for the Number pickup, Repeat block, and nested Step while copy explains the Held Item count.
+- [x] Add a concise Field Guide Automation/Loops note about Thought Bubble Numbers as Repeat counts.
+- [x] Add a `VARIABLES_PACK` registration assertion for `level-keys-1`.
+
 ## Validation Checklist
 
 - [x] Focused key-door tests pass.
 - [x] PER 3 focused runtime and touched component tests pass.
+- [x] PER 4 focused pack/runtime/Ghost Path/Field Guide validation passes.
 - [x] `PROTO_NODE_VERSION=24 pnpm check`.
 - [x] `PROTO_NODE_VERSION=24 pnpm lint`.
 - [x] `git diff --check`.
@@ -71,5 +81,6 @@
 - [x] Bubble-as-parameter polish for loops in the bounded Key/Number slice.
 - [ ] Thought Bubble pickup/open-door transition animation.
 - [x] Runtime parity helper to reduce interpreter/Ghost Path duplication.
+- [x] Player-facing Number/Repeat teaching content for the existing Variables pack level.
 - [ ] Lexical scoping / box metaphor.
 - [ ] PXT / MakeCode investigation.

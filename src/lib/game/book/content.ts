@@ -91,6 +91,12 @@ export const THE_FIELD_GUIDE: Book = {
 						},
 						{
 							type: 'text',
+							voice: 'guide',
+							content:
+								'If a level gives you a **Number** in the Thought Bubble, **Repeat** can use **Held Item** as its count. Put the action inside Repeat, and the carried number decides how many times it runs.'
+						},
+						{
+							type: 'text',
 							voice: 'zoey',
 							content: "It's like magic! I write it once, and it happens five times!"
 						},

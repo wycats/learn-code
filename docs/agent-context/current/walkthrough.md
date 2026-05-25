@@ -2,7 +2,7 @@
 
 ## Current Status
 
-Phase 46 has started with a variables/scoping recon and a first concrete implementation slice: Jonas Key/Door Creator Loop. The intent is to make existing visible memory mechanics creator-accessible before introducing abstract variables, scoped boxes, counters, or PXT.
+Phase 46 has progressed through the Jonas Key/Door creator loop, Number pickup Builder slice, runtime parity polish, and a tiny player-facing Number/Repeat teaching-content pass. The intent remains to make existing visible memory mechanics creator-accessible and learnable before introducing abstract variables, scoped boxes, counters, or PXT.
 
 ## Why This Phase Matters
 
@@ -101,6 +101,21 @@ PER 3 added/confirmed parity coverage for:
 - Number 3 → Repeat Move reaches the goal.
 - Boat → Water still works through the vehicle path.
 - Zero repeat still mirrors current behavior.
+
+## PER 4 Progress
+
+PER 4 kept the runtime and Builder untouched and polished the existing `level-keys-1` teaching level instead of adding another near-duplicate. The level still uses the same id, straight-line 5×5 geometry, Number value `3`, and block set, but its player-facing text now names the full sequence:
+
+1. Pick Up the Number.
+2. Watch the Thought Bubble hold it.
+3. Use Held Item as the Repeat count.
+4. Put Step inside Repeat so the held `3` runs Step three times.
+
+The level intro now has targets for the Number, Pick Up, Repeat, and Step surfaces, and the level has two lightweight hints: one for picking up the Number and one for using Held Item with Repeat.
+
+The Field Guide Automation/Loops page now adds the same concept in one concise note: a Number in the Thought Bubble can drive Repeat through Held Item.
+
+Pack validation now includes a focused assertion that `VARIABLES_PACK` continues to register `level-keys-1`, so the teaching level remains present in the built-in Variables pack.
 
 ## Deferred Work
 

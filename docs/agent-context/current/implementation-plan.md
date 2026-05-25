@@ -2,7 +2,7 @@
 
 ## Status
 
-Recon, PER 1, and PER 2 are complete. PER 3 is the bounded polish/parity slice after PR #31: it keeps visible carried values focused on Key and Number, extracts duplicated runtime rules, and improves the visual continuity of Thought Bubble / Held Item tokens without expanding the feature set.
+Recon and PER 1 through PER 3 are complete. PER 4 is the tiny player-facing Number/Repeat teaching slice: polish the existing Variables pack level and Field Guide wording so the runtime-supported Number pickup → Held Item Repeat path is discoverable without expanding semantics.
 
 ## Phase Goal
 
@@ -85,12 +85,31 @@ Do not expose `0` as a Builder value in this slice. Current Interpreter and Ghos
 - Introduce a shared held-item token visual for the Thought Bubble, cell pickup badge, player tray Held Item token, loop variable badge, and Builder logic Held Item token.
 - Add visual-only passable/unlocked feedback for locked doors when the matching held item is present. Do not consume keys or add door state.
 
+## PER 4 — Number/Repeat Teaching Content
+
+- Polish `src/lib/game/levels/level-keys.json` in place rather than adding another built-in level.
+- Keep `level-keys-1`, its 5×5 straight-line geometry, Number value `3`, available block set, and solution shape stable.
+- Make the intro and hints explicitly teach the player sequence:
+  - pick up the Number;
+  - see it held in the Thought Bubble;
+  - use Held Item as the Repeat count;
+  - place Step inside Repeat.
+- Add a short Automation/Loops Field Guide note that a Thought Bubble Number can drive Repeat through Held Item.
+- Add a low-cost pack validation assertion that `VARIABLES_PACK` continues to register `level-keys-1`.
+- Avoid runtime, Builder, zero semantics, named variables, lexical scope, and PXT changes.
+
 ### PER 3 Deferrals
 
 - Do not redesign zero-repeat semantics.
 - Do not add key consumption, door-unlocked state, multiple inventory slots, or named variables.
 - Do not rewrite the Builder route; only touch the existing Builder logic token where the shared token is a bounded fit.
 - Keep broader E2E and visual regression coverage as follow-up unless a tiny focused component test naturally covers the touched UI.
+
+### PER 4 Deferrals
+
+- Do not add a near-duplicate Number/Repeat level.
+- Do not change runtime Repeat count resolution or `0` semantics.
+- Do not introduce named variables, lexical scope, counters, or PXT.
 
 ## Out of Scope for PER 1
 
@@ -118,6 +137,12 @@ Do not expose `0` as a Builder value in this slice. Current Interpreter and Ghos
 - Builder route rewrite or pack/manual route parity refactor.
 - Broad E2E expansion.
 
+## Out of Scope for PER 4
+
+- Geometry, item value, block availability, or solution-shape changes to `level-keys-1`.
+- Runtime or Builder changes.
+- New variable concepts beyond visible held values.
+
 ## Validation Plan
 
 - Builder model tests for painting Key and Door.
@@ -130,6 +155,8 @@ Do not expose `0` as a Builder value in this slice. Current Interpreter and Ghos
 - Ghost Path Pick Up Number 3 → Repeat Move parity test.
 - PER 3 focused Interpreter/Ghost Path parity tests for Key, Door, Number, Boat, and zero-repeat behavior.
 - Touched component tests for shared held-item token rendering and door passable affordance.
+- PER 4 pack validation assertion for `VARIABLES_PACK` containing `level-keys-1`.
+- PER 4 focused pack/runtime/Ghost Path/Field Guide validation command.
 - Integrated browser review of Jonas creating a key-door puzzle.
 - `PROTO_NODE_VERSION=24 pnpm check`.
 - `PROTO_NODE_VERSION=24 pnpm lint`.
