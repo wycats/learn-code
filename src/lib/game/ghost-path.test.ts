@@ -151,6 +151,40 @@ describe('simulateGhostPath', () => {
 		expect(preview.path.map((entry) => entry.blockId).filter(Boolean)).toEqual(['move-once']);
 	});
 
+	it('predicts Repeat Move from a picked-up Number 3 held item value', () => {
+		const preview = simulateGhostPath({
+			level: {
+				...baseLevel,
+				gridSize: { width: 4, height: 1 },
+				goal: { x: 3, y: 0 },
+				items: { '0,0': { type: 'number', value: 3, icon: 'Hash' } }
+			},
+			program: [
+				block('pick', 'pick-up'),
+				block('repeat-held-number', 'loop', {
+					count: { type: 'variable', variableId: 'heldItem' },
+					children: [block('move-repeat', 'move-forward')]
+				})
+			]
+		});
+
+		expect(preview.outcome).toBe('won');
+		expect(preview.finalPosition).toEqual({ x: 3, y: 0 });
+		expect(preview.path.map((entry) => entry.blockId).filter(Boolean)).toEqual([
+			'pick',
+			'move-repeat',
+			'move-repeat',
+			'move-repeat'
+		]);
+		expect(preview.path.map((entry) => entry.event)).toEqual([
+			'start',
+			'pick-up',
+			'move',
+			'move',
+			'won'
+		]);
+	});
+
 	it('caps runaway loops', () => {
 		const preview = simulateGhostPath({
 			level: {

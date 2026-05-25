@@ -510,6 +510,42 @@ describe('StackInterpreter', () => {
 			expect(loopFrame.loopMax).toBe(2);
 		});
 
+		it('should repeat movement using a picked-up Number 3 as the held item value', () => {
+			game.level.gridSize = { width: 4, height: 1 };
+			game.level.goal = { x: 3, y: 0 };
+			game.level.items = { '0,0': { type: 'number', value: 3, icon: 'Hash' } };
+
+			game.addBlock({ id: 'pick', type: 'pick-up' });
+			game.addBlock({
+				id: 'repeat-held-number',
+				type: 'loop',
+				count: { type: 'variable', variableId: 'heldItem' },
+				children: [{ id: 'move-repeat', type: 'move-forward' }]
+			});
+
+			interpreter.start();
+
+			// Pick up the Number 3.
+			interpreter.step();
+			interpreter.step();
+			expect(game.heldItem).toEqual({ type: 'number', value: 3, icon: 'Hash' });
+
+			// Enter the repeat and confirm it resolved from heldItem before running to completion.
+			interpreter.step();
+			expect(interpreter.stack.at(-1)?.loopMax).toBe(3);
+
+			let result = true;
+			let steps = 0;
+			while (result && steps < 20) {
+				result = interpreter.step();
+				steps++;
+			}
+
+			expect(game.status).toBe('won');
+			expect(game.characterPosition).toEqual({ x: 3, y: 0 });
+			expect(game.heldItem?.value).toBe(3);
+		});
+
 		it('should solve a key-door puzzle with Pick Up and Move', () => {
 			game.level.gridSize = { width: 4, height: 1 };
 			game.level.goal = { x: 3, y: 0 };

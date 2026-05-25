@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { BuilderModel } from '$lib/game/builder-model.svelte';
+	import { BUILDER_NUMBER_ITEM_MAX, BUILDER_NUMBER_ITEM_MIN } from '$lib/game/builder-model.svelte';
 	import Grid from '$lib/components/game/Grid.svelte';
-	import { Plus, Trash2 } from 'lucide-svelte';
+	import { Hash, Plus, Trash2 } from 'lucide-svelte';
 	import { fade, fly } from 'svelte/transition';
 
 	interface Props {
@@ -26,6 +27,7 @@
 
 	const rows = $derived(Array.from({ length: height }, (_, i) => i));
 	const cols = $derived(Array.from({ length: width }, (_, i) => i));
+	const selectedNumberValue = $derived(builder.selectedNumberItemValue);
 
 	function handleRemoveRow(index: number) {
 		builder.removeRow(index);
@@ -37,6 +39,10 @@
 		builder.removeColumn(index);
 		builder.selectedGridPosition = null;
 		builder.hoveredGridPosition = null;
+	}
+
+	function setNumberValue(value: number) {
+		builder.setSelectedNumberItemValue(value);
 	}
 </script>
 
@@ -117,6 +123,42 @@
 			onInteractionEnd={() => builder.endInteraction()}
 		/>
 
+		{#if selectedNumberValue !== null}
+			<div
+				class="number-editor"
+				transition:fade={{ duration: 150 }}
+				role="group"
+				aria-label="Edit number item value"
+				data-testid="builder-number-editor"
+			>
+				<div class="number-editor-title">
+					<Hash size={18} />
+					<span>Number</span>
+				</div>
+				<div class="number-editor-controls">
+					<button
+						class="number-editor-btn"
+						onclick={() => setNumberValue(selectedNumberValue - 1)}
+						disabled={selectedNumberValue <= BUILDER_NUMBER_ITEM_MIN}
+						aria-label="Decrease number value"
+					>
+						−
+					</button>
+					<output class="number-editor-value" aria-label="Number value">
+						{selectedNumberValue}
+					</output>
+					<button
+						class="number-editor-btn"
+						onclick={() => setNumberValue(selectedNumberValue + 1)}
+						disabled={selectedNumberValue >= BUILDER_NUMBER_ITEM_MAX}
+						aria-label="Increase number value"
+					>
+						+
+					</button>
+				</div>
+			</div>
+		{/if}
+
 		{#if !isGridMode}
 			<div class="grid-overlay-hint" transition:fade>
 				<!-- Optional: Hint that grid is editable via tool -->
@@ -164,6 +206,79 @@
 		width: 100%;
 		height: 100%;
 		position: relative;
+	}
+
+	.number-editor {
+		position: absolute;
+		left: 50%;
+		bottom: var(--size-3);
+		transform: translateX(-50%);
+		z-index: 40;
+		display: flex;
+		align-items: center;
+		gap: var(--size-3);
+		padding: var(--size-2) var(--size-3);
+		border-radius: var(--radius-round);
+		background: light-dark(rgba(255, 255, 255, 0.92), rgba(18, 18, 18, 0.9));
+		border: 1px solid color-mix(in srgb, var(--blue-5), transparent 40%);
+		box-shadow: var(--shadow-4);
+		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
+	}
+
+	.number-editor-title,
+	.number-editor-controls {
+		display: flex;
+		align-items: center;
+	}
+
+	.number-editor-title {
+		gap: var(--size-1);
+		font-size: var(--font-size-0);
+		font-weight: 800;
+		color: var(--blue-7);
+		white-space: nowrap;
+	}
+
+	.number-editor-controls {
+		gap: var(--size-2);
+	}
+
+	.number-editor-btn {
+		width: var(--touch-target-min);
+		height: var(--touch-target-min);
+		border-radius: var(--radius-round);
+		border: 1px solid var(--surface-3);
+		background: var(--surface-2);
+		color: var(--text-1);
+		font-size: var(--font-size-3);
+		font-weight: 900;
+		line-height: 1;
+		cursor: pointer;
+		display: grid;
+		place-items: center;
+		padding: 0;
+	}
+
+	.number-editor-btn:hover:not(:disabled) {
+		background: var(--blue-2);
+		border-color: var(--blue-5);
+		color: var(--blue-8);
+	}
+
+	.number-editor-btn:disabled {
+		opacity: 0.42;
+		cursor: not-allowed;
+	}
+
+	.number-editor-value {
+		min-width: 34px;
+		font-family: var(--font-mono);
+		font-size: var(--font-size-4);
+		font-weight: 900;
+		line-height: 1;
+		text-align: center;
+		color: var(--text-1);
 	}
 
 	.control-area {

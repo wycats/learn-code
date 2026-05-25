@@ -15,7 +15,8 @@ function resolveValue(
 		if (game.heldItem) {
 			const def = resolveItemDefinition(game.level, game.heldItem.type);
 			if (def && def.behavior === 'value') {
-				return game.heldItem.value;
+				const resolvedValue = Number(game.heldItem.value);
+				return Number.isFinite(resolvedValue) ? resolvedValue : 0;
 			}
 		}
 		return 0;

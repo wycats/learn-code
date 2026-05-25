@@ -272,6 +272,12 @@
 		color: var(--blue-8);
 	}
 
+	.item-marker[data-item-type='number'] {
+		background-color: var(--blue-1);
+		border-color: var(--blue-5);
+		color: var(--blue-8);
+	}
+
 	.item-marker :global(svg) {
 		width: 72%;
 		height: 72%;
@@ -309,13 +315,10 @@
 
 	.number-item {
 		font-family: var(--font-mono);
-		font-weight: bold;
-		font-size: var(--font-size-3);
-		color: var(--text-1);
-		background: var(--surface-1);
-		padding: 2px 6px;
-		border-radius: var(--radius-2);
-		border: 1px solid var(--surface-4);
+		font-weight: 900;
+		font-size: clamp(1rem, 58%, 1.35rem);
+		line-height: 1;
+		color: var(--blue-8);
 	}
 
 	.color-item {

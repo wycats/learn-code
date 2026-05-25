@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { BuilderModel } from './builder-model.svelte';
+import { BUILDER_NUMBER_ITEM_DEFAULT, BuilderModel } from './builder-model.svelte';
 import { InMemoryPersistenceService } from '$lib/services/persistence.fake';
 import { InMemoryFileSystemService } from '$lib/services/file-system.fake';
 import { LOCKED_DOOR_TILE_ID } from './builder-presets';
-import type { LevelPack } from '$lib/game/types';
+import type { HeldItem, LevelPack } from '$lib/game/types';
 
 // No mocks! Just fakes.
 
@@ -120,6 +120,87 @@ describe('BuilderModel', () => {
 			type: 'key',
 			value: true,
 			icon: 'Key'
+		});
+	});
+
+	it('paints a number item with a positive integer default value', () => {
+		builder.activeTool = { type: 'item', value: 'number' };
+		builder.handleCellClick({ x: 1, y: 1 });
+
+		expect(builder.level.items?.['1,1']).toEqual({
+			type: 'number',
+			value: BUILDER_NUMBER_ITEM_DEFAULT,
+			icon: 'Hash'
+		});
+		expect(builder.game.level.items?.['1,1']).toEqual({
+			type: 'number',
+			value: BUILDER_NUMBER_ITEM_DEFAULT,
+			icon: 'Hash'
+		});
+		expect(builder.selectedNumberPosition).toEqual({ x: 1, y: 1 });
+		expect(builder.selectedNumberItemValue).toBe(BUILDER_NUMBER_ITEM_DEFAULT);
+	});
+
+	it('edits a placed number item value, clamps to 1..9, and preserves undo history', () => {
+		builder.activeTool = { type: 'item', value: 'number' };
+		builder.handleCellClick({ x: 1, y: 1 });
+
+		builder.setSelectedNumberItemValue(7);
+		expect(builder.level.items?.['1,1']).toMatchObject({ type: 'number', value: 7, icon: 'Hash' });
+		expect(builder.game.level.items?.['1,1']).toMatchObject({ type: 'number', value: 7 });
+
+		builder.handleCellClick({ x: 1, y: 1 });
+		expect(builder.level.items?.['1,1']?.value).toBe(7);
+		expect(builder.selectedNumberPosition).toEqual({ x: 1, y: 1 });
+
+		builder.setNumberItemValue({ x: 1, y: 1 }, 0);
+		expect(builder.level.items?.['1,1']?.value).toBe(1);
+
+		builder.setNumberItemValue({ x: 1, y: 1 }, 42);
+		expect(builder.level.items?.['1,1']?.value).toBe(9);
+
+		builder.undo();
+		expect(builder.level.items?.['1,1']?.value).toBe(1);
+		expect(builder.game.level.items?.['1,1']?.value).toBe(1);
+	});
+
+	it('selects an existing number item without adding no-op undo history', () => {
+		builder.activeTool = { type: 'item', value: 'number' };
+		builder.handleCellClick({ x: 1, y: 1 });
+		builder.setSelectedNumberItemValue(7);
+		builder.selectedNumberPosition = null;
+
+		const historyLength = builder.historyManager.history.length;
+		builder.handleCellClick({ x: 1, y: 1 });
+
+		expect(builder.selectedNumberPosition).toEqual({ x: 1, y: 1 });
+		expect(builder.level.items?.['1,1']?.value).toBe(7);
+		expect(builder.historyManager.history).toHaveLength(historyLength);
+	});
+
+	it('normalizes malformed number items when selected for editing', () => {
+		builder.level.items = {
+			'1,1': {
+				type: 'number',
+				value: 42
+			} as HeldItem
+		};
+		builder.syncGame();
+		builder.activeTool = { type: 'item', value: 'number' };
+
+		builder.handleCellClick({ x: 1, y: 1 });
+
+		expect(builder.selectedNumberPosition).toEqual({ x: 1, y: 1 });
+		expect(builder.selectedNumberItemValue).toBe(9);
+		expect(builder.level.items?.['1,1']).toEqual({
+			type: 'number',
+			value: 9,
+			icon: 'Hash'
+		});
+		expect(builder.game.level.items?.['1,1']).toEqual({
+			type: 'number',
+			value: 9,
+			icon: 'Hash'
 		});
 	});
 

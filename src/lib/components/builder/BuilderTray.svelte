@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { BuilderModel, BuilderTool } from '$lib/game/builder-model.svelte';
+	import { BUILDER_NUMBER_ITEM_DEFAULT } from '$lib/game/builder-model.svelte';
 	import type { BlockType, CellType } from '$lib/game/types';
 	import type { TileDefinition, ItemDefinition } from '$lib/game/schema';
 	import type { ComponentType, SvelteComponent } from 'svelte';
@@ -27,6 +28,7 @@
 		MessageCircle,
 		Ship,
 		Key,
+		Hash,
 		Box,
 		Eraser
 	} from 'lucide-svelte';
@@ -62,6 +64,7 @@
 		tileDef?: TileDefinition;
 		itemDef?: ItemDefinition;
 		scope?: 'pack' | 'level';
+		previewValue?: number;
 	};
 
 	const standardTerrainTools: TerrainTool[] = [
@@ -96,6 +99,15 @@
 
 	const standardItemTools: TerrainTool[] = [
 		{ id: 'key', value: 'key', label: 'Key', type: 'item', icon: Key, color: 'var(--orange-7)' },
+		{
+			id: 'number',
+			value: 'number',
+			label: 'Number',
+			type: 'item',
+			icon: Hash,
+			color: 'var(--blue-7)',
+			previewValue: BUILDER_NUMBER_ITEM_DEFAULT
+		},
 		{ id: 'boat', value: 'boat', label: 'Boat', type: 'item', icon: Ship, color: 'var(--blue-7)' }
 	];
 
@@ -177,6 +189,9 @@
 
 		builder.activeTool = tool;
 		builder.selectedActor = null;
+		if (!(tool.type === 'item' && 'value' in tool && tool.value === 'number')) {
+			builder.selectedNumberPosition = null;
+		}
 	}
 
 	function isToolHighlighted(tool: TerrainTool) {
@@ -403,10 +418,15 @@
 								onclick={() => selectTerrainTool(tool)}
 								style:--tool-color={tool.color}
 							>
-								<div class="cell-preview">
+								<div class="cell-preview" aria-hidden="true">
 									{#if tool.type === 'erase' && tool.icon}
 										<div class="item-preview erase-preview">
 											<tool.icon size={32} />
+										</div>
+									{:else if tool.type === 'item' && tool.icon && tool.previewValue}
+										<div class="item-preview number-tool-preview">
+											<tool.icon size={28} />
+											<span class="item-preview-value">{tool.previewValue}</span>
 										</div>
 									{:else if tool.type === 'item' && tool.icon}
 										<div class="item-preview">
@@ -748,6 +768,20 @@
 		justify-content: center;
 		background-color: var(--surface-2);
 		color: var(--tool-color, var(--text-1));
+	}
+
+	.number-tool-preview {
+		position: relative;
+		gap: 2px;
+		background: linear-gradient(135deg, var(--blue-1), var(--surface-2));
+	}
+
+	.item-preview-value {
+		font-family: var(--font-mono);
+		font-size: var(--font-size-3);
+		font-weight: 900;
+		line-height: 1;
+		color: var(--text-1);
 	}
 
 	.cell-preview :global(.marker svg),

@@ -16,7 +16,7 @@ The current system already has a concrete “variable” foundation: the charact
 - Key/door semantics already exist in the engine: custom wall tiles can set `passableBy: 'key'`, and built-in `key` is a collectible item.
 - Ghost Path duplicates the interpreter’s variable/item/terrain behavior, so every new variable behavior needs parity coverage.
 - Builder exposes `Pick Up` and can define passable custom tiles, but Key is not visible in the standard item tools and Door is not a first-class creator preset.
-- Builder item painting currently uses `value: true` for all items; this works for keys/boats but is not enough for future number variables.
+- Before PER 2, Builder item painting used `value: true` for all items; Key/Boat still use boolean values, while Number now needs numeric value persistence.
 - The design docs position variables as visible memory in a Thought Bubble, starting with concrete possession before numeric values or operations.
 
 ## Current Runtime Flow
@@ -77,7 +77,7 @@ Acceptance shape:
 - Door preset must persist a custom tile definition; otherwise an unknown `locked-door` tile id becomes passable floor.
 - Door visuals need to clearly read as locked/key-required, not just another wall.
 - Interpreter and Ghost Path must stay in sync.
-- Future number-variable slices need value editing, because current item painting stores `value: true`.
+- PER 2 should keep Number values positive until zero-repeat semantics are redesigned.
 - PXT should remain a later engine/syntax bridge investigation until Kibi’s own creator semantics are clearer.
 
 ## Follow-Up Slices
@@ -90,7 +90,7 @@ Acceptance shape:
 
 ### Medium Effort
 
-- Number item creator tools and value editing.
+- Zero semantics and larger Number ranges after the initial `1..9` creator slice.
 - Bubble-as-parameter polish for loops.
 - Better Thought Bubble transition animations.
 - Runtime parity helpers to reduce interpreter/ghost duplication.

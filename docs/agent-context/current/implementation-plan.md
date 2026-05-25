@@ -2,7 +2,7 @@
 
 ## Status
 
-Recon and first implementation slice are underway. Phase 46 should prioritize Jonas-facing creator power through concrete visible memory before attempting named variables, lexical scoping, or PXT integration.
+Recon and the first implementation slice are complete. PER 2 is underway to make Number pickup creator-accessible as a visible Repeat value, still prioritizing concrete carried state before named variables, lexical scoping, or PXT integration.
 
 ## Phase Goal
 
@@ -58,6 +58,20 @@ See `variables-recon.md` for details. The short version:
 - The tablet top bar should never require horizontal scrolling; secondary status chips can collapse before primary actions are pushed offscreen.
 - Builder tablet typography should have a floor: shrink layout density, icon spacing, or columns before shrinking primary labels below comfortable reading size.
 
+## PER 2 — Number Pickup as Visible Repeat Value
+
+- Expose Number as a standard Builder item tool next to Key and Boat.
+- Use a clear hash/value tray preview so the tool reads as “a number I can pick up,” not another terrain tile.
+- Persist Builder-created Number items with numeric positive integer values, defaulting to `3`.
+- Add a small touch-friendly editor for placed Number items so Jonas can adjust the visible value without editing JSON.
+- Keep edits connected to Builder history, modified state, and `GameModel` sync.
+- Preserve Key, Door, and Boat behavior from PER 1.
+- Verify that Interpreter and Ghost Path both treat Pick Up Number 3 followed by Repeat Move using `heldItem` as three moves.
+
+### PER 2 Deferral
+
+Do not expose `0` as a Builder value in this slice. Current Interpreter and Ghost Path loop semantics intentionally mirror each other by executing a `0` repeat body once, which would be confusing for Jonas. Builder Number values are clamped to `1..9` until zero semantics are redesigned.
+
 ## Out of Scope for PER 1
 
 - Named variables.
@@ -69,12 +83,24 @@ See `variables-recon.md` for details. The short version:
 - Lexical scoping boxes.
 - PXT / MakeCode integration.
 
+## Out of Scope for PER 2
+
+- Zero-valued Number tools.
+- Number ranges beyond `1..9`.
+- Arithmetic, counters, or merge operations.
+- Named variables, multiple inventory slots, or scoped storage.
+- Runtime loop semantic changes for `0`.
+
 ## Validation Plan
 
 - Builder model tests for painting Key and Door.
+- Builder model tests for painting and editing Number values.
 - Builder tray component test for visible Key and Door tools.
+- Builder tray component test for visible Number tooling and updated tool counts.
 - Interpreter key-door puzzle test.
+- Interpreter Pick Up Number 3 → Repeat Move parity test.
 - Ghost Path key-door prediction tests.
+- Ghost Path Pick Up Number 3 → Repeat Move parity test.
 - Integrated browser review of Jonas creating a key-door puzzle.
 - `PROTO_NODE_VERSION=24 pnpm check`.
 - `PROTO_NODE_VERSION=24 pnpm lint`.
@@ -88,4 +114,5 @@ See `variables-recon.md` for details. The short version:
 - Should the Builder UI typography tokens become global design tokens once more Builder screens adopt them?
 - Should Builder offer a one-click “locked door puzzle” starter later?
 - Should Field Guide relevance learn a key-door concept page in this phase or a follow-up?
-- When do we introduce number/value items as the next step after key possession?
+- What should zero-repeat mean before Builder exposes `0` as a Number value?
+- When should Number values expand beyond the single-digit `1..9` creator range?

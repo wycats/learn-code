@@ -294,7 +294,8 @@ function resolveValue(
 		if (state.heldItem) {
 			const definition = resolveItemDefinition(level, state.heldItem.type);
 			if (definition?.behavior === 'value') {
-				return Number(state.heldItem.value);
+				const resolvedValue = Number(state.heldItem.value);
+				return Number.isFinite(resolvedValue) ? resolvedValue : 0;
 			}
 		}
 		return 0;
