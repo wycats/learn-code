@@ -620,3 +620,35 @@
 
 - We updated `CampaignService` and other services to unwrap proxies before cloning.
 - This prevents "DataCloneError" and ensures reliable data persistence.
+
+## Phase 46: Variables & Scoping / Engine Readiness
+
+### 66. Visible Carried State Before Symbolic Variables
+
+**Decision:** Introduce the next variables/scoping work through visible carried state before adding named variables, counters, lexical scope, or PXT.
+**Context:** The runtime already had `heldItem`, Pick Up, Thought Bubble display, `passableBy`, and variable references for held values. This made possession a concrete and developmentally appropriate bridge toward variables.
+**Consequence:**
+
+- The first creator-facing variable mechanics are Key → Door and Number → Repeat.
+- The product teaches “what I carry changes what happens later” before teaching symbolic storage.
+- Lexical scoping and the box metaphor remain future work built on a more tangible foundation.
+
+### 67. Builder Mechanics as Presets Over Existing Runtime Semantics
+
+**Decision:** Expose Key, Door, and Number through Builder presets and tools rather than adding new runtime concepts.
+**Context:** The engine already supported collectible items, value items, passable custom wall tiles, and held-item Repeat counts. Jonas needed a creator loop, not a new schema direction.
+**Consequence:**
+
+- Door is stored as a custom wall tile with `passableBy: 'key'`.
+- Number items persist as numeric values and are edited in the Builder with a bounded `1..9` range.
+- Zero-valued Number tools remain deferred because current zero-repeat semantics run once.
+
+### 68. Shared Runtime Rules for Interpreter and Ghost Path
+
+**Decision:** Extract pure helpers for held-value resolution, terrain/custom tile resolution, and passability checks used by both the live Interpreter and Ghost Path simulation.
+**Context:** Key/Door, Number/Repeat, and Boat/Water parity depends on the preview matching runtime behavior. Duplicated rules made future creator mechanics riskier.
+**Consequence:**
+
+- Interpreter and Ghost Path now share the same core runtime rules while keeping mutation, sounds, status updates, and path-entry recording local.
+- Existing behavior, including zero-repeat parity and the `heldItem` vs. `vehicle` split, was intentionally preserved.
+- Future mechanics can add parity tests around one helper seam instead of updating two divergent implementations.

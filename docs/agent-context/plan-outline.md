@@ -447,13 +447,18 @@
   - [ ] **Context-Aware Manual**: Customize the Field Guide for the current level.
   - [ ] **Architect Control**: Give the Architect control over the Field Guide content for their levels.
 
-## Phase 46: Engine Upgrade
+## Phase 46: Variables & Scoping / Engine Readiness (Completed)
 
-**Goal:** Modernize the underlying execution engine to support advanced features and better performance.
+**Goal:** Make the existing Thought Bubble / held-item runtime creator-accessible and learnable as visible carried state before introducing named variables, lexical scoping, counters, or PXT.
 
-- [ ] **PXT / MakeCode Integration**: Investigate using Microsoft's PXT as the underlying engine.
-- [ ] **Zod Schema Diff**: Implement "Spec-ulation" rules for Zod schemas to prevent breaking changes.
-- [ ] **Variables & Scoping**: Refine the variable system with lexical scoping and "box" metaphor.
+- [x] **Jonas Key/Door Creator Loop**: Add Key and Door Builder tools, persist Door as a key-passable wall tile, and verify the creator/playtest loop.
+- [x] **Number Pickup as Visible Repeat Value**: Add a Builder Number tool, persist numeric values, add a bounded value editor, and verify Number → Held Item → Repeat parity.
+- [x] **Runtime Parity Cleanup**: Extract shared held-value, terrain resolution, and passability helpers for Interpreter and Ghost Path.
+- [x] **Held-Value Visual Polish**: Unify carried-item visuals across Thought Bubble, pickup tokens, tray tokens, Repeat badges, and Builder logic tokens.
+- [x] **Teaching Content**: Polish the existing Variables pack level and Field Guide copy to teach Pick Up Number → Thought Bubble → Held Item → Repeat.
+- [ ] **PXT / MakeCode Integration**: Investigate using Microsoft's PXT as the underlying engine. (Deferred)
+- [ ] **Zod Schema Diff**: Implement "Spec-ulation" rules for Zod schemas to prevent breaking changes. (Deferred)
+- [ ] **Lexical Scoping / Box Metaphor**: Refine the variable system with lexical scoping and the box metaphor. (Deferred)
 
 ## Phase 47: The Syntax Bridge
 

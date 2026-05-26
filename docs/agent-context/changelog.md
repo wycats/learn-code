@@ -826,3 +826,35 @@ Addressed two critical bugs affecting user experience: a "Loading..." hang when 
   - **E2E Tests**: Added `e2e/play-local-pack.spec.ts` to verify local pack loading and `e2e/navigation-crash.spec.ts` to prevent regression of the navigation crash.
 - **Documentation**:
   - Updated `walkthrough.md` with verification steps for the fixes.
+
+## Phase 46: Variables & Scoping / Engine Readiness (Completed)
+
+**Date:** May 25, 2026
+
+**Summary:**
+Made the existing Thought Bubble / held-item runtime creator-accessible and learnable before introducing named variables, lexical scope, counters, or PXT. The phase focused on visible carried state: Keys affect locked Doors, and Numbers affect Repeat counts. It added Builder tools for Key, Door, and Number; polished carried-item visuals; extracted shared runtime parity helpers; and updated the built-in Variables pack lesson and Field Guide copy to teach the Number → Thought Bubble → Held Item → Repeat flow.
+
+**Key Deliverables:**
+
+- **Jonas Key/Door Creator Loop**:
+  - Added Key as a standard Builder item tool.
+  - Added Door as a Builder terrain preset backed by a custom wall tile with `passableBy: 'key'`.
+  - Kept Pick Up in the existing Logic tray and verified the creator loop in the browser.
+  - Added an Erase tool to the Terrain tray so Key/Door placements can be removed where they are created.
+- **Number Pickup as Visible Repeat Value**:
+  - Added Number as a Builder item tool with a hash/value preview.
+  - Persisted Builder-created Numbers as numeric values instead of generic `true` item values.
+  - Added a touch-friendly selected-Number editor with a bounded `1..9` range.
+  - Deferred zero-valued Numbers until zero-repeat semantics are redesigned.
+- **Runtime Parity and Visual Polish**:
+  - Extracted shared held-value, terrain resolution, and passability helpers for the Interpreter and Ghost Path.
+  - Preserved existing semantics for Key/Door, Boat/Water, and zero-repeat behavior.
+  - Added a shared `HeldItemToken` visual across Thought Bubble, pickup badges, tray tokens, Repeat badges, and Builder logic tokens.
+  - Added visual-only passable feedback for locked doors while the matching held item is present.
+- **Teaching Content**:
+  - Polished the existing `level-keys-1` Variables pack level to teach Pick Up Number → Thought Bubble → Held Item Repeat → Step inside Repeat.
+  - Added a concise Field Guide Automation/Loops note about Thought Bubble Numbers driving Repeat counts.
+  - Added pack validation coverage to keep the Variables teaching level registered.
+- **Verification**:
+  - Added/updated BuilderModel, BuilderTray, Interpreter, Ghost Path, Cell, pack validation, and Field Guide relevance coverage.
+  - Ran phase verification successfully: `pnpm check`, `pnpm lint`, and unit tests all passed.
