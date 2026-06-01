@@ -124,10 +124,10 @@
 </script>
 
 <aside class="board-preview" aria-label="Board preview">
-	<header class="board-preview-header">
+	<div class="board-preview-header">
 		<h3>Board</h3>
 		<span>{width}x{height}</span>
-	</header>
+	</div>
 
 	<div
 		class="mini-board"

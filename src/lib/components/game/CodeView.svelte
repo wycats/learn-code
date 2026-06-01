@@ -153,7 +153,7 @@
 	use:watchDialogOpen
 >
 	<div class="code-view-shell">
-		<header class="code-view-header">
+		<div class="code-view-header">
 			<div class="title-group">
 				<span class="eyebrow">Syntax Bridge</span>
 				<h2 id="code-view-title">Code View</h2>
@@ -171,7 +171,7 @@
 			>
 				<X size={22} />
 			</button>
-		</header>
+		</div>
 
 		{#if controls}
 			<div class="code-controls" role="toolbar" aria-label="Code View playback controls">
