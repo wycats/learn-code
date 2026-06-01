@@ -180,7 +180,7 @@
 					class:stop={controls.runControl.action === 'stop'}
 					onclick={controls.onRunControl}
 					disabled={controls.runControl.disabled}
-					aria-label={controls.runControl.label}
+					aria-label="Code View execution control"
 				>
 					{#if controls.runControl.action === 'stop'}
 						<Square size={16} fill="currentColor" />
@@ -194,7 +194,7 @@
 					class="code-control-button"
 					onclick={controls.onStepBack}
 					disabled={!controls.canStepBack}
-					aria-label="Step Back"
+					aria-label="Code View previous instruction"
 				>
 					<StepBack size={16} />
 					<span>Back</span>
@@ -204,7 +204,7 @@
 					class="code-control-button"
 					onclick={controls.onStepForward}
 					disabled={!controls.canStepForward}
-					aria-label="Step Forward"
+					aria-label="Code View next instruction"
 				>
 					<StepForward size={16} />
 					<span>Step</span>
@@ -214,7 +214,7 @@
 					class="code-control-button"
 					onclick={controls.onReset}
 					disabled={!controls.canReset}
-					aria-label="Reset"
+					aria-label="Code View restart run"
 				>
 					<RotateCcw size={16} />
 					<span>Reset</span>

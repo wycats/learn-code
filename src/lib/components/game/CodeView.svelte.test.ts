@@ -129,14 +129,18 @@ describe('CodeView', () => {
 			}
 		});
 
-		const playButton = container.querySelector('button[aria-label="Play"]') as HTMLButtonElement;
+		const playButton = container.querySelector(
+			'button[aria-label="Code View execution control"]'
+		) as HTMLButtonElement;
 		const backButton = container.querySelector(
-			'button[aria-label="Step Back"]'
+			'button[aria-label="Code View previous instruction"]'
 		) as HTMLButtonElement;
 		const stepButton = container.querySelector(
-			'button[aria-label="Step Forward"]'
+			'button[aria-label="Code View next instruction"]'
 		) as HTMLButtonElement;
-		const resetButton = container.querySelector('button[aria-label="Reset"]') as HTMLButtonElement;
+		const resetButton = container.querySelector(
+			'button[aria-label="Code View restart run"]'
+		) as HTMLButtonElement;
 
 		expect(playButton).toBeInTheDocument();
 		expect(backButton.disabled).toBe(true);
