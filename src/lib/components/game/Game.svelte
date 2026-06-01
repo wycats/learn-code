@@ -4,6 +4,7 @@
 	import { simulateGhostPath } from '$lib/game/ghost-path';
 	import Grid from '$lib/components/game/Grid.svelte';
 	import Tray from '$lib/components/game/Tray.svelte';
+	import CodeView from '$lib/components/game/CodeView.svelte';
 	import InstructionBar from '$lib/components/game/InstructionBar.svelte';
 	import StatusPanel from '$lib/components/game/StatusPanel.svelte';
 	import WinModal from '$lib/components/game/WinModal.svelte';
@@ -422,6 +423,15 @@
 			</div>
 
 			<div class="right-controls">
+				<button
+					class="btn-secondary"
+					command="show-modal"
+					commandfor="code-view-dialog"
+					aria-label="Open Code View"
+					title="Open Code View"
+				>
+					<span class="btn-label">Code View</span>
+				</button>
 				<DevConnectionStatus />
 				<button class="btn-icon" onclick={handleOpenFeedback} title="Report Issue">
 					<MessageCircle size={20} />
@@ -483,6 +493,20 @@
 			{/key}
 		</div>
 	</div>
+
+	<CodeView
+		{game}
+		controls={{
+			runControl,
+			onRunControl: handleRunControl,
+			onStepBack: handleStepBack,
+			onStepForward: handleStep,
+			onReset: handleReset,
+			canStepBack: isRunning && Boolean(interpreter),
+			canStepForward: game.program.length > 0 && !(isRunning && !isPaused),
+			canReset: !(isRunning && !isPaused)
+		}}
+	/>
 
 	{#if activeFeedbackContext}
 		<FeedbackModal context={activeFeedbackContext} onClose={() => (activeFeedbackContext = null)} />
@@ -718,6 +742,7 @@
 		position: relative;
 		z-index: 10;
 		min-height: 0;
+		overflow: visible;
 	}
 
 	.stage-container {

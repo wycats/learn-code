@@ -1,32 +1,35 @@
-# Changelog Plan: Phase 46 — Variables & Scoping / Engine Readiness
+# Changelog Plan: Phase 47 — The Syntax Bridge
 
 ## Candidate User-Facing Summary
 
-Creators can build simple locked-door puzzles by placing a key and a door in the Builder. Players can also learn the visible-value version of the same idea: pick up a Number, hold it in the Thought Bubble, and use Held Item to control Repeat.
+Players can open a read-only Code View that shows their Kibi block program as TypeScript-flavored code. The view includes syntax highlighting, updates after committed block changes, shows both the main program and any function definitions, visually connects selected or executing blocks to their generated code lines, and includes a compact board preview when space allows.
 
 ## Candidate Highlights
 
-- Add Key as a Builder item tool.
-- Add Door as a Builder terrain preset.
-- Door behaves like a wall that opens when the character holds Key.
-- Reuse the existing Thought Bubble / held-item mechanic as the first visible variable concept.
-- Add interpreter and Ghost Path coverage for the key-door puzzle loop.
-- Polish the built-in Number/Repeat teaching level so it explains Pick Up Number → Thought Bubble → Held Item Repeat → Step inside Repeat.
-- Add a short Field Guide note about Thought Bubble Numbers as Repeat counts.
+- Add a pure block-to-code formatter for the current Kibi block schema.
+- Use a small code-writer helper so indentation is centralized instead of hand-managed by every block formatter.
+- Add a read-only Code View dialog in the shared game toolbar.
+- Show the whole program without wrapping it in a fake `main()` function.
+- Render function calls and definitions with quoted creator-authored names.
+- Render Number/Thought Bubble repeat values as `heldItem`.
+- Add Shiki syntax highlighting with a plain-code fallback.
+- Highlight selected and executing code lines using a formatter-generated block source map.
+- Add playback controls and a compact board preview inside Code View.
+- Add formatter and component tests for generated code and committed model updates.
 
 ## Non-User-Facing Notes
 
-- No named variables, counters, lexical scoping, or PXT integration in this first slice.
-- Door is stored as a custom wall tile with `passableBy: 'key'`.
-- Runtime behavior uses existing held-item/passability semantics.
-- Number/Repeat teaching content reuses existing runtime support; no runtime or Builder changes were needed for PER 4.
-- `level-keys-1` remains the existing Variables pack level with the same id, layout, Number value `3`, and available blocks.
+- Generated code is an explanatory pseudo-runtime, not executable JavaScript.
+- Blocks remain the source of truth.
+- No schema, runtime, interpreter, or Builder semantics changed.
+- Editable text mode, round-trip parsing, direct code execution, and PXT remain deferred.
+- During-drag code preview remains a follow-up product decision.
 
 ## Validation Notes To Include Internally
 
-- BuilderModel key and door painting tests.
-- Interpreter key-door solve test.
-- Ghost Path key-door solve and blocked-path tests.
-- Integrated browser review of the Builder creation loop.
-- Variables pack registration assertion for `level-keys-1`.
-- Focused PER 4 validation: pack validation, variables runtime parity, Ghost Path, and Field Guide relevance.
+- Focused formatter tests.
+- Focused Code View component tests.
+- `PROTO_NODE_VERSION=24 pnpm check`.
+- `PROTO_NODE_VERSION=24 pnpm lint`.
+- `git diff --check`.
+- Manual browser review at `https://kibi.localhost/`.

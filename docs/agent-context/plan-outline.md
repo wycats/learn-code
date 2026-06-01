@@ -464,9 +464,11 @@
 
 **Goal:** Bridge the gap between block-based coding and real-world text-based syntax.
 
-- [ ] **Code View**: A read-only panel showing the generated JavaScript/TypeScript code for the current program.
-- [ ] **Syntax Highlighting**: Use Shiki or similar to highlight the code.
-- [ ] **Live Updates**: Code updates in real-time as blocks are dragged.
+- [x] **Code View**: A read-only panel showing generated TypeScript-flavored pseudo-runtime code for the current program.
+- [x] **Syntax Highlighting**: Use Shiki or similar to highlight the code.
+- [x] **Committed Live Updates**: Code updates after block changes are committed to the program model.
+- [x] **Code/Board Context**: Show playback controls and a compact board preview inside Code View when space allows.
+- [ ] **During-Drag Preview**: Decide whether hover/draft drag state should update the Code View before blocks are committed.
 
 ## Phase 48: Advanced Builder Interactions
 
