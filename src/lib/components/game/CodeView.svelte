@@ -115,6 +115,17 @@
 		}
 	}
 
+	function handleCloseClick(event: MouseEvent) {
+		if ('command' in HTMLButtonElement.prototype) return;
+
+		const button = event.currentTarget as HTMLButtonElement;
+		const targetId = button.getAttribute('commandfor');
+		if (!targetId) return;
+
+		const dialog = document.getElementById(targetId)?.closest('dialog') as HTMLDialogElement | null;
+		dialog?.close();
+	}
+
 	function watchDialogOpen(dialog: HTMLDialogElement) {
 		shouldHighlight ||= dialog.open;
 
@@ -167,6 +178,7 @@
 				class="close-button"
 				command="close"
 				commandfor={dialogId}
+				onclick={handleCloseClick}
 				aria-label="Close Code View"
 			>
 				<X size={22} />
