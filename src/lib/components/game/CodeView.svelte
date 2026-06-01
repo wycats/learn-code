@@ -42,6 +42,7 @@
 	}
 
 	let { game, dialogId = 'code-view-dialog', controls }: Props = $props();
+	let shouldHighlight = $state(false);
 
 	const formattedCode = $derived(
 		formatProgramCodeWithMap({
@@ -56,7 +57,7 @@
 	const codeLineMetadata = $derived.by(() =>
 		buildLineMetadata(formattedCode.blockLineRanges, game.activeBlockId, selectedBlockIds)
 	);
-	const highlightedCode = $derived(highlight(generatedCode));
+	const highlightedCode = $derived(shouldHighlight ? highlight(generatedCode) : null);
 
 	function buildLineMetadata(
 		blockLineRanges: ReadonlyMap<string, CodeLineRange>,
@@ -114,6 +115,21 @@
 		}
 	}
 
+	function watchDialogOpen(dialog: HTMLDialogElement) {
+		shouldHighlight ||= dialog.open;
+
+		const observer = new MutationObserver(() => {
+			shouldHighlight ||= dialog.open;
+		});
+		observer.observe(dialog, { attributes: true, attributeFilter: ['open'] });
+
+		return {
+			destroy() {
+				observer.disconnect();
+			}
+		};
+	}
+
 	function tokenColor(token: HighlightToken, highlighted: HighlightedCode): string {
 		return token.color ?? highlighted.fg ?? '#e1e4e8';
 	}
@@ -134,6 +150,7 @@
 	aria-labelledby="code-view-title"
 	aria-describedby="code-view-description"
 	onclick={handleBackdropClick}
+	use:watchDialogOpen
 >
 	<div class="code-view-shell">
 		<header class="code-view-header">
@@ -207,7 +224,48 @@
 
 		<div class="code-view-body">
 			<div class="code-frame">
-				{#await highlightedCode}
+				{#if highlightedCode}
+					{#await highlightedCode}
+						<pre><code class="highlighted-code"
+								>{#each codeLines as line, lineIndex (lineIndex)}{@const metadata =
+										lineMetadata(lineIndex)}<span
+										class="code-line"
+										class:active-code-line={metadata.isActive}
+										class:selected-code-line={metadata.isSelected}
+										data-testid="code-line"
+										data-block-ids={lineBlockIds(lineIndex)}>{line}</span
+									>{/each}</code
+							></pre>
+					{:then highlighted}
+						<pre style:background-color={highlighted.bg} style:color={highlighted.fg}><code
+								class="highlighted-code"
+								>{#each highlighted.tokens as line, lineIndex (lineIndex)}{@const metadata =
+										lineMetadata(lineIndex)}<span
+										class="code-line"
+										class:active-code-line={metadata.isActive}
+										class:selected-code-line={metadata.isSelected}
+										data-testid="code-line"
+										data-block-ids={lineBlockIds(lineIndex)}
+										>{#each line as token, tokenIndex (tokenIndex)}<span
+												style:color={tokenColor(token, highlighted)}
+												style:font-style={tokenFontStyle(token)}
+												style:font-weight={tokenFontWeight(token)}>{token.content}</span
+											>{/each}</span
+									>{/each}</code
+							></pre>
+					{:catch}
+						<pre><code class="highlighted-code"
+								>{#each codeLines as line, lineIndex (lineIndex)}{@const metadata =
+										lineMetadata(lineIndex)}<span
+										class="code-line"
+										class:active-code-line={metadata.isActive}
+										class:selected-code-line={metadata.isSelected}
+										data-testid="code-line"
+										data-block-ids={lineBlockIds(lineIndex)}>{line}</span
+									>{/each}</code
+							></pre>
+					{/await}
+				{:else}
 					<pre><code class="highlighted-code"
 							>{#each codeLines as line, lineIndex (lineIndex)}{@const metadata =
 									lineMetadata(lineIndex)}<span
@@ -218,35 +276,7 @@
 									data-block-ids={lineBlockIds(lineIndex)}>{line}</span
 								>{/each}</code
 						></pre>
-				{:then highlighted}
-					<pre style:background-color={highlighted.bg} style:color={highlighted.fg}><code
-							class="highlighted-code"
-							>{#each highlighted.tokens as line, lineIndex (lineIndex)}{@const metadata =
-									lineMetadata(lineIndex)}<span
-									class="code-line"
-									class:active-code-line={metadata.isActive}
-									class:selected-code-line={metadata.isSelected}
-									data-testid="code-line"
-									data-block-ids={lineBlockIds(lineIndex)}
-									>{#each line as token, tokenIndex (tokenIndex)}<span
-											style:color={tokenColor(token, highlighted)}
-											style:font-style={tokenFontStyle(token)}
-											style:font-weight={tokenFontWeight(token)}>{token.content}</span
-										>{/each}</span
-								>{/each}</code
-						></pre>
-				{:catch}
-					<pre><code class="highlighted-code"
-							>{#each codeLines as line, lineIndex (lineIndex)}{@const metadata =
-									lineMetadata(lineIndex)}<span
-									class="code-line"
-									class:active-code-line={metadata.isActive}
-									class:selected-code-line={metadata.isSelected}
-									data-testid="code-line"
-									data-block-ids={lineBlockIds(lineIndex)}>{line}</span
-								>{/each}</code
-						></pre>
-				{/await}
+				{/if}
 			</div>
 
 			<div class="board-preview-slot">

@@ -274,6 +274,19 @@
 		});
 	}
 
+	function handleOpenCodeView(event: MouseEvent) {
+		if ('command' in HTMLButtonElement.prototype) return;
+
+		const button = event.currentTarget as HTMLButtonElement;
+		const targetId = button.getAttribute('commandfor');
+		if (!targetId) return;
+
+		const dialog = document.getElementById(targetId) as HTMLDialogElement | null;
+		if (!dialog?.open && typeof dialog?.showModal === 'function') {
+			dialog.showModal();
+		}
+	}
+
 	function handleOpenFieldGuide() {
 		if (relatedFieldGuideTarget) {
 			bookStore.openTo(relatedFieldGuideTarget.chapterId, relatedFieldGuideTarget.pageId);
@@ -427,6 +440,7 @@
 					class="btn-secondary"
 					command="show-modal"
 					commandfor="code-view-dialog"
+					onclick={handleOpenCodeView}
 					aria-label="Open Code View"
 					title="Open Code View"
 				>
