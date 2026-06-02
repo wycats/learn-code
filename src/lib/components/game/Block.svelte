@@ -20,6 +20,8 @@
 		Ship
 	} from 'lucide-svelte';
 
+	type BlockSurface = 'palette' | 'program' | 'draft';
+
 	interface Props {
 		block: Block;
 		game?: GameModel;
@@ -34,6 +36,7 @@
 		onTarget?: (target: string) => void;
 		isTargetMode?: boolean;
 		disabled?: boolean;
+		dragSurface?: BlockSurface;
 	}
 
 	let {
@@ -48,7 +51,8 @@
 		loopProgress = 0,
 		onTarget,
 		isTargetMode = false,
-		disabled = false
+		disabled = false,
+		dragSurface = isPalette ? 'palette' : 'program'
 	}: Props = $props();
 
 	// Interaction State
@@ -187,7 +191,7 @@
 	}}
 	use:draggableSource={{
 		id: block.id,
-		data: { type: 'block', block: block, isPaletteItem: isPalette },
+		data: { type: 'block', block: block, isPaletteItem: isPalette, surface: dragSurface },
 		disabled: disabled
 	}}
 >
@@ -286,7 +290,15 @@
 				},
 				api: slotApi
 			}}
-			use:dropTarget={{ id: `${block.id}-children` }}
+			use:dropTarget={{
+				id: `${block.id}-children`,
+				data: {
+					type: 'drop-target',
+					surface: dragSurface,
+					targetKind: 'children',
+					parentId: block.id
+				}
+			}}
 			class:ring={slotState.status === 'candidate'}
 			onclick={handleContainerClick}
 		>
@@ -306,6 +318,7 @@
 							{onContainerClick}
 							{onTarget}
 							{isTargetMode}
+							{dragSurface}
 						/>
 					</div>
 

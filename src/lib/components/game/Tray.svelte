@@ -5,15 +5,20 @@
 	import { editorState } from '$lib/interactions/editor.svelte';
 	import { dropTarget } from '$lib/interactions/dnd';
 	import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
-	import {
-		extractClosestEdge,
-		type Edge
-	} from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
+	import { extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 	import BlockComponent from './Block.svelte';
 	import HeldItemToken from './HeldItemToken.svelte';
 	import DropIndicator from './DropIndicator.svelte';
 	import DialInput from '$lib/components/builder/DialInput.svelte';
 	import type { Block, BlockType } from '$lib/game/types';
+	import {
+		cloneBlockWithFreshIds,
+		findBlockInList,
+		insertBlockInList,
+		removeBlockFromList,
+		updateBlockInList,
+		type BlockListInsertTarget
+	} from '$lib/game/block-list';
 	import type { GameModel } from '$lib/game/model.svelte';
 	import { resolveItemDefinition } from '$lib/game/utils';
 	import { Trash2, Move, ListChecks, Copy, Infinity as InfinityIcon } from 'lucide-svelte';
@@ -26,9 +31,14 @@
 		game: GameModel;
 		onTarget?: (target: string) => void;
 		isStepMode?: boolean;
+		draftingTable?: Block[];
 	}
 
-	let { game, onTarget, isStepMode = false }: Props = $props();
+	let { game, onTarget, isStepMode = false, draftingTable }: Props = $props();
+
+	type BlockSurface = 'palette' | 'program' | 'draft';
+	type EditableBlockSurface = Exclude<BlockSurface, 'palette'>;
+	type SelectedBlock = { block: Block; surface: EditableBlockSurface };
 
 	// Palette items (derived from game level)
 	const paletteItems = $derived.by(() => {
@@ -143,23 +153,43 @@
 	// Trash State
 	let isTrashActive = $state(false);
 
-	function findBlock(blocks: Block[], id: string): Block | null {
-		for (const block of blocks) {
-			if (block.id === id) return block;
-			if (block.children) {
-				const found = findBlock(block.children, id);
-				if (found) return found;
-			}
+	function findBlockWithSurface(id: string): SelectedBlock | null {
+		const programBlock = findBlockInList(game.activeProgram, id);
+		if (programBlock) return { block: programBlock, surface: 'program' };
+
+		if (draftingTable) {
+			const draftBlock = findBlockInList(draftingTable, id);
+			if (draftBlock) return { block: draftBlock, surface: 'draft' };
 		}
+
 		return null;
 	}
 
-	const selectedBlocks = $derived(
+	function updateEditableBlock(id: string, updates: Partial<Block>) {
+		const selected = findBlockWithSurface(id);
+		if (!selected) return;
+
+		if (selected.surface === 'program') {
+			game.updateBlock(id, updates);
+			return;
+		}
+
+		if (draftingTable) {
+			updateBlockInList(draftingTable, id, updates);
+		}
+	}
+
+	const selectedBlockEntries = $derived(
 		Array.from(interactionManager.selection)
-			.map((id) => findBlock(game.activeProgram, id))
-			.filter((b) => b !== null) as Block[]
+			.map((id) => findBlockWithSurface(id))
+			.filter((entry) => entry !== null) as SelectedBlock[]
 	);
-	const primarySelectedBlock = $derived(selectedBlocks.length === 1 ? selectedBlocks[0] : null);
+	const selectedBlocks = $derived(selectedBlockEntries.map((entry) => entry.block));
+	const primarySelectedEntry = $derived(
+		selectedBlockEntries.length === 1 ? selectedBlockEntries[0] : null
+	);
+	const primarySelectedBlock = $derived(primarySelectedEntry?.block ?? null);
+	const primarySelectedSurface = $derived(primarySelectedEntry?.surface ?? null);
 	const selectedBlockId = $derived(primarySelectedBlock?.id ?? null); // Backwards compatibility for logic that expects single ID
 
 	function handleVariableClick() {
@@ -177,7 +207,7 @@
 			const match = target.match(/^block:(.+):count$/);
 			if (match) {
 				const blockId = match[1];
-				game.updateBlock(blockId, {
+				updateEditableBlock(blockId, {
 					count: { type: 'variable', variableId: 'heldItem' }
 				});
 				soundManager.play('click');
@@ -192,23 +222,30 @@
 	function updateLoopCount(count: number | undefined | 'variable') {
 		if (primarySelectedBlock && primarySelectedBlock.type === 'loop') {
 			if (count === 'variable') {
-				game.updateBlock(primarySelectedBlock.id, {
+				updateEditableBlock(primarySelectedBlock.id, {
 					count: { type: 'variable', variableId: 'heldItem' }
 				});
 			} else {
-				game.updateBlock(primarySelectedBlock.id, { count });
+				updateEditableBlock(primarySelectedBlock.id, { count });
 			}
 		}
 	}
 
 	function updateCallFunction(name: string) {
 		if (primarySelectedBlock && primarySelectedBlock.type === 'call') {
-			game.updateBlock(primarySelectedBlock.id, { functionName: name });
+			updateEditableBlock(primarySelectedBlock.id, { functionName: name });
 		}
 	}
 
 	function handleSelect(id: string) {
-		editorState.handleBlockClick(game, id);
+		const selected = findBlockWithSurface(id);
+		if (selected?.surface === 'draft') {
+			editorState.setMode('idle');
+			editorState.clearGhosts();
+			interactionManager.select(id);
+		} else {
+			editorState.handleBlockClick(game, id);
+		}
 
 		// If we select a different block (and not in multi-select), we might need to sync local state?
 		// No, local state is gone.
@@ -236,7 +273,7 @@
 				editorState.ghostSourceType === type &&
 				editorState.defaultGhostId
 			) {
-				const defaultGhost = findBlock(game.activeProgram, editorState.defaultGhostId);
+				const defaultGhost = findBlockInList(game.activeProgram, editorState.defaultGhostId);
 				if (defaultGhost) {
 					editorState.confirmGhost(game, defaultGhost);
 					return;
@@ -244,7 +281,7 @@
 			}
 
 			editorState.clearGhosts();
-			const target = findBlock(game.activeProgram, selectedBlockId);
+			const target = findBlockInList(game.activeProgram, selectedBlockId);
 			if (target) {
 				editorState.showGhosts(game, target, sourceBlock);
 				return;
@@ -275,8 +312,28 @@
 
 	function handleDeleteSelected() {
 		if (interactionManager.selection.size === 0) return;
+		const programIds: string[] = [];
+		const draftIds: string[] = [];
+
+		for (const entry of selectedBlockEntries) {
+			if (entry.surface === 'program') {
+				programIds.push(entry.block.id);
+			} else {
+				draftIds.push(entry.block.id);
+			}
+		}
+
+		if (programIds.length === 0 && draftIds.length === 0) return;
+
 		soundManager.play('delete');
-		game.deleteBlocks(Array.from(interactionManager.selection));
+		if (programIds.length > 0) {
+			game.deleteBlocks(programIds);
+		}
+		if (draftingTable && draftIds.length > 0) {
+			for (const id of draftIds) {
+				removeBlockFromList(draftingTable, id);
+			}
+		}
 		interactionManager.clearSelection();
 	}
 
@@ -285,39 +342,26 @@
 		soundManager.play('click');
 
 		// Deep clone selected blocks
-		const blocks = Array.from(interactionManager.selection)
-			.map((id) => findBlock(game.activeProgram, id))
-			.filter((b) => b !== null) as Block[];
+		const blocks = selectedBlocks;
 
 		editorState.copy(blocks);
 		editorState.isMultiSelectMode = false;
 
 		// Show ghosts around the primary selection immediately
-		if (primarySelectedBlock && editorState.clipboard.length > 0) {
+		if (
+			primarySelectedBlock &&
+			primarySelectedSurface === 'program' &&
+			editorState.clipboard.length > 0
+		) {
 			editorState.showGhosts(game, primarySelectedBlock, editorState.clipboard[0]);
 		}
 	}
 
-	// Helper to remove block from anywhere in the tree
-	function removeBlock(blocks: Block[], id: string): boolean {
-		const index = blocks.findIndex((b) => b.id === id);
-		if (index !== -1) {
-			blocks.splice(index, 1);
-			return true;
-		}
-		for (const block of blocks) {
-			if (block.children && removeBlock(block.children, id)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	function handleContainerClick(containerId: string) {
-		if (!selectedBlockId) return;
+		if (!selectedBlockId || primarySelectedSurface !== 'program') return;
 		if (selectedBlockId === containerId) return; // Can't move into self
 
-		const blockToMove = findBlock(game.activeProgram, selectedBlockId);
+		const blockToMove = findBlockInList(game.activeProgram, selectedBlockId);
 		if (!blockToMove) return;
 
 		// Check if target is a child of the block we are moving (prevent cycles)
@@ -332,10 +376,10 @@
 		if (isChild(blockToMove, containerId)) return;
 
 		// Remove from old position
-		removeBlock(game.activeProgram, selectedBlockId);
+		removeBlockFromList(game.activeProgram, selectedBlockId);
 
 		// Add to new position
-		const container = findBlock(game.activeProgram, containerId);
+		const container = findBlockInList(game.activeProgram, containerId);
 		if (container) {
 			if (!container.children) container.children = [];
 			container.children.push(blockToMove);
@@ -411,6 +455,111 @@
 		}
 	});
 
+	function getSurfaceBlocks(surface: EditableBlockSurface): Block[] | null {
+		if (surface === 'program') return game.activeProgram;
+		return draftingTable ?? null;
+	}
+
+	function syncSurface(surface: EditableBlockSurface) {
+		if (surface === 'program') {
+			game.activeProgram = [...game.activeProgram];
+		}
+	}
+
+	function getDragSurface(sourceData: Record<string, unknown>): BlockSurface {
+		if (sourceData.surface === 'draft') return 'draft';
+		if (sourceData.surface === 'program') return 'program';
+		return 'palette';
+	}
+
+	function getVerticalEdge(data: Record<string, unknown>): 'top' | 'bottom' | null {
+		const edge = extractClosestEdge(data);
+		return edge === 'top' || edge === 'bottom' ? edge : null;
+	}
+
+	function isDropInsideSource(sourceBlock: Block, target: BlockListInsertTarget): boolean {
+		if (target.kind === 'root') return false;
+		const targetId = target.kind === 'children' ? target.parentId : target.targetId;
+		return (
+			targetId === sourceBlock.id || Boolean(findBlockInList(sourceBlock.children ?? [], targetId))
+		);
+	}
+
+	function getDropTarget(data: Record<string, unknown>): {
+		surface: EditableBlockSurface;
+		target: BlockListInsertTarget;
+	} | null {
+		const surface = data.surface === 'draft' ? 'draft' : 'program';
+		const targetKind = data.targetKind;
+		const blockId = data.blockId;
+
+		if (targetKind === 'children' && typeof data.parentId === 'string') {
+			return { surface, target: { kind: 'children', parentId: data.parentId } };
+		}
+
+		if (targetKind === 'root' || blockId === 'program-list' || blockId === 'drafting-table-list') {
+			return { surface, target: { kind: 'root' } };
+		}
+
+		if (typeof blockId === 'string') {
+			return {
+				surface,
+				target: {
+					kind: 'sibling',
+					targetId: blockId,
+					edge: getVerticalEdge(data)
+				}
+			};
+		}
+
+		return null;
+	}
+
+	function handleTrashDrop(sourceBlock: Block, sourceSurface: BlockSurface) {
+		if (sourceSurface === 'palette') return;
+
+		if (sourceSurface === 'program') {
+			game.deleteBlock(sourceBlock.id);
+		} else if (draftingTable) {
+			removeBlockFromList(draftingTable, sourceBlock.id);
+		}
+
+		interactionManager.clearSelection();
+	}
+
+	function transferBlock(
+		sourceBlock: Block,
+		sourceSurface: BlockSurface,
+		targetData: Record<string, unknown>
+	) {
+		const dropTarget = getDropTarget(targetData);
+		if (!dropTarget) return;
+
+		const targetBlocks = getSurfaceBlocks(dropTarget.surface);
+		if (!targetBlocks) return;
+
+		let blockToInsert: Block;
+		const sourceEditableSurface: EditableBlockSurface | null =
+			sourceSurface === 'palette' ? null : sourceSurface;
+		const isSameEditableSurface = sourceEditableSurface === dropTarget.surface;
+
+		if (isSameEditableSurface) {
+			if (isDropInsideSource(sourceBlock, dropTarget.target)) return;
+			const sourceBlocks = getSurfaceBlocks(sourceEditableSurface);
+			if (!sourceBlocks) return;
+			blockToInsert = removeBlockFromList(sourceBlocks, sourceBlock.id) ?? sourceBlock;
+		} else {
+			blockToInsert = cloneBlockWithFreshIds(sourceBlock);
+		}
+
+		if (insertBlockInList(targetBlocks, dropTarget.target, blockToInsert)) {
+			syncSurface(dropTarget.surface);
+			if (sourceEditableSurface && isSameEditableSurface) {
+				syncSurface(sourceEditableSurface);
+			}
+		}
+	}
+
 	$effect(() => {
 		return monitorForElements({
 			onDragStart: () => {
@@ -438,96 +587,18 @@
 				soundManager.play('drop');
 
 				const sourceBlock = source.data.block as Block;
-				const isPaletteItem = source.data.isPaletteItem as boolean;
+				const sourceSurface = getDragSurface(source.data);
 				const targetData = target.data;
-
-				// Helper to insert block
-				function insertBlock(
-					blocks: Block[],
-					targetId: string,
-					newBlock: Block,
-					edge: Edge | null
-				) {
-					// If target is the main list
-					if (targetId === 'program-list') {
-						// If edge is null, append to end
-						if (!edge) {
-							blocks.push(newBlock);
-							return;
-						}
-						// This shouldn't happen if we have proper targets, but fallback
-						blocks.push(newBlock);
-						return;
-					}
-
-					// Find the target block
-					// We need to find the *parent* list of the target block to insert next to it
-					// OR if the target is a container (like 'loop-children'), insert inside it.
-
-					// Wait, my drop targets are on the blocks themselves.
-					// So I need to find the list containing the target block.
-
-					function findAndInsert(list: Block[]): boolean {
-						const index = list.findIndex((b) => b.id === targetId);
-						if (index !== -1) {
-							let insertIndex = index;
-							if (edge === 'bottom') insertIndex += 1;
-							list.splice(insertIndex, 0, newBlock);
-							return true;
-						}
-
-						for (const block of list) {
-							// Check if the target IS the container itself (e.g. dropping into a loop)
-							if (targetId === `${block.id}-children`) {
-								if (!block.children) block.children = [];
-								block.children.push(newBlock);
-								return true;
-							}
-
-							if (block.children) {
-								if (findAndInsert(block.children)) return true;
-							}
-						}
-						return false;
-					}
-
-					findAndInsert(blocks);
-				}
 
 				// Handle Trash
 				if (targetData.type === 'trash') {
-					if (!isPaletteItem) {
-						game.deleteBlock(sourceBlock.id);
-						interactionManager.clearSelection();
-					}
+					handleTrashDrop(sourceBlock, sourceSurface);
 					return;
 				}
 
 				// Handle Drop on List or Block
 				if (targetData.type === 'drop-target') {
-					let newBlock: Block;
-					if (isPaletteItem) {
-						// Copy all properties from source block (except id) to preserve data like functionName
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						const { id, ...rest } = sourceBlock;
-						newBlock = { id: crypto.randomUUID(), ...rest };
-					} else {
-						newBlock = sourceBlock;
-						// Remove from old position first
-						removeBlock(game.activeProgram, sourceBlock.id);
-					}
-
-					// Insert at new position
-					const edge = extractClosestEdge(targetData);
-					const targetId = targetData.blockId as string;
-
-					// Special case: Dropping into empty program list
-					if (targetId === 'program-list' && game.activeProgram.length === 0) {
-						game.activeProgram = [newBlock];
-					} else {
-						insertBlock(game.activeProgram, targetId, newBlock, edge);
-						game.activeProgram = [...game.activeProgram]; // Trigger reactivity
-					}
+					transferBlock(sourceBlock, sourceSurface, targetData);
 				}
 			}
 		});
@@ -638,6 +709,110 @@
 			</div>
 		{/if}
 
+		{#if draftingTable}
+			<section class="drafting-section" aria-label="Drafting Table">
+				<div class="program-header drafting-header">
+					<h3>Drafting Table</h3>
+					<span class="drafting-note">Scratchpad</span>
+				</div>
+
+				<div
+					class="program-list drafting-list"
+					class:disabled={isDisabled}
+					data-block-id="drafting-table-list"
+					use:interactionTarget={{
+						node: {
+							id: 'drafting-table-list',
+							role: 'root',
+							dataType: 'statement',
+							accepts: ['statement']
+						},
+						api: {
+							highlight: () => {},
+							clearHighlight: () => {},
+							scrollIntoView: () => {},
+							getBoundingRect: () => new DOMRect(),
+							focus: () =>
+								(
+									document.querySelector('[data-block-id="drafting-table-list"]') as HTMLElement
+								)?.focus()
+						}
+					}}
+					use:dropTarget={{
+						id: 'drafting-table-list',
+						data: {
+							type: 'drop-target',
+							surface: 'draft',
+							targetKind: 'root',
+							blockId: 'drafting-table-list'
+						}
+					}}
+					onclick={() => interactionManager.clearSelection()}
+					role="button"
+					tabindex="0"
+					onkeydown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') interactionManager.clearSelection();
+					}}
+				>
+					{#each draftingTable as item, index (item.id)}
+						{@const itemState = interactionManager.getComponentState(item.id)}
+						<div class="block-wrapper draft-block-wrapper" style:position="relative">
+							{#if itemState.status === 'candidate' && itemState.isHovered && itemState.edge === 'top'}
+								<DropIndicator edge="top" />
+							{/if}
+
+							<div
+								use:interactionTarget={{
+									node: {
+										id: `draft-gap-${item.id}`,
+										role: 'slot',
+										dataType: 'statement',
+										accepts: ['statement']
+									},
+									api: {
+										highlight: () => {},
+										clearHighlight: () => {},
+										scrollIntoView: () => {},
+										getBoundingRect: () => new DOMRect(),
+										focus: () => {}
+									}
+								}}
+								use:dropTarget={{
+									id: `draft-gap-${item.id}`,
+									data: {
+										type: 'drop-target',
+										surface: 'draft',
+										targetKind: 'sibling',
+										blockId: item.id,
+										index: index
+									}
+								}}
+							>
+								<BlockComponent
+									block={item}
+									{game}
+									activeBlockId={null}
+									onSelect={handleSelect}
+									onContainerClick={handleContainerClick}
+									onTarget={handleTargetClick}
+									isTargetMode={isVariableSelected}
+									dragSurface="draft"
+								/>
+							</div>
+
+							{#if itemState.status === 'candidate' && itemState.isHovered && itemState.edge === 'bottom'}
+								<DropIndicator edge="bottom" />
+							{/if}
+						</div>
+					{/each}
+
+					{#if draftingTable.length === 0}
+						<div class="empty-placeholder draft-empty">Stage blocks here.</div>
+					{/if}
+				</div>
+			</section>
+		{/if}
+
 		<div class="program-container">
 			{#key game.editingContext}
 				<div
@@ -664,7 +839,12 @@
 					}}
 					use:dropTarget={{
 						id: 'program-list',
-						data: { type: 'drop-target', blockId: 'program-list' }
+						data: {
+							type: 'drop-target',
+							surface: 'program',
+							targetKind: 'root',
+							blockId: 'program-list'
+						}
 					}}
 					onclick={() => interactionManager.clearSelection()}
 					role="button"
@@ -698,7 +878,13 @@
 								}}
 								use:dropTarget={{
 									id: `gap-${item.id}`,
-									data: { type: 'drop-target', blockId: item.id, index: index }
+									data: {
+										type: 'drop-target',
+										surface: 'program',
+										targetKind: 'sibling',
+										blockId: item.id,
+										index: index
+									}
 								}}
 							>
 								<BlockComponent
@@ -709,6 +895,7 @@
 									onContainerClick={handleContainerClick}
 									onTarget={handleTargetClick}
 									isTargetMode={isVariableSelected}
+									dragSurface="program"
 								/>
 							</div>
 
@@ -866,7 +1053,7 @@
 				</div>
 			{/if}
 
-			{#if interactionManager.selection.size === 1}
+			{#if interactionManager.selection.size === 1 && primarySelectedSurface === 'program'}
 				<div
 					class="toolbar-btn"
 					class:active={isMoveMode}
@@ -930,6 +1117,15 @@
 			left: 50%;
 			margin-bottom: var(--size-2);
 			margin-right: 0;
+		}
+
+		.drafting-list {
+			grid-template-columns: 1fr;
+			max-height: 24vh;
+		}
+
+		.drafting-note {
+			display: none;
 		}
 	}
 
@@ -1312,8 +1508,30 @@
 	.sequence {
 		display: flex;
 		flex-direction: column;
+		gap: var(--size-2);
 		overflow: hidden; /* Contain the scrollable list */
 		min-height: 0; /* Crucial for flex child scrolling */
+	}
+
+	.drafting-section {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+		flex: 0 0 auto;
+	}
+
+	.drafting-header {
+		margin-bottom: var(--size-1);
+	}
+
+	.drafting-note {
+		color: var(--text-3);
+		background-color: var(--surface-3);
+		border-radius: var(--radius-round);
+		font-size: var(--font-size-00);
+		font-weight: 800;
+		padding: 2px var(--size-2);
+		text-transform: uppercase;
 	}
 
 	.program-container {
@@ -1338,6 +1556,17 @@
 		overflow-y: auto; /* Scroll vertically if needed */
 	}
 
+	.drafting-list {
+		grid-template-columns: 1fr 1fr;
+		max-height: min(26vh, 220px);
+		border: 1px dashed var(--surface-4);
+		background-color: light-dark(var(--surface-0), var(--surface-1));
+	}
+
+	.draft-empty {
+		min-height: 72px;
+	}
+
 	.program-list.disabled {
 		opacity: 0.7;
 		pointer-events: none;
@@ -1356,6 +1585,11 @@
 		font-style: italic;
 		pointer-events: none;
 		min-height: 100px;
+	}
+
+	.drafting-list .empty-placeholder {
+		grid-column: 1 / -1;
+		min-height: 72px;
 	}
 
 	.context-tabs {

@@ -1,35 +1,29 @@
-# Changelog Plan: Phase 47 — The Syntax Bridge
+# Changelog Plan: Phase 48 PER 1 — The Drafting Table
 
 ## Candidate User-Facing Summary
 
-Players can open a read-only Code View that shows their Kibi block program as TypeScript-flavored code. The view includes syntax highlighting, updates after committed block changes, shows both the main program and any function definitions, visually connects selected or executing blocks to their generated code lines, and includes a compact board preview when space allows.
+Builders can use a Drafting Table while testing a level: a safe scratchpad for staging block ideas before copying them into the executable Program.
 
 ## Candidate Highlights
 
-- Add a pure block-to-code formatter for the current Kibi block schema.
-- Use a small code-writer helper so indentation is centralized instead of hand-managed by every block formatter.
-- Add a read-only Code View dialog in the shared game toolbar.
-- Show the whole program without wrapping it in a fake `main()` function.
-- Render function calls and definitions with quoted creator-authored names.
-- Render Number/Thought Bubble repeat values as `heldItem`.
-- Add Shiki syntax highlighting with a plain-code fallback.
-- Highlight selected and executing code lines using a formatter-generated block source map.
-- Add playback controls and a compact board preview inside Code View.
-- Keep Code View's formatter, source-map, selection, and highlighting work idle while the dialog is closed.
-- Add formatter and component tests for generated code and committed model updates.
+- Add a visible Builder/Test Drafting Table lane above the Program.
+- Let creators stage blocks without affecting run behavior, block limits, Ghost Path, or Code View.
+- Copy blocks safely between Program and Drafting Table with fresh IDs.
+- Keep drafts session-only and level-scoped within the current Builder session.
+- Reuse existing block visuals and loop/call configuration affordances for draft blocks.
 
 ## Non-User-Facing Notes
 
-- Generated code is an explanatory pseudo-runtime, not executable JavaScript.
-- Blocks remain the source of truth.
-- No schema, runtime, interpreter, or Builder semantics changed.
-- Editable text mode, round-trip parsing, direct code execution, and PXT remain deferred.
-- During-drag code preview remains a follow-up product decision.
+- Drafts are not persisted in level JSON.
+- Drafts are not part of `GameModel` execution state.
+- Player trays are unchanged.
+- Semantic Zoom and saved snippet libraries remain deferred.
 
 ## Validation Notes To Include Internally
 
-- Focused formatter tests.
-- Focused Code View component tests.
+- Focused block-list helper tests.
+- Focused BuilderModel draft-state tests.
+- Focused Tray component tests.
 - `PROTO_NODE_VERSION=24 pnpm check`.
 - `PROTO_NODE_VERSION=24 pnpm lint`.
 - `git diff --check`.

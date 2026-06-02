@@ -34,6 +34,7 @@
 		{fieldGuide}
 		{relatedFieldGuideTarget}
 		architectMode={true}
+		draftingTable={builder.activeDraftingTable}
 		onExit={() => builder.setMode('edit')}
 		onTarget={(target) => {
 			if (builder.targetingState.isActive) {

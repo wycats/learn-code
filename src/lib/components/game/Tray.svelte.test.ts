@@ -33,7 +33,9 @@ const createMockGame = () =>
 		level: {
 			availableBlocks: {
 				'move-forward': 'unlimited',
-				'turn-left': 5
+				'turn-left': 5,
+				loop: 'unlimited',
+				call: 'unlimited'
 			},
 			maxBlocks: 10
 		},
@@ -159,5 +161,55 @@ describe('Tray Component', () => {
 		const { getByText } = render(Tray, { game });
 
 		expect(getByText('Level Complete! Replay or continue.')).toBeInTheDocument();
+	});
+
+	it('renders the Drafting Table only when drafting props are provided', async () => {
+		const { container } = render(Tray, { game });
+
+		expect(container.textContent).not.toContain('Drafting Table');
+
+		const draftBlocks: Block[] = [];
+		const renderedWithDrafts = render(Tray, { game, draftingTable: draftBlocks });
+
+		expect(renderedWithDrafts.getByText('Drafting Table')).toBeInTheDocument();
+		expect(renderedWithDrafts.container.textContent).toContain('Program');
+	});
+
+	it('does not count draft blocks toward the displayed block limit', async () => {
+		const draftBlocks: Block[] = [{ id: 'draft-step', type: 'move-forward' }];
+
+		const { container } = render(Tray, { game, draftingTable: draftBlocks });
+
+		expect(container.querySelector('.count')?.textContent?.trim()).toBe('0 / 10');
+		expect(container.querySelector('[data-block-id="drafting-table-list"]')).toBeInTheDocument();
+	});
+
+	it('shows loop configuration for a selected draft loop', async () => {
+		const draftBlocks: Block[] = [{ id: 'draft-loop', type: 'loop', count: 3, children: [] }];
+		const { container, getByLabelText } = render(Tray, { game, draftingTable: draftBlocks });
+
+		await (
+			container.querySelector(
+				'[data-block-id="drafting-table-list"] [data-type="loop"]'
+			) as HTMLElement
+		)?.click();
+
+		expect(getByLabelText('Times')).toBeInTheDocument();
+		expect(container.querySelector('.config-panel')).toBeInTheDocument();
+	});
+
+	it('shows call configuration for a selected draft call', async () => {
+		game.functions = { helper: [] };
+		const draftBlocks: Block[] = [{ id: 'draft-call', type: 'call' }];
+		const { container, getByText } = render(Tray, { game, draftingTable: draftBlocks });
+
+		await (
+			container.querySelector(
+				'[data-block-id="drafting-table-list"] [data-type="call"]'
+			) as HTMLElement
+		)?.click();
+
+		expect(getByText('Calling:')).toBeInTheDocument();
+		expect(container.querySelector('.single-function-display .value')?.textContent).toBe('helper');
 	});
 });
