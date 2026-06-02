@@ -42,7 +42,7 @@
 	}
 
 	let { game, dialogId = 'code-view-dialog', controls }: Props = $props();
-	let shouldHighlight = $state(false);
+	let isDialogOpen = $state(false);
 
 	const formattedCode = $derived(
 		formatProgramCodeWithMap({
@@ -57,7 +57,7 @@
 	const codeLineMetadata = $derived.by(() =>
 		buildLineMetadata(formattedCode.blockLineRanges, game.activeBlockId, selectedBlockIds)
 	);
-	const highlightedCode = $derived(shouldHighlight ? highlight(generatedCode) : null);
+	const highlightedCode = $derived(isDialogOpen ? highlight(generatedCode) : null);
 
 	function buildLineMetadata(
 		blockLineRanges: ReadonlyMap<string, CodeLineRange>,
@@ -127,10 +127,10 @@
 	}
 
 	function watchDialogOpen(dialog: HTMLDialogElement) {
-		shouldHighlight ||= dialog.open;
+		isDialogOpen = dialog.open;
 
 		const observer = new MutationObserver(() => {
-			shouldHighlight ||= dialog.open;
+			isDialogOpen = dialog.open;
 		});
 		observer.observe(dialog, { attributes: true, attributeFilter: ['open'] });
 
