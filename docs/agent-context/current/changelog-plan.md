@@ -15,6 +15,7 @@ Players can open a read-only Code View that shows their Kibi block program as Ty
 - Add Shiki syntax highlighting with a plain-code fallback.
 - Highlight selected and executing code lines using a formatter-generated block source map.
 - Add playback controls and a compact board preview inside Code View.
+- Keep Code View's formatter, source-map, selection, and highlighting work idle while the dialog is closed.
 - Add formatter and component tests for generated code and committed model updates.
 
 ## Non-User-Facing Notes

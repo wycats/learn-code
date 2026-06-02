@@ -652,3 +652,35 @@
 - Interpreter and Ghost Path now share the same core runtime rules while keeping mutation, sounds, status updates, and path-entry recording local.
 - Existing behavior, including zero-repeat parity and the `heldItem` vs. `vehicle` split, was intentionally preserved.
 - Future mechanics can add parity tests around one helper seam instead of updating two divergent implementations.
+
+## Phase 47: The Syntax Bridge
+
+### 69. Blocks Remain the Source of Truth for the First Code View
+
+**Decision:** Implement Code View as a read-only projection of block state rather than an editable text surface.
+**Context:** The phase goal was to build a gentle bridge from blocks to text syntax. Editable text would require parsing, reconciliation with block IDs, error recovery, and decisions about syntax that blocks cannot yet express.
+**Consequence:**
+
+- Learners can recognize text-like code without being asked to debug a second programming surface.
+- The formatter stays pure and testable, while runtime execution continues through the existing block interpreter.
+- Editable text mode, round-trip parsing, and running generated code directly remain future work.
+
+### 70. TypeScript-Flavored Pseudo-Runtime Instead of Executable JavaScript
+
+**Decision:** Generate readable TypeScript-shaped pseudo-runtime calls such as `moveForward()`, `repeat(...)`, `callFunction(...)`, and `defineFunction(...)`.
+**Context:** Literal JavaScript would introduce implementation noise, while fully executable generated code would force runtime commitments before the learning bridge is validated.
+**Consequence:**
+
+- Generated code teaches structure and vocabulary without becoming a separate engine.
+- Creator-authored function names are preserved as quoted strings, avoiding invalid generated identifiers.
+- Held-item Repeat values render as `heldItem`, matching the current Thought Bubble model.
+
+### 71. Code View Work Is Gated by Dialog Open State
+
+**Decision:** Keep formatter output, line mapping, selection snapshots, and Shiki tokenization idle while the Code View dialog is closed.
+**Context:** Code View is mounted on the game screen even when unused. Letting all derived values stay live would make normal block edits and selection changes run background codegen and mapping work.
+**Consequence:**
+
+- The main game screen avoids unnecessary Code View work until the user opens the dialog.
+- Code View still updates from committed program state once opened.
+- Component tests now cover the closed idle state and open the dialog before asserting generated code or correspondence highlights.
