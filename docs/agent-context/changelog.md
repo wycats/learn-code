@@ -858,3 +858,32 @@ Made the existing Thought Bubble / held-item runtime creator-accessible and lear
 - **Verification**:
   - Added/updated BuilderModel, BuilderTray, Interpreter, Ghost Path, Cell, pack validation, and Field Guide relevance coverage.
   - Ran phase verification successfully: `pnpm check`, `pnpm lint`, and unit tests all passed.
+
+## Phase 47: The Syntax Bridge (Completed)
+
+**Date:** June 2, 2026
+
+**Summary:**
+Added a read-only Code View that bridges Kibi's block programs into TypeScript-flavored pseudo-runtime code. Blocks remain the source of truth, while the generated text helps learners recognize code structure, function calls, loops, and held-item repeat values. The view includes syntax highlighting, block-to-line correspondence, playback controls, and a compact board preview when space allows.
+
+**Key Deliverables:**
+
+- **Pure Code Formatter**:
+  - Added `src/lib/game/codegen.ts` to format the current program and functions without Svelte dependencies.
+  - Centralized indentation and line emission in a small writer helper.
+  - Added block-ID to generated-line-range mapping for selected and executing line highlights.
+- **Read-Only Code View Dialog**:
+  - Added `src/lib/components/game/CodeView.svelte` as a native dialog opened from the shared game toolbar.
+  - Added Shiki syntax highlighting with a plain fallback.
+  - Kept formatter, source-map, selection, and highlighting work idle while the dialog is closed.
+- **Code/Runtime Context**:
+  - Added Code View playback controls wired to the existing run, step, step-back, and reset handlers.
+  - Added `src/lib/components/game/CodeViewBoard.svelte` for a compact read-only board preview on wider layouts.
+- **Teaching Shape**:
+  - Rendered main program code first, followed by function definitions.
+  - Rendered creator-authored function names as quoted strings instead of generated identifiers.
+  - Rendered held-item Repeat counts as `heldItem`.
+- **Verification**:
+  - Added formatter and component coverage for generated code, line mapping, selection/execution highlights, controls, board preview, and closed-dialog idleness.
+  - Ran focused formatter and Code View tests, full phase verification, `PROTO_NODE_VERSION=24 pnpm check`, `PROTO_NODE_VERSION=24 pnpm lint`, and `git diff --check`.
+  - Visually reviewed Code View at `https://kibi.localhost/`.

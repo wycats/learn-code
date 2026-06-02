@@ -36,11 +36,19 @@ The dialog uses Shiki highlighting through a dynamic import. While Shiki loads, 
 
 The dialog is opened from the shared game toolbar in `Game.svelte`. That placement keeps the feature close to the run/step controls and available in the normal play/test surface without burying it inside the tray.
 
+### Code/Block Correspondence
+
+The formatter also returns a block-to-line map so Code View can connect text back to blocks without changing runtime semantics. Selected blocks and the currently executing block mark their generated code lines, including nested loop bodies and function definitions.
+
+Code View includes playback controls backed by the existing run, step, step-back, and reset handlers. It also shows a compact read-only board preview beside the code when the dialog has enough horizontal space; narrower layouts hide the preview so the code remains readable.
+
 ### Live Updates
 
 The Code View updates from `GameModel.program` and `GameModel.functions`, so it follows committed model changes such as adding, removing, reordering, or configuring blocks.
 
 During-drag preview is not included in this slice. That is a separate product question because it would require deciding whether hover/draft drag state should be treated as code for learning purposes.
+
+While the dialog is closed, Code View keeps its formatter, line mapping, selection snapshot, and Shiki tokenization idle. That avoids background codegen work during normal block editing on screens where Code View is mounted but not being used.
 
 ## Why The Code Is Pseudo-Runtime TypeScript
 
@@ -51,7 +59,7 @@ This avoids two traps:
 - literal JavaScript would add implementation noise before learners need it;
 - fully executable generated code would force runtime and parser commitments before the bridge has been validated.
 
-## What To Review
+## How To Try It Out
 
 1. Open `https://kibi.localhost/` with the user-managed dev server running.
 2. Enter a level and open Code View from the game toolbar.
@@ -60,8 +68,12 @@ This avoids two traps:
 5. Confirm Code View updates after committed block changes.
 6. Check held-item Repeat renders as `repeat(heldItem, () => { ... })`.
 7. Check function definitions appear after the top-level program.
-8. Check the dialog closes with the close button and backdrop click.
-9. Check narrow/mobile layout does not clip the header or code frame.
+8. Select a block and confirm the corresponding generated code line is marked.
+9. Step through a program and confirm the active executing block marks the corresponding generated code line.
+10. Use the Code View playback controls and confirm they match the main run/step/reset behavior.
+11. Confirm the compact board preview appears on wide layouts and hides on narrow layouts.
+12. Check the dialog closes with the close button, Escape, and backdrop click.
+13. Check narrow/mobile layout does not clip the header, controls, or code frame.
 
 ## Deferred Work
 

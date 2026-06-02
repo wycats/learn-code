@@ -24,6 +24,8 @@ Phase 47 adds a read-only syntax bridge over the existing block runtime. Blocks 
 6. `Game.svelte` owns the Code View trigger in the shared game toolbar.
 7. No schema, runtime, interpreter, drag/drop, or Builder state changes are required.
 
+`CodeView.svelte` gates formatter output, code lines, selection snapshots, line metadata, and Shiki tokenization on the dialog's actual `open` state. This keeps Code View idle while it is mounted but closed, so normal block editing does not do background codegen or source-map work.
+
 ## Formatter Rules
 
 - Top-level blocks render first.
@@ -49,5 +51,6 @@ PXT remains a possible future bridge, but introducing it here would make the fir
 - Unit test the formatter across empty programs, primitive blocks, loops, held-item repeats, and function definitions.
 - Unit test source-map ranges for primitive blocks, nested loops, and function bodies.
 - Component test Code View rendering, committed model updates, active line classes, selected line classes, controls, and the compact board preview.
+- Component test the closed dialog idle state before opening Code View.
 - Keep full app validation focused on check/lint and nearby tests unless the UI changes expand.
 - Manually review Code View at `https://kibi.localhost/` with the user-managed dev server.
