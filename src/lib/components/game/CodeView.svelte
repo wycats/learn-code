@@ -44,20 +44,32 @@
 	let { game, dialogId = 'code-view-dialog', controls }: Props = $props();
 	let isDialogOpen = $state(false);
 
-	const formattedCode = $derived(
-		formatProgramCodeWithMap({
-			program: game.program,
-			functions: game.functions,
-			heldItemName: 'heldItem'
-		})
+	const emptyFormattedCode = {
+		code: '',
+		blockLineRanges: new Map<string, CodeLineRange>()
+	};
+	const emptySelectedBlockIds = new Set<string>();
+
+	const formattedCode = $derived.by(() =>
+		isDialogOpen
+			? formatProgramCodeWithMap({
+					program: game.program,
+					functions: game.functions,
+					heldItemName: 'heldItem'
+				})
+			: emptyFormattedCode
 	);
 	const generatedCode = $derived(formattedCode.code);
-	const codeLines = $derived(generatedCode.split('\n'));
-	const selectedBlockIds = $derived.by(() => new Set(interactionManager.selection));
-	const codeLineMetadata = $derived.by(() =>
-		buildLineMetadata(formattedCode.blockLineRanges, game.activeBlockId, selectedBlockIds)
+	const codeLines = $derived(isDialogOpen ? generatedCode.split('\n') : []);
+	const selectedBlockIds = $derived.by(() =>
+		isDialogOpen ? new Set(interactionManager.selection) : emptySelectedBlockIds
 	);
-	const highlightedCode = $derived(isDialogOpen ? highlight(generatedCode) : null);
+	const codeLineMetadata = $derived.by(() =>
+		isDialogOpen
+			? buildLineMetadata(formattedCode.blockLineRanges, game.activeBlockId, selectedBlockIds)
+			: []
+	);
+	const highlightedCode = $derived(isDialogOpen && generatedCode ? highlight(generatedCode) : null);
 
 	function buildLineMetadata(
 		blockLineRanges: ReadonlyMap<string, CodeLineRange>,

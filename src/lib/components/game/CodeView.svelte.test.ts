@@ -16,12 +16,21 @@ const MOCK_LEVEL: LevelDefinition = {
 	goal: { x: 4, y: 0 }
 };
 
+async function openCodeView(container: HTMLElement) {
+	const dialog = container.querySelector('dialog[data-testid="code-view"]') as HTMLDialogElement;
+	dialog.showModal();
+	await vi.waitFor(() => expect(dialog.open).toBe(true));
+	await vi.waitFor(() =>
+		expect(container.querySelectorAll('[data-testid="code-line"]').length).toBeGreaterThan(0)
+	);
+}
+
 describe('CodeView', () => {
 	beforeEach(() => {
 		interactionManager.clearSelection();
 	});
 
-	it('renders generated code in a dialog for the whole program', () => {
+	it('keeps code generation idle while the dialog is closed', () => {
 		const game = new GameModel(MOCK_LEVEL);
 		game.status = 'planning';
 		game.program = [{ id: 'move-1', type: 'move-forward' }];
@@ -29,14 +38,27 @@ describe('CodeView', () => {
 		const { container } = render(CodeView, { game });
 
 		expect(container.querySelector('dialog[data-testid="code-view"]')).toBeInTheDocument();
-		expect(container.textContent).not.toContain('function main()');
+		expect(container.textContent).not.toContain('moveForward();');
+		expect(container.querySelectorAll('[data-testid="code-line"]')).toHaveLength(0);
+	});
+
+	it('renders generated code in a dialog for the whole program', async () => {
+		const game = new GameModel(MOCK_LEVEL);
+		game.status = 'planning';
+		game.program = [{ id: 'move-1', type: 'move-forward' }];
+
+		const { container } = render(CodeView, { game });
+		await openCodeView(container);
+
+		expect(container.querySelector('dialog[data-testid="code-view"]')).toBeInTheDocument();
 		expect(container.textContent).toContain('moveForward();');
 	});
 
-	it('updates when committed block changes update the model', async () => {
+	it('updates while open when committed block changes update the model', async () => {
 		const game = new GameModel(MOCK_LEVEL);
 		game.status = 'planning';
 		const rendered = render(CodeView, { game });
+		await openCodeView(rendered.container);
 
 		expect(rendered.container.textContent).toContain(
 			'// Add blocks to start building your program.'
@@ -48,7 +70,7 @@ describe('CodeView', () => {
 		expect(rendered.container.textContent).toContain('moveForward();');
 	});
 
-	it('renders function definitions along with top-level code', () => {
+	it('renders function definitions along with top-level code', async () => {
 		const game = new GameModel(MOCK_LEVEL);
 		game.status = 'planning';
 		game.functions = {
@@ -57,6 +79,7 @@ describe('CodeView', () => {
 		game.program = [{ id: 'call-1', type: 'call', functionName: 'Helper Path' }];
 
 		const { container } = render(CodeView, { game });
+		await openCodeView(container);
 
 		expect(container.textContent).toContain('defineFunction("Helper Path"');
 		expect(container.textContent).toContain('callFunction("Helper Path");');
@@ -72,7 +95,7 @@ describe('CodeView', () => {
 		expect(container.textContent).toContain('5x5');
 	});
 
-	it('marks the active block code line', () => {
+	it('marks the active block code line', async () => {
 		const game = new GameModel(MOCK_LEVEL);
 		game.status = 'planning';
 		game.program = [
@@ -82,6 +105,7 @@ describe('CodeView', () => {
 		game.activeBlockId = 'turn-1';
 
 		const { container } = render(CodeView, { game });
+		await openCodeView(container);
 
 		expect(container.querySelector('[data-block-ids="turn-1"]')).toHaveClass('active-code-line');
 		expect(container.querySelector('[data-block-ids="move-1"]')).not.toHaveClass(
@@ -89,7 +113,7 @@ describe('CodeView', () => {
 		);
 	});
 
-	it('marks selected block code lines', () => {
+	it('marks selected block code lines', async () => {
 		const game = new GameModel(MOCK_LEVEL);
 		game.status = 'planning';
 		game.program = [
@@ -99,6 +123,7 @@ describe('CodeView', () => {
 		interactionManager.select('move-1');
 
 		const { container } = render(CodeView, { game });
+		await openCodeView(container);
 
 		expect(container.querySelector('[data-block-ids="move-1"]')).toHaveClass('selected-code-line');
 		expect(container.querySelector('[data-block-ids="turn-1"]')).not.toHaveClass(
