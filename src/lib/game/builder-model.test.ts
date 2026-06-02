@@ -337,6 +337,48 @@ describe('BuilderModel', () => {
 		expect(() => builder.snapshotTray()).not.toThrow();
 	});
 
+	it('keeps drafting table blocks across edit/test mode switches', () => {
+		builder.activeDraftingTable.push({ id: 'draft-1', type: 'move-forward' });
+
+		builder.setMode('test');
+		builder.setMode('edit');
+
+		expect(builder.activeDraftingTable).toEqual([{ id: 'draft-1', type: 'move-forward' }]);
+	});
+
+	it('keeps drafting tables scoped to the active level for the current session', () => {
+		builder.activeDraftingTable.push({ id: 'level-1-draft', type: 'move-forward' });
+		builder.pack.levels.push({
+			id: 'level-2',
+			name: 'Level 2',
+			gridSize: { width: 5, height: 5 },
+			start: { x: 0, y: 0 },
+			startOrientation: 'E',
+			goal: { x: 4, y: 4 },
+			layout: {},
+			availableBlocks: {}
+		});
+
+		builder.switchLevel('level-2');
+		expect(builder.activeDraftingTable).toEqual([]);
+
+		builder.activeDraftingTable.push({ id: 'level-2-draft', type: 'turn-left' });
+		builder.switchLevel('level-1');
+
+		expect(builder.activeDraftingTable).toEqual([{ id: 'level-1-draft', type: 'move-forward' }]);
+		expect(builder.draftingTables['level-2']).toEqual([{ id: 'level-2-draft', type: 'turn-left' }]);
+	});
+
+	it('does not persist draft blocks when snapshotting the tray', () => {
+		builder.game.program = [{ id: 'program-1', type: 'move-forward' }];
+		builder.activeDraftingTable.push({ id: 'draft-1', type: 'turn-left' });
+
+		builder.snapshotTray();
+
+		expect(builder.level.initialProgram).toEqual([{ id: 'program-1', type: 'move-forward' }]);
+		expect(JSON.stringify(builder.level)).not.toContain('draft-1');
+	});
+
 	it('toggles story highlight', () => {
 		// Setup a segment
 		builder.level.intro = [{ id: 'seg1', text: 'Intro', speaker: 'Narrator', targets: [] }];

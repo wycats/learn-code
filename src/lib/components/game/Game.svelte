@@ -39,6 +39,7 @@
 	import type { FieldGuideTarget } from '$lib/game/book/relevance';
 	import BookModal from '$lib/components/game/book/BookModal.svelte';
 	import HealthDisplay from '$lib/components/game/HealthDisplay.svelte';
+	import type { Block } from '$lib/game/types';
 
 	interface Props {
 		game: GameModel;
@@ -51,6 +52,7 @@
 		feedbackRouteContext?: FeedbackRouteContext;
 		fieldGuide?: Book;
 		relatedFieldGuideTarget?: FieldGuideTarget | null;
+		draftingTable?: Block[];
 	}
 
 	let {
@@ -63,7 +65,8 @@
 		onTarget,
 		feedbackRouteContext = { source: 'shared' },
 		fieldGuide = THE_FIELD_GUIDE,
-		relatedFieldGuideTarget = null
+		relatedFieldGuideTarget = null,
+		draftingTable
 	}: Props = $props();
 
 	let isRunning = $state(false);
@@ -503,7 +506,7 @@
 
 		<div class="tray-area">
 			{#key game.level.id}
-				<Tray {game} {onTarget} {isStepMode} />
+				<Tray {game} {onTarget} {isStepMode} {draftingTable} />
 			{/key}
 		</div>
 	</div>

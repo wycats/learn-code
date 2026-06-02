@@ -90,6 +90,19 @@ export class BuilderModel {
 	// The working program (persisted across mode switches)
 	currentProgram = $state<Block[]>([]);
 
+	// Session-only drafting tables, keyed by level id. These are never persisted to level JSON.
+	draftingTables = $state<Record<string, Block[]>>({});
+
+	get activeDraftingTable() {
+		const levelId = this.activeLevelId || this.level.id;
+		return this.draftingTables[levelId] ?? [];
+	}
+
+	ensureDraftingTable(levelId = this.activeLevelId || this.level.id) {
+		this.draftingTables[levelId] ??= [];
+		return this.draftingTables[levelId];
+	}
+
 	// Undo/Redo History
 	historyManager = new HistoryManager<LevelDefinition>();
 
@@ -399,6 +412,7 @@ export class BuilderModel {
 		});
 
 		this.pack = pack;
+		this.draftingTables = {};
 		if (this.pack.levels.length === 0) {
 			// Create a default level if pack is empty
 			const defaultLevel: LevelDefinition = {
@@ -514,6 +528,7 @@ export class BuilderModel {
 	}
 
 	syncGame() {
+		this.ensureDraftingTable();
 		this.ensureCellIds();
 
 		// Merge pack tiles into level definition for the game model

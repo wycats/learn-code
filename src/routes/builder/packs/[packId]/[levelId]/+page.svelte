@@ -76,6 +76,7 @@
 		{fieldGuide}
 		{relatedFieldGuideTarget}
 		architectMode={true}
+		draftingTable={builder.activeDraftingTable}
 		onExit={handleExit}
 		onTarget={(target) => {
 			if (builder.targetingState.isActive) {
