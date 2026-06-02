@@ -554,9 +554,6 @@
 
 		if (insertBlockInList(targetBlocks, dropTarget.target, blockToInsert)) {
 			syncSurface(dropTarget.surface);
-			if (sourceEditableSurface && isSameEditableSurface) {
-				syncSurface(sourceEditableSurface);
-			}
 		}
 	}
 
